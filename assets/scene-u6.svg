@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <ellipse cx="120" cy="110" rx="36" ry="22" fill="#000" fill-opacity=".14"/>
+  <ellipse cx="168" cy="96" rx="48" ry="28" fill="#000" fill-opacity=".18"/>
+  <ellipse cx="214" cy="114" rx="32" ry="18" fill="#000" fill-opacity=".14"/>
+  <rect x="90" y="170" width="36" height="56" fill="#000" fill-opacity=".14"/>
+  <rect x="136" y="170" width="36" height="56" fill="#000" fill-opacity=".2"/>
+  <rect x="182" y="170" width="36" height="56" fill="#000" fill-opacity=".14"/>
+  <rect x="74" y="226" width="160" height="12" rx="2" fill="#000" fill-opacity=".28" stroke="none"/>
+  <rect x="1180" y="80" width="160" height="120" rx="8" stroke-dasharray="8 7"/>
+  <rect x="1208" y="108" width="104" height="70" rx="4" fill="#000" fill-opacity=".12"/>
+  <ellipse cx="1180" cy="640" rx="30" ry="18" fill="#000" fill-opacity=".14"/>
+  <ellipse cx="1220" cy="626" rx="40" ry="24" fill="#000" fill-opacity=".18"/>
+  <ellipse cx="1260" cy="644" rx="28" ry="16" fill="#000" fill-opacity=".14"/>
+  <rect x="1148" y="690" width="30" height="48" fill="#000" fill-opacity=".14"/>
+  <rect x="1188" y="690" width="30" height="48" fill="#000" fill-opacity=".2"/>
+  <rect x="1228" y="690" width="30" height="48" fill="#000" fill-opacity=".14"/>
+  <rect x="1136" y="738" width="134" height="10" rx="2" fill="#000" fill-opacity=".26" stroke="none"/>
+  <rect x="70" y="680" width="200" height="130" rx="10" stroke-dasharray="9 8"/>
+  <path d="M110 760h40M190 760h40M110 790h120"/>
+</svg>

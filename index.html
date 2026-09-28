@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f7fb" />
+    <title>20937 · תכנות מערכות דפנסיבי</title>
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("cs-theme");
+          var theme =
+            saved === "dark" || saved === "light"
+              ? saved
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute("content", theme === "dark" ? "#0b1220" : "#f4f7fb");
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=30" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="data/course.js?v=30"></script>
+    <script src="data/unit1.js?v=30"></script>
+    <script src="data/unit1-interact.js?v=30"></script>
+    <script src="data/unit2.js?v=30"></script>
+    <script src="data/unit2-part-a.js?v=30"></script>
+    <script src="data/unit2-part-b.js?v=30"></script>
+    <script src="data/unit2-part-c.js?v=30"></script>
+    <script src="data/unit2-part-d.js?v=30"></script>
+    <script src="data/unit2-interact.js?v=30"></script>
+    <script src="data/unit2-hw.js?v=30"></script>
+    <script src="data/unit3.js?v=30"></script>
+    <script src="data/unit3-part-a.js?v=30"></script>
+    <script src="data/unit3-part-b.js?v=30"></script>
+    <script src="data/unit3-part-c.js?v=30"></script>
+    <script src="data/unit3-part-d.js?v=30"></script>
+    <script src="data/unit3-interact.js?v=30"></script>
+    <script src="data/unit4.js?v=30"></script>
+    <script src="data/unit4-part-a.js?v=30"></script>
+    <script src="data/unit4-part-b.js?v=30"></script>
+    <script src="data/unit4-part-c.js?v=30"></script>
+    <script src="data/unit4-part-d.js?v=30"></script>
+    <script src="data/unit4-interact.js?v=30"></script>
+    <script src="data/unit4-hw.js?v=30"></script>
+    <script src="data/unit5.js?v=30"></script>
+    <script src="data/unit5-part-a.js?v=30"></script>
+    <script src="data/unit5-part-b.js?v=30"></script>
+    <script src="data/unit5-part-c.js?v=30"></script>
+    <script src="data/unit5-part-d.js?v=30"></script>
+    <script src="data/unit5-interact.js?v=30"></script>
+    <script src="data/unit5-hw.js?v=30"></script>
+    <script src="data/unit6.js?v=30"></script>
+    <script src="data/unit6-part-a.js?v=30"></script>
+    <script src="data/unit6-part-b.js?v=30"></script>
+    <script src="data/unit6-part-c.js?v=30"></script>
+    <script src="data/unit6-interact.js?v=30"></script>
+    <script src="data/unit7.js?v=30"></script>
+    <script src="data/unit7-part-a.js?v=30"></script>
+    <script src="data/unit7-part-b.js?v=30"></script>
+    <script src="data/unit7-part-c.js?v=30"></script>
+    <script src="data/unit7-part-d.js?v=30"></script>
+    <script src="data/unit7-interact.js?v=30"></script>
+    <script src="data/unit7-hw.js?v=30"></script>
+    <script src="data/summary-prose.js?v=30"></script>
+    <script src="data/summary-detail.js?v=30"></script>
+    <script src="data/exam-recon.js?v=30"></script>
+    <script src="data/exam-sims.js?v=30"></script>
+    <script src="data/exam-sims-recon.js?v=30"></script>
+    <script src="data/viz.js?v=30"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js?v=30"></script>
+    <script src="js/content-store.js?v=30"></script>
+    <script src="js/progress-sync.js?v=30"></script>
+    <script src="js/admin.js?v=30"></script>
+    <script src="app.js?v=30"></script>
+  </body>
+</html>
