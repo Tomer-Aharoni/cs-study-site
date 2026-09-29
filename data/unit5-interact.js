@@ -165,6 +165,17 @@ window.UNIT5_QUIZZES = [
     explain: "גבולות send אינם גבולות recv. הפרוטוקול מגדיר אורך, מפריד או גודל קבוע ותקרת הודעה; recv שמחזיר 0 מציין EOF מסודר.",
   },
   {
+    id: "u5-hdr12",
+    prompt: "במסגור של 12 בתים מעל TCP, מה עושים עם שדה האורך מהכותרת?",
+    options: [
+      { id: "a", text: "קוראים recv פעם אחת בלי לולאה, וסומכים שהאורך תמיד מגיע במלואו." },
+      { id: "b", text: "קוראים בדיוק 12 בתים, מפענחים big-endian, וקוראים בדיוק את האורך — אחרי תקרה, כי האורך הוא קלט." },
+      { id: "c", text: "מתעלמים מהכותרת כי TCP שומר גבולות הודעה." },
+    ],
+    answer: "b",
+    explain: "שלושה שדות של 4 בתים: מספר חבילה, סך חבילות, אורך payload. recv_exact משלים חלקיות. אורך בלי תקרה הוא מיצוי זיכרון.",
+  },
+  {
     id: "u5-mitm-replay",
     prompt: "למה הצפנה בלבד אינה בהכרח מספיקה להגנת הודעה?",
     options: [
@@ -250,14 +261,14 @@ window.U5_OSI = [
   { id: "u5-shor", unit: "5", kind: "לזכור", title: "שור מול גרובר (Shor / Grover)", body: "שור: RSA, DH, ECC, חתימות/תעודות. גרובר: מחליש AES, SHA, MAC/HMAC — לא אותו שבירה." },
   { id: "u5-v6", unit: "5", kind: "לזכור", title: "כתובת IPv6", body: "128 סיביות (16 בתים). במצגת הוגדר ב־1994. המעבר מ־IPv4 נמשך." },
   { id: "u5-end", unit: "5", kind: "מלכודת", title: "סדר בתים (endian, htons)", body: "IP ב-big-endian. htons לפורט." },
-  { id: "u5-rpc", unit: "5", kind: "הגדרה", title: "קריאה מרחוק (RPC)", body: "קריאה שנראית מקומית ורצה בשרת." },
+  { id: "u5-rpc", unit: "5", kind: "הגדרה", title: "קריאה מרחוק (RPC)", body: "stub אורז (marshalling) ופורק (deserialization). פורמט שמריץ קוד בפריקה, כמו pickle לא אמין, הוא הזרקה. אימות על הבקשה." },
   { id: "u5-cs", unit: "5", kind: "הגדרה", title: "שרת-לקוח", body: "לקוח פונה; שרת מאזין. P2P: שני התפקידים." },
   { id: "u5-prx", unit: "5", kind: "הגדרה", title: "פרוקסי / רחרחן", body: "מתווך רואה בקשה. Sniffer מתעד תעבורה — כלי מורשה." },
   { id: "u5-so", unit: "5", kind: "הגדרה", title: "יצירת שקע (socket)", body: "AF_INET/6, STREAM/DGRAM, protocol 0. כישלון: ערך שלילי, לא השוואה ל־0." },
   { id: "u5-cl", unit: "5", kind: "לזכור", title: "לקוח", body: "socket, htons, inet_pton, connect, send/read." },
   { id: "u5-sv", unit: "5", kind: "לזכור", title: "שרת", body: "setsockopt, bind, listen(backlog), accept → שקע שיחה. בפייתון אותו רצף. addrlen לא addlen." },
   { id: "u5-any", unit: "5", kind: "מלכודת", title: "האזנה על כל הממשקים (INADDR_ANY)", body: "האזנה לכל הממשקים — משטח גדול מ-127.0.0.1." },
-  { id: "u5-rd", unit: "5", kind: "מלכודת", title: "שליחה וקבלה (send, recv)", body: "TCP הוא זרם: שליחה/קבלה יכולות להיות חלקיות. מגדירים מסגור, תקרה ו־timeout." },
+  { id: "u5-rd", unit: "5", kind: "מלכודת", title: "שליחה וקבלה (send, recv)", body: "TCP הוא זרם: שליחה/קבלה יכולות להיות חלקיות. כותרת 12B big-endian ואז payload באורך חסום. recv_exact עד n בתים." },
   { id: "u5-th", unit: "5", kind: "הגדרה", title: "חוט / תהליך", body: "thread יחידת ביצוע; process מופע תוכנית. thread joinable שנהרס גורם terminate." },
   { id: "u5-gil", unit: "5", kind: "מלכודת", title: "נעילת המפרש (GIL)", body: "CPython: אין מקביליות bytecode. multiprocessing לחישוב." },
   { id: "u5-rac", unit: "5", kind: "מלכודת", title: "מרוץ נתונים (Data Race)", body: "גישה מתנגשת ללא סנכרון ב־C++ = undefined behavior. mutex/atomic לפי החוזה." },
@@ -267,7 +278,7 @@ window.U5_OSI = [
   { id: "u5-sym", unit: "5", kind: "הגדרה", title: "הצפנה סימטרית / AES", body: "אותו מפתח סודי לשני הצדדים. AES מצפין בלוקים באורך קבוע. מהיר לנפח; המפתח עדיין צריך להגיע בבטחה." },
   { id: "u5-asy", unit: "5", kind: "הגדרה", title: "הצפנה אסימטרית (Public-Key)", body: "פומבי/פרטי. איטית יותר לנפח נתונים." },
   { id: "u5-hy", unit: "5", kind: "לזכור", title: "הצפנה היברידית", body: "אסימטרי למפתח הסימטרי, סימטרי לנתונים. לאמת זהות מול סמכות סרטיפיקטים." },
-  { id: "u5-pqc", unit: "5", kind: "לזכור", title: "הצפנה פוסט־קוונטית (PQC)", body: "Harvest now, decode later. Kyber, Dilithium, SPHINCS+, Falcon — שמות המצגת; NIST מאשר תקנים." },
+  { id: "u5-pqc", unit: "5", kind: "לזכור", title: "הצפנה פוסט־קוונטית (PQC)", body: "Harvest now, decode later. Kyber הוא ML-KEM (מפתח); Dilithium הוא ML-DSA (חתימה). גם SPHINCS+ ו־Falcon. גרובר: AES-128 נחלש לכ־64, עוברים ל־AES-256." },
   { id: "u5-mm", unit: "5", kind: "הגדרה", title: "אדם-באמצע (MITM)", body: "גורם על הנתיב. ערוץ מוצפן ומאומת + תעודה." },
   { id: "u5-rp", unit: "5", kind: "הגדרה", title: "התקפת שידור חוזר (Replay Attack)", body: "הודעה ישנה שוב. nonce / מונה / זמן." },
   { id: "u5-nul", unit: "5", kind: "מלכודת", title: "read בלי אפס סיום", body: "read/recv לא מוסיפים אפס סיום. printf %s על החוצץ עלול לקרוא מעבר. מדפיסים לפי האורך שחזר." }

@@ -99,5 +99,38 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as srv:
         conn.sendall(b"ok")</code></pre>
       <p><code>listen(1)</code> הוא backlog קטן לדוגמה; בייצור קובעים תקרה במודע. <code>recv</code> עדיין עשוי להחזיר חלק — מסגור ותקרת גודל חלים גם כאן. האזנה ל־127.0.0.1 צרה מ־<code>0.0.0.0</code> / INADDR_ANY.</p>
     `,
+  },
+  {
+    id: "u5-frame",
+    title: "מסגור (Framing) מעל זרם בתים של TCP",
+    html: `
+      <p>TCP מעביר <strong>זרם בתים (byte stream)</strong>. אין לו גבול של "הודעה". קריאה אחת ל־<code>recv</code> יכולה לחזור עם חלק מההודעה, או עם זנב של הודעה אחת ותחילת ההודעה הבאה באותו חוצץ.</p>
+      <p>הפרוטוקול של היישום מגדיר מסגור. במטלת הקורס זו כותרת קבועה של 12 בתים, שלושה מספרים של 4 בתים כל אחד, בסדר רשת big-endian:</p>
+      <ul>
+        <li>מספר החבילה</li>
+        <li>מספר החבילות הכולל</li>
+        <li>אורך ה־payload בחבילה הזו</li>
+      </ul>
+      <p>קודם קוראים בדיוק 12 בתים, מפענחים, ורק אז קוראים בדיוק את האורך שכתוב. הלולאה חובה: <code>recv</code> רשאי להחזיר פחות ממה שביקשתם. אורך שמגיע מהכותרת הוא קלט, ולכן יש תקרה לפני הקריאה השנייה. בלי תקרה, שדה אורך ענקי מבקש מהשרת לצבור זיכרון.</p>
+      <pre class="code"><code>def recv_exact(conn, n):
+    buf = bytearray()
+    while len(buf) &lt; n:
+        chunk = conn.recv(n - len(buf))
+        if not chunk:
+            raise OSError("connection closed")
+        buf.extend(chunk)
+    return bytes(buf)
+
+HEADER = 12
+MAX_PAYLOAD = 2036
+header = recv_exact(conn, HEADER)
+pkt_id = int.from_bytes(header[0:4], "big")
+total = int.from_bytes(header[4:8], "big")
+size = int.from_bytes(header[8:12], "big")
+if size &gt; MAX_PAYLOAD:
+    raise ValueError("payload too large")
+payload = recv_exact(conn, size)</code></pre>
+      <p><code>struct.unpack("!III", header)</code> מפענח את אותם שלושה מספרים: <code>!</code> הוא big-endian. <code>send</code> גם הוא עלול לשלוח חלק, ולכן בצד השולח משתמשים ב־<code>sendall</code> או בלולאה עד שכל הכותרת וה־payload יצאו. 2036 הוא המקום שנשאר כשהיחידה כולה מוגבלת ל־2048 בתים (12 כותרת). הפתרון המלא של המטלה נמצא בתרגול.</p>
+    `,
   }
 );

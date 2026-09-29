@@ -26,6 +26,7 @@ UNIT4.sections.push(
       <p>ירושה דרך type: הורים ב־tuple. פסיק אחרי שם יחיד חובה, אחרת זו לא tuple:</p>
       <pre class="code"><code>Colored = type("Colpoint", (Point,), {"kind": "color"})</code></pre>
       <p><code>(Point,)</code> — tuple בן הורה אחד. <code>(Point)</code> בלי פסיק הוא סתם הסוגריים של ביטוי, כלומר המחלקה Point עצמה, והקריאה ל־type תיכשל.</p>
+      <p>מלכודת מבחן: אותו פסיק עם כל הורה יחיד, למשל <code>(Book,)</code>. <code>(Book)</code> אינו tuple, ו־<code>type</code> לא יקבל אותו כרשימת בסיסים. אחרי היצירה מתקבלת מחלקה; מופע יוצרים בקריאה נפרדת, למשל <code>DetectiveBook("כותרת", "מחבר")</code> אם כך הוגדר <code>__init__</code>.</p>
     `,
   },
   {
@@ -50,6 +51,9 @@ else:
         <li>דפנסיבית: לא eval/exec על קלט. מספר: בדיקת ספרות ואז <code>int</code>.</li>
         <li>אם נדרש לפרש ליטרלים של פייתון בלבד, <code>ast.literal_eval</code> אינו מריץ קריאות פונקציה או ייבוא. עם זאת קלט גדול או עמוק עלול לצרוך משאבים; מגבילים גודל ועומק. להחלפת נתונים בין מערכות מעדיפים בדרך כלל JSON עם סכימה ואימות.</li>
       </ul>
+      <pre class="code"><code>import ast
+raw = "{'name': 'Ada', 'role': 'reader'}"
+data = ast.literal_eval(raw)  # מילון, מחרוזת, מספר, רשימה או tuple — לא קריאה</code></pre>
       <p>המעבדה למטה מדמה את ההבדל בלי להריץ קלט חופשי בדפדפן.</p>
     `,
   },

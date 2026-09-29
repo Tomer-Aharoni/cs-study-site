@@ -35,6 +35,11 @@ sqlite3_finalize(st);</code></pre>
       <p>שבורה: <code>"SELECT * FROM Students WHERE id = " + id</code></p>
       <p>מתוקנת במצגת: תבנית קבועה <code>SELECT * FROM Students WHERE id = ?</code> ורשימת ערכים. אחרי קשירה, גם מחרוזת שנראית כמו תחביר SQL מושווית כערך, לא כחלק מהדקדוק — מספר השורות נקבע לפי התבנית שבקוד.</p>
       <p>מלכודת מבחן: <code>execute("... WHERE name='{}'.format(user))</code> עדיין הזרקה. גרש במחרוזת לא "סוגר" את הגבול. רק <code>?</code> וטיפל (או bind ב־C++) מפרידים נתון מתחביר.</p>
+      <pre class="code"><code>cur.execute(
+    "SELECT * FROM Users WHERE username = ? AND password = ?",
+    (user_input, pass_input),
+)</code></pre>
+      <p>שני סימני <code>?</code> דורשים טיפל באורך 2. גם אם המחרוזת שנקשרה נראית כמו תחביר SQL, המנוע משווה אותה כערך. שם טבלה או שם עמודה עדיין לא נקשרים כך — רק ערכים.</p>
       <div class="panel">
         <p><strong>למה פרמטר ולא גרשיים.</strong> דמיינו טופס מודפס: "מצא תלמיד שמספרו ____". המספר נכתב במשבצת; הספרן לא קורא אותו כהוראה. הדבקה עם <code>+</code> או <code>format</code> היא מכתב חופשי — הקורא יכול להוסיף משפטים. הגרשיים במחרוזת שלכם הם חלק מהמכתב, לא קיר. לכן <code>?</code> וטיפל: התבנית בקוד, הערך בצינור נפרד.</p>
       </div>

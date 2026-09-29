@@ -35,6 +35,7 @@ def square(n):
 square = decotitle(square)
 print(square(10))</code></pre>
       <p>קודם הודעת המעטפת, אחר כך 100. <code>square</code> עכשיו מצביע על <code>ret</code>, ו־<code>ret</code> עדיין קורא לפונקציה המקורית דרך f שנסגרה בסגירה. <code>wraps</code> משמר שם, תיעוד ומטא־נתונים; <code>**kwargs</code> שומר גם קריאות עם ארגומנטים בעלי שם.</p>
+      <p>מלכודת מבחן: בלי <code>@wraps(f)</code> השם <code>__name__</code> והתיעוד <code>__doc__</code> הם של הפונקציה הפנימית (כאן <code>ret</code>), לא של <code>square</code>. עם <code>functools.wraps</code> הם נשארים של הפונקציה המקורית. במבחן שואלים מה יודפס מ־<code>__name__</code> אחרי העטיפה.</p>
       <div class="panel">
         <p><strong>למה מעטפת.</strong> רוצים לוג, מדידת זמן או בדיקת הרשאה סביב פונקציות קיימות בלי להעתיק את הגוף. <code>@decotitle</code> מחליף את השם בפונקציה שעוטפת. זה כוח מטא־תכנות: נוח, וגם גבול אמון אם המעטפת עצמה מגיעה מקלט או משנה התנהגות לפי מחרוזת חיצונית.</p>
       </div>
@@ -107,8 +108,9 @@ if __name__ == "__main__":
     self.x = xcor
     self.y = ycor</code></pre>
       <p><code>p.reset(10, 20)</code>, <code>p.reset(30)</code> (y נשאר 0), <code>p.reset()</code> — שלושת הצירופים עובדים.</p>
-      <p>לגישה לפי שם מחרוזת משתמשים בפונקציות <code>getattr</code> ו־<code>setattr</code>. המתודות המיוחדות <code>__getattribute__</code>, <code>__getattr__</code> ו־<code>__setattr__</code> הן נקודות התאמה אישית של מנגנון הגישה. אפשר לחבר שם מתודה לשם אחר בריצה, למשל reset שיפעיל את move. גמישות רבה — וסיכון אם קלט משתמש קובע שם או ערך בלי רשימת מותרים והרשאה.</p>
+      <p>לגישה לפי שם מחרוזת משתמשים בפונקציות <code>getattr</code>, <code>setattr</code> ו־<code>hasattr</code>. <code>dir</code> מציג שמות. יחד זו <strong>רפלקציה (reflection)</strong>: בדיקה ושינוי של מאפיינים בזמן ריצה לפי מחרוזת. המתודות המיוחדות <code>__getattribute__</code>, <code>__getattr__</code> ו־<code>__setattr__</code> הן נקודות התאמה אישית של מנגנון הגישה. אפשר לחבר שם מתודה לשם אחר בריצה, למשל reset שיפעיל את move. גמישות רבה — וסיכון אם קלט משתמש קובע שם או ערך בלי רשימת מותרים והרשאה.</p>
       <pre class="code"><code>setattr(p, "reset", getattr(p, "move"))</code></pre>
+      <p><strong>רכיבה דינמית (monkey patching)</strong> היא החלפת פונקציה או מתודה בזמן ריצה, כמו ההשמה הזו. אם קלט לא אמין בוחר את השם או את הפונקציה, אפשר להחליף בדיקת התחברות או בדיקת הרשאה בלי לשנות את קובץ המקור. אפחות: רשימת שמות מותרים, לא לקבל קוד מהלקוח, ובידוד תהליך כשמריצים קוד זר (יחידה 6).</p>
       <p>אין אכיפת <code>private</code> כמו ב־C++. קידומת <code>_</code> היא מוסכמה "לשימוש פנימי". קידומת כפולה כגון <code>__secret</code> מפעילה <strong>שינוי שם (Name Mangling)</strong>, שמצמצם התנגשויות בירושה אך אינו מנגנון אבטחה.</p>
       <p>אפשר להמשיך שורה בעזרת <code>\\</code>, אך עדיף המשך משתמע בתוך <code>()</code>, <code>[]</code> או <code>{}</code>; הוא עמיד וקריא יותר.</p>
     `,

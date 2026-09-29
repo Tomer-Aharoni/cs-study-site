@@ -56,7 +56,35 @@ int main() {
         <li>חשוף ל<strong>הצפת התחברויות</strong> ממשתמש זדוני — זו משפחת <strong>מניעת שירות (DoS, Denial of Service)</strong>: למצות משאבים כדי שהשירות לא יעמוד. אפחות: הגבלת תור, timeout, לא ליצור תהליך בלי תקרה.</li>
         <li>הפתרון במצגת: <strong>Selector</strong> — אובייקט שמחלק טיפול בערוצים לפי מידע שמגיע, בלי קריאות חוסמות על כל לקוח. בפייתון: מודול <code>selectors</code>, להתחיל ב־<code>DefaultSelector</code>. זה אותו רעיון כמו תבנית <strong>Reactor</strong> במדריך ביחידה 1: לא תהליך לכל לקוח, אלא המתנה ל"מי מוכן".</li>
       </ul>
-      <p>רעיון: חוט/תהליך אחד ממתין ל"מי מוכן לקריאה/כתיבה", ומטפל רק במי שמוכן. זה ריבוב I/O. Selector לבדו אינו הגנת DoS: עדיין נדרשים תקרות חיבור וגודל, timeout, backpressure ומכסות עבודה לכל לקוח.</p>
+      <p>רעיון: חוט/תהליך אחד ממתין ל"מי מוכן לקריאה/כתיבה", ומטפל רק במי שמוכן. זה ריבוב I/O. <code>selectors.DefaultSelector</code> בוחר את מנגנון מערכת ההפעלה (למשל select, epoll או kqueue). השקע עובר ל־<code>setblocking(False)</code>, נרשם לאירוע קריאה, ו־<code>select</code> מחזיר רק ערוצים מוכנים.</p>
+      <pre class="code"><code>import selectors
+import socket
+
+sel = selectors.DefaultSelector()
+
+def accept_client(server_sock, mask):
+    conn, _addr = server_sock.accept()
+    conn.setblocking(False)
+    sel.register(conn, selectors.EVENT_READ, read_client)
+
+def read_client(conn, mask):
+    data = conn.recv(1024)
+    if not data:
+        sel.unregister(conn)
+        conn.close()
+        return
+    conn.sendall(data)
+
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(("127.0.0.1", 8080))
+server.listen(16)
+server.setblocking(False)
+sel.register(server, selectors.EVENT_READ, accept_client)
+
+while True:
+    for key, mask in sel.select(timeout=1):
+        key.data(key.fileobj, mask)</code></pre>
+      <p>השלד מראה רישום וחלוקה, לא שרת מוכן לייצור. <code>sendall</code> על שקע לא־חוסם עלול לא לשלוח הכול; כתיבה חלקית ו־<code>EVENT_WRITE</code> משלימים את זה. Selector לבדו אינו הגנת DoS: עדיין נדרשים תקרות חיבור וגודל, timeout, backpressure ומכסות עבודה לכל לקוח.</p>
     `,
   }
 );

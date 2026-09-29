@@ -39,11 +39,11 @@ return names[d - 1]</code></pre>
     html: `
       <p>המצגת מונה SOLID (בלי לפרט כל אות בשקופית) — חמש האותיות בעברית כמקובל בקורס:</p>
       <ul>
-        <li><strong>אחריות יחידה (Single Responsibility)</strong> — מחלקה/מודול לסיבה אחת להשתנות. שכבת DB לא מערבבת HTML.</li>
-        <li><strong>פתוח-סגור (Open-Closed)</strong> — פתוח להרחבה, סגור לשינוי שביר. תוספת סוג שאילתה בלי לשכתב את כולם.</li>
-        <li><strong>ההחלפה של ליסקוב (Liskov Substitution)</strong> — טיפוס נגזר מתנהג כחוזה של הבסיס. לא להחליף מאגר ב"דמה" ששותק על שגיאות.</li>
-        <li><strong>הפרדת ממשקים (Interface Segregation)</strong> — לא לכפות על לקוח ממשק ענק. קורא לא חייב API של מנהל.</li>
-        <li><strong>היפוך התלות (Dependency Inversion)</strong> — תלות בהפשטה (ממשק מאגר) לא בפרטי sqlite3 בכל המסכים.</li>
+        <li><strong>אחריות יחידה (Single Responsibility, SRP)</strong> — מחלקה או פונקציה לסיבה אחת להשתנות. שכבת DB לא מערבבת HTML.</li>
+        <li><strong>פתוח-סגור (Open-Closed, OCP)</strong> — פתוח להרחבה, סגור לשינוי שביר. תוספת סוג שאילתה בלי לשכתב את כולם.</li>
+        <li><strong>ההחלפה של ליסקוב (Liskov Substitution, LSP)</strong> — טיפוס נגזר ניתן להחלפה במקום הבסיס בלי לשבור את נכונות התוכנית. לא להחליף מאגר ב"דמה" ששותק על שגיאות.</li>
+        <li><strong>הפרדת ממשקים (Interface Segregation, ISP)</strong> — כמה ממשקים קטנים, לא ממשק אחד מנופח. קורא לא חייב API של מנהל.</li>
+        <li><strong>היפוך התלות (Dependency Inversion, DIP)</strong> — תלות בהפשטה (ממשק או מחלקה מופשטת), לא בפרטי sqlite3 בכל המסכים.</li>
       </ul>
       <p><strong>עקרון השימוש בעקרונות:</strong> עקרונות אינם חוקים; צריך להבין מה עושים. חל גם על עצמו — לא להחיל SOLID כקישוט שמסתיר באג הזרקה.</p>
     `,
@@ -58,6 +58,12 @@ if not name: return False
 if len(name) &lt; 3: return False
 if not name[0].isalpha(): return False
 return True</code></pre>
+      <p>אותו דפוס ב־C++ נקרא גם <strong>חיתוך מוקדם (guard clause)</strong>: בודקים את מקרי הקצה ויוצאים, והלוגיקה העיקרית נשארת בלי קינון.</p>
+      <pre class="code"><code>bool processUserClean(const std::string&amp; name, int age) {
+    if (name.empty()) return false;
+    if (age &lt; 18 || age &gt; 120) return false;
+    return true;
+}</code></pre>
       <p><strong>שייום (naming)</strong>: <code>a</code> על וקטור מול <code>average(values)</code>. שם שמסגיר כוונה מונע שימוש במשתנה קלט כאילו הוא כבר מחוטא.</p>
       <p><strong>מספרי קסם:</strong> <code>option == 5</code> מול קבוע בשם <code>EXIT_APPLICATION</code>. בקוד SQL: אורך <code>VARCHAR</code> וגבולות קלט — קבועים בעלי שם, לא ספרות פזורות.</p>
       <p><strong>הערות:</strong> להסביר, לבאר, להקל על קריאה. לא לחזור על מה שהקוד כבר אומר; לא "סליחה לא סיימתי" במקום מימוש; לא הערת בנאי שמספרת ש־<code>count = 100</code>. הערה טובה: למה נבחר טווח, למה פרמטר ולא הדבקה.</p>

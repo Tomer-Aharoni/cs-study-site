@@ -209,6 +209,17 @@ window.UNIT4_QUIZZES = [
     explain: "type בשלושה ארגומנטים מחזיר מחלקה, לא מופע. מופע: Colpoint(...) אחרי היצירה. המצגת לפעמים מבלבלת בין מחלקה למופע.",
   },
   {
+    id: "u4-wraps-name",
+    prompt: "מעטפת בלי @functools.wraps. מה יחזיר __name__ של הפונקציה העטופה?",
+    options: [
+      { id: "a", text: "תמיד את שם הפונקציה המקורית." },
+      { id: "b", text: "את שם הפונקציה הפנימית, למשל wrapper או ret. wraps משאיר את השם ואת __doc__ של המקור." },
+      { id: "c", text: "את שם המחלקה type." },
+    ],
+    answer: "b",
+    explain: "בלי wraps המטא־נתונים מוחלפים. עם wraps השם והתיעוד נשארים. הגוף עדיין רץ דרך המעטפת.",
+  },
+  {
     id: "u4-with-ex",
     prompt: "open בתוך try בלי with — מה הסיכון הדפנסיבי?",
     options: [
@@ -248,7 +259,7 @@ window.PY_EVAL_LAB = {
   { id: "u4-ex", unit: "4", kind: "הגדרה", title: "חריגות (try, except)", body: "תופסים חריגה ספציפית; bare except תופס גם חריגות מערכת. else בהצלחה, finally תמיד." },
   { id: "u4-pkl", unit: "4", kind: "מלכודת", title: "שימור אובייקטים (pickle, shelve)", body: "dump שומר; load משחזר ויכול להריץ קוד. רק מקור אמין. מול משתמש — JSON וסכימה." },
   { id: "u4-kw", unit: "4", kind: "הגדרה", title: "ארגומנט בעל שם", body: "keyword argument: f(x=1). מיקום: לפי סדר." },
-  { id: "u4-dec", unit: "4", kind: "הגדרה", title: "מעטפת (decorator)", body: "פונקציה שעוטפת פונקציה. wraps משמר מטא־נתונים; wrapper מקבל *args וגם **kwargs." },
+  { id: "u4-dec", unit: "4", kind: "הגדרה", title: "מעטפת (decorator)", body: "פונקציה שעוטפת פונקציה. בלי wraps, __name__ ו־__doc__ הם של הפונקציה הפנימית. עם wraps הם של המקור. wrapper מקבל *args וגם **kwargs." },
   { id: "u4-init", unit: "4", kind: "הגדרה", title: "אתחול מופע (__init__, self)", body: "__new__ יוצר; __init__ מאתחל. self הוא המופע. שדות גלויים כברירת מחדל." },
   { id: "u4-strd", unit: "4", kind: "טריק", title: "ייצוג כמחרוזת (__str__)", body: "print(obj) קורא לה. כמו toString." },
   { id: "u4-main", unit: "4", kind: "טריק", title: "הרצה כקובץ ראשי (__main__)", body: "רץ רק כקובץ ראשי, לא ב-import." },
@@ -268,7 +279,7 @@ window.PY_EVAL_LAB = {
   { id: "u4-join", unit: "4", kind: "מלכודת", title: "חיבור מחרוזות (join)", body: "קוראים ל-join על מחרוזת הדבק. הרשימה היא הארגומנט." },
   { id: "u4-is", unit: "4", kind: "הגדרה", title: "is מול ==", body: "is זהות אובייקט; == תוכן. id() מזהה." },
   { id: "u4-clsvar", unit: "4", kind: "מלכודת", title: "השמה ל-obj.x", body: "יוצרת שדה מופע. לא משנה את משתנה המחלקה לאחרים." },
-  { id: "u4-gattr", unit: "4", kind: "טריק", title: "גישה לפי שם (getattr, setattr)", body: "קריאה ועדכון לפי שם מחרוזת. חיבור מתודה למתודה אחרת בריצה." },
+  { id: "u4-gattr", unit: "4", kind: "טריק", title: "גישה לפי שם (getattr, setattr)", body: "רפלקציה: getattr, setattr, hasattr, dir. רכיבה דינמית (monkey patching) מחליפה מתודה בריצה. קלט לא בוחר שם בלי רשימת מותרים." },
   { id: "u4-pvmc", unit: "4", kind: "הגדרה", title: "קוד ביניים (bytecode, PVM)", body: "ב־CPython המקור מקומפל ל-bytecode; מימושים אחרים רשאים לפעול אחרת." },
   { id: "u4-lit", unit: "4", kind: "לזכור", title: "מפרש מוגבל", body: "literal_eval אינו מריץ קריאות, אך עדיין מגבילים גודל ועומק; להחלפה מעדיפים JSON וסכימה." },
   { id: "u4-comp", unit: "4", kind: "טריק", title: "בניית רשימה ואיטרטור", body: "בניית רשימה בביטוי. iterator נצרך ב-for/next." }
