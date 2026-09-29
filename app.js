@@ -3658,6 +3658,7 @@ app.addEventListener("submit", (e) => {
     <p>רכיב: ${esc(m.component)}</p>
     <p>סיווג: ${esc(m.klass)}</p>
     <p>CIA: ${esc(m.cia)}</p>
+    <p>נזק: ${esc(m.impact)}</p>
     <p>אפחות: ${esc(m.fix)}</p></div>`;
   if (hits >= 3 && window.CSProgress) {
     const section = form.closest("[data-lab]");
