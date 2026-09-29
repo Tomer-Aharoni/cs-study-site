@@ -144,7 +144,13 @@ struct Horse : Animal {};
 struct Mule : Donkey, Horse {};
 Mule m;
 m.kick();  // איזה kick? של המסלול דרך Donkey או Horse?</code></pre>
-      <p>ל־Mule יש <em>שתי</em> תתי־חיה. זו <strong>בעיית היהלום (diamond problem)</strong>: בסיס משותף מגיע פעמיים. הקריאה דו־משמעית. בקורס: להימנע מהמבנה, או (מתקדם) ירושה וירטואלית של הבסיס.</p>
+      <p>ל־Mule יש <em>שתי</em> תתי־חיה. זו <strong>בעיית היהלום (diamond problem)</strong>: בסיס משותף מגיע פעמיים. הקריאה דו־משמעית. בקורס מעדיפים להימנע מהמבנה. אם בכל זאת יש בסיס משותף אחד, ירושה וירטואלית במחלקות הביניים משאירה עותק אחד של הבסיס:</p>
+      <pre class="code"><code>struct Animal { void kick(); };
+struct Donkey : virtual Animal {};
+struct Horse : virtual Animal {};
+struct Mule : Donkey, Horse {};
+Mule m;
+m.kick();  // עותק אחד של Animal, הקריאה חד-משמעית</code></pre>
     `,
   }
 );

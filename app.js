@@ -213,6 +213,52 @@ function startReview() {
   else location.hash = dest;
 }
 
+function prepById(id) {
+  return (window.PREP_BANK || []).find((q) => q.id === id) || null;
+}
+
+function prepTopics() {
+  const bank = window.PREP_BANK || [];
+  const topics = [];
+  bank.forEach((q) => {
+    let topic = topics.find((item) => item.id === q.topic);
+    if (!topic) {
+      topic = { id: q.topic, title: q.topicTitle || q.topic, n: 0 };
+      topics.push(topic);
+    }
+    topic.n += 1;
+  });
+  return topics;
+}
+
+function loadPrepRound() {
+  try {
+    return JSON.parse(sessionStorage.getItem("cs-prep-round") || "");
+  } catch (err) {
+    return null;
+  }
+}
+
+function savePrepRound(round) {
+  sessionStorage.setItem("cs-prep-round", JSON.stringify(round));
+}
+
+function startPrep(topic, count) {
+  const pool = shuffle((window.PREP_BANK || []).filter((q) => topic === "all" || q.topic === topic));
+  if (!pool.length) return;
+  const n = count === "all" ? pool.length : Math.max(1, Math.min(Number(count) || 5, pool.length));
+  savePrepRound({
+    ids: pool.slice(0, n).map((q) => q.id),
+    index: 0,
+    picked: {},
+    revealed: {},
+    topic: topic,
+  });
+  const dest = `#/course/${COURSE.id}/practice/bank`;
+  if (location.hash === dest) route();
+  else location.hash = dest;
+}
+
 function normText(s) {
   return String(s || "")
     .toLowerCase()
@@ -1455,6 +1501,119 @@ function drillHubHtml() {
   </section>`;
 }
 
+function prepHubHtml() {
+  const topics = prepTopics();
+  const total = (window.PREP_BANK || []).length;
+  if (!total) return "";
+  const options = topics
+    .map((topic) => `<option value="${esc(topic.id)}">${esc(topic.title)} (${topic.n})</option>`)
+    .join("");
+  return `<section class="drill-setup-card">
+    <h2>מאגר חוברת ההכנה</h2>
+    <p class="muted">שאלות מהחוברת, לא סימולציית מועד. ${total} שאלות. כל הנושאים מגריל מכל המאגר. נושא אחד מגריל רק ממנו. אחרי רב־ברירה רואים מיד אם זה נכון. בשאלה פתוחה מציגים פתרון.</p>
+    <form class="drill-setup" data-prep-setup>
+      <label>נושא
+        <select name="topic">
+          <option value="all">כל הנושאים, באקראי (${total})</option>
+          ${options}
+        </select>
+      </label>
+      <label>כמות
+        <select name="count">
+          <option value="3">3</option>
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+          <option value="all">כל השאלות בנושא</option>
+        </select>
+      </label>
+      <button class="primary" type="submit">התחלת תרגול</button>
+    </form>
+  </section>`;
+}
+
+function renderPrepBank() {
+  const base = `#/course/${COURSE.id}`;
+  const round = loadPrepRound();
+  if (!round || !Array.isArray(round.ids)) {
+    return shell(`
+      <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
+      <h1>מאגר חוברת ההכנה</h1>
+      <p>בחרו נושא וכמות בעמוד התרגול.</p>
+      <p><a href="${base}/practice">חזרה לתרגול</a></p>
+    `);
+  }
+  if (!round.ids.length) {
+    return shell(`
+      <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
+      <h1>מאגר חוברת ההכנה</h1>
+      <p>אין שאלות בנושא שנבחר.</p>
+    `);
+  }
+  if (round.index >= round.ids.length) {
+    let mcq = 0;
+    let good = 0;
+    let open = 0;
+    round.ids.forEach((id) => {
+      const item = prepById(id);
+      if (!item) return;
+      if (item.kind === "open") open += 1;
+      else {
+        mcq += 1;
+        if (round.picked[id] === item.answer) good += 1;
+      }
+    });
+    return shell(`
+      <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
+      <h1>סוף התרגול</h1>
+      <p class="drill-score">${good} תשובות נכונות מתוך ${mcq} רב־ברירה.</p>
+      <p class="muted">${open ? open + " שאלות פתוחות עם פתרון." : ""}</p>
+      <p class="drill-end"><a class="primary-link" href="${base}/practice">תרגול חדש</a></p>
+    `);
+  }
+  const q = prepById(round.ids[round.index]);
+  if (!q) {
+    round.index += 1;
+    savePrepRound(round);
+    return renderPrepBank();
+  }
+  const kindLabel = q.kind === "open" ? "פתוחה" : "רב־ברירה";
+  const nextLabel = round.index + 1 === round.ids.length ? "סיום" : "השאלה הבאה";
+  let body = "";
+  if (q.kind === "open") {
+    const shown = !!(round.revealed || {})[q.id];
+    body = `
+      <h1>${esc(q.title || "שאלה פתוחה")}</h1>
+      <p>${esc(q.prompt)}</p>
+      <button type="button" class="ghost-btn" data-prep-reveal ${shown ? "hidden" : ""}>הצגת פתרון</button>
+      <div class="panel prep-solution" ${shown ? "" : "hidden"}>
+        ${q.solution || ""}
+        ${q.note ? `<p class="feedback ok">${esc(q.note)}</p>` : ""}
+      </div>
+      <button type="button" class="primary" data-prep-next ${shown ? "" : "hidden"}>${nextLabel}</button>`;
+  } else {
+    const picked = round.picked[q.id];
+    const opts = q.options
+      .map((o) => {
+        const mark = picked ? (o.id === q.answer ? " correct" : o.id === picked ? " wrong" : "") : "";
+        const dis = picked ? " disabled" : "";
+        return `<button type="button" class="option${mark}" data-prep-choice="${o.id}"${dis}>${esc(o.text)}</button>`;
+      })
+      .join("");
+    const right = (q.options.find((o) => o.id === q.answer) || {}).text || "";
+    const fb = picked
+      ? `<p class="feedback ${picked === q.answer ? "ok" : "bad"}">${esc(q.explain || (picked === q.answer ? "נכון." : "התשובה הנכונה: " + right))}</p>`
+      : "";
+    body = `<h1>${esc(q.prompt)}</h1>${opts}${fb}<button type="button" class="primary" data-prep-next ${picked ? "" : "hidden"}>${nextLabel}</button>`;
+  }
+  return shell(`
+    <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
+    <p class="drill-meta">שאלה ${round.index + 1} מתוך ${round.ids.length} · ${esc(q.topicTitle || "")} · ${kindLabel}</p>
+    <section class="drill" data-prep>
+      ${body}
+    </section>
+  `);
+}
+
 function renderRound(mode) {
   const base = `#/course/${COURSE.id}`;
   let round = loadRound();
@@ -1721,7 +1880,7 @@ function examHubHtml() {
     .join("");
   return `<section class="section">
     <h2>סימולציות מועד</h2>
-    <p class="muted">שעון, חלק א בלי חשיפת תשובה, בחירת שאלות בחלק ב, ואז פתרון + חוות דעת. לא מועתק שאלון רשמי במלואו.</p>
+    <p class="muted">רק מועדים שמבוססים על מבחן. שעון, חלק א בלי חשיפת תשובה, בחירת שאלות בחלק ב, ואז פתרון.</p>
     <div class="grid exam-grid">${cards}</div>
   </section>`;
 }
@@ -1730,6 +1889,7 @@ function renderPractice() {
   const r = parseRoute();
   const view = r.practiceView;
   if (view === "round" || view === "review") return renderRound(view);
+  if (view === "bank") return renderPrepBank();
   if (view === "exam" && r.examId) {
     const exam = examById(r.examId);
     if (!exam) {
@@ -1753,6 +1913,7 @@ function renderPractice() {
     <p><a href="#/course/${COURSE.id}">← חזרה לקורס</a></p>
     <h1>תרגול למבחנים</h1>
     ${examHubHtml()}
+    ${prepHubHtml()}
     ${drillHubHtml()}
     ${exams}
   `);
@@ -2789,6 +2950,39 @@ app.addEventListener("click", async (e) => {
     return;
   }
 
+  const prepChoice = e.target.closest("[data-prep-choice]");
+  if (prepChoice) {
+    const round = loadPrepRound();
+    if (!round || round.index >= round.ids.length) return;
+    const q = prepById(round.ids[round.index]);
+    if (!q || q.kind !== "mcq" || round.picked[q.id]) return;
+    round.picked[q.id] = prepChoice.getAttribute("data-prep-choice");
+    savePrepRound(round);
+    app.innerHTML = renderPrepBank();
+    return;
+  }
+
+  if (e.target.closest("[data-prep-reveal]")) {
+    const round = loadPrepRound();
+    if (!round || round.index >= round.ids.length) return;
+    const q = prepById(round.ids[round.index]);
+    if (!q || q.kind !== "open") return;
+    round.revealed = round.revealed || {};
+    round.revealed[q.id] = true;
+    savePrepRound(round);
+    app.innerHTML = renderPrepBank();
+    return;
+  }
+
+  if (e.target.closest("[data-prep-next]")) {
+    const round = loadPrepRound();
+    if (!round) return;
+    round.index += 1;
+    savePrepRound(round);
+    app.innerHTML = renderPrepBank();
+    return;
+  }
+
   if (e.target.closest("[data-flip]")) {
     flipState.back = !flipState.back;
     showFlip();
@@ -3427,6 +3621,13 @@ app.addEventListener("submit", (e) => {
     e.preventDefault();
     const data = new FormData(drillForm);
     startRound(String(data.get("unit") || "all"), String(data.get("count") || "10"));
+    return;
+  }
+  const prepForm = e.target.closest("[data-prep-setup]");
+  if (prepForm) {
+    e.preventDefault();
+    const data = new FormData(prepForm);
+    startPrep(String(data.get("topic") || "all"), String(data.get("count") || "5"));
     return;
   }
   if (!e.target.classList.contains("risk-form")) return;

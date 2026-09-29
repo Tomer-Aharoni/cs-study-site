@@ -176,6 +176,17 @@ window.UNIT5_QUIZZES = [
     explain: "שלושה שדות של 4 בתים: מספר חבילה, סך חבילות, אורך payload. recv_exact משלים חלקיות. אורך בלי תקרה הוא מיצוי זיכרון.",
   },
   {
+    id: "u5-thr-mem",
+    prompt: "מה משותף לחוטים באותו תהליך, ומה נפרד?",
+    options: [
+      { id: "a", text: "לכל חוט מרחב כתובות פרטי, כמו תהליך." },
+      { id: "b", text: "חולקים ערימה, קבצים ושקעים. לכל חוט מחסנית ורגיסטרים משלו." },
+      { id: "c", text: "חולקים גם את המחסנית, ולכן אין מרוץ על משתנים מקומיים." },
+    ],
+    answer: "b",
+    explain: "תהליך מבודד בזיכרון. חוט חולק את מרחב הכתובות ושומר מחסנית נפרדת. בלוק בערימה משותף; משתנה מקומי לא.",
+  },
+  {
     id: "u5-mitm-replay",
     prompt: "למה הצפנה בלבד אינה בהכרח מספיקה להגנת הודעה?",
     options: [
@@ -269,6 +280,7 @@ window.U5_OSI = [
   { id: "u5-sv", unit: "5", kind: "לזכור", title: "שרת", body: "setsockopt, bind, listen(backlog), accept → שקע שיחה. בפייתון אותו רצף. addrlen לא addlen." },
   { id: "u5-any", unit: "5", kind: "מלכודת", title: "האזנה על כל הממשקים (INADDR_ANY)", body: "האזנה לכל הממשקים — משטח גדול מ-127.0.0.1." },
   { id: "u5-rd", unit: "5", kind: "מלכודת", title: "שליחה וקבלה (send, recv)", body: "TCP הוא זרם: שליחה/קבלה יכולות להיות חלקיות. כותרת 12B big-endian ואז payload באורך חסום. recv_exact עד n בתים." },
+  { id: "u5-thr", unit: "5", kind: "מלכודת", title: "זיכרון של חוט מול תהליך", body: "תהליך: מרחב כתובות נפרד. חוטים חולקים ערימה, קבצים ושקעים, ולכל אחד מחסנית ורגיסטרים." },
   { id: "u5-th", unit: "5", kind: "הגדרה", title: "חוט / תהליך", body: "thread יחידת ביצוע; process מופע תוכנית. thread joinable שנהרס גורם terminate." },
   { id: "u5-gil", unit: "5", kind: "מלכודת", title: "נעילת המפרש (GIL)", body: "CPython: אין מקביליות bytecode. multiprocessing לחישוב." },
   { id: "u5-rac", unit: "5", kind: "מלכודת", title: "מרוץ נתונים (Data Race)", body: "גישה מתנגשת ללא סנכרון ב־C++ = undefined behavior. mutex/atomic לפי החוזה." },
@@ -278,7 +290,7 @@ window.U5_OSI = [
   { id: "u5-sym", unit: "5", kind: "הגדרה", title: "הצפנה סימטרית / AES", body: "אותו מפתח סודי לשני הצדדים. AES מצפין בלוקים באורך קבוע. מהיר לנפח; המפתח עדיין צריך להגיע בבטחה." },
   { id: "u5-asy", unit: "5", kind: "הגדרה", title: "הצפנה אסימטרית (Public-Key)", body: "פומבי/פרטי. איטית יותר לנפח נתונים." },
   { id: "u5-hy", unit: "5", kind: "לזכור", title: "הצפנה היברידית", body: "אסימטרי למפתח הסימטרי, סימטרי לנתונים. לאמת זהות מול סמכות סרטיפיקטים." },
-  { id: "u5-pqc", unit: "5", kind: "לזכור", title: "הצפנה פוסט־קוונטית (PQC)", body: "Harvest now, decode later. Kyber הוא ML-KEM (מפתח); Dilithium הוא ML-DSA (חתימה). גם SPHINCS+ ו־Falcon. גרובר: AES-128 נחלש לכ־64, עוברים ל־AES-256." },
+  { id: "u5-pqc", unit: "5", kind: "לזכור", title: "הצפנה פוסט־קוונטית (PQC)", body: "Harvest now, decode later. Kyber (ML-KEM) ו-Dilithium (ML-DSA) מבוססי סריגים. גרובר: AES-128 נחלש לכ־64." },
   { id: "u5-mm", unit: "5", kind: "הגדרה", title: "אדם-באמצע (MITM)", body: "גורם על הנתיב. ערוץ מוצפן ומאומת + תעודה." },
   { id: "u5-rp", unit: "5", kind: "הגדרה", title: "התקפת שידור חוזר (Replay Attack)", body: "הודעה ישנה שוב. nonce / מונה / זמן." },
   { id: "u5-nul", unit: "5", kind: "מלכודת", title: "read בלי אפס סיום", body: "read/recv לא מוסיפים אפס סיום. printf %s על החוצץ עלול לקרוא מעבר. מדפיסים לפי האורך שחזר." }

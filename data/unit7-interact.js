@@ -154,6 +154,17 @@ window.UNIT7_QUIZZES = [
     explain: "קל לראות מסלול דחייה. שייום ומספרי קסם הם קווים נפרדים באותו חלק.",
   },
   {
+    id: "u7-ignore",
+    prompt: "קוראים שורות מקובץ אל טבלת Students עם id כמפתח ראשי. איך מכניסים בלי הדבקה ובלי ליפול על כפילות?",
+    options: [
+      { id: "a", text: "בונים INSERT עם f-string לכל שורה, ומתעלמים משגיאה." },
+      { id: "b", text: "executemany עם INSERT OR IGNORE וטיפל (?, ?). OR IGNORE מדלג על הפרת מפתח." },
+      { id: "c", text: "PRIMARY KEY לבדו הופך כל מחרוזת מהקובץ לפרמטר." },
+    ],
+    answer: "b",
+    explain: "הקובץ הוא קלט. התבנית קבועה, הערכים בטיפל. OR IGNORE מדלג על אילוץ, כולל מפתח כפול, ולא מסביר למה.",
+  },
+  {
     id: "u7-cmq",
     prompt: "הערות לפי המצגת?",
     options: [
@@ -250,6 +261,7 @@ window.U7_CLN_LAB = {
   { id: "u7-api", unit: "7", kind: "לזכור", title: "ממשק SQLite ב־C++ ובפייתון", body: "C++: prepare+bind. פייתון: execute(?, tuple). connect זורק חריגה, לא None." },
   { id: "u7-inj", unit: "7", kind: "מלכודת", title: "הזרקת SQL (SQL injection)", body: "קלט נדבק לפקודה והופך לתחביר. כמו eval לשפת SQL. תנאי תמיד-אמת → יותר שורות." },
   { id: "u7-par", unit: "7", kind: "הגדרה", title: "שאילתה פרמטרית (Parameterized query)", body: "תבנית קבועה + ערכים נקשרים. הקלט נשאר נתון." },
+  { id: "u7-csv", unit: "7", kind: "לזכור", title: "קובץ ל-SQLite", body: "PRIMARY KEY על המזהה. executemany עם INSERT OR IGNORE וטיפל. הקובץ הוא קלט, לא חלק מה-SQL." },
   { id: "u7-fmt", unit: "7", kind: "מלכודת", title: "הדבקה ב־format וב־f-string", body: "עדיין הזרקה. גרש במחרוזת אינו גבול. רק ? וטיפל או bind." },
   { id: "u7-execs", unit: "7", kind: "מלכודת", title: "הרצה ישירה (sqlite3_exec)", body: "נוח ל־DDL קבוע בלי קלט. לקלט — prepare ו־bind, לא שרשור." },
   { id: "u7-idt", unit: "7", kind: "מלכודת", title: "מזהה דינמי (identifier)", body: "? לא לשמות טבלה/עמודה. רק רשימה סגורה בקוד." },

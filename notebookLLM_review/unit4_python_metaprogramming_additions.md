@@ -1,23 +1,21 @@
-# יחידה 4: שפת פייתון ומטא-תכנות דינמי - מערך שיעור מורחב ומקיף והנחיות ל-Cursor
+# יחידה 4: שפת פייתון ומטא-תכנות דינמי - תוספות ומערך שיעור מורחב
+
+> **CURSOR DIRECTIVE / CONTEXT BOUNDARY:**
+> - **Target File to Edit:** `docs/unit-4.md` (or `content/unit-4.md` in the repo).
+> - **Scope Restriction:** Edit ONLY Unit 4 files. Do NOT modify any other unit files or global settings.
 
 ---
 
-> ### 🤖 הנחיות ממוקדות עבור Cursor (Context Directives)
-> **מטרת ההנחיה:** הטמעת התוכן והשיפורים של יחידה 4 בלבד באתר הלימוד (`cs-study-site`).
-> 
-> **נתיב הקבצים יעד לעריכה במאגר (Target Files):**
-> * חפש ועדכן **אך ורק** קובץ המתאים ליחידה 4, כגון:
->   * `src/content/docs/unit-4.md` / `src/content/docs/unit4.md`
->   * `content/units/unit4.md` / `docs/unit4.mdx` / `pages/unit4.tsx`
-> 
-> ⛔ **מגבלת הקשר חמורה (Strict Scope Constraint):**
-> 1. **אל תמחק** קבצים אחרים בתוכנית הלימודים.
-> 2. **אל תיגש ואל תערוך** קבצים המיועדים ליחידות 1, 2, 3, 5, 6, 7.
-> 3. אנאמזג (Merge) את הסעיפים והדגשים שלהלן לתוך קובץ יחידה 4 הקיים, או החלף את התוכן של יחידה 4 בלבד.
+## 1. מלכודת מבחן קריטית: העמסת פונקציות (Overloading) בפייתון
+
+שאלה אמריקאית שחוזרת על עצמה שוב ושוב (למשל 2022ג מועד 85, 2024):
+* **האם פייתון תומכת בהעמסת פונקציות (Function Overloading)?**
+* **תשובה חד-משמעית למבחן:** **לא!** בפייתון אין מנגנון העמסה לפי חתימת פרמטרים. הגדרה של פונקציה בעלת אותו שם פשוט **דורסת ומחליפה (Override)** את ההגדרה הקודמת במילון המודול.
+* **איך משיגים התנהגות גמישה בפייתון?** בעזרת ערכי ברירת מחדל (Default Arguments), פרמטרים משתנים (`*args`, `**kwargs`), או בדיקת טיפוסים דינמית (`isinstance`).
 
 ---
 
-## 1. יצירת מחלקה דינמית עם `type()` – מלכודת הטופל (Tuple) במבחן
+## 2. יצירת מחלקה דינמית עם `type()` – מלכודת הטופל (Tuple) במבחן
 
 בבחינות הקורס (למשל 2025ג שאלה 6ג, 2026א), נדרשים ליצור מחלקה באופן דינמי בזמן ריצה בעזרת המטא-מחלקה `type`.
 
@@ -33,25 +31,26 @@ NewClass = type(classname, superclasses_tuple, attribute_dict)
 
 ```python
 class Book:
-    def __init__(self, title, author):
+    def __init__(self, title, author, year):
         self.title = title
         self.author = author
+        self.year = year
 
 # יצירת מחלקה נגזרת דינמית - תקני ומדויק למבחן
 DetectiveBook = type(
     "DetectiveBook",       # 1. שם המחלקה החדשה
     (Book,),               # 2. מחלקות אב (שימו לב לפסיק - חובה!)
-    {"genre": "Mystery"}   # 3. מילון שדות ומתודות
+    {"openu_id": 20535}    # 3. מילון שדות ומתודות
 )
 
 # יצירת מופע מהמחלקה הדינמית
-my_book = DetectiveBook("A Study in Scarlet", "Conan Doyle")
-print(my_book.genre)  # Mystery
+my_book = DetectiveBook("A Study in Scarlet", "Conan Doyle", 1887)
+print(my_book.openu_id)  # 20535
 ```
 
 ---
 
-## 2. דיקורטורים (Decorators) ושמירת מטא-נתונים עם `@functools.wraps`
+## 3. דיקורטורים (Decorators) ושמירת מטא-נתונים עם `@functools.wraps`
 
 כאשר עוטפים פונקציה באמצעות Decorator, הפונקציה המקורית מאבדת את השם (`__name__`) ואת התיעוד (`__doc__`) שלה, משום שהם מוחלפים במטא-נתונים של פונקציית המעטפת (`wrapper`).
 
@@ -69,25 +68,18 @@ def audit_logger(func):
 
 @audit_logger
 def calculate_salary(emp_id, hours):
-    '''Calculates monthly employee salary.'''
+    """Calculates monthly employee salary."""
     return hours * 50
 
-print(calculate_salary.__name__)  # מדפיס: calculate_salary (ללא wraps היה מדפיס: wrapper)
+print(calculate_salary.__name__)  # מדפיס: calculate_salary
 print(calculate_salary.__doc__)   # מדפיס: Calculates monthly employee salary.
 ```
 
 ---
 
-## 3. הזרקת קוד ב-Python: `eval()` מול חלופות בטוחות
+## 4. הזרקת קוד ב-Python: `eval()` מול חלופות בטוחות
 
 שימוש ב-`eval()` או `exec()` על קלט שמגיע מלקוח לא מהימן מהווה חולשת **Code Injection (RCE)** קטלנית.
-
-### ❌ הקוד המסוכן:
-```python
-# התוקף מזין: __import__('os').system('rm -rf /')
-user_input = input("Enter math expression: ")
-result = eval(user_input)
-```
 
 ### ✅ הפתרון הדפנסיבי:
 אם נדרשים לקרוא מבני נתונים או ליטרלים מפייתון (מספרים, מחרוזות, רשימות, מילונים), משתמשים ב-**`ast.literal_eval()`**:
@@ -102,31 +94,18 @@ data = ast.literal_eval(user_input)  # מעבד מילון בצורה בטוחה
 
 ---
 
-## 4. רפלקציה (Reflection) ורכיבה דינמית (Monkey Patching)
+## 5. שינוי דינמי של קוד (Monkey Patching & `setattr`)
 
-* **רפלקציה בזמן ריצה:** שימוש בפונקציות `getattr()`, `setattr()`, `hasattr()`, ו-`dir()` לבדיקה ושינוי מאפיינים בזמן ריצה.
-* **Monkey Patching (שינוי דינמי בקוד):** החלפת מתודות או פונקציות מודול בזמן ריצה.
-  * *סכנה אבטחתית:* שינוי דינמי של פונקציות אימות או תקשורת ללא בקרת הרשאות עלול לאפשר לתוקף לעקוף מנגנוני אבטחה במערכת.
+שינוי התנהגות של מחלקה או מודול בזמן ריצה מתבצע על ידי הצבת פונקציה חדשה במילון המודול/המחלקה או בעזרת `setattr()`:
 
 ```python
-import types
-
 class Service:
-    def execute(self):
-        return "Normal Execution"
+    def process(self):
+        return "Normal Result"
 
-def malicious_execute(self):
-    return "Malicious Compromised Execution!"
+def patched_process(self):
+    return "Patched Secure Result"
 
-s = Service()
-# Monkey Patching - החלפה דינמית של המתודה בזמן ריצה
-s.execute = types.MethodType(malicious_execute, s)
-print(s.execute()) # מדפיס: Malicious Compromised Execution!
+# Monkey Patching בזמן ריצה
+Service.process = patched_process
 ```
-
----
-
-> ### 🛑 הנחיות ל-Cursor להטמעת הקובץ:
-> 1. פתח את הקובץ המתאים ליחידה 4 בלבד במאגר.
-> 2. עדכן את התוכן על פי הסעיפים לעיל.
-> 3. ודא כי כל הדוגמאות בפייתון, הדיקורטורים וה-Monkey Patching מופיעים בצורה ברורה.

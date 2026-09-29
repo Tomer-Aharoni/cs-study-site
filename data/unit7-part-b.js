@@ -48,5 +48,38 @@ cur.execute("INSERT INTO messages (id, body) VALUES (?, ?)", (i, text))
 conn.commit()</code></pre>
       <p>מטמון URL (מבחן 2025ג): ערך הכתובת ב־<code>?</code>; מחיקת הישן לפי עמודה שאתם קובעים בקוד, לא שם עמודה מהלקוח. <code>ORDER BY updated ASC LIMIT 1</code> — מזהה העמודה whitelist בקוד.</p>
     `,
+  },
+  {
+    id: "u7-csv",
+    title: "קובץ לטבלה: מפתח, התעלמות מכפילות, ואצווה",
+    html: `
+      <p>במבחן קוראים שורות מקובץ טקסט ומכניסים אותן ל־SQLite. הקובץ הוא קלט: כל שדה נכנס כפרמטר, לא כחלק ממחרוזת ה־SQL.</p>
+      <ul>
+        <li><code>PRIMARY KEY</code> על המזהה אוסר שתי שורות עם אותו מפתח.</li>
+        <li><code>INSERT OR IGNORE</code> מדלג על שורה שמפרה אילוץ, כולל מפתח כפול, במקום להפיל את כל האצווה. הדילוג לא מספר למה השורה נדחתה; אם צריך לדעת, בודקים כמה שורות באמת השתנו.</li>
+        <li><code>executemany</code> מריץ אותה תבנית על רשימת טיפלים. זה עדיין קשירה, לא שרשור מהיר יותר.</li>
+      </ul>
+      <pre class="code"><code>cur.execute(
+    "CREATE TABLE IF NOT EXISTS Students ("
+    "id INTEGER PRIMARY KEY, name TEXT)"
+)
+rows = []
+with open("students.csv", encoding="utf-8") as f:
+    for line in f:
+        parts = line.strip().split(",", 1)
+        if len(parts) != 2:
+            continue
+        try:
+            sid = int(parts[0])
+        except ValueError:
+            continue
+        rows.append((sid, parts[1]))
+cur.executemany(
+    "INSERT OR IGNORE INTO Students (id, name) VALUES (?, ?)",
+    rows,
+)
+conn.commit()</code></pre>
+      <p>פיצול לפי פסיק נשבר אם השם עצמו מכיל פסיק. בודקים שיש שני שדות, וממירים את המזהה למספר לפני הקשירה. כישלון המרה הוא דחיית השורה, לא הדבקה ל־SQL.</p>
+    `,
   }
 );
