@@ -280,6 +280,16 @@ window.UNIT1 = {
           <li><strong>אפחות ותיקון (Mitigation / Remediation)</strong> — הפעולה ההנדסית שסוגרת את החולשה. דוגמה: לא להעתיק מחרוזת בלי גבול. במקום <code>strcpy</code> בלי אורך, מעבירים גם קיבולת, או עוברים ל־<code>std::string</code> שמחזיק את הגודל. העתקה חסומה שעדיין לא סוגרת את המחרוזת ב־0 אינה תיקון מלא.</li>
         </ul>
         <p><strong>הרשאת מינימום (Least Privilege)</strong> מופיעה גם כשדה אפחות וגם כעיקרון תכנון: לוג שגיאות לא צריך גישה למסד תשלומים.</p>
+        <h3>שאלת תרגול</h3>
+        <p>מהם חמשת השדות שממלאים בממצא ביקורת קוד בממ"נים ובבחינות?</p>
+        <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>שאלו חמש שאלות: איפה הבאג? מה סוגו? איזה יעד ב־CIA נפגע? מה התוקף מרוויח? איך מתקנים?</p></div></details>
+        <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ol>
+          <li><strong>מיקום (Location)</strong> — הקובץ, הפונקציה או השורות.</li>
+          <li><strong>סיווג (Classification)</strong> — מימוש, עיצוב, או תפעול.</li>
+          <li><strong>יעד CIA</strong> — סודיות, שלמות, או זמינות.</li>
+          <li><strong>נזק (Impact)</strong> — מה התוקף מרוויח, למשל מעקף אימות או הרצת קוד.</li>
+          <li><strong>אפחות ותיקון (Mitigation)</strong> — הפעולה ההנדסית, למשל שאילתה פרמטרית או בדיקת גבול.</li>
+        </ol></div></details>
       `,
     },
     {

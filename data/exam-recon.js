@@ -41,6 +41,80 @@ window.EXAM_RECONS = [
       <p>חלק א לדוגמה: אפחות (Mitigation) = הגנת מערכת בפני תקיפה כדי למזער נזק — לא סודיות ולא ניצול.</p>
       <p>שאלה 8 (רעיון): לקוח פייתון ל-IP ופורט נתונים, שליחת קובץ, הדפסת תשובה מוגבלת, הודעות שגיאה בלי Traceback; SQLite: טבלת <code>messages</code> עם מספר סידורי ותוכן — עם פרמטרים, לא שרשור.</p>
       <p>שאלה 9: Sandbox — מטרה, בעיות, מימוש עקרוני. אחר כך: <code>exec</code> על קוד מהלקוח שובר אמון; אפחות בשכבות; מה נשאר אחריהן.</p>
+      <h3>שאלות מהשאלון · רמזים ופתרונות</h3>
+      <p><strong>שאלה 1 (אמריקאית):</strong> מה פירוש המושג אפחות (Mitigation)?</p>
+      <ul>
+        <li>א. מצב שבו המערכת נקייה מבאגים וללא בעיות אבטחה.</li>
+        <li>ב. שמירה על הנתונים ללא אפשרות גישה לגורמים בלתי מורשים.</li>
+        <li>ג. תקיפת מערכת המתאפשרת בעקבות חולשת אבטחה.</li>
+        <li>ד. הגנת המערכת בפני תקיפה לצורך מזעור הנזק העלול להיגרם ממנה.</li>
+      </ul>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>חשבו אם אפחות מסיר את עצם קיום החולשה בקוד, או שהוא מצמצם את הנגישות והנזק שהתוקף יכול לגרום.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ד'.</strong> אפחות אינו בהכרח תיקון שמבטל את החולשה מהשורש (כמו א'), אלא הגנה היקפית או הנדסית — קנרית, ASLR, הרשאה מינימלית — שממזערת את הנזק בזמן תקיפה. תיקון השורש עדיף כשאפשר; אפחות היא שכבה נוספת.</p></div></details>
+      <p><strong>שאלה 2 (אמריקאית):</strong> היכן יאוחסנו <code>f1</code> ו־<code>p1</code>?</p>
+      <pre class="code" dir="ltr">Frog f1(5);
+Frog *p1 = &amp;f1;
+f1.hop();</pre>
+      <ul>
+        <li>א. <code>f1</code> במחסנית, <code>p1</code> בערימה.</li>
+        <li>ב. שניהם בערימה.</li>
+        <li>ג. שניהם במחסנית.</li>
+        <li>ד. <code>p1</code> במחסנית, <code>f1</code> בערימה.</li>
+      </ul>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>בדקו אם נעשה שימוש ב־<code>new</code>. איפה יושבים משתנה מקומי ומצביע שמוגדרים ישירות בתוך פונקציה?</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ג'.</strong> <code>f1</code> הוא אובייקט מקומי על מסגרת המחסנית של <code>main</code>. <code>p1</code> הוא מצביע מקומי, גם הוא על המחסנית, ומחזיק את כתובת <code>f1</code>. בלי <code>new</code> שום דבר לא הוקצה בערימה.</p></div></details>
+      <p><strong>שאלה 3 (אמריקאית):</strong> מדוע הקוד לא יתקמפל?</p>
+      <pre class="code" dir="ltr">struct Thread { void run() {} };
+struct Sender : public Thread {};
+struct Receiver : public Thread {};
+class Messenger : public Sender, public Receiver {};
+
+int main() {
+    Messenger m;
+    m.run(); // שגיאת קומפילציה
+}</pre>
+      <ul>
+        <li>א. בגלל ירושה מרובה.</li>
+        <li>ב. בגלל בעיית המשולש.</li>
+        <li>ג. בגלל בעיית היהלום.</li>
+        <li>ד. הקוד יתקמפל.</li>
+      </ul>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p><code>Messenger</code> יורש גם מ־<code>Sender</code> וגם מ־<code>Receiver</code>. כמה עותקים של <code>Thread</code>, וכך של <code>run()</code>, קיימים בתוך מופע <code>Messenger</code>?</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ג' (בעיית היהלום).</strong> <code>Sender</code> ו־<code>Receiver</code> יורשים שניהם מ־<code>Thread</code> בירושה רגילה, ולכן במופע <code>m</code> יש שני עותקים של <code>Thread</code>. הקריאה <code>m.run()</code> דו־משמעית, כי המהדר לא יודע לאיזה עותק להתקשר. הפתרון: ירושה וירטואלית (<code>virtual public Thread</code>) שמשאירה עותק אחד.</p></div></details>
+      <p><strong>שאלה 4 (אמריקאית):</strong> האם יש זליגת זיכרון?</p>
+      <pre class="code" dir="ltr">class Foo {
+    char* buffer1;
+public:
+    Foo(size_t size) { buffer1 = new char[size]; }
+    ~Foo() { delete[] buffer1; }
+};
+class Bar : public Foo {
+    char* buffer2;
+public:
+    Bar(size_t size) : Foo(size) { buffer2 = new char[size]; }
+    ~Bar() { delete[] buffer2; }
+};
+int main() {
+    Foo* f = new Bar(100);
+    delete f;
+}</pre>
+      <ul>
+        <li>א. כן, של <code>buffer1</code>.</li>
+        <li>ב. כן, של <code>buffer2</code>.</li>
+        <li>ג. כן, של <code>buffer1</code> ו־<code>buffer2</code>.</li>
+        <li>ד. לא, אין זליגה.</li>
+      </ul>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>המצביע <code>f</code> הוא <code>Foo*</code>, אבל האובייקט הוא <code>Bar</code>. האם <code>~Foo()</code> מוגדר <code>virtual</code>?</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ב' (של <code>buffer2</code>).</strong> המפרק <code>~Foo()</code> אינו וירטואלי, ולכן <code>delete f;</code> דרך <code>Foo*</code> מפעיל רק את <code>~Foo()</code> (קישור סטטי). <code>~Bar()</code> לא רץ, ו־<code>buffer2</code> זולג. <code>buffer1</code> כן משתחרר כי <code>~Foo()</code> רץ. התיקון: <code>virtual ~Foo()</code>.</p></div></details>
+      <p><strong>שאלה 5 (פתוחה):</strong> נתחו את מנגנון קנרית המחסנית (Stack Canary): הבעיה שהובילה אליו, אופן הפעולה, מבנה המחסנית עם ובלי הקנרית, וחלופה.</p>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>הקנרית היא ערך סודי שנשתל במחסנית לפני כתובת החזרה. מה קורה לערך הזה כשגלישה רציפה מנסה להגיע לכתובת החזרה?</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ul>
+        <li><strong>הבעיה:</strong> בגלישת חוצץ במחסנית, קלט ארוך מהחוצץ המקומי נכתב מעבר לו. העתקה בלי גבול (<code>strcpy</code>, <code>gets</code>) מתקדמת אל EBP/RBP שמור ואל כתובת החזרה.</li>
+        <li><strong>הפעולה:</strong> המהדר שותל ערך אקראי סודי בין המשתנים המקומיים לבין כתובת החזרה. בכניסה לפונקציה הערך נרשם, ולפני <code>ret</code> נבדק. אם גלישה רציפה שינתה אותו, התהליך נעצר לפני החזרה.</li>
+        <li><strong>מבנה המחסנית:</strong> בלי קנרית — חוצצים מקומיים, EBP שמור, כתובת חזרה. עם קנרית — חוצצים מקומיים, קנרית, EBP שמור, כתובת חזרה.</li>
+        <li><strong>חלופות:</strong> ASLR מגריל כתובות כדי שלא יהיה יעד קבוע; מחסנית צל (CET) שומרת עותק מוגן של כתובת החזרה ומשווה ב־<code>ret</code>.</li>
+        <li>הקנרית אינה מתקנת את <code>strcpy</code>, ואינה עוצרת גלישת ערימה, דריסת vptr, או מצב שבו ערכה כבר דלף.</li>
+      </ul></div></details>
     `,
   },
   {
@@ -51,6 +125,61 @@ window.EXAM_RECONS = [
       <p>חלק א: קטע <code>Base</code>/<code>Der</code> עם <code>f</code> וירטואלית, <code>g</code> לא וירטואלית, <code>h</code> וירטואלית. מה יודפס ב-<code>b-&gt;f()</code>, <code>d-&gt;f()</code>, <code>b-&gt;g()</code>, <code>d-&gt;g()</code>. זה פולימורפיזם וטבלה וירטואלית (יחידה 2).</p>
       <p>גם: <code>protected</code>, מילים שמורות בפייתון, by-reference מול by-value.</p>
       <p>חלק ב (בבחינות האלה חוזר): SQLite ב-C++/פייתון; תקשורת; אפחות זיכרון.</p>
+      <h3>שאלות מהשאלון · רמזים ופתרונות</h3>
+      <p><strong>שאלה 1 (אמריקאית):</strong> מה יודפס?</p>
+      <pre class="code" dir="ltr">class Base {
+public:
+    virtual void f() { g(); cout &lt;&lt; "B::f" &lt;&lt; endl; }
+    void g() { h(); cout &lt;&lt; "B::g" &lt;&lt; endl; }
+    virtual void h() { cout &lt;&lt; "B::h" &lt;&lt; endl; }
+};
+class Der : public Base {
+public:
+    void g() { h(); cout &lt;&lt; "D::g" &lt;&lt; endl; }
+    void h() { cout &lt;&lt; "D::h" &lt;&lt; endl; }
+};
+int main() {
+    Base* b; Der* d = new Der();
+    b = d;
+    b-&gt;f(); cout &lt;&lt; "---" &lt;&lt; endl;
+    d-&gt;f(); cout &lt;&lt; "---" &lt;&lt; endl;
+    b-&gt;g(); cout &lt;&lt; "---" &lt;&lt; endl;
+    d-&gt;g();
+}</pre>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p><code>f()</code> וירטואלית ב־<code>Base</code>. <code>g()</code> <strong>אינה</strong> וירטואלית. <code>h()</code> וירטואלית. כשקוראים ל־<code>g()</code> מתוך <code>Base::f()</code>, לאיזו גרסה מגיעים?</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ol>
+        <li><code>b-&gt;f()</code>: <code>f</code> וירטואלית ו־<code>Der</code> לא דורסת אותה, לכן <code>Base::f</code>. בתוכה <code>g()</code> אינה וירטואלית, לכן <code>Base::g</code>. בתוכה <code>h()</code> וירטואלית והאובייקט הוא <code>Der</code>, לכן <code>Der::h</code>. פלט: <code>D::h</code>, <code>B::g</code>, <code>B::f</code>.</li>
+        <li><code>d-&gt;f()</code>: <code>f</code> מורשת מ־<code>Base</code>, אותו מסלול. פלט: <code>D::h</code>, <code>B::g</code>, <code>B::f</code>.</li>
+        <li><code>b-&gt;g()</code>: <code>b</code> מסוג <code>Base*</code> ו־<code>g</code> אינה וירטואלית, לכן <code>Base::g</code>. בתוכה <code>h()</code> הווירטואלית נותנת <code>Der::h</code>. פלט: <code>D::h</code>, <code>B::g</code>.</li>
+        <li><code>d-&gt;g()</code>: <code>d</code> מסוג <code>Der*</code>, לכן <code>Der::g</code> (הסתרה). בתוכה <code>Der::h</code>. פלט: <code>D::h</code>, <code>D::g</code>.</li>
+      </ol><p>הכלל: קריאה לפונקציה לא־וירטואלית נקבעת לפי טיפוס המצביע; קריאה וירטואלית נקבעת לפי טיפוס האובייקט בפועל.</p></div></details>
+      <p><strong>שאלה 9 (פתוחה):</strong> שני מבני <code>field</code> על הערימה, <code>strcpy</code> מ־<code>argv</code>. מה החולשה, מה נשבר, ואיך מתקנים?</p>
+      <pre class="code" dir="ltr">#define FIELDSIZE (16)
+struct field {
+    unsigned char f_id;
+    char* f_data;
+};
+void handle_fields(int argc, char** argv) {
+    if (argc != 2) exit(1);
+    field* r1 = (struct field*)malloc(sizeof(struct field));
+    r1-&gt;f_id = 1;
+    r1-&gt;f_data = (char*)malloc(FIELDSIZE);
+    field* r2 = (struct field*)malloc(sizeof(struct field));
+    r2-&gt;f_id = 2;
+    r2-&gt;f_data = (char*)malloc(FIELDSIZE);
+    strcpy(r1-&gt;f_data, argv[0]);
+    strcpy(r2-&gt;f_data, argv[1]);
+}</pre>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>מה קורה כשמחרוזת ארוכה מ־16 בתים נכנסת ל־<code>r1-&gt;f_data</code>? אילו הקצאות יושבות על הערימה בצמוד לחוצץ הזה?</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ul>
+        <li><strong>החולשה:</strong> <code>strcpy</code> לא בודק את אורך הקלט מול <code>FIELDSIZE</code>. זו גלישת ערימה (Heap Buffer Overflow).</li>
+        <li><strong>מה נשבר:</strong> ההקצאות עלולות לשבת ברצף — <code>r1</code>, החוצץ שלו, <code>r2</code>, החוצץ שלו. כתיבה עודפת לחוצץ של <code>r1</code> עלולה להגיע למבנה <code>r2</code> ולשנות את המצביע <code>f_data</code> שבו. אז ה־<code>strcpy</code> הבא כותב לאן שהמצביע המושחת מצביע — פגיעה בשלמות, בלי לגעת בכתובת חזרה.</li>
+        <li><strong>באג נוסף בשאלה:</strong> עם <code>argc != 2</code>, <code>argv[0]</code> הוא שם התוכנית ו־<code>argv[1]</code> הוא הארגומנט היחיד. זה לא "שני ערכי קלט" רגילים.</li>
+        <li><strong>התיקון:</strong> לבדוק אורך מול <code>FIELDSIZE - 1</code> לפני ההעתקה, או העתקה חסומה עם אפס סיום, ולבדוק את ההחזרה של <code>malloc</code>.</li>
+      </ul>
+      <pre class="code" dir="ltr">strncpy(r1-&gt;f_data, argv[0], FIELDSIZE - 1);
+r1-&gt;f_data[FIELDSIZE - 1] = '\\0';</pre>
+      <p>הרחקת המצביע מהחוצץ אינה תחליף לבדיקת הגבול.</p></div></details>
     `,
   },
   {
@@ -75,6 +204,49 @@ window.EXAM_RECONS = [
       <p>שאלה 7. ASLR: מה זה, איזו בעיה זה מקשה, ואיך בודקים אם הוא פעיל. מנגנון נוסף, או מגבלה של ASLR, נמצא ביחידה 3: קנרית ו־NX.</p>
       <p>שאלה 8 · הסבר vtable וקישור בזמן ריצה בין מצביע בסיס לאובייקט נגזר. <strong>לא</strong> מתרגלים באתר החלפת כניסה ראשונה בטבלה לפונקציה חיצונית.</p>
       <p>שאלה 9 · שרת פרוקסי/מטמון: פורט 8080, מגבלת אורך URL, טבלת SQLite עם פרמטרים, מחיקת הרשומה הישנה ביותר כשיש יותר מדי — בלי הזרקה.</p>
+      <h3>שאלות נוספות · רמזים ופתרונות</h3>
+      <p class="muted">שתי השאלות הבאות לקוחות ממסמך שמאחד את מועד ג ואת מועד 81. המספור שלהן אינו תואם את מפתח חלק א שלמעלה, ולכן אינו משנה אותו.</p>
+      <p><strong>שאלה (אמריקאית) · סדר בתים:</strong> הקוד רץ על מעבד Intel ב־32 סיביות. מה ערכי <code>buffer[0]</code> עד <code>buffer[3]</code>?</p>
+      <pre class="code" dir="ltr">char buffer[sizeof(int)];
+int x = 0xC00010FF;
+memcpy(buffer, &amp;x, sizeof(int));</pre>
+      <ul>
+        <li>א. <code>FF, 10, 00, C0</code></li>
+        <li>ב. <code>FF, 01, 00, C0</code></li>
+        <li>ג. <code>C0, 00, 10, FF</code></li>
+        <li>ד. <code>C0, 10, 00, FF</code></li>
+      </ul>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>מעבדי Intel הם little-endian. באיזה צד של המספר יושב הבית הנמוך (LSB), ואיזו כתובת הוא מקבל?</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: א' (<code>FF, 10, 00, C0</code>).</strong></p>
+      <ul>
+        <li>המספר <code>0xC00010FF</code> מורכב מארבעה בתים: הנמוך ביותר (LSB) <code>0xFF</code>, אחריו <code>0x10</code>, אחריו <code>0x00</code>, והגבוה ביותר (MSB) <code>0xC0</code>.</li>
+        <li>ב־little-endian הבית הנמוך נשמר בכתובת הנמוכה, כלומר ב־<code>buffer[0]</code>.</li>
+        <li>לכן: <code>buffer[0] = 0xFF</code>, <code>buffer[1] = 0x10</code>, <code>buffer[2] = 0x00</code>, <code>buffer[3] = 0xC0</code>.</li>
+      </ul></div></details>
+      <p><strong>שאלה (פתוחה) · גלישה נומרית לפני <code>calloc</code>:</strong> מה החולשה, מה נשבר, ואיך מתקנים?</p>
+      <pre class="code" dir="ltr">char* read_string(int sock) {
+    char* string;
+    size_t length = 0;
+    if (read(sock, &amp;length, sizeof(length)) &lt; 0) return NULL;
+    string = calloc(length + 2, sizeof(char));
+    if (string == NULL) return NULL;
+    if (read_bytes(sock, string, length) &lt; 0) {
+        free(string);
+        return NULL;
+    }
+    string[length] = '\\0';
+    return string;
+}</pre>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p><code>length</code> מגיע מהרשת. מה יקרה ל־<code>length + 2</code> אם הערך קרוב מאוד ל־<code>SIZE_MAX</code>?</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ul>
+        <li><strong>החולשה:</strong> גלישה נומרית (Integer Overflow) בחישוב <code>length + 2</code>, לפני ההקצאה.</li>
+        <li><strong>מה נשבר:</strong> <code>size_t</code> נעטף מודולו 2<sup>n</sup>. ערך <code>length</code> קרוב ל־<code>SIZE_MAX</code> הופך את <code>length + 2</code> למספר קטן — למשל ב־<code>size_t</code> של 32 סיביות, <code>0xFFFFFFFF + 2</code> נעטף ל־1. <code>calloc</code> מקצה בלוק קטן, אבל <code>read_bytes</code> עדיין קורא <code>length</code> בתים לתוכו, וגם <code>string[length]</code> כותב מעבר לבלוק. זו גלישת ערימה.</li>
+        <li><strong>התיקון:</strong> לדחות אורך לא סביר, ולבדוק לפני החיבור שהוא לא יגלוש:</li>
+      </ul>
+      <pre class="code" dir="ltr">if (length &gt; MAX_ALLOWED_STRING_SIZE || length &gt; SIZE_MAX - 2) {
+    return NULL; /* דחיית קלט לא תקין */
+}</pre>
+      <p>הבדיקה חייבת לבוא לפני החיבור. אחרי העטיפה אי אפשר לשחזר את הגודל המקורי מהתוצאה.</p></div></details>
     `,
   },
   {
@@ -87,6 +259,25 @@ window.EXAM_RECONS = [
       <p>שאלה 7 · C++: פולימורפיזם, מצביע וירטואלי ו-vtable; הבדל וירטואלי / לא וירטואלי; איזו חולשה נפתחת כשיש כתיבה לזיכרון של הטבלה (רעיון — בלי PoC).</p>
       <p>שאלה 8 · שרת Linux ב-C/C++ שקורא קובץ ושולח צ'אנקים 1024 עם כותרת (שם, מספר, גודל); תוכנית שמעבירה שורות קובץ ל-SQLite (מספר סידורי + תוכן) עם <code>CREATE</code> ופרמטרים.</p>
       <p>שאלה 9 לא שוחזרה. אין גרסה מתוקנת מהסריקה.</p>
+      <h3>שאלה 7 · רמזים ופתרונות</h3>
+      <p><strong>שאלה 7 (פתוחה):</strong> הסבירו איך עובד מנגנון הפונקציות הווירטואליות ב־C++, עם <code>vptr</code> ו־<code>vtable</code>. אחר כך: איזו חולשה נפתחת כשכותבים לזיכרון של הטבלה או של המצביע אליה?</p>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>חשבו איפה נשמר <code>vptr</code> בתוך האובייקט, לאן הוא מצביע, ומה קורה בזמן ריצה כשקוראים לפונקציה וירטואלית דרך מצביע לבסיס.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>חלק 1 · המנגנון.</strong></p>
+      <ul>
+        <li>לכל מחלקה עם לפחות פונקציה וירטואלית אחת, המהדר בונה טבלה וירטואלית (<code>vtable</code>) אחת: רשימת כתובות של המימושים. הטבלה משותפת לכל המופעים של המחלקה.</li>
+        <li>בכל אובייקט נשמר מצביע נסתר, <code>vptr</code>. במודל הקורס הוא יושב בתחילת האובייקט (היסט 0), ומצביע לטבלה של המחלקה האמיתית של האובייקט.</li>
+        <li>הבנאי מציב את <code>vptr</code>. לכן גם דרך <code>Base*</code> לאובייקט <code>Der</code>, ה־<code>vptr</code> מצביע לטבלה של <code>Der</code>.</li>
+        <li>קריאה וירטואלית מתורגמת בערך ל־<code>obj-&gt;vptr[index]()</code>: קוראים את המצביע, ניגשים לכניסה, וקופצים. זה קישור בזמן ריצה.</li>
+        <li>בלי <code>virtual</code> הקריאה נקבעת בקומפילציה לפי טיפוס המצביע, ולכן <code>Base*</code> יגיע תמיד ל־<code>Base</code>.</li>
+      </ul>
+      <p><strong>חלק 2 · מה נשבר כשכותבים לשם.</strong></p>
+      <ul>
+        <li>יעד הקריאה הווירטואלית נקרא מהזיכרון בזמן ריצה. אם כתיבה מעבר לחוצץ, שימוש אחרי שחרור, או גלישה בערימה משחיתים את <code>vptr</code> של אובייקט (או מצביע פונקציה בשדה), הקריאה הבאה הולכת למה שנשאר בזיכרון ולא למימוש שתוכנן. זו פגיעה בשלמות זרימת הבקרה.</li>
+        <li>הטבלה עצמה לרוב יושבת בזיכרון לקריאה בלבד. ה־<code>vptr</code> בתוך אובייקט בערימה הוא נתון רגיל שאפשר להשחית — לכן הוא היעד הנפוץ.</li>
+        <li><code>private</code> אינו מגן: הרשאות הגישה נאכפות בקומפילציה על שמות, לא על כתיבה גולמית לזיכרון. קנרית המחסנית בודקת את המסגרת לפני <code>ret</code>, ואינה שומרת על <code>vptr</code> בערימה.</li>
+      </ul>
+      <p><strong>איך מתגוננים:</strong> תיקון שורש — לא לכתוב מעבר לגודל (<code>std::string</code>, בדיקת אורך) ובעלות ברורה על זיכרון (<code>unique_ptr</code>). שכבות — ASLR מקשה על כתובות קבועות, ושלמות זרימת בקרה (CFI) בודקת שיעד הקפיצה העקיפה הוא אחד היעדים שתוכננו.</p>
+      <p class="muted">הסעיף במקור מבקש קוד שמחליף כניסה בטבלה בפונקציה אחרת. באתר מתארים מה נשבר ואיך מתגוננים, בלי קוד כזה.</p></div></details>
     `,
   },
 ];

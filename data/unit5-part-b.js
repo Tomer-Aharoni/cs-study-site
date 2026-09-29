@@ -131,6 +131,29 @@ if size &gt; MAX_PAYLOAD:
     raise ValueError("payload too large")
 payload = recv_exact(conn, size)</code></pre>
       <p><code>struct.unpack("!III", header)</code> מפענח את אותם שלושה מספרים: <code>!</code> הוא big-endian. <code>send</code> גם הוא עלול לשלוח חלק, ולכן בצד השולח משתמשים ב־<code>sendall</code> או בלולאה עד שכל הכותרת וה־payload יצאו. 2036 הוא המקום שנשאר כשהיחידה כולה מוגבלת ל־2048 בתים (12 כותרת). הפתרון המלא של המטלה נמצא בתרגול.</p>
+      <h3>שאלת תרגול</h3>
+      <p>למה <code>recv(1024)</code> ב־TCP לא מבטיח הודעה שלמה, ואיך קוראים הודעה עם כותרת קבועה של 12 בתים ב־big-endian?</p>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>TCP הוא זרם בתים בלי גבולות הודעה. <code>struct.unpack("!III", ...)</code> מפענח שלושה מספרים של 4 בתים בסדר רשת.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body">
+        <p><code>recv</code> מחזיר עד כמות הבתים שביקשתם, וגם פחות. אין קשר בין גבולות <code>send</code> לגבולות <code>recv</code>. לכן קוראים קודם בדיוק 12 בתים, מפענחים, בודקים שהאורך לא עובר תקרה, וקוראים בדיוק את האורך.</p>
+        <pre class="code"><code>import struct
+
+def receive_exact(sock, n):
+    buf = bytearray()
+    while len(buf) &lt; n:
+        chunk = sock.recv(n - len(buf))
+        if not chunk:
+            raise ConnectionError("socket closed")
+        buf.extend(chunk)
+    return bytes(buf)
+
+def read_framed_message(sock, max_payload=2036):
+    header = receive_exact(sock, 12)
+    pkt_id, total, size = struct.unpack("!III", header)
+    if size &gt; max_payload:
+        raise ValueError("payload too large")
+    return pkt_id, total, receive_exact(sock, size)</code></pre>
+      </div></details>
     `,
   }
 );

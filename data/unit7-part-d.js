@@ -67,6 +67,29 @@ return True</code></pre>
       <p><strong>שייום (naming)</strong>: <code>a</code> על וקטור מול <code>average(values)</code>. שם שמסגיר כוונה מונע שימוש במשתנה קלט כאילו הוא כבר מחוטא.</p>
       <p><strong>מספרי קסם:</strong> <code>option == 5</code> מול קבוע בשם <code>EXIT_APPLICATION</code>. בקוד SQL: אורך <code>VARCHAR</code> וגבולות קלט — קבועים בעלי שם, לא ספרות פזורות.</p>
       <p><strong>הערות:</strong> להסביר, לבאר, להקל על קריאה. לא לחזור על מה שהקוד כבר אומר; לא "סליחה לא סיימתי" במקום מימוש; לא הערת בנאי שמספרת ש־<code>count = 100</code>. הערה טובה: למה נבחר טווח, למה פרמטר ולא הדבקה.</p>
+      <h3>שאלת תרגול</h3>
+      <p>א. איך מונעים הזרקת SQL ב־SQLite בפייתון? ב. הפכו את קוד החץ הבא לקוד עם חיתוך מוקדם.</p>
+      <pre class="code"><code>bool validateUser(const std::string&amp; name, int age) {
+    if (!name.empty()) {
+        if (age &gt;= 18) {
+            if (age &lt;= 120) {
+                return true;
+            }
+        }
+    }
+    return false;
+}</code></pre>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>ב־SQL: מציין מקום <code>?</code> וטיפל. ב־C++: יציאה מוקדמת על כל תנאי קצה שלילי.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body">
+        <p><strong>א.</strong> התבנית קבועה, והערך נקשר בנפרד. גם f-string או <code>format</code> מדביקים את הקלט לתחביר.</p>
+        <pre class="code"><code>cursor.execute("SELECT * FROM Students WHERE Name = ?", (user_input,))</code></pre>
+        <p><strong>ב.</strong> כל כשל יוצא בשורה משלו, והמסלול התקין נשאר בלי קינון.</p>
+        <pre class="code"><code>bool validateUserClean(const std::string&amp; name, int age) {
+    if (name.empty()) return false;
+    if (age &lt; 18 || age &gt; 120) return false;
+    return true;
+}</code></pre>
+      </div></details>
     `,
   },
   {

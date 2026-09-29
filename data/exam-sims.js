@@ -173,6 +173,12 @@ except OSError:
           { id: "d", text: "g תמיד D::g כי האובייקט הוא Der." },
         ],
         answer: "c",
+        hint: "<p><code>f()</code> וירטואלית ב־<code>Base</code>. <code>g()</code> <strong>אינה</strong> וירטואלית. <code>h()</code> וירטואלית. כשקוראים ל־<code>g()</code> מתוך <code>Base::f()</code>, לאיזו גרסה מגיעים?</p>",
+        solution: `<ol>
+<li><code>b-&gt;f()</code>: <code>f</code> וירטואלית ו־<code>Der</code> לא דורסת אותה, לכן <code>Base::f</code>. בתוכה <code>g()</code> אינה וירטואלית, לכן <code>Base::g</code>. בתוכה <code>h()</code> וירטואלית והאובייקט הוא <code>Der</code>, לכן <code>Der::h</code>. פלט: <code>D::h</code>, <code>B::g</code>, <code>B::f</code>.</li>
+<li><code>d-&gt;g()</code>: <code>d</code> מסוג <code>Der*</code>, לכן <code>Der::g</code> (הסתרה). בתוכה <code>h()</code> נותנת <code>Der::h</code>. פלט: <code>D::h</code>, <code>D::g</code>.</li>
+</ol>
+<p>הכלל: קריאה לא־וירטואלית נקבעת לפי טיפוס המצביע; קריאה וירטואלית לפי טיפוס האובייקט בפועל.</p>`,
       },
       {
         id: "a2",
@@ -331,6 +337,14 @@ int main(void) {
 <p>ג. לבדוק אורך מול FIELDSIZE-1; <code>strncpy</code> + כתיבת <code>'\\0'</code> בסוף; או פונקציה שגוזרת אורך; בדיקת ההחזרה של malloc.</p>`,
         verdictKind: "ok",
         verdict: "אבחון החולשה והתיקון הרשמיים נכונים. לא מעתיקים לאתר את פירוט הניצול לפי בתים. שמו לב לבאג argc/argv בשאלה עצמה.",
+        hint: "<p>מה קורה כשמחרוזת ארוכה מ־<code>FIELDSIZE</code> נכנסת ל־<code>r1-&gt;f_data</code>? אילו הקצאות יושבות על הערימה בצמוד לחוצץ הזה?</p>",
+        solution: `<ul>
+<li><strong>החולשה:</strong> <code>strcpy</code> לא בודק את אורך הקלט מול <code>FIELDSIZE</code>. זו גלישת ערימה (Heap Buffer Overflow).</li>
+<li><strong>מה נשבר:</strong> ההקצאות עלולות לשבת ברצף — <code>r1</code>, החוצץ שלו, <code>r2</code>, החוצץ שלו. כתיבה עודפת לחוצץ של <code>r1</code> עלולה להגיע למבנה <code>r2</code> ולשנות את המצביע <code>f_data</code> שבו. ה־<code>strcpy</code> הבא כותב לאן שהמצביע המושחת מצביע — פגיעה בשלמות, בלי לגעת בכתובת חזרה.</li>
+<li><strong>התיקון:</strong> לבדוק אורך מול <code>FIELDSIZE - 1</code>, או העתקה חסומה עם אפס סיום, ולבדוק את ההחזרה של <code>malloc</code>.</li>
+</ul>
+<pre class="exam-code" dir="ltr">strncpy(r1-&gt;f_data, argv[0], FIELDSIZE - 1);
+r1-&gt;f_data[FIELDSIZE - 1] = '\\0';</pre>`,
       },
     ],
   },

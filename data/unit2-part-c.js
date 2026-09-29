@@ -38,6 +38,17 @@ p4 = p1;          // אופרטור השמה: p4 כבר היה קיים</code></
       <div class="panel">
         <p><strong>איך לזכור במבחן.</strong> אם השם משמאל מופיע בפעם הראשונה באותה שורה, זה בנאי העתקה. אם השם כבר הוצהר למעלה, זו השמה. בנאי העתקה לא משחרר ישן, כי אין ישן. השמה כן.</p>
       </div>
+      <h3>שאלת תרגול</h3>
+      <p>איזה מנגנון מופעל בכל אחת מהשורות המסומנות?</p>
+      <pre class="code"><code>Person p1("Alice", 20);
+Person p2 = p1;   // שורה 1
+Person p3("Bob", 25);
+p3 = p1;          // שורה 2</code></pre>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>בדקו אם בשורה נוצר אובייקט חדש שלא היה קיים קודם, או שמבצעים השמה לתוך אובייקט שכבר הוקצה.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body">
+        <p><strong>שורה 1</strong> מפעילה את <strong>בנאי ההעתקה</strong>. יש שם <code>=</code>, אבל זו הצהרה על <code>p2</code> שנבנה מ־<code>p1</code>.</p>
+        <p><strong>שורה 2</strong> מפעילה את <strong>אופרטור ההשמה</strong>. <code>p3</code> כבר היה קיים, ולכן משחררים את המשאב הישן שלו (אחרי בדיקת השמה עצמית) ומעתיקים לתוכו את התוכן של <code>p1</code>.</p>
+      </div></details>
     `,
   },
   {

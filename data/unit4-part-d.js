@@ -27,6 +27,25 @@ UNIT4.sections.push(
       <pre class="code"><code>Colored = type("Colpoint", (Point,), {"kind": "color"})</code></pre>
       <p><code>(Point,)</code> — tuple בן הורה אחד. <code>(Point)</code> בלי פסיק הוא סתם הסוגריים של ביטוי, כלומר המחלקה Point עצמה, והקריאה ל־type תיכשל.</p>
       <p>מלכודת מבחן: אותו פסיק עם כל הורה יחיד, למשל <code>(Book,)</code>. <code>(Book)</code> אינו tuple, ו־<code>type</code> לא יקבל אותו כרשימת בסיסים. אחרי היצירה מתקבלת מחלקה; מופע יוצרים בקריאה נפרדת, למשל <code>DetectiveBook("כותרת", "מחבר")</code> אם כך הוגדר <code>__init__</code>.</p>
+      <h3>שאלת תרגול</h3>
+      <p>צרו בעזרת <code>type</code> מחלקה נגזרת מ־<code>Book</code> בשם <code>MysteryBook</code>, עם משתנה מחלקה <code>openu_code = 20937</code>, ואז צרו ממנה מופע.</p>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>החתימה היא <code>type(name, bases, dict)</code>. שימו לב לארגומנט השני כשיש הורה אחד בלבד.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body">
+        <pre class="code"><code>class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+
+MysteryBook = type(
+    "MysteryBook",
+    (Book,),                  # tuple של הורים: הפסיק חובה
+    {"openu_code": 20937},    # משתני מחלקה
+)
+
+book = MysteryBook("Sherlock", "Conan Doyle")
+print(book.openu_code)        # 20937</code></pre>
+        <p><code>type</code> מחזיר מחלקה, לא מופע. <code>__init__</code> של <code>Book</code> עובר בירושה, ולכן המופע מקבל שם ומחבר.</p>
+      </div></details>
     `,
   },
   {

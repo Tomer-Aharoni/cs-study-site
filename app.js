@@ -1760,6 +1760,10 @@ function mountExamClock() {
   window.__examClock = setInterval(tick, 1000);
 }
 
+function foldHtml(summary, html) {
+  return `<details class="fold"><summary>${summary}</summary><div class="fold-body">${html}</div></details>`;
+}
+
 function examMcqHtml(exam, run, review) {
   return exam.partA
     .map((q) => {
@@ -1783,10 +1787,14 @@ function examMcqHtml(exam, run, review) {
           : review
             ? `<p class="feedback bad">לא נענתה. נכון: ${esc((q.options.find((o) => o.id === q.answer) || {}).text || "")}</p>`
             : "";
+      const hint = q.hint ? foldHtml("💡 רמז לפתרון", q.hint) : "";
+      const solution = review && q.solution ? foldHtml("פתרון מפורט ודרך חישוב", q.solution) : "";
       return `<div class="quiz panel" data-qid="${q.id}">
         <p><strong>${esc(q.prompt)}</strong></p>
         ${opts}
+        ${hint}
         ${mark}
+        ${solution}
       </div>`;
     })
     .join("");
@@ -1808,12 +1816,15 @@ function examPartBHtml(exam, run, review) {
           ${q.hadOfficial ? `<h3>מה היה בפתרון הקיים</h3><p>${esc(q.official)}</p>` : `<h3>אין פתרון רשמי קריא</h3>`}
           <h3>פתרון שעונה על הדרישה</h3>
           ${q.proposed}
+          ${q.solution ? foldHtml("פתרון מפורט ודרך חישוב", q.solution) : ""}
           <p class="verdict ${kind === "ok" ? "ok" : kind === "fix" ? "fix" : "new"}"><strong>חוות דעת:</strong> ${esc(q.verdict)}</p>
         </div>`;
       }
+      const hint = q.hint ? foldHtml("💡 רמז לפתרון", q.hint) : "";
       return `<article class="section exam-bq" id="${q.id}">
         <h2>${esc(q.title)}</h2>
         <p>${esc(q.prompt)}</p>
+        ${hint}
         ${pickBtn}
         ${sol}
       </article>`;
