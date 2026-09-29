@@ -1584,9 +1584,10 @@ function renderPrepBank() {
     body = `
       <h1>${esc(q.title || "שאלה פתוחה")}</h1>
       <p>${esc(q.prompt)}</p>
+      ${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}
       <button type="button" class="ghost-btn" data-prep-reveal ${shown ? "hidden" : ""}>הצגת פתרון</button>
       <div class="panel prep-solution" ${shown ? "" : "hidden"}>
-        ${q.solution || ""}
+        ${foldHtml("פתרון מפורט ודרך חישוב", q.solution || "<p>לא נמצא פתרון מלא במקור.</p>")}
         ${q.note ? `<p class="feedback ok">${esc(q.note)}</p>` : ""}
       </div>
       <button type="button" class="primary" data-prep-next ${shown ? "" : "hidden"}>${nextLabel}</button>`;
@@ -1601,9 +1602,10 @@ function renderPrepBank() {
       .join("");
     const right = (q.options.find((o) => o.id === q.answer) || {}).text || "";
     const fb = picked
-      ? `<p class="feedback ${picked === q.answer ? "ok" : "bad"}">${esc(q.explain || (picked === q.answer ? "נכון." : "התשובה הנכונה: " + right))}</p>`
+      ? `<p class="feedback ${picked === q.answer ? "ok" : "bad"}">${picked === q.answer ? "נכון." : "התשובה הנכונה: " + esc(right)}</p>
+        ${foldHtml("פתרון מפורט ודרך חישוב", practiceSolutionHtml(q))}`
       : "";
-    body = `<h1>${esc(q.prompt)}</h1>${opts}${fb}<button type="button" class="primary" data-prep-next ${picked ? "" : "hidden"}>${nextLabel}</button>`;
+    body = `<h1>${esc(q.prompt)}</h1>${opts}${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}${fb}<button type="button" class="primary" data-prep-next ${picked ? "" : "hidden"}>${nextLabel}</button>`;
   }
   return shell(`
     <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
@@ -1671,7 +1673,8 @@ function renderRound(mode) {
     })
     .join("");
   const fb = picked
-    ? `<p class="feedback ${picked === q.answer ? "ok" : "bad"}">${esc(q.explain)}</p>`
+    ? `<p class="feedback ${picked === q.answer ? "ok" : "bad"}">${picked === q.answer ? "נכון." : "לא נכון."}</p>
+      ${foldHtml("פתרון מפורט ודרך חישוב", practiceSolutionHtml(q))}`
     : `<p class="feedback" hidden></p>`;
   const nextLabel = round.index + 1 === round.ids.length ? "סיום" : "השאלה הבאה";
   const unitId = (allQuizzes().find((item) => item.id === q.id) || {}).unit;
@@ -1682,6 +1685,7 @@ function renderRound(mode) {
     <section class="drill" data-drill>
       <h1>${esc(q.prompt)}</h1>
       ${opts}
+      ${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}
       ${fb}
       <button type="button" class="primary" data-drill-next ${picked ? "" : "hidden"}>${nextLabel}</button>
     </section>
@@ -1764,6 +1768,95 @@ function foldHtml(summary, html) {
   return `<details class="fold"><summary>${summary}</summary><div class="fold-body">${html}</div></details>`;
 }
 
+function practiceQuestionText(q) {
+  return `${q.title || ""} ${q.prompt || ""}`.toLowerCase();
+}
+
+function practiceHintHtml(q) {
+  if (q.hint) return q.hint;
+  const text = practiceQuestionText(q);
+  const hints = [
+    [/לכידות|cohesion/, "בדקו אם כל רכיבי המחלקה משרתים אחריות אחת ברורה, או אוסף משימות שאינן קשורות זו לזו."],
+    [/צמידות|coupling/, "חשבו כמה המחלקה צריכה לדעת על פרטי המימוש של מחלקות אחרות, ומה יקרה אם הפרטים האלה ישתנו."],
+    [/אין שחזור|לא זכור|הסעיף ריק/, "אין נוסח שאלה אמין במקור, ולכן אין דרך להסיק דרישות או פתרון בלי להמציא תוכן."],
+    [/sql|sqlite|שאילתה|insert|primary key/, "הפרידו בין מבנה פקודת ה-SQL לבין הערכים, ובדקו אילו אילוצים קובעים אם שורה תתקבל."],
+    [/sandbox|ארגז חול|קוד של לקוח|\bexec\b/, "מנו את המשאבים וההרשאות שקוד לא מוכר צריך לאבד, ואז ציינו מה קורה אם שכבת הבידוד עצמה פגיעה."],
+    [/מפתח ציבורי|מפתח סימטרי|הצפנ|תעודה|certificate/, "השוו את העלות והתפקיד של הצפנה אסימטרית וסימטרית, והסבירו כיצד אימות זהות מונע החלפת מפתח בדרך."],
+    [/פייתון|מילון|רשימת מילים|מחלקת book|שטח משולש/, "פתרו כל סעיף בנפרד: קודם טרנספורמציית הנתונים, אחר כך מודל המחלקות, ולבסוף קלט/פלט וטיפול בשגיאות."],
+    [/חולש|vulnerability|אפחות|mitigation/, "הפרידו בין הפגם שמאפשר חריגה, הפעולה שמנצלת אותו, והגנה שמצמצמת את הנזק."],
+    [/vtable|vptr|וירטואל|פולימורפ|מצביע בסיס/, "הפרידו בין הטיפוס הסטטי של המצביע לבין טיפוס האובייקט בפועל, ובדקו אם הפונקציה הוגדרה virtual."],
+    [/כלל השלושה|כלל החמישה|בנאי העתקה|אופרטור השמה/, "זהו מי הבעלים של המשאב ומה יקרה בהעתקה, בהשמה ובהשמדה. בדקו גם השמה עצמית."],
+    [/חיתוך|slicing|יהלום/, "בדקו אם אובייקט נגזר מועתק לפי ערך לאובייקט בסיס, או אם אותו בסיס מגיע בשני מסלולי ירושה."],
+    [/protected/, "השוו גישה מתוך המחלקה ומתוך יורש לגישה של קוד חיצוני שאינו חלק מהיררכיית הירושה."],
+    [/by-reference|by-value|לפי הפניה|לפי ערך/, "שאלו אם נוצר עותק חדש, ומה המחיר או אובדן המידע שעלולים להיגרם מהעתקה."],
+    [/ipv6/, "השוו לאורך כתובת IPv4, ואז זכרו שכתובת IPv6 נכתבת כשמונה קבוצות של 16 סיביות."],
+    [/העמס|overload/, "בדקו אם השפה בוחרת בין כמה חתימות בזמן קומפילציה, או שהגדרה מאוחרת פשוט מחליפה שם קודם."],
+    [/copy|העתקה רדודה|העתקה עמוקה/, "בדקו אם הועתקו גם האובייקטים המקוננים, או רק ההפניות אליהם."],
+    [/osi|שכבת הייצוג/, "התמקדו בשינוי הייצוג של המידע: קידוד, דחיסה והצפנה — לא ניתוב ולא אמינות תעבורה."],
+    [/htons|big-endian|little-endian|סדר בתים/, "פרקו את הערך לבתים והבחינו בין סדר הבתים של המעבד לבין סדר הרשת."],
+    [/\bbind\b|inaddr_any|כתובת ip נקובה/, "בדקו לאיזו כתובת מקומית השקע נקשר: ממשק מסוים או כל הממשקים של המחשב."],
+    [/aslr|קנרית|canary|dep|nx|חוצץ|strcpy|malloc|calloc|גלישה נומרית|integer overflow/, "עקבו אחרי הגבול או חישוב הגודל, ציינו איזה זיכרון עלול להיפגע, ואז הפרידו בין תיקון השורש לשכבות אפחות."],
+    [/סיסמ|ערוץ צדדי|side.channel/, "בדקו אם זמן הריצה או התנהגות אחרת תלויים במיקום התו השגוי ויכולים לחשוף מידע חלקי."],
+    [/decorator|מעטפת|wraps|__name__/, "עקבו אחרי האובייקט שהשם המקורי מצביע אליו לאחר העיטוף, ואילו פרטי מטא־נתונים נשמרים."],
+    [/selector|socket|שקע|tcp|udp|recv|שרת|לקוח|צ'אנק/, "עברו לפי מחזור החיים של השקע והפרוטוקול: יצירה, קישור או חיבור, מסגור, קריאה/כתיבה וסגירה."],
+    [/thread|חוט|atomic|סנכרון|counter/, "פרקו את הפעולה לקריאה, חישוב וכתיבה ובדקו אם חוט אחר יכול להשתלב ביניהן."],
+    [/ddos|זמינות/, "בדקו איזו מתכונות האבטחה נפגעת כשמשאב מוצף ולא ניתן עוד שירות למשתמשים לגיטימיים."],
+    [/ביטוי משולש|ternary/, "חפשו את שלושת חלקי הביטוי: תנאי, ערך אם אמת וערך אם שקר, ואת סימני הפיסוק שמפרידים ביניהם."],
+  ];
+  const match = hints.find(([pattern]) => pattern.test(text));
+  const fallback =
+    q.kind === "open" || q.proposed
+      ? "חלקו את התשובה להגדרה, אופן הפעולה ומגבלה או תיקון. עברו שוב על כל דרישה בניסוח השאלה."
+      : "בדקו איזו אפשרות מתארת את המנגנון עצמו, ולא רק תוצאה אפשרית או טענה גורפת מדי.";
+  return `<p>${esc(match ? match[1] : fallback)}</p>`;
+}
+
+function practiceExplanation(q) {
+  const text = practiceQuestionText(q);
+  const explanations = [
+    [/לכידות|cohesion/, "לכידות מתארת עד כמה מרכיבי יחידה תוכנתית משרתים מטרה משותפת. אחריות אחת ברורה מעידה על לכידות גבוהה."],
+    [/צמידות|coupling/, "צמידות חלשה מתקבלת כשמחלקות תלויות בממשק יציב ולא בפרטי המימוש זו של זו, ולכן שינוי פנימי אינו מתפשט למערכת."],
+    [/חולש|vulnerability/, "חולשת אבטחה היא פגם שמאפשר פעולה שלא תוכננה. ניצול הוא השימוש בפגם, ואפחות היא הגנה שמצמצמת סיכון או נזק."],
+    [/אפחות|mitigation/, "אפחות אינה הבטחה שאין באגים; היא שכבת הגנה שמקטינה את הסיכוי לניצול מוצלח או את הנזק ממנו."],
+    [/vtable|vptr/, "באובייקט פולימורפי ה-vptr מפנה לטבלה המשותפת למחלקה, והכניסה המתאימה בטבלה קובעת בזמן ריצה את יעד הקריאה הווירטואלית."],
+    [/וירטואל|פולימורפ|מצביע בסיס/, "פונקציה וירטואלית נקבעת לפי טיפוס האובייקט בפועל. פונקציה לא־וירטואלית נקבעת לפי הטיפוס הסטטי של המצביע או ההפניה."],
+    [/כלל השלושה/, "מחלקה שמנהלת משאב צריכה מפרק, בנאי העתקה ואופרטור השמה עקביים, כדי למנוע העתקה רדודה, דליפה ושחרור כפול."],
+    [/חיתוך|slicing/, "בהעתקת אובייקט נגזר לבסיס לפי ערך נשמר רק חלק הבסיס. מצביע או הפניה שומרים את הזהות הדינמית של האובייקט."],
+    [/יהלום/, "בירושת יהלום רגילה מתקבלים שני עותקים של הבסיס ונוצרת דו־משמעות. ירושה וירטואלית משאירה עותק בסיס משותף."],
+    [/protected/, "חבר protected נגיש למחלקה וליורשיה, אך לא לקוד חיצוני רגיל. הוא אינו ציבורי."],
+    [/by-reference|by-value|לפי הפניה|לפי ערך/, "העברה לפי הפניה נמנעת מיצירת עותק ושומרת על האובייקט המלא; const reference גם מונעת שינוי דרך ההפניה."],
+    [/ipv6/, "כתובת IPv6 היא באורך 128 סיביות, לעומת 32 סיביות ב-IPv4."],
+    [/העמס|overload/, "C++ תומכת בהעמסה לפי חתימות שונות. בפייתון שם חדש באותו תחום מחליף את הקודם, ולכן משתמשים בברירות מחדל או בארגומנטים משתנים."],
+    [/copy|העתקה רדודה|העתקה עמוקה/, "list.copy יוצרת רשימה חיצונית חדשה אך משאירה הפניות לאותם אובייקטים פנימיים; שינוי אובייקט מקונן נראה בשתי הרשימות."],
+    [/osi|שכבת הייצוג/, "שכבת הייצוג עוסקת באופן ייצוג הנתונים, כגון קידוד, דחיסה והצפנה. ניתוב שייך לשכבת הרשת ואמינות מקצה לקצה לתובלה."],
+    [/htons/, "htons ממירה מספר פורט בן 16 סיביות מסדר הבתים של המארח לסדר הרשת, שהוא big-endian."],
+    [/\bbind\b|inaddr_any|כתובת ip נקובה/, "bind לכתובת נקובה מאזין רק בממשק המתאים; INADDR_ANY מאפשר קבלה בכל הממשקים המקומיים."],
+    [/aslr/, "ASLR מגריל כתובות טעינה ומקשה על שימוש בכתובות צפויות. הוא אינו מתקן את באג הכתיבה ואינו מספיק לבדו."],
+    [/dep|nx/, "DEP/NX מונע הרצת קוד באזורי נתונים. הוא אינו מונע את הכתיבה עצמה ואינו חוסם כל שימוש בקוד שכבר קיים."],
+    [/קנרית|canary/, "קנרית נבדקת לפני החזרה מפונקציה כדי לזהות דריסה רציפה במחסנית. היא אינה מגינה על כל סוגי השחתת הזיכרון."],
+    [/חוצץ|strcpy/, "העתקה שאינה בודקת את קיבולת היעד עלולה לכתוב מעבר לחוצץ. התיקון הוא אימות אורך והעתקה חסומה עם סיום תקין."],
+    [/malloc|calloc|גלישה נומרית|integer overflow/, "יש לבדוק את החישוב לפני חיבור או כפל גדלים. עטיפה עלולה לגרום להקצאה קטנה ולאחריה כתיבה לפי הגודל הגדול המקורי."],
+    [/סיסמ|ערוץ צדדי|side.channel/, "יציאה בתו השגוי הראשון גורמת לזמן שתלוי באורך הקידומת הנכונה. השוואה בזמן קבוע אינה עוצרת לפי מיקום ההבדל."],
+    [/wraps|__name__/, "מעטפת מחליפה את אובייקט הפונקציה שאליו מצביע השם. functools.wraps מעתיקה אליה מטא־נתונים כמו __name__."],
+    [/selector/, "selectors מאפשרים ללולאה אחת לטפל באירועי קלט ופלט של כמה שקעים, בלי להקצות חוט או תהליך לכל חיבור."],
+    [/htons|socket|שקע|tcp|udp|recv|שרת|לקוח|צ'אנק/, "תקשורת היא זרם או סדרת הודעות, ולכן קריאה אחת אינה מבטיחה הודעה שלמה. צריך מסגור, לולאות קריאה/כתיבה ומגבלות גודל."],
+    [/sql|sqlite|שאילתה|insert|primary key/, "מצייני מקום וקשירת ערכים משאירים קלט כנתון ולא כחלק מתחביר SQL. אילוצים כמו PRIMARY KEY מטפלים בכפילויות בנפרד."],
+    [/thread|חוט|atomic|סנכרון|counter/, "הגדלה רגילה היא רצף קריאה־שינוי־כתיבה ולא פעולה אטומית. mutex או טיפוס atomic מונעים אובדן עדכונים."],
+    [/sandbox|ארגז חול|קוד של לקוח/, "ארגז חול מגביל הרשאות, קבצים, רשת ומשאבים של קוד לא מוכר. הוא מצמצם נזק אך אינו מבטיח שבמנגנון הבידוד אין חולשה."],
+    [/ddos|זמינות/, "DDoS מציף משאבים כדי למנוע שירות, ולכן הפגיעה המרכזית היא בזמינות."],
+    [/ביטוי משולש|ternary/, "ב-C++ התחביר הוא condition ? value_if_true : value_if_false."],
+  ];
+  const match = explanations.find(([pattern]) => pattern.test(text));
+  return match ? match[1] : "האפשרות הנכונה תואמת את ההגדרה וההתנהגות שנלמדו; שאר האפשרויות מחליפות בין מושגים או מציגות כלל גורף שאינו נכון.";
+}
+
+function practiceSolutionHtml(q) {
+  if (q.solution) return q.solution;
+  const right = ((q.options || []).find((o) => o.id === q.answer) || {}).text || q.answer || "";
+  const explanation = q.explain || practiceExplanation(q);
+  return `<p><strong>התשובה הנכונה: ${esc(right)}</strong></p><p>${esc(explanation)}</p>`;
+}
+
 function examMcqHtml(exam, run, review) {
   return exam.partA
     .map((q) => {
@@ -1787,8 +1880,8 @@ function examMcqHtml(exam, run, review) {
           : review
             ? `<p class="feedback bad">לא נענתה. נכון: ${esc((q.options.find((o) => o.id === q.answer) || {}).text || "")}</p>`
             : "";
-      const hint = q.hint ? foldHtml("💡 רמז לפתרון", q.hint) : "";
-      const solution = review && q.solution ? foldHtml("פתרון מפורט ודרך חישוב", q.solution) : "";
+      const hint = foldHtml("💡 רמז לפתרון", practiceHintHtml(q));
+      const solution = review ? foldHtml("פתרון מפורט ודרך חישוב", practiceSolutionHtml(q)) : "";
       return `<div class="quiz panel" data-qid="${q.id}">
         <p><strong>${esc(q.prompt)}</strong></p>
         ${opts}
@@ -1814,13 +1907,11 @@ function examPartBHtml(exam, run, review) {
         const kind = q.verdictKind || "new";
         sol = `<div class="exam-sol">
           ${q.hadOfficial ? `<h3>מה היה בפתרון הקיים</h3><p>${esc(q.official)}</p>` : `<h3>אין פתרון רשמי קריא</h3>`}
-          <h3>פתרון שעונה על הדרישה</h3>
-          ${q.proposed}
-          ${q.solution ? foldHtml("פתרון מפורט ודרך חישוב", q.solution) : ""}
+          ${foldHtml("פתרון מפורט ודרך חישוב", q.solution || q.proposed || "<p>לא נמצא פתרון מלא במקור.</p>")}
           <p class="verdict ${kind === "ok" ? "ok" : kind === "fix" ? "fix" : "new"}"><strong>חוות דעת:</strong> ${esc(q.verdict)}</p>
         </div>`;
       }
-      const hint = q.hint ? foldHtml("💡 רמז לפתרון", q.hint) : "";
+      const hint = foldHtml("💡 רמז לפתרון", practiceHintHtml(q));
       return `<article class="section exam-bq" id="${q.id}">
         <h2>${esc(q.title)}</h2>
         <p>${esc(q.prompt)}</p>
