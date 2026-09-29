@@ -21,13 +21,13 @@ print(squares[-2:])     # [25, 36]</code></pre>
       <ul>
         <li><code>append</code> — בסוף.</li>
         <li><code>clear</code> — מרוקן.</li>
-        <li><code>copy</code> — רשימה חדשה עם אותם איברים (עותק רדוד).</li>
+        <li><code>copy</code> — רשימה חדשה עם אותם איברים. זה <strong>עותק רדוד (shallow copy)</strong>: הרשימה נפרדת, אבל האיברים שבתוכה הם אותם אובייקטים, לא עותקים שלהם.</li>
         <li><code>count</code> — כמה פעמים ערך מופיע.</li>
         <li><code>extend</code> — מצרף סדרת איברים.</li>
         <li><code>insert(index, value)</code> — דוחף במקום.</li>
         <li><code>sort</code> / <code>reverse</code> — ממיינים / הופכים <em>במקום</em>.</li>
       </ul>
-      <p>רוב שיטות הרשימה משנות את האובייקט הקיים ולא מחזירות עותק. מלכודת מול <code>str.upper</code>.</p>
+      <p>רוב שיטות הרשימה משנות את האובייקט הקיים ולא מחזירות עותק. זו מלכודת מול <code>str.upper</code>, שמחזיר מחרוזת חדשה ולא משנה את המקור.</p>
     `,
   },
   {
@@ -46,7 +46,7 @@ print("_".join(list_abc))</code></pre>
     id: "u4-aliasing",
     title: "כינוי כפול (aliasing) מול copy, is מול ==",
     html: `
-      <p>כי הרשימה mutable, השמה <code>vegs = fruit</code> היא <strong>כינוי כפול (aliasing)</strong>: שני שמות לאותו אובייקט. שינוי איבר דרך אחד נראה בשני. במצגת: אחרי <code>fruit[0] = "pear"</code> ו־<code>fruit[-1] = "orange"</code>, גם <code>vegs</code> מציג את אותם ערכים.</p>
+      <p>כי הרשימה <strong>ניתנת לשינוי (mutable)</strong>, השמה <code>vegs = fruit</code> היא <strong>כינוי כפול (aliasing)</strong>: שני שמות לאותו אובייקט, לא שני עותקים. שינוי איבר דרך אחד נראה בשני. במצגת: אחרי <code>fruit[0] = "pear"</code> ו־<code>fruit[-1] = "orange"</code>, גם <code>vegs</code> מציג את אותם ערכים.</p>
       <p><code>copy()</code> או חיתוך <code>[:]</code> יוצרים רשימה חדשה. שינוי ב־fruit לא יעבור ל־vegs (כל עוד האיברים עצמם לא אובייקטים משותפים עמוקים יותר — עותק רדוד).</p>
       <p>שתי רשימות שנבנו בנפרד עם אותו תוכן:</p>
       <pre class="code"><code>alist = ["a", "b", "c"]
@@ -73,14 +73,14 @@ print(id(alist), id(blist))</code></pre>
       <pre class="code"><code>mylist = ["this", "is", "a", "list"]
 for word in mylist:
     print(word.capitalize(), end=" ")</code></pre>
-      <p><code>range(n)</code> נותן את המספרים מ־0 עד n-1. יש n ערכים, והמספר n עצמו לא נכלל. זה נוח כשרוצים n חזרות. לולאה על אינדקסים נכתבת <code>for i in range(len(args)):</code>. הרשימה <code>[len(args)-1]</code> היא לא טווח: יש בה איבר אחד בלבד, ולכן הלולאה רצה פעם אחת.</p>
+      <p><code>range(n)</code> נותן את המספרים מ־0 עד n-1. יש n ערכים, והמספר n עצמו לא נכלל. זה נוח כשרוצים n חזרות. לולאה על אינדקסים נכתבת <code>for i in range(len(args)):</code>, כאשר <code>args</code> הוא שם לרשימה, למשל רשימת ארגומנטים. הרשימה <code>[len(args)-1]</code> היא לא טווח: יש בה איבר אחד בלבד, ולכן הלולאה רצה פעם אחת.</p>
       <p>במצגת: פיבונאצ'י עם החלפה כפולה בשורה אחת:</p>
       <pre class="code"><code>a, b = 0, 1
 for num in range(8):
     print(a)
     a, b = b, a + b</code></pre>
       <p>שמונה מספרים ראשונים בסדרה (0 עד 13). שימו לב: <code>range(8)</code> זה 8 חזרות, לא "עד 8 כולל".</p>
-      <p><strong>tuple</strong> היא סדרה בסוגריים עגולים. בניגוד לרשימה, אחרי היצירה אי אפשר להחליף איבר. קוראים לפי אינדקס כמו ברשימה: <code>thistuple[1]</code> בדוגמה הוא <code>banana</code>. היא מתאימה כמפתח במילון כשהאיברים עצמם לא משתנים, למשל מספרים או מחרוזות. רשימה לא יכולה להיות מפתח, כי אפשר לשנות אותה.</p>
+      <p><strong>סדרה קבועה (tuple)</strong> היא סדרה בסוגריים עגולים. בניגוד לרשימה, אחרי היצירה אי אפשר להחליף איבר. קוראים לפי אינדקס כמו ברשימה: <code>thistuple[1]</code> בדוגמה הוא <code>banana</code>. היא מתאימה כמפתח ב<strong>מילון (dict)</strong>, מבנה של מפתח וערך שיופיע מיד, כשהאיברים עצמם לא משתנים, למשל מספרים או מחרוזות. רשימה לא יכולה להיות מפתח, כי אפשר לשנות אותה.</p>
       <pre class="code"><code>thistuple = ("apple", "banana", "cherry")
 print(thistuple[1])</code></pre>
     `,
@@ -90,7 +90,7 @@ print(thistuple[1])</code></pre>
     title: "קבוצה (set) ומילון (dict)",
     html: `
       <p><strong>קבוצה (set)</strong> היא אוסף שבו כל ערך מופיע פעם אחת. אם מכניסים כפילות, היא נבלעת. אין סדר שאפשר לסמוך עליו: שני מעברים על אותה קבוצה לא חייבים להדפיס באותו סדר, ולכן לא בונים על הסדר הזה חישוב או פלט. כן משתמשים בה לבדיקת שייכות, לאיחוד ולחיתוך.</p>
-      <p><strong>מילון (dict)</strong> שומר זוגות של מפתח וערך. המפתח ייחודי, והוא לרוב מחרוזת, לא בהכרח מספר. <code>thisdict["year"]</code> מביא את הערך של המפתח year. השמה לאותו מפתח מחליפה את הערך. מפתח שאין במילון, בתוך סוגריים מרובעים, זורק שגיאה. <code>get</code> מחזיר במקום זה <code>None</code> או ערך ברירת מחדל.</p>
+      <p><strong>מילון (dict)</strong> שומר זוגות של מפתח וערך. המפתח ייחודי, והוא לרוב מחרוזת, לא בהכרח מספר. <code>thisdict["year"]</code> מביא את הערך של המפתח year. השמה לאותו מפתח מחליפה את הערך. מפתח שאין במילון, בתוך סוגריים מרובעים, זורק <code>KeyError</code>, חריגה שאומרת שהמפתח לא קיים. <code>get</code> מחזיר במקום זה <code>None</code>, ערך מיוחד שאומר שאין תוצאה, או ערך ברירת מחדל שנותנים לו.</p>
       <pre class="code"><code>thisdict = {
     "brand": "Ford",
     "model": "Mustang",
@@ -98,10 +98,10 @@ print(thistuple[1])</code></pre>
 }
 print(thisdict["year"])
 thisdict["year"] = 1980</code></pre>
-      <p>במדריך זה אחד המבנים השימושיים ביותר: מחלקות ורוב המופעים הרגילים מחזיקים מרחב שמות דמוי מילון (<code>__dict__</code>). לכן שתי הגדרות מתודה באותו שם באותו גוף מחלקה אינן העמסה — ההגדרה המאוחרת מחליפה את המוקדמת. יש חריגים, למשל מחלקות שמשתמשות ב־<code>__slots__</code>.</p>
+      <p>במדריך זה אחד המבנים השימושיים ביותר. מחלקה ומופע, כמו ב־C++, מחזיקים בפייתון בדרך כלל מילון פנימי בשם <code>__dict__</code>: כל שם ממופה לערך. לכן שתי הגדרות מתודה באותו שם, באותו גוף מחלקה, אינן העמסה כמו ב־C++. ההגדרה המאוחרת מחליפה את המוקדמת באותו מפתח. חריג: <code>__slots__</code>, רשימת שדות קבועה מראש בלי המילון הזה. נחזור לזה כשנגיע למחלקות.</p>
       <p>שיטות במצגת:</p>
       <ul>
-        <li><code>clear</code> / <code>copy</code> / <code>fromkeys</code></li>
+        <li><code>clear</code> מרוקן. <code>copy</code> מעתיק. <code>fromkeys</code> בונה מילון מרשימת מפתחות, עם אותו ערך התחלתי לכולם.</li>
         <li><code>get</code> — ערך למפתח, בלי KeyError אם חסר (None או ברירת מחדל).</li>
         <li><code>items</code> — זוגות כ־tuples; <code>keys</code> / <code>values</code></li>
         <li><code>pop</code> — מוחק לפי מפתח ומחזיר ערך.</li>
@@ -114,7 +114,7 @@ thisdict["year"] = 1980</code></pre>
     id: "u4-files",
     title: "קבצים: פתיחה, מצבים וסגירה",
     html: `
-      <p><code>open(path, "r")</code> מחזיר אובייקט קובץ. <code>read()</code> קורא את <em>כל</em> התוכן בבת אחת — לקובץ גדול זו בעיית זיכרון. <code>read(n)</code> קורא עד n תווים במצב טקסט; <code>readline</code> שורה; <code>for line in f</code> שורה־שורה. דפנסיבית משתמשים ב־<code>with</code>, שסוגר גם אם יש חריגה, ומציינים קידוד כשפורמט הקובץ ידוע.</p>
+      <p><code>open(path, "r")</code> מחזיר אובייקט קובץ. <code>read()</code> קורא את <em>כל</em> התוכן בבת אחת. לקובץ גדול זו בעיית זיכרון. <code>read(n)</code> קורא עד n תווים במצב טקסט; <code>readline</code> שורה; <code>for line in f</code> שורה־שורה. דפנסיבית משתמשים ב־<code>with</code>, שסוגר את הקובץ גם אם יש חריגה. מציינים <strong>קידוד (encoding)</strong> כשפורמט הקובץ ידוע: האופן שבו תווים נשמרים כבתים. <code>utf-8</code> הוא הקידוד הנפוץ לטקסט.</p>
       <pre class="code"><code>with open("demofile.txt", "r", encoding="utf-8") as f:
     for line in f:
         print(line, end="")</code></pre>
@@ -130,8 +130,8 @@ thisdict["year"] = 1980</code></pre>
     id: "u4-ex",
     title: "טיפול בחריגות (try, except, else, raise)",
     html: `
-      <p>אירוע לא רצוי (קובץ חסר, המרה נכשלת) עלול "להעיף" את התוכנית עם Traceback. כמתכנתים רוצים להישאר בשליטה ולהציג הודעה ברורה. עוטפים ב־<code>try</code> (סביבה מוגנת) ויוצאים ב־<code>except</code>.</p>
-      <p><code>except:</code> לבד תופס גם חריגות מערכת כגון <code>KeyboardInterrupt</code> ו־<code>SystemExit</code>. עדיף לתפוס טיפוס מפורש; אם נדרש ענף כללי לשגיאות רגילות, משתמשים ב־<code>except Exception</code>, רושמים ומחליטים אם להעביר הלאה. <code>else</code> רץ רק אם ה־try הסתיים בלי חריגה; <code>finally</code> רץ בכל מקרה ומשמש לניקוי שאינו מנוהל ב־<code>with</code>.</p>
+      <p>אירוע לא רצוי, למשל קובץ חסר או המרה שנכשלת, עלול להפיל את התוכנית. על המסך מופיע <strong>מעקב קריאות (Traceback)</strong>: רשימת הפונקציות שהיו פעילות ברגע השגיאה. כדי להישאר בשליטה ולהציג הודעה ברורה, עוטפים ב־<code>try</code> את הקוד שעלול להיכשל, ותופסים ב־<code>except</code>.</p>
+      <p><code>except:</code> בלי טיפוס תופס גם חריגות מערכת. <code>KeyboardInterrupt</code> היא עצירה מהמקלדת, למשל Ctrl+C. <code>SystemExit</code> היא יציאה מהתוכנית. עדיף לתפוס טיפוס מפורש. אם נדרש ענף כללי לשגיאות רגילות, משתמשים ב־<code>except Exception</code>. <code>Exception</code> היא מחלקת הבסיס של שגיאות רגילות, לא של עצירה ויציאה. רושמים ומחליטים אם להעביר הלאה. <code>else</code> רץ רק אם ה־<code>try</code> הסתיים בלי חריגה. <code>finally</code> רץ בכל מקרה, ומשמש לניקוי שאינו מנוהל ב־<code>with</code>.</p>
       <pre class="code"><code>import sys
 try:
     with open("myfile.txt") as f:
@@ -146,9 +146,9 @@ except Exception:
     raise
 else:
     print("all ok")</code></pre>
-      <p><code>with</code> סוגר את הקובץ גם אם ההמרה נכשלת. בלי <code>with</code> צריך <code>finally</code> או סגירה ידנית — קל לשכוח בענף שגיאה.</p>
+      <p><code>with</code> סוגר את הקובץ גם אם ההמרה נכשלת. בלי <code>with</code> צריך <code>finally</code> או סגירה ידנית, וקל לשכוח את זה בענף שגיאה. <code>sys.exc_info()[0]</code> מחזיר את טיפוס החריגה שנזרקה.</p>
       <p>מילים שמורות במצגת (אי אפשר שמות משתנים): False, None, True, and, as, assert, async, await, break, class, continue, def, del, elif, else, except, finally, for, from, global, if, import, in, is, lambda, nonlocal, not, or, pass, raise, return, try, while, with, yield.</p>
-      <p><strong>Pickle / Shelve</strong> — סדרת־אובייקטים של פייתון: <code>pickle.dump</code> שומר אובייקט לקובץ, <code>pickle.load</code> משחזר. השחזור יכול להפעיל קוד כחלק מבניית האובייקט; לכן טוענים רק קובץ ממקור אמין שעבורו נשמרה גם שלמות. לא <code>loads</code> על גוף בקשת משתמש. להחלפת נתונים עם מערכות אחרות מעדיפים JSON עם סכימה, מגבלות גודל ואימות ערכים.</p>
+      <p><strong>שימור אובייקטים (Pickle / Shelve).</strong> <code>pickle</code> שומר אובייקט כרצף בתים: <code>pickle.dump</code> כותב לקובץ, <code>pickle.load</code> משחזר. <code>shelve</code> הוא מילון שנשמר בקובץ דרך אותו מנגנון. השחזור יכול להפעיל קוד כחלק מבניית האובייקט, ולכן טוענים רק קובץ ממקור אמין שעבורו נשמרה גם שלמות. לא <code>loads</code> על גוף בקשת משתמש. להחלפת נתונים עם מערכות אחרות מעדיפים <strong>JSON</strong>, פורמט טקסט מוסכם לנתונים, עם <strong>סכימה (schema)</strong>, תיאור של אילו שדות וערכים מותרים, ועם מגבלות גודל ואימות ערכים.</p>
       <pre class="code"><code>import pickle
 # כתיבה למקום שבשליטתכם, לא לקלט משתמש
 with open("state.pkl", "wb") as out:

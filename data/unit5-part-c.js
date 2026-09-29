@@ -3,7 +3,7 @@ UNIT5.sections.push(
     id: "u5-conc",
     title: "תכנות מקבילי: חוט (thread) ותהליך (process)",
     html: `
-      <p><strong>בו־זמניות (Concurrency)</strong> היא ניהול כמה משימות שזמני הביצוע שלהן חופפים; הן עשויות להתחלף על ליבה אחת. <strong>מקביליות (Parallelism)</strong> היא ביצוע ממשי של כמה פעולות באותו זמן, למשל על כמה ליבות. המצגת מציגה אותן יחד, אך ההבחנה חשובה: שרת יכול להיות concurrent גם בלי להריץ שתי הוראות באותו רגע.</p>
+      <p><strong>בו־זמניות (Concurrency)</strong> היא ניהול כמה משימות שזמני הביצוע שלהן חופפים; הן עשויות להתחלף על ליבה אחת — יחידת עיבוד אחת במעבד. <strong>מקביליות (Parallelism)</strong> היא ביצוע ממשי של כמה פעולות באותו זמן, למשל על כמה ליבות. המצגת מציגה אותן יחד, אך ההבחנה חשובה: שרת יכול להיות בו־זמני גם בלי להריץ שתי הוראות באותו רגע.</p>
       <ul>
         <li><strong>חוט (thread)</strong> — יחידת ביצוע של קוד, מקושרת לפונקציית כניסה (entry point).</li>
         <li><strong>תהליך (process)</strong> — מופע של "תוכנית". לכל תהליך לפחות חוט אחד, ומרחב כתובות משלו.</li>
@@ -12,7 +12,7 @@ UNIT5.sections.push(
       <div class="panel">
         <p><strong>מלכודת מבחן.</strong> תהליך מבודד בזיכרון. חוט אינו תהליך קטן עם זיכרון פרטי: הוא חולק את מרחב הכתובות, ושומר לעצמו רק את המחסנית ואת הרגיסטרים. לכן באג כתיבה בערימה של חוט אחד נראה גם אצל השני, ומחסנית של פונקציה בחוט אחד אינה המחסנית של חוט אחר.</p>
       </div>
-      <p>ב־C++11: <code>std::thread</code>. יוצרים חוט עם פונקציה והוא מתחיל לרוץ. לפני שאובייקט thread חי נהרס חייבים לבצע <code>join</code> או <code>detach</code>; הריסת thread שעדיין joinable קוראת ל־<code>std::terminate</code>.</p>
+      <p>ב־C++11: <code>std::thread</code>. יוצרים חוט עם פונקציה והוא מתחיל לרוץ. לפני שאובייקט thread חי נהרס חייבים לבצע <code>join</code> — להמתין שהחוט יסתיים — או <code>detach</code> — לנתק אותו כדי שימשיך לבד. הריסת thread שעדיין joinable, כלומר לא בוצע עליו אחד מהשניים, קוראת ל־<code>std::terminate</code> וסוגרת את התוכנית.</p>
       <pre class="code"><code>#include &lt;thread&gt;
 void work() { /* ... */ }
 int main() {
@@ -27,7 +27,7 @@ int main() {
     title: "פייתון: נעילת המפרש הגלובלית (GIL) ו־multiprocessing",
     html: `
       <p>החוטים ב־C++ יכולים לרוץ במקביל על כמה ליבות. בפייתון, בבנייה הרגילה של CPython, המפרש עצמו מגביל את זה.</p>
-      <p>בבנייה הרגילה של CPython יש <strong>נעילת המפרש הגלובלית (Global Interpreter Lock, GIL)</strong>: בכל רגע חוט אחד מבצע bytecode של פייתון בתוך אותו מפרש. חוטים עדיין שימושיים ל־I/O, וספריות native עשויות לשחרר את ה־GIL. לחישוב CPU מקבילי המצגת מפנה ל־<code>multiprocessing</code> — תהליכים נפרדים.</p>
+      <p>בבנייה הרגילה של CPython יש <strong>נעילת המפרש הגלובלית (Global Interpreter Lock, GIL)</strong>: בכל רגע חוט אחד מבצע bytecode של פייתון — קוד הביניים של המפרש מיחידה 4 — בתוך אותו מפרש. חוטים עדיין שימושיים כשממתינים לרשת או לקובץ (I/O). ספרייה <strong>native</strong> — קוד בשפה כמו C שרץ מחוץ למפרש — עשויה לשחרר את ה־GIL בזמן העבודה שלה. לחישוב שמעמיס על המעבד המצגת מפנה ל־<code>multiprocessing</code> — תהליכים נפרדים, כל אחד עם מפרש משלו.</p>
     `,
   },
   {
@@ -58,9 +58,9 @@ int main() {
       <ul>
         <li>תהליך (או חוט) לכל חיבור — הקצאת משאבים לכל אחד. בעומס: מצוקת זיכרון/מעבד.</li>
         <li>חשוף ל<strong>הצפת התחברויות</strong> ממשתמש זדוני — זו משפחת <strong>מניעת שירות (DoS, Denial of Service)</strong>: למצות משאבים כדי שהשירות לא יעמוד. אפחות: הגבלת תור, timeout, לא ליצור תהליך בלי תקרה.</li>
-        <li>הפתרון במצגת: <strong>Selector</strong> — אובייקט שמחלק טיפול בערוצים לפי מידע שמגיע, בלי קריאות חוסמות על כל לקוח. בפייתון: מודול <code>selectors</code>, להתחיל ב־<code>DefaultSelector</code>. זה אותו רעיון כמו תבנית <strong>Reactor</strong> במדריך ביחידה 1: לא תהליך לכל לקוח, אלא המתנה ל"מי מוכן".</li>
+        <li>הפתרון במצגת: <strong>Selector</strong> — אובייקט שמחלק טיפול בערוצים לפי מי שמוכן, בלי קריאה חוסמת על כל לקוח. קריאה חוסמת עוצרת את התוכנית עד שהנתון מגיע. בפייתון: מודול <code>selectors</code>, להתחיל ב־<code>DefaultSelector</code>. זה אותו רעיון כמו תבנית <strong>Reactor</strong> במדריך ביחידה 1: לא תהליך לכל לקוח, אלא המתנה ל"מי מוכן".</li>
       </ul>
-      <p>רעיון: חוט/תהליך אחד ממתין ל"מי מוכן לקריאה/כתיבה", ומטפל רק במי שמוכן. זה ריבוב I/O. <code>selectors.DefaultSelector</code> בוחר את מנגנון מערכת ההפעלה (למשל select, epoll או kqueue). השקע עובר ל־<code>setblocking(False)</code>, נרשם לאירוע קריאה, ו־<code>select</code> מחזיר רק ערוצים מוכנים.</p>
+      <p>רעיון: חוט או תהליך אחד ממתין ל"מי מוכן לקריאה או לכתיבה", ומטפל רק במי שמוכן. זה <strong>ריבוב קלט־פלט (I/O multiplexing)</strong>: ערוץ אחד של המתנה להרבה חיבורים. <code>selectors.DefaultSelector</code> בוחר את מנגנון מערכת ההפעלה, למשל <code>select</code>, <code>epoll</code> בלינוקס, או <code>kqueue</code> ב־macOS. <code>setblocking(False)</code> אומר שהשקע לא עוצר את התוכנית כשאין עדיין נתון. רושמים אותו לאירוע קריאה, ו־<code>select</code> מחזיר רק ערוצים מוכנים.</p>
       <pre class="code"><code>import selectors
 import socket
 
@@ -88,7 +88,7 @@ sel.register(server, selectors.EVENT_READ, accept_client)
 while True:
     for key, mask in sel.select(timeout=1):
         key.data(key.fileobj, mask)</code></pre>
-      <p>השלד מראה רישום וחלוקה, לא שרת מוכן לייצור. <code>sendall</code> על שקע לא־חוסם עלול לא לשלוח הכול; כתיבה חלקית ו־<code>EVENT_WRITE</code> משלימים את זה. Selector לבדו אינו הגנת DoS: עדיין נדרשים תקרות חיבור וגודל, timeout, backpressure ומכסות עבודה לכל לקוח.</p>
+      <p>השלד מראה רישום וחלוקה, לא שרת מוכן לייצור. <code>sendall</code> על שקע לא־חוסם עלול לא לשלוח הכול; כתיבה חלקית ו־<code>EVENT_WRITE</code> — אירוע "אפשר לכתוב עכשיו" — משלימים את זה. Selector לבדו אינו הגנת DoS: עדיין נדרשים תקרות חיבור וגודל, timeout, <strong>backpressure</strong> — האטת הקבלה כשהשרת לא מספיק לעבד, כדי שהתור לא יצמח בלי גבול — ומכסות עבודה לכל לקוח.</p>
     `,
   }
 );

@@ -11,7 +11,7 @@ int sockfd = socket(domain, type, protocol);</code></pre>
         <li><code>type</code> — <code>SOCK_STREAM</code> (TCP) או <code>SOCK_DGRAM</code> (UDP).</li>
         <li><code>protocol</code> — בדרך כלל 0 כדי שמערכת ההפעלה תבחר את פרוטוקול ברירת המחדל המתאים לצירוף domain/type; אפשר לציין במפורש, למשל <code>IPPROTO_TCP</code>.</li>
       </ul>
-      <p>הערך המוחזר הוא מספר שלם. בדיקה דפנסיבית: ערך <strong>שלילי</strong> = כשל ביצירה. דוגמת המצגת בודקת <code>== 0</code> — זה שגוי: 0 הוא ידית חוקית (לעיתים stdin). ביוניקס בודקים <code>&lt; 0</code>.</p>
+      <p>הערך המוחזר הוא מספר שלם. בדיקה דפנסיבית: ערך <strong>שלילי</strong> = כשל ביצירה. דוגמת המצגת בודקת <code>== 0</code> — זה שגוי: 0 הוא ידית חוקית, לפעמים של הקלט הסטנדרטי (<code>stdin</code>) — הזרם שממנו התוכנית קוראת הקלדה. ביוניקס בודקים <code>&lt; 0</code>.</p>
       <div class="panel">
         <p><strong>למה שקע.</strong> תוכנית לא "מדברת עם האינטרנט" ישירות. היא מבקשת מהמערכת קצה ערוץ — כמו לקבל שפופרת. <code>SOCK_STREAM</code> היא שיחה רציפה (TCP); <code>SOCK_DGRAM</code> היא גלויות (UDP). אחרי שיש שפופרת, לקוח מתקשר (<code>connect</code>) ושרת ממתין לצלצול (<code>bind</code>/<code>listen</code>/<code>accept</code>).</p>
       </div>
@@ -21,9 +21,9 @@ int sockfd = socket(domain, type, protocol);</code></pre>
     id: "u5-client",
     title: "לקוח ב-C++: connect, send, read",
     html: `
-      <p>הלקוח יוצר שקע, ממלא <code>sockaddr_in</code> (משפחה, פורט ב־<code>htons</code>, כתובת ב־<code>inet_pton</code> מטקסט לבינרי), קורא ל־<code>connect</code>, ואז <code>send</code> / <code>read</code> (או <code>recv</code>).</p>
+      <p>הלקוח יוצר שקע, וממלא מבנה <code>sockaddr_in</code> — רשומה לכתובת IPv4: משפחת הכתובות, פורט אחרי <code>htons</code>, וכתובת ש־<code>inet_pton</code> ממיר מטקסט (למשל 127.0.0.1) לבתים. אחר כך <code>connect</code>, ואז <code>send</code> / <code>read</code> (או <code>recv</code>).</p>
       <pre class="code"><code>int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);</code></pre>
-      <p>זו קריאת מערכת שמתחילה חיבור אל כתובת IP ופורט של היעד. מערכת ההפעלה בוחרת בדרך כלל גם כתובת ופורט מקומיים אם הלקוח לא ביצע <code>bind</code>. אחרי חיבור מוצלח שני הצדדים מחליפים זרם בתים.</p>
+      <p>זו קריאת מערכת — בקשה למערכת ההפעלה, לא פונקציה רגילה בקוד שלכם — שמתחילה חיבור אל כתובת IP ופורט של היעד. מערכת ההפעלה בוחרת בדרך כלל גם כתובת ופורט מקומיים אם הלקוח לא ביצע <code>bind</code>, כלומר לא קשר בעצמו כתובת מקומית. אחרי חיבור מוצלח שני הצדדים מחליפים זרם בתים.</p>
       <p>שלד לקוח, באותו סדר פעולות:</p>
       <ul>
         <li><code>socket(AF_INET, SOCK_STREAM, 0)</code></li>
@@ -32,7 +32,7 @@ int sockfd = socket(domain, type, protocol);</code></pre>
         <li><code>connect</code> — כשל → יציאה</li>
         <li><code>send</code> הודעה; <code>read</code> לחוצץ בגודל ידוע</li>
       </ul>
-      <p>דפנסיבית: <code>send</code> עלול לשלוח רק חלק מהבתים, ו־<code>read</code>/<code>recv</code> מחזירים עד גודל החוצץ — לא "הודעה שלמה". החזרה 0 ב־TCP מציינת סגירה מסודרת מצד העמית; ערך שלילי הוא שגיאה. בונים לולאות שליחה/קבלה, מטפלים בהפרעות וב־timeout, ומגדירים מסגור בפרוטוקול (אורך, מפריד או הודעה בגודל קבוע). לא מתייחסים לחוצץ כמחרוזת מזוהה־אפס בלי להוסיף סיום בתחום המוקצה. 127.0.0.1 הוא המחשב המקומי.</p>
+      <p>דפנסיבית: <code>send</code> עלול לשלוח רק חלק מהבתים, ו־<code>read</code>/<code>recv</code> מחזירים עד גודל החוצץ — לא "הודעה שלמה". החזרה 0 ב־TCP מציינת סגירה מסודרת מצד העמית; ערך שלילי הוא שגיאה. בונים לולאות שליחה/קבלה. אם הקריאה נקטעה לפני שהסתיימה, מנסים שוב. <strong>timeout</strong> מנתק כשאין התקדמות בזמן שנקבע. מסגור בפרוטוקול הוא אורך, מפריד, או הודעה בגודל קבוע. לא מתייחסים לחוצץ כמחרוזת שמסתיימת בתו <code>\0</code> בלי להוסיף את הסיום בתוך המקום שהוקצה. 127.0.0.1 הוא המחשב המקומי.</p>
     `,
   },
   {
@@ -58,7 +58,7 @@ int sockfd = socket(domain, type, protocol);</code></pre>
     id: "u5-boost",
     title: "Boost כספריות C++ לתקשורת",
     html: `
-      <p>המצגת מפנה ל־boost.org: חבילות מקור לפיתוח C++. אפשר להתקין לבד, או ב־Visual Studio 2019 דרך <strong>NuGet</strong> שמוריד חבילות הרחבה, כולל Boost. בקורס זה תשתית לכתיבת שקעים ברמה גבוהה יותר מה־API הגולמי — לא חובה לשנן כל מחלקה.</p>
+      <p>המצגת מפנה ל־boost.org: חבילות מקור לפיתוח C++. אפשר להתקין לבד, או ב־Visual Studio 2019 דרך <strong>NuGet</strong> — מנהל חבילות שמוריד ספריות מוכנות, כולל Boost. בקורס זה תשתית לכתיבת שקעים ברמה גבוהה יותר מה־API הגולמי, ממשק התכנות הישיר של מערכת ההפעלה — לא חובה לשנן כל מחלקה.</p>
       <p>C++ לא כוללת הצפנה בתקן השפה. כשצריך ערוץ מוצפן או צופן, קוראים לספרייה — לא ממציאים אלגוריתם. במצגת המשלימה: <strong>OpenSSL</strong> (מימוש נפוץ של TLS ושל צפנים) ו־<strong>Crypto++</strong> (ספריית C++ לאלגוריתמים קריפטוגרפיים; מופיעה גם בחומרי הקורס).</p>
     `,
   },
@@ -97,7 +97,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as srv:
         conn.settimeout(5)
         data = conn.recv(1024)
         conn.sendall(b"ok")</code></pre>
-      <p><code>listen(1)</code> הוא backlog קטן לדוגמה; בייצור קובעים תקרה במודע. <code>recv</code> עדיין עשוי להחזיר חלק — מסגור ותקרת גודל חלים גם כאן. האזנה ל־127.0.0.1 צרה מ־<code>0.0.0.0</code> / INADDR_ANY.</p>
+      <p><code>listen(1)</code> הוא backlog קטן לדוגמה; בייצור קובעים תקרה במודע. <code>recv</code> עדיין עשוי להחזיר חלק — מסגור ותקרת גודל חלים גם כאן. 127.0.0.1 הוא רק המחשב הזה. <code>0.0.0.0</code>, כמו <code>INADDR_ANY</code>, פירושו האזנה על כל כרטיסי הרשת, ולכן משטח חשיפה גדול יותר.</p>
     `,
   },
   {
@@ -109,7 +109,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as srv:
       <ul>
         <li>מספר החבילה</li>
         <li>מספר החבילות הכולל</li>
-        <li>אורך ה־payload בחבילה הזו</li>
+        <li>אורך המטען (<strong>payload</strong>) — הבתים של ההודעה עצמה, בלי הכותרת</li>
       </ul>
       <p>קודם קוראים בדיוק 12 בתים, מפענחים, ורק אז קוראים בדיוק את האורך שכתוב. הלולאה חובה: <code>recv</code> רשאי להחזיר פחות ממה שביקשתם. אורך שמגיע מהכותרת הוא קלט, ולכן יש תקרה לפני הקריאה השנייה. בלי תקרה, שדה אורך ענקי מבקש מהשרת לצבור זיכרון.</p>
       <pre class="code"><code>def recv_exact(conn, n):

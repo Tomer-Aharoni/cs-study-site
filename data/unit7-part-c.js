@@ -5,8 +5,8 @@ UNIT7.sections.push(
     html: `
       <p>בסעיפים על הוספה, שליפה והממשק בשפה, הערך אמור להיכנס דרך פרמטר. כאן רואים מה נשבר כשאותו ערך מודבק למחרוזת הפקודה.</p>
       <p><strong>הזרקת SQL (SQL injection)</strong> במצגת: שיטה לניצול חולשה בקוד שמשתמש ב-SQL. התבנית השבורה: בונים מחרוזת פקודה עם אופרטור <code>+</code> (או פורמט) מקלט.</p>
-      <p>במצגת: <code>query = "SELECT * FROM Students WHERE id = " + id</code> כש־<code>id</code> מגיע מ־<code>getstudentid()</code> או מ־HTTP. המנוע לא יודע שחלק מהמחרוזת "היה אמור להיות מספר". הוא מפרסר <em>משפט אחד</em>.</p>
-      <p>מה נשבר (המצגת מראה תנאי שהופך תמיד לאמת): במקום שורה אחת חוזרות יותר שורות ממה שתוכנן — פגיעה בסודיות. ב־<code>UPDATE</code>/<code>DELETE</code> אותה הדבקה פוגעת בשלמות. לא מרכיבים כאן מטענים.</p>
+      <p>במצגת: <code>query = "SELECT * FROM Students WHERE id = " + id</code> כש־<code>id</code> מגיע מ־<code>getstudentid()</code> או מ־HTTP. המנוע לא יודע שחלק מהמחרוזת "היה אמור להיות מספר". הוא מפרסר אותה: קורא את כל המחרוזת לפי כללי SQL, כמשפט אחד.</p>
+      <p>מה נשבר (המצגת מראה תנאי שהופך תמיד לאמת): במקום שורה אחת חוזרות יותר שורות ממה שתוכנן — פגיעה בסודיות. ב־<code>UPDATE</code>/<code>DELETE</code> אותה הדבקה פוגעת בשלמות. לא מרכיבים כאן מטענים. <code>format</code>, f-string (מחרוזת עם <code>f</code> לפני הגרשיים, שמכניסה ערך של משתנה לתוך הטקסט) והסימן <code>%</code> הן דרכים בפייתון להדביק ערך למחרוזת. כולן אותה משפחה כמו <code>+</code>.</p>
       <pre class="code"><code># פגיע: הדבקה. גם format / f-string / % — אותה משפחה
 cur.execute("SELECT school FROM students WHERE name = '" + name + "'")
 
@@ -24,6 +24,7 @@ sqlite3_prepare_v2(db, "SELECT school FROM students WHERE id = ?", -1, &amp;st, 
 sqlite3_bind_text(st, 1, id.c_str(), -1, SQLITE_TRANSIENT);
 while (sqlite3_step(st) == SQLITE_ROW) { /* קריאת עמודה */ }
 sqlite3_finalize(st);</code></pre>
+      <p><code>SQLITE_TRANSIENT</code> אומר לספרייה להעתיק את הטקסט של הפרמטר. כך אפשר לשחרר את המחרוזת המקורית, והערך נשאר שמור אצל המנוע.</p>
       <p>זו אותה משפחה כמו הזרקת קוד ב־<code>eval</code>: גבול אמון בין נתון לבין שפה. סינון תווים ("אין גרש") נשבר בקלות מול קידודים וניבים — לא אפחות יחידה.</p>
     `,
   },
@@ -33,7 +34,7 @@ sqlite3_finalize(st);</code></pre>
     html: `
       <p>הגנת המצגת: <strong>שאילתות פרמטריות (Parameterized queries)</strong> — אותו רעיון נקרא גם משפט מוכן (prepared statement). המחרוזת מכילה מציין מקום (ב-SQLite לרוב <code>?</code>); הערך נשלח בנפרד ונקשר כנתון.</p>
       <p>שבורה: <code>"SELECT * FROM Students WHERE id = " + id</code></p>
-      <p>מתוקנת במצגת: תבנית קבועה <code>SELECT * FROM Students WHERE id = ?</code> ורשימת ערכים. אחרי קשירה, גם מחרוזת שנראית כמו תחביר SQL מושווית כערך, לא כחלק מהדקדוק — מספר השורות נקבע לפי התבנית שבקוד.</p>
+      <p>מתוקנת במצגת: תבנית קבועה <code>SELECT * FROM Students WHERE id = ?</code> ורשימת ערכים. אחרי קשירה, גם מחרוזת שנראית כמו תחביר SQL מושווית כערך, לא כחלק מכללי השפה — מספר השורות נקבע לפי התבנית שבקוד.</p>
       <p>מלכודת מבחן: <code>execute("... WHERE name='{}'.format(user))</code> עדיין הזרקה. גרש במחרוזת לא "סוגר" את הגבול. רק <code>?</code> וטיפל (או bind ב־C++) מפרידים נתון מתחביר.</p>
       <pre class="code"><code>cur.execute(
     "SELECT * FROM Users WHERE username = ? AND password = ?",
@@ -45,9 +46,9 @@ sqlite3_finalize(st);</code></pre>
       </div>
       <p>מגבלות:</p>
       <ul>
-        <li>מציין מקום ל<strong>ערכים</strong>, לא לשמות טבלה/עמודה. מזהה דינמי — רק whitelist בקוד.</li>
+        <li>מציין מקום ל<strong>ערכים</strong>, לא לשמות טבלה/עמודה. מזהה דינמי — רק רשימת שמות מותרים (whitelist) בקוד.</li>
         <li>בניית SQL דינמית ממחרוזות תבנית עדיין שבירה אם מדביקים קלט לתוך התבנית.</li>
-        <li>ORM לא קסם: ממשקי "SQL גולמי" חוזרים לאותה מלכודת.</li>
+        <li>ORM (Object-Relational Mapping, מיפוי אובייקטים לטבלאות) היא ספרייה שכותבת SQL בשבילכם מתוך אובייקטים בשפה. היא לא קסם: ממשק של "SQL גולמי" בתוכה חוזר לאותה מלכודת.</li>
       </ul>
     `,
   },

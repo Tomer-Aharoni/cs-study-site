@@ -129,7 +129,7 @@ window.UNIT5_QUIZZES = [
       { id: "c", text: "רק NAT." },
     ],
     answer: "b",
-    explain: "NIST: Kyber, Dilithium, SPHINCS+, Falcon במצגת. שור שובר RSA/DH/ECC; גרובר מחליש AES/SHA/MAC בלי אותו שבירה.",
+    explain: "NIST: Kyber, Dilithium, SPHINCS+, Falcon במצגת. שור שובר RSA/DH/ECC; גרובר מחליש AES/SHA וקוד אימות הודעה (MAC), לא כתובת MAC.",
   },
   {
     id: "u5-shor",
@@ -269,7 +269,7 @@ window.U5_OSI = [
   { id: "u5-5lay", unit: "5", kind: "לזכור", title: "TCP/IP מעשי", body: "חמש שכבות: יישום, תובלה, רשת, ערוץ, פיזית." },
   { id: "u5-v4", unit: "5", kind: "לזכור", title: "IPv4 32 סיביות", body: "ארבעה בתים. מסכת רשת / CIDR לקידומת. NAT כשחסרות כתובות." },
   { id: "u5-mask", unit: "5", kind: "הגדרה", title: "מסכת רשת (subnet mask)", body: "AND עם הכתובת נותן את הרשת. השאר מארח. /24 = 255.255.255.0." },
-  { id: "u5-shor", unit: "5", kind: "לזכור", title: "שור מול גרובר (Shor / Grover)", body: "שור: RSA, DH, ECC, חתימות/תעודות. גרובר: מחליש AES, SHA, MAC/HMAC — לא אותו שבירה." },
+  { id: "u5-shor", unit: "5", kind: "לזכור", title: "שור מול גרובר (Shor / Grover)", body: "שור: RSA, DH, ECC, חתימות/תעודות. גרובר: מחליש AES, SHA, וקוד אימות הודעה (MAC/HMAC) — לא כתובת MAC של כרטיס רשת, ולא אותה שבירה." },
   { id: "u5-v6", unit: "5", kind: "לזכור", title: "כתובת IPv6", body: "128 סיביות (16 בתים). במצגת הוגדר ב־1994. המעבר מ־IPv4 נמשך." },
   { id: "u5-end", unit: "5", kind: "מלכודת", title: "סדר בתים (endian, htons)", body: "IP ב-big-endian. htons לפורט." },
   { id: "u5-rpc", unit: "5", kind: "הגדרה", title: "קריאה מרחוק (RPC)", body: "stub אורז (marshalling) ופורק (deserialization). פורמט שמריץ קוד בפריקה, כמו pickle לא אמין, הוא הזרקה. אימות על הבקשה." },

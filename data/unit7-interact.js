@@ -85,7 +85,7 @@ window.UNIT7_QUIZZES = [
       { id: "c", text: "מאפשרת לשרשר חופשי כי \"יש מסגרת\"." },
     ],
     answer: "a",
-    explain: "? לערכים, לא לשמות טבלה. whitelist למזהים.",
+    explain: "? לערכים, לא לשמות טבלה. רשימת שמות מותרים (whitelist) למזהים.",
   },
   {
     id: "u7-idq",
@@ -96,7 +96,7 @@ window.UNIT7_QUIZZES = [
       { id: "c", text: "תמיד בטוח כי זה DDL." },
     ],
     answer: "b",
-    explain: "מצייני מקום הם לערכים. מזהה דינמי בלי whitelist חוזר להזרקה.",
+    explain: "מצייני מקום הם לערכים. מזהה דינמי בלי רשימת שמות מותרים (whitelist) חוזר להזרקה.",
   },
   {
     id: "u7-trq",
@@ -255,7 +255,7 @@ window.U7_CLN_LAB = {
   { id: "u7-ddl", unit: "7", kind: "לזכור", title: "שפת הגדרת מבנה (DDL)", body: "CREATE/ALTER/DROP — מבנה." },
   { id: "u7-dcl", unit: "7", kind: "לזכור", title: "שפת בקרת הרשאות (DCL)", body: "GRANT/REVOKE. ב-SQLite הרשאת הקובץ במערכת." },
   { id: "u7-pk", unit: "7", kind: "הגדרה", title: "מפתחות (Primary / Foreign key)", body: "ראשי מזהה שורה; זר מצביע לטבלה אחרת." },
-  { id: "u7-cr", unit: "7", kind: "לזכור", title: "יצירת טבלה (CREATE TABLE)", body: "שם טבלה ועמודות עם טיפוס. לא לקבל שם טבלה מקלט בלי whitelist." },
+  { id: "u7-cr", unit: "7", kind: "לזכור", title: "יצירת טבלה (CREATE TABLE)", body: "שם טבלה ועמודות עם טיפוס. לא לקבל שם טבלה מקלט בלי רשימת שמות מותרים (whitelist)." },
   { id: "u7-ins", unit: "7", kind: "לזכור", title: "הוספה ושליפה (INSERT, SELECT)", body: "הוספה לפי עמודות. SELECT עם WHERE/ORDER. ערכים ב-?." },
   { id: "u7-lite", unit: "7", kind: "הגדרה", title: "מנוע SQLite", body: "מנוע ב-C, קובץ בתהליך. תרגול ומבחן." },
   { id: "u7-api", unit: "7", kind: "לזכור", title: "ממשק SQLite ב־C++ ובפייתון", body: "C++: prepare+bind. פייתון: execute(?, tuple). connect זורק חריגה, לא None." },

@@ -233,7 +233,7 @@ window.UAF_LAB = {
   { id: "u3-bof", unit: "3", kind: "הגדרה", title: "גלישת חוצץ (Buffer Overflow)", body: "כתיבה מעבר לגודל שהוקצה לחוצץ. הבתים העודפים אצל השכן." },
   { id: "u3-smash", unit: "3", kind: "הגדרה", title: "דריסת חוצץ במחסנית", body: "Stack-based Buffer Overflow: כתיבה מעבר לחוצץ מקומי. שונה מ-Stack Overflow של מיצוי המחסנית." },
   { id: "u3-strcpy", unit: "3", kind: "מלכודת", title: "העתקה בלי גבול (strcpy, gets)", body: "strcpy בלי גבול יעד. gets בלי גבול בכלל. קלט לא נמדד." },
-  { id: "u3-safe", unit: "3", kind: "טריק", title: "מה כותבים במקום", body: "API שמקבל קיבולת + בדיקת החזרה; ב-C++ string/vector/span. strncpy אינו בטוח אוטומטית." },
+  { id: "u3-safe", unit: "3", kind: "טריק", title: "מה כותבים במקום", body: "API (ממשק מוכן) שמקבל קיבולת + בדיקת החזרה; ב-C++ string/vector, או span (מבט על מערך קיים יחד עם אורכו). strncpy אינו בטוח אוטומטית." },
   { id: "u3-inj", unit: "3", kind: "הגדרה", title: "הזרקת קוד", body: "בתים מהקלט שרצים כהוראות. דורש אזור בר-ביצוע. DEP מחליש את זה." },
   { id: "u3-rop", unit: "3", kind: "הגדרה", title: "שימוש חוזר בקוד (ROP)", body: "שימוש חוזר בקטעי קוד קיימים לאחר השחתת זרימת הביצוע; DEP לבדו אינו מתקן את הדריסה." },
   { id: "u3-obo", unit: "3", kind: "מלכודת", title: "גלישה באחד (Off-by-One)", body: "i <= sizeof במקום i <. בית אחד יכול לשבור מצביע או דגל." },

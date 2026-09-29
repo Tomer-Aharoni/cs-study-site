@@ -2,7 +2,7 @@ UNIT7.sections.push({
   id: "u7-hw",
   title: "תרגילי SQL מהמרצה",
   html: `
-<p>פתרונות מהמרצה לשאלות SQLite. הקלט נכנס דרך <code>?</code>, לא בהדבקה למחרוזת. הם סגורים בהתחלה.</p><details class="fold"><summary>2021א · שקע וטבלת הודעות</summary><div class="fold-body"><p>קוראים קובץ, שולחים ב־TCP, מדפיסים עד חמש שורות תשובה, ושומרים ב־INSERT עם פרמטרים. <code>recv(128)</code> פעם אחת לא מבטיח שהגיעו חמש שורות: בזרם TCP הקריאה יכולה לחזור חלקית, כמו <code>recv_exact</code> ביחידה 5.</p><pre class="code"><code>import socket
+<p>פתרונות מהמרצה לשאלות SQLite. הקלט נכנס דרך <code>?</code>, לא בהדבקה למחרוזת. הם סגורים בהתחלה.</p><details class="fold"><summary>2021א · שקע וטבלת הודעות</summary><div class="fold-body"><p>קוראים קובץ, שולחים ב־TCP, מדפיסים עד חמש שורות תשובה, ושומרים ב־INSERT עם פרמטרים. <code>recv(128)</code> פעם אחת לא מבטיח שהגיעו חמש שורות: בזרם TCP הקריאה יכולה לחזור חלקית, כמו <code>recv_exact</code> ביחידה 5. <code>executescript</code> מריץ כמה פקודות SQL ממחרוזת אחת; כאן המחרוזת קבועה בקוד, בלי קלט. <code>NOT NULL</code> אומר שהתא לא יכול להישאר ריק. <code>enumerate(messages, 1)</code> נותן מספר שורה שמתחיל ב־1, יחד עם כל הודעה.</p><pre class="code"><code>import socket
 import sqlite3
 HOST = "119.4.7.5"
 PORT = 8080
@@ -40,7 +40,7 @@ def main():
         save_messages(messages)
     except (OSError, UnicodeError, sqlite3.Error) as error:
         print("Error:", error)
-main()</code></pre></div></details><details class="fold"><summary>2021א (75/78) · Students לפי שם</summary><div class="fold-body"><p>אם מדביקים את השם לתוך מחרוזת השאילתה, זו הזרקת SQL. האפחות היא <code>?</code> והעברת השם בנפרד. במחרוזות SQL עדיף גרש בודד. בפתרון כאן יש גרשיים כפולים; SQLite מקבל אותם כמחרוזת כשאין עמודה בשם הזה, אבל מנוע אחר עלול לקרוא אותם כשם עמודה.</p><pre class="code"><code>import sqlite3
+main()</code></pre></div></details><details class="fold"><summary>2021א (75/78) · Students לפי שם</summary><div class="fold-body"><p>אם מדביקים את השם לתוך מחרוזת השאילתה, זו הזרקת SQL. האפחות היא <code>?</code> והעברת השם בנפרד. במחרוזות SQL עדיף גרש בודד. בפתרון כאן יש גרשיים כפולים; SQLite מקבל אותם כמחרוזת כשאין עמודה בשם הזה, אבל מנוע אחר עלול לקרוא אותם כשם עמודה. <code>fetchall</code> מחזיר את כל שורות התוצאה לרשימה.</p><pre class="code"><code>import sqlite3
 conn = sqlite3.connect("server.db")
 conn.executescript("""
     CREATE TABLE Students(
@@ -82,7 +82,7 @@ cur.execute("SELECT School FROM Students WHERE Name = ?", [name])
 rows = cur.fetchall()
 if len(rows) &gt; 0:
     print(rows[0][0])
-conn.close()</code></pre></div></details><details class="fold"><summary>2026א · סעיף ב · FileData מקובץ טקסט</summary><div class="fold-body"><p>סעיף א בפתרון המרצה הוא שרת קבצים ב־C++ (Boost.Asio). כאן סעיף ב' בלבד — טבלה ו־INSERT עם פרמטרים. שרת השקעים נלמד ביחידה 5.</p><pre class="code"><code>import sqlite3
+conn.close()</code></pre></div></details><details class="fold"><summary>2026א · סעיף ב · FileData מקובץ טקסט</summary><div class="fold-body"><p>סעיף א בפתרון המרצה הוא שרת קבצים ב־C++ עם Boost.Asio, ספריית רשת. כאן סעיף ב' בלבד — טבלה ו־INSERT עם פרמטרים. שרת השקעים נלמד ביחידה 5. <code>rstrip("\\n")</code> מוריד את תו סוף השורה לפני השמירה.</p><pre class="code"><code>import sqlite3
 conn = sqlite3.connect("file_data.db")
 conn.executescript("""
     CREATE TABLE FileData(

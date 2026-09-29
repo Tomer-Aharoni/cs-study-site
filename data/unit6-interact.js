@@ -133,7 +133,7 @@ window.UNIT6_QUIZZES = [
   },
   {
     id: "u6-hv",
-    prompt: "Hypervisor מול container (וירטואליזציה ברמת מ\"ה), כמו במבחן?",
+    prompt: "Hypervisor מול container (וירטואליזציה ברמת מערכת הפעלה), כמו במבחן?",
     options: [
       { id: "a", text: "אותו דבר בדיוק." },
       { id: "b", text: "Hypervisor מנהל VMs עם ליבה נפרדת; container מרחבי משתמש על ליבה משותפת." },
@@ -157,7 +157,7 @@ window.UNIT6_QUIZZES = [
     id: "u6-ol",
     prompt: "מהדר מקוון שמריץ קוד לקוח על השרת — אפחות?",
     options: [
-      { id: "a", text: "להריץ כ-root בלי הגבלה, כי זה \"רק קומפיילר\"." },
+      { id: "a", text: "להריץ כמשתמש־על (root, החשבון עם כל ההרשאות) בלי הגבלה, כי זה \"רק קומפיילר\"." },
       { id: "b", text: "Sandbox / container / VM, מכסות זמן וזיכרון, בלי הרשאות יתר." },
       { id: "c", text: "רק htons." },
     ],
@@ -239,7 +239,7 @@ window.U6_TRU_LAB = {
 (window.SUMMARY_CARDS = window.SUMMARY_CARDS || []).push(
   { id: "u6-ws", unit: "6", kind: "הגדרה", title: "שרת אינטרנט (Web server)", body: "תוכנה ב-HTTP. סטטי = קבצים מוכנים בדיסק, מיפוי נתיב לקובץ." },
   { id: "u6-http", unit: "6", kind: "לזכור", title: "בקשות GET ו־POST", body: "GET: פרמטרים בכתובת. POST: בגוף. שניהם קלט. קודי 200/404/5xx." },
-  { id: "u6-ck", unit: "6", kind: "מלכודת", title: "עוגיה (Cookie)", body: "HTTP חסר מצב. מי שמחזיק את העוגיה = המשתמש. מזהה מושב, לא admin=true. בלי HTTPS — MITM." },
+  { id: "u6-ck", unit: "6", kind: "מלכודת", title: "עוגיה (Cookie)", body: "HTTP חסר מצב. מי שמחזיק את העוגיה = המשתמש. מזהה מושב, לא admin=true. בלי HTTPS — אדם־באמצע (MITM)." },
   { id: "u6-cgi", unit: "6", kind: "הגדרה", title: "ממשק שער משותף (CGI)", body: "סקריפט יוצר תשובה דינמית; תהליך לבקשה בקלאסי. משתני סביבה הם נתון." },
   { id: "u6-qs", unit: "6", kind: "מלכודת", title: "מחרוזת השאילתה (QUERY_STRING)", body: "משתנה סביבה: אחרי ? בכתובת. נתון, לא פקודה." },
   { id: "u6-wa", unit: "6", kind: "הגדרה", title: "יישום רשת (Web application)", body: "יישום דינמי שרת-לקוח: מושב, בסיס נתונים, תבניות — מעבר לקובץ בודד." },
