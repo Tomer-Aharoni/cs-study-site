@@ -297,12 +297,141 @@
     return { profiles: profiles.data || [], seen: seen, practice: practiceCount, marks: markCount };
   }
 
+  function expandHex(value) {
+    if (/^#[0-9a-fA-F]{3}$/.test(value || "")) {
+      return "#" + value.slice(1).split("").map((ch) => ch + ch).join("");
+    }
+    return /^#[0-9a-fA-F]{6}$/.test(value || "") ? value : "#0f766e";
+  }
+
+  function bannerItems() {
+    return CSContent.catalog()
+      .filter((item) => item.kind === "banner")
+      .sort((a, b) => (a.sort || 0) - (b.sort || 0));
+  }
+
+  function blankBanner() {
+    return {
+      id: "banner:" + Math.random().toString(36).slice(2, 10),
+      kind: "banner",
+      unit_id: null,
+      sort: bannerItems().length,
+      title: "באנר",
+      html: null,
+      body: CSBanners.normalize({
+        enabled: true,
+        mode: "all",
+        bg: "#0f766e",
+        color: "#ffffff",
+        pages: [],
+        runs: [{ text: "טקסט הבאנר", size: "md" }],
+      }),
+    };
+  }
+
+  function bannerEditor(item) {
+    const body = CSBanners.normalize(item.body);
+    const pages = CSBanners.pages()
+      .map(([id, label]) => {
+        const on = body.pages.indexOf(id) !== -1 ? " checked" : "";
+        return `<label class="check-line"><input type="checkbox" name="page" value="${esc(id)}"${on}> ${esc(label)}</label>`;
+      })
+      .join("");
+    const mode = (value, label) =>
+      `<label class="check-line"><input type="radio" name="mode" value="${value}"${body.mode === value ? " checked" : ""}> ${label}</label>`;
+    return `<form class="admin-form" data-banner-form data-item="${esc(item.id)}" data-sort="${item.sort || 0}">
+      <div class="admin-actions banner-tools">
+        <button type="button" class="ghost-btn" data-banner-cmd="bold"><b>B</b></button>
+        <button type="button" class="ghost-btn" data-banner-cmd="italic"><i>I</i></button>
+        <button type="button" class="ghost-btn" data-banner-cmd="underline"><u>U</u></button>
+        <label>גודל<select data-banner-size>
+          <option value="sm">קטן</option>
+          <option value="md" selected>רגיל</option>
+          <option value="lg">גדול</option>
+          <option value="xl">גדול מאוד</option>
+        </select></label>
+        <button type="button" class="ghost-btn" data-banner-size-apply>החל גודל על הסימון</button>
+      </div>
+      <label>טקסט
+        <div class="banner-editor" data-banner-editor contenteditable="true" role="textbox" aria-multiline="true"></div>
+      </label>
+      <label>צבע רקע<input name="bg" type="color" value="${expandHex(body.bg)}"></label>
+      <label>צבע טקסט<input name="color" type="color" value="${expandHex(body.color)}"></label>
+      <fieldset class="banner-scope">
+        <legend>איפה להציג</legend>
+        ${mode("all", "כל העמודים")}
+        ${mode("whitelist", "רק בעמודים המסומנים")}
+        ${mode("blacklist", "בכל העמודים חוץ מהמסומנים")}
+        <div class="banner-pages">${pages}</div>
+      </fieldset>
+      <label class="check-line"><input name="enabled" type="checkbox"${body.enabled ? " checked" : ""}> מוצג</label>
+      <p class="admin-actions">
+        <button class="primary" type="submit">שמירה</button>
+        <button type="button" class="ghost-btn" data-banner-delete>מחיקה</button>
+      </p>
+      <p class="save-note" data-admin-status></p>
+      <div data-banner-live></div>
+    </form>`;
+  }
+
+  function readBanner(form) {
+    const editor = form.querySelector("[data-banner-editor]");
+    const runs = CSBanners.serialize(editor);
+    const data = new FormData(form);
+    const body = CSBanners.normalize({
+      enabled: !!form.querySelector("[name=enabled]").checked,
+      bg: String(data.get("bg") || ""),
+      color: String(data.get("color") || ""),
+      mode: String(data.get("mode") || "all"),
+      pages: data.getAll("page"),
+      runs: runs,
+    });
+    return {
+      id: form.getAttribute("data-item"),
+      kind: "banner",
+      unit_id: null,
+      sort: Number(form.getAttribute("data-sort")) || 0,
+      title: CSBanners.plainTitle(runs),
+      html: null,
+      body: body,
+    };
+  }
+
+  function refreshBannerPreview(form) {
+    const live = form.querySelector("[data-banner-live]");
+    if (live) live.innerHTML = CSBanners.preview(readBanner(form).body);
+  }
+
+  function paintBanners(bannerId) {
+    const body = document.querySelector("[data-admin-body]");
+    if (!body) return;
+    const list = bannerItems()
+      .map((item) => `<a class="admin-item" href="#/admin/banners/${encodeURIComponent(item.id)}"><strong>${esc(item.title || "באנר")}</strong></a>`)
+      .join("");
+    if (!bannerId) {
+      body.innerHTML = `<p class="admin-actions"><a class="primary-link" href="#/admin/banners/new">באנר חדש</a></p>
+        <div class="admin-list">${list || `<p class="muted">אין באנרים.</p>`}</div>
+        <p class="save-note" data-admin-status></p>`;
+      return;
+    }
+    const item = bannerId === "new" ? blankBanner() : CSContent.item(bannerId);
+    if (!item || item.kind !== "banner") {
+      body.innerHTML = `<p class="muted">הבאנר לא נמצא.</p><p><a href="#/admin/banners">לרשימה</a></p>`;
+      return;
+    }
+    body.innerHTML = `<p><a href="#/admin/banners">לכל הבאנרים</a></p>${bannerEditor(item)}`;
+    const editor = body.querySelector("[data-banner-editor]");
+    CSBanners.fillEditor(editor, item.body.runs);
+    refreshBannerPreview(body.querySelector("[data-banner-form]"));
+  }
+
   function shellTabs(active) {
     return `<div class="admin-panel">
       <p class="back-row"><a class="back" href="#/course/${COURSE.id}">לקורס</a></p>
       <h1>ניהול</h1>
       <nav class="admin-tabs">
         <a href="#/admin"${active === "content" ? ' class="is-on"' : ""}>תוכן</a>
+        <a href="#/admin/banners"${active === "banners" ? ' class="is-on"' : ""}>באנרים</a>
         <a href="#/admin/users"${active === "users" ? ' class="is-on"' : ""}>משתמשים</a>
       </nav>
       <div data-admin-body></div>
@@ -333,6 +462,11 @@
       denied("אין הרשאת ניהול לחשבון הזה. תפקיד מנהל נקבע רק ב-SQL של Supabase, לא מהדפדפן.");
       return;
     }
+    if (routeInfo.adminBanners) {
+      box.innerHTML = shellTabs("banners");
+      paintBanners(routeInfo.adminBannerId);
+      return;
+    }
     if (routeInfo.adminUsers) {
       box.innerHTML = shellTabs("users");
       const body = box.querySelector("[data-admin-body]");
@@ -354,6 +488,7 @@
     box.querySelector("[data-admin-body]").innerHTML = `<div class="admin-split">
       <div>
         <p class="admin-actions"><button type="button" class="primary" data-admin-import>ייבוא מהקבצים המצורפים</button></p>
+        <p class="muted">שמירה כאן נשארת בשרת. כדי לכתוב אותה לקובץ בפרויקט הריצו במחשב הזה, בתיקיית האתר, <code dir="ltr">py scripts/publish-content.py --write</code>. הפקודה לא פתוחה מהרשת, והיא כותבת רק את <code dir="ltr">data/published-content.js</code>.</p>
         <div class="admin-filters">
           <label>סוג<select data-admin-kind>${KINDS.map(([id, label]) => `<option value="${id}"${filterKind === id ? " selected" : ""}>${label}</option>`).join("")}</select></label>
           <label>יחידה<select data-admin-unit>${units.map((id) => `<option value="${id}"${filterUnit === id ? " selected" : ""}>${id === "all" ? "הכל" : "יחידה " + id}</option>`).join("")}</select></label>
@@ -372,6 +507,27 @@
   }
 
   async function onSubmit(e) {
+    const bannerForm = e.target.closest("[data-banner-form]");
+    if (bannerForm) {
+      e.preventDefault();
+      const button = bannerForm.querySelector("button[type=submit]");
+      button.disabled = true;
+      try {
+        const item = readBanner(bannerForm);
+        if (!item.body.runs.some((run) => run.text.trim())) {
+          status("כתבו טקסט לבאנר.", true);
+          return;
+        }
+        await CSContent.saveItem(item);
+        status("נשמר.");
+        location.hash = "#/admin/banners/" + encodeURIComponent(item.id);
+      } catch (err) {
+        status(explainError(err), true);
+      } finally {
+        button.disabled = false;
+      }
+      return;
+    }
     const reset = e.target.closest("[data-admin-reset]");
     if (reset) {
       e.preventDefault();
@@ -426,7 +582,58 @@
     if (bound) return;
     bound = true;
     document.addEventListener("submit", onSubmit);
+    document.addEventListener("mousedown", (e) => {
+      if (e.target.closest("[data-banner-cmd], [data-banner-size-apply]")) e.preventDefault();
+    });
+    document.addEventListener("paste", (e) => {
+      const node = e.target && e.target.nodeType === 1 ? e.target : e.target && e.target.parentElement;
+      const editor = node && node.closest && node.closest("[data-banner-editor]");
+      if (!editor) return;
+      e.preventDefault();
+      const text = (e.clipboardData && e.clipboardData.getData("text/plain")) || "";
+      document.execCommand("insertText", false, text);
+    });
     document.addEventListener("click", async (e) => {
+      const cmd = e.target.closest("[data-banner-cmd]");
+      if (cmd) {
+        document.execCommand(cmd.getAttribute("data-banner-cmd"));
+        const form = cmd.closest("[data-banner-form]");
+        if (form) refreshBannerPreview(form);
+        return;
+      }
+      const sizeApply = e.target.closest("[data-banner-size-apply]");
+      if (sizeApply) {
+        const form = sizeApply.closest("[data-banner-form]");
+        const editor = form.querySelector("[data-banner-editor]");
+        const size = form.querySelector("[data-banner-size]").value;
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount && editor.contains(sel.anchorNode)) {
+          const range = sel.getRangeAt(0);
+          if (!range.collapsed) {
+            const span = document.createElement("span");
+            span.dataset.size = size;
+            span.appendChild(range.extractContents());
+            range.insertNode(span);
+          }
+        }
+        refreshBannerPreview(form);
+        return;
+      }
+      const remove = e.target.closest("[data-banner-delete]");
+      if (remove) {
+        const form = remove.closest("[data-banner-form]");
+        const id = form.getAttribute("data-item");
+        if (!window.confirm("למחוק את הבאנר?")) return;
+        remove.disabled = true;
+        try {
+          if (CSContent.item(id)) await CSContent.deleteItem(id);
+          location.hash = "#/admin/banners";
+        } catch (err) {
+          remove.disabled = false;
+          status(explainError(err), true);
+        }
+        return;
+      }
       const preview = e.target.closest("[data-admin-preview]");
       if (preview) {
         const form = preview.closest("[data-admin-form]");
@@ -480,6 +687,10 @@
       }
     });
     document.addEventListener("input", (e) => {
+      const bannerForm = e.target.closest && e.target.closest("[data-banner-form]");
+      if (bannerForm && (e.target.matches("input, select") || e.target.closest("[data-banner-editor]"))) {
+        refreshBannerPreview(bannerForm);
+      }
       if (e.target.matches("[data-admin-filter]")) {
         filterText = e.target.value;
         repaintList();
@@ -493,6 +704,8 @@
       }
     });
     document.addEventListener("change", (e) => {
+      const bannerForm = e.target.closest && e.target.closest("[data-banner-form]");
+      if (bannerForm) refreshBannerPreview(bannerForm);
       if (e.target.matches("[data-admin-kind]")) {
         filterKind = e.target.value;
         repaintList();

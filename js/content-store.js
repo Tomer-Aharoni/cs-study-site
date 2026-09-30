@@ -198,6 +198,10 @@
     if (!course || !rows) return;
     rows.forEach((row) => {
       const body = row.body || {};
+      if (row.kind === "banner") {
+        if (window.CSBanners) CSBanners.store(row);
+        return;
+      }
       if (row.kind === "course") {
         if (row.title) course.name = row.title;
         if (body.code) course.code = body.code;
@@ -435,6 +439,17 @@
     await writeAudit("edit_content", { id: item.id, kind: item.kind });
   }
 
+  async function deleteItem(id) {
+    const client = window.CSAuth && CSAuth.client();
+    if (!client) throw new Error("no client");
+    const { error } = await client.from("content_items").delete().eq("id", id);
+    if (error) throw error;
+    loaded = loaded.filter((row) => row.id !== id);
+    cloudIds.delete(id);
+    if (window.CSBanners) CSBanners.forget(id);
+    await writeAudit("edit_content", { id: id, deleted: true });
+  }
+
   async function importMissing() {
     const client = window.CSAuth && CSAuth.client();
     if (!client) throw new Error("no client");
@@ -456,8 +471,21 @@
     return fresh.length;
   }
 
+  function applyPublished() {
+    const rows = window.PUBLISHED_CONTENT;
+    if (!Array.isArray(rows) || !rows.length) return;
+    const safe = rows.filter((row) => {
+      if (!row || typeof row.id !== "string" || typeof row.kind !== "string") return false;
+      const blob = (row.title || "") + " " + (row.html || "") + " " + JSON.stringify(row.body || {});
+      return !danger(blob);
+    });
+    applyItems(safe);
+  }
+
   async function boot() {
     snapshot();
+    if (window.CSBanners) CSBanners.reset();
+    applyPublished();
     if (!window.CSAuth || !CSAuth.enabled()) return;
     await CSAuth.ready;
     const client = CSAuth.client();
@@ -490,6 +518,7 @@
       return cloudIds.has(id);
     },
     saveItem: saveItem,
+    deleteItem: deleteItem,
     importMissing: importMissing,
     item: function (id) {
       return catalog().find((item) => item.id === id) || null;

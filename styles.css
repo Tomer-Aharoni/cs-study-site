@@ -4166,6 +4166,65 @@ a.card,
   align-items: center;
 }
 
+.site-banners {
+  position: relative;
+  z-index: 45;
+}
+
+.site-banner {
+  margin: 0;
+  padding: 0.55rem 1.25rem;
+  text-align: center;
+  line-height: 1.45;
+}
+
+.banner-sm { font-size: 0.875rem; }
+.banner-md { font-size: 1rem; }
+.banner-lg { font-size: 1.25rem; }
+.banner-xl { font-size: 1.5rem; }
+
+.site-banner .is-bold { font-weight: 800; }
+.site-banner .is-italic { font-style: italic; }
+.site-banner .is-under { text-decoration: underline; }
+
+.banner-tools {
+  align-items: end;
+}
+
+.banner-editor {
+  min-height: 4.5rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.banner-editor:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.banner-scope {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin: 0;
+  padding: 0.7rem 0.9rem 0.9rem;
+}
+
+.banner-pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin-top: 0.4rem;
+}
+
+.banner-tools button:hover,
+.banner-tools button:focus-visible {
+  border-color: var(--accent);
+}
+
 @media (max-width: 800px) {
   .admin-split {
     grid-template-columns: 1fr;

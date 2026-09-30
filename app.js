@@ -66,6 +66,8 @@ function parseRoute() {
       admin: parts[0] === "admin",
       adminUsers: parts[0] === "admin" && parts[1] === "users",
       adminItem: parts[0] === "admin" && parts[1] === "item" ? safeDecode(parts.slice(2).join("/")) : "",
+      adminBanners: parts[0] === "admin" && parts[1] === "banners",
+      adminBannerId: parts[0] === "admin" && parts[1] === "banners" && parts[2] ? safeDecode(parts[2]) : "",
     };
   }
   const area = parts[2] || "hub";
@@ -419,8 +421,10 @@ function shell(body, opts) {
   const r = parseRoute();
   const inCourse = r.course === COURSE.id;
   const base = `#/course/${COURSE.id}`;
+  const banners = window.CSBanners ? CSBanners.html(r) : "";
   if (stage) {
     return `
+      ${banners}
       <div class="stage-tools">
         ${themeButton(false)}
         ${accountControls()}
@@ -437,6 +441,7 @@ function shell(body, opts) {
     .filter(Boolean)
     .join(" ");
   return `
+    ${banners}
     <header class="topbar">
       <div class="topbar-inner">
         <a class="brand" href="#/">${esc(COURSE.code)} · ${esc(COURSE.name)}</a>

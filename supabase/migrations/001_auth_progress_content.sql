@@ -16,7 +16,7 @@ create table if not exists public.content_items (
   id text primary key,
   kind text not null check (kind in (
     'course', 'unit_meta', 'section', 'summary_unit', 'summary_part',
-    'card', 'quiz', 'exam_meta', 'exam_question'
+    'card', 'quiz', 'exam_meta', 'exam_question', 'banner'
   )),
   unit_id text,
   sort integer not null default 0,
