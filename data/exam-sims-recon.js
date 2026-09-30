@@ -4,7 +4,7 @@
     title: "סימולציה בסגנון 2021א-74",
     minutes: 180,
     pick: 3,
-    note: "חלק א על אפחות. שאלות 6–7 על נושאים שחוזרים. שאלות 8–9: שקע עם SQLite, וארגז חול עם exec.",
+    note: "מהשאלון: אפחות, Frog, יהלום, מפרק לא וירטואלי, קנרית, לקוח וארגז חול. שתי שאלות מסומנות כתוספת לסימולציה כי לא שוחזרו.",
     partA: [
       {
         id: "a1",
@@ -21,40 +21,40 @@
       },
       {
         id: "a2",
-        prompt: "IPv6 — כמה סיביות לכתובת?",
+        prompt: "Frog f1(5); Frog *p1 = &f1; בלי new. היכן נשמרים?",
         options: [
-          { id: "a", text: "32" },
-          { id: "b", text: "64" },
-          { id: "c", text: "128" },
-          { id: "d", text: "256" },
+          { id: "a", text: "f1 במחסנית, p1 בערמה." },
+          { id: "b", text: "שניהם בערמה." },
+          { id: "c", text: "שניהם במחסנית." },
+          { id: "d", text: "p1 במחסנית, f1 בערמה." },
         ],
         answer: "c",
       },
       {
         id: "a3",
-        prompt: "העמסת פונקציות בפייתון:",
+        prompt: "Messenger יורש מ-Sender ומ-Receiver, ושניהם יורשים מ-Thread. m.run() לא מתקמפל. למה?",
         options: [
-          { id: "a", text: "כמו C++ לפי טיפוסי פרמטרים." },
-          { id: "b", text: "אין העמסה; שם חדש מסתיר, ברירות מחדל ו-kwargs." },
-          { id: "c", text: "רק עם private." },
-          { id: "d", text: "רק במפרש 2." },
+          { id: "a", text: "בגלל ירושה מרובה לבדה." },
+          { id: "b", text: "בגלל בעיית המשולש." },
+          { id: "c", text: "בגלל בעיית היהלום: שני עותקים של Thread." },
+          { id: "d", text: "הקוד כן מתקמפל." },
         ],
-        answer: "b",
+        answer: "c",
       },
       {
         id: "a4",
-        prompt: "list.copy() בפייתון ואז שינוי איבר פנימי ברשימה מקוננת:",
+        prompt: "Foo* f = new Bar(100); והמפרק של Foo אינו וירטואלי. delete f. מה זולג?",
         options: [
-          { id: "a", text: "העתקה עמוקה תמיד." },
-          { id: "b", text: "העתקה רדודה: הרשימה החדשה נפרדת, האובייקטים הפנימיים משותפים." },
-          { id: "c", text: "שתי הרשימות הן אותו אובייקט (is)." },
-          { id: "d", text: "אסור בפייתון 3." },
+          { id: "a", text: "buffer1 של Foo." },
+          { id: "b", text: "buffer2 של Bar. מפרק הבן לא רץ." },
+          { id: "c", text: "שני החוצצים." },
+          { id: "d", text: "אין זליגה." },
         ],
         answer: "b",
       },
       {
         id: "a5",
-        prompt: "שכבת הייצוג ב-OSI אחראית בעיקר ל:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. שכבת הייצוג ב-OSI אחראית בעיקר ל:",
         options: [
           { id: "a", text: "ניתוב IP." },
           { id: "b", text: "קידוד, דחיסה, הצפנה של המידע." },
@@ -67,8 +67,8 @@
     partB: [
       {
         id: "q6",
-        title: "שאלה 6 · פייתון בסיסי (דפוס חוזר)",
-        prompt: "פונקציה שמפצלת מחרוזת ומדפיסה מילים לפי תחילית/סיומת; מחלקה עם בנאי; קריאת קובץ לאובייקטים. בחרו דפוס ando/pre/im כמו במועד — כאן: מילים שמתחילות ב-pre באותיות גדולות.",
+        title: "שאלה 6 · לא מהמועד",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. פיצול מחרוזת והדפסת מילים שמתחילות ב-pre באותיות גדולות, ומחלקת Book.",
         hadOfficial: false,
         official: "",
         proposed: `<pre class="exam-code" dir="ltr">def print_pre(text):
@@ -86,13 +86,13 @@ class Book:
       },
       {
         id: "q7",
-        title: "שאלה 7 · אפחות לדריסת כתובת חזרה",
-        prompt: "לפחות שלוש דרכים להגן מפני דריסת כתובת החזרה במחסנית.",
+        title: "שאלה 7 · קנרית המחסנית",
+        prompt: "מהשאלון (שם זו שאלה 5): הבעיה שהובילה לקנרית, אופן הפעולה, מבנה המחסנית עם ובלי הקנרית, וחלופה.",
         hadOfficial: false,
         official: "",
-        proposed: "<ul><li>קנרית המחסנית — ערך סודי לפני כתובת החזרה, בדיקה לפני ret.</li><li>ASLR — כתובות משתנות בין הרצות.</li><li>NX/DEP — מחסנית לא להריץ.</li><li>בדיקת אורך לפני copy; פונקציות מוגבלות.</li></ul>",
+        proposed: "<p>העתקה בלי גבול מגיעה לכתובת החזרה. ערך סודי נשתל לפניה ונבדק לפני ret. בלי קנרית: מקומיים, מסגרת שמורה, כתובת חזרה. עם קנרית: מקומיים, קנרית, מסגרת, כתובת חזרה. חלופה: ASLR או NX/DEP. הקנרית לא מתקנת את ההעתקה.</p>",
         verdictKind: "new",
-        verdict: "אין פתרון רשמי מצורף. שלוש הראשונות הן מהיחידה; הרביעית היא תיקון שורש.",
+        verdict: "זו שאלת הקנרית מהשאלון, לא שאלת שלוש האפחות הגנרית.",
       },
       {
         id: "q8",
@@ -163,7 +163,7 @@ conn.close()</pre>`,
     title: "סימולציה בסגנון 2022ג",
     minutes: 180,
     pick: 3,
-    note: "שחזור לפי זיכרון. אין פתרון רשמי.",
+    note: "שחזור לפי זיכרון. אין פתרון רשמי. האמריקאית על bind אינה מהמועד: שאלת ההפניות לא שוחזרה.",
     partA: [
       {
         id: "a1",
@@ -211,7 +211,7 @@ conn.close()</pre>`,
       },
       {
         id: "a5",
-        prompt: "bind לכתובת IP נקובה בשרת (לא INADDR_ANY):",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. שאלת ההפניות בחלק א לא שוחזרה בניסוח שאפשר לסמוך עליו. bind לכתובת IP נקובה בשרת (לא INADDR_ANY):",
         options: [
           { id: "a", text: "השרת מקשיב רק בממשק הזה." },
           { id: "b", text: "זה NAT." },
@@ -442,11 +442,11 @@ s.close()
     title: "סימולציה בסגנון 2025ג מועד ג",
     minutes: 180,
     pick: 3,
-    note: "שחזור לפי מחברות. לחלק א אין גוף שאלות, ולכן הוא לא נבחן כאן.",
+    note: "שאלות 6–9 מהשחזור. חמש האמריקאיות אינן מהמועד: גוף חלק א לא היה במחברות, רק מפתח.",
     partA: [
       {
         id: "a1",
-        prompt: "ASLR נועד בעיקר:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. ASLR נועד בעיקר:",
         options: [
           { id: "a", text: "להצפין דיסק." },
           { id: "b", text: "לערבב כתובות זיכרון בין הרצות." },
@@ -457,7 +457,7 @@ s.close()
       },
       {
         id: "a2",
-        prompt: "שאילתה פרמטרית:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. שאילתה פרמטרית:",
         options: [
           { id: "a", text: "מדביקה קלט ל-SQL." },
           { id: "b", text: "מפרידה תבנית מערכים נקשרים." },
@@ -468,7 +468,7 @@ s.close()
       },
       {
         id: "a3",
-        prompt: "type(name, bases, dict) בפייתון:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. type(name, bases, dict) בפייתון:",
         options: [
           { id: "a", text: "יוצר מחלקה בזמן ריצה." },
           { id: "b", text: "רק מדפיס טיפוס." },
@@ -479,7 +479,7 @@ s.close()
       },
       {
         id: "a4",
-        prompt: "DDoS פוגע בעיקר ב:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. DDoS פוגע בעיקר ב:",
         options: [
           { id: "a", text: "זמינות." },
           { id: "b", text: "רק סודיות." },
@@ -490,7 +490,7 @@ s.close()
       },
       {
         id: "a5",
-        prompt: "vtable בפולימורפיזם:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. vtable בפולימורפיזם:",
         options: [
           { id: "a", text: "טבלת מצביעים לפונקציות וירטואליות." },
           { id: "b", text: "טבלת SQL." },
@@ -606,11 +606,11 @@ def put(conn, rec: UrlRecord):
     title: "סימולציה בסגנון 2026א",
     minutes: 180,
     pick: 3,
-    note: "שחזור לפי מחברות. שאלה 9 לא שוחזרה.",
+    note: "שאלות 6–8 מהשחזור. שאלה 9 לא שוחזרה. חמש האמריקאיות אינן מהמועד: לא היה טקסט שאלות.",
     partA: [
       {
         id: "a1",
-        prompt: "פונקציה וירטואלית ב-C++ נקשרת:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. פונקציה וירטואלית ב-C++ נקשרת:",
         options: [
           { id: "a", text: "רק בקומפילציה, תמיד של המצביע הסטטי." },
           { id: "b", text: "בזמן ריצה לפי טיפוס האובייקט (vtable)." },
@@ -621,7 +621,7 @@ def put(conn, rec: UrlRecord):
       },
       {
         id: "a2",
-        prompt: "פונקציה לא-וירטואלית דרך מצביע בסיס:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. פונקציה לא-וירטואלית דרך מצביע בסיס:",
         options: [
           { id: "a", text: "תמיד של הנגזר." },
           { id: "b", text: "של טיפוס המצביע (בסיס), גם אם האובייקט נגזר." },
@@ -632,7 +632,7 @@ def put(conn, rec: UrlRecord):
       },
       {
         id: "a3",
-        prompt: "INSERT עם ? ב-SQLite:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. INSERT עם ? ב-SQLite:",
         options: [
           { id: "a", text: "הערך נשאר נתון." },
           { id: "b", text: "חובה שרשור." },
@@ -643,7 +643,7 @@ def put(conn, rec: UrlRecord):
       },
       {
         id: "a4",
-        prompt: "צ'אנק 1024 בקבצים ברשת:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. צ'אנק 1024 בקבצים ברשת:",
         options: [
           { id: "a", text: "מגביל גודל send/recv לכל מקטע." },
           { id: "b", text: "זה IPv6 בלבד." },
@@ -654,7 +654,7 @@ def put(conn, rec: UrlRecord):
       },
       {
         id: "a5",
-        prompt: "כתיבה ל-vtable של אובייקט:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. כתיבה ל-vtable של אובייקט:",
         options: [
           { id: "a", text: "שוברת שלמות / פולימורפיזם — חולשה אם אפשרית." },
           { id: "b", text: "חובה בכל תוכנית." },
@@ -899,11 +899,11 @@ int main(void) {
     title: "סימולציה · 2025א 12.2",
     minutes: 180,
     pick: 3,
-    note: "שחזור מזיכרון. שאלה 7 וחלק מהאמריקאיות לא שלמות, ולכן לא נבחנות כאן.",
+    note: "מהזיכרון: range, פייתון, קנרית, לקוח עם כותרת, ושרת. שאר האמריקאיות אינן ניסוח המועד — האפשרויות לא שוחזרו.",
     partA: [
       {
         id: "a1",
-        prompt: "מה DEP מונע?",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. בזיכרון נשמר רק ניסוח אחד על DEP, בלי שאר האפשרויות. מה DEP מונע?",
         options: [
           { id: "a", text: "כל כתיבה למחסנית." },
           { id: "b", text: "גלישת חוצץ עצמה." },
@@ -914,7 +914,7 @@ int main(void) {
       },
       {
         id: "a2",
-        prompt: "קריאה וירטואלית מתוך בנאי הבסיס, כשהנגזר דורס אותה, מגיעה ל:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. בזיכרון יש תיאור של קריאה מבנאי, בלי השאלה עצמה. קריאה וירטואלית מתוך בנאי הבסיס, כשהנגזר דורס אותה, מגיעה ל:",
         options: [
           { id: "a", text: "מימוש הבסיס. בזמן בניית הבסיס האובייקט עדיין בסיס." },
           { id: "b", text: "תמיד לנגזר, כי new יצר נגזר." },
@@ -936,7 +936,7 @@ int main(void) {
       },
       {
         id: "a4",
-        prompt: "הפניה (reference) ב-C++ למחרוזת קיימת s1 נכתבת:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. אפשרויות ההפניה בזיכרון סומנו כלא מדויקות. הפניה (reference) ב-C++ למחרוזת קיימת s1 נכתבת:",
         options: [
           { id: "a", text: "std::string a = s1; זו העתקה." },
           { id: "b", text: "std::string &a = s1;" },
@@ -947,7 +947,7 @@ int main(void) {
       },
       {
         id: "a5",
-        prompt: "אפחות (Mitigation) היא:",
+        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. משפט האפחות בזיכרון לא שלם. אפחות (Mitigation) היא:",
         options: [
           { id: "a", text: "מערכת בלי באגים." },
           { id: "b", text: "רק הצפנת הערוץ." },
@@ -1042,6 +1042,295 @@ def send_file(host, port, path):
         proposed: "<p>קוראים 12 בתים, מפרשים שלושה <code>uint32_t</code> בסדר רשת, ואז קוראים בדיוק את גודל המטען שאושר (לכל היותר 1024). אין תשובה משוחזרת ללקוח, ולכן לא ממציאים פורמט תגובה.</p>",
         verdictKind: "new",
         verdict: "סעיף התגובה חסר בזיכרון.",
+      },
+    ],
+  },
+  {
+    id: "sim-style-a",
+    title: "סימולצייה שלוקטה באמצעות AI",
+    minutes: 180,
+    pick: 3,
+    note: "אותם תפקידי שאלות כמו במבחן לדוגמה א': חלק א על לכידות, העמסה, הסתרה בפייתון, גלישה וחוטים. חלק ב: לקוח TCP, הצפנה היברידית, טבלה וירטואלית, ופייתון על מילון וקובץ. הניסוח חדש, מהחומר שבסבבי השאלות.",
+    partA: [
+      {
+        id: "a1",
+        prompt: "מחלקה אחת מחשבת מחיר, פותחת שקע, ובונה HTML. מה נמדד כאן?",
+        options: [
+          { id: "a", text: "לכידות חזקה: כל המתודות באותה מחלקה." },
+          { id: "b", text: "לכידות חלשה: רכיבים באותה מחלקה לא משרתים אחריות אחת." },
+          { id: "c", text: "צמידות חלשה בין מחלקות שונות." },
+          { id: "d", text: "רק יעילות של הצוות." },
+        ],
+        answer: "b",
+      },
+      {
+        id: "a2",
+        prompt: "איזו זוג חתימות היא העמסה (overloading) ב-C++?",
+        options: [
+          { id: "a", text: "void f(int) ו-int f(int). רק טיפוס החזרה שונה." },
+          { id: "b", text: "void f(int) ו-void f(double)." },
+          { id: "c", text: "שתי הגדרות void f(int) באותו תחום." },
+          { id: "d", text: "פונקציה וירטואלית בלי מימוש." },
+        ],
+        answer: "b",
+      },
+      {
+        id: "a3",
+        prompt: "בפייתון, obj._Point__x אחרי שדה בשם __x:",
+        options: [
+          { id: "a", text: "שגיאת קומפילציה כמו private ב-C++." },
+          { id: "b", text: "הגישה נחסמת בזמן ריצה." },
+          { id: "c", text: "אפשר עדיין לקרוא. שני קווים תחתיים הם מוסכמה ושינוי שם, לא הרשאה." },
+          { id: "d", text: "זה protected של C++." },
+        ],
+        answer: "c",
+      },
+      {
+        id: "a4",
+        prompt: "גלישת חוצץ (Buffer Overflow) יכולה להתרחש:",
+        options: [
+          { id: "a", text: "רק במחסנית, ליד כתובת חזרה." },
+          { id: "b", text: "רק בערימה." },
+          { id: "c", text: "רק בקוד." },
+          { id: "d", text: "בכל אזור שאליו כותבים מעבר לגודל שהוקצה." },
+        ],
+        answer: "d",
+      },
+      {
+        id: "a5",
+        prompt: "שני חוטים באותו תהליך:",
+        options: [
+          { id: "a", text: "מרחב כתובות נפרד לכל חוט." },
+          { id: "b", text: "ערימה וקבצים משותפים; מחסנית ורגיסטרים נפרדים." },
+          { id: "c", text: "עותק נפרד של התוכנית." },
+          { id: "d", text: "גם המחסנית משותפת, ולכן אין מרוץ." },
+        ],
+        answer: "b",
+      },
+    ],
+    partB: [
+      {
+        id: "q6",
+        title: "שאלה 6 · לקוח TCP",
+        prompt: "כתבו לקוח C/C++ ללינוקס שמתחבר ל-10.1.2.3 בפורט 9000, שולח את השורה PING ואז קורא עד 64 בתים או עד תו שורה, המוקדם, ומדפיס.",
+        hadOfficial: false,
+        official: "",
+        proposed: `<pre class="exam-code" dir="ltr">#include &lt;arpa/inet.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;unistd.h&gt;
+int main(void) {
+  int s = socket(AF_INET, SOCK_STREAM, 0);
+  if (s &lt; 0) return 1;
+  struct sockaddr_in a;
+  memset(&amp;a, 0, sizeof a);
+  a.sin_family = AF_INET;
+  a.sin_port = htons(9000);
+  if (inet_pton(AF_INET, "10.1.2.3", &amp;a.sin_addr) != 1) return 1;
+  if (connect(s, (struct sockaddr *)&amp;a, sizeof a) &lt; 0) return 1;
+  const char *msg = "PING\\n";
+  if (send(s, msg, strlen(msg), 0) &lt; 0) return 1;
+  char buf[65];
+  ssize_t n = recv(s, buf, 64, 0);
+  if (n &lt; 0) return 1;
+  buf[n] = 0;
+  for (ssize_t i = 0; i &lt; n; i++) if (buf[i] == '\\n') { buf[i + 1] = 0; break; }
+  fputs(buf, stdout);
+  close(s);
+}</pre>`,
+        verdictKind: "new",
+        verdict: "אותו דפוס כמו מבחן לדוגמה א': שקע TCP, htons, שליחה, וקריאה חסומה. הכתובת והטקסט כאן אחרים.",
+      },
+      {
+        id: "q7",
+        title: "שאלה 7 · מפתח ציבורי והיברידי",
+        prompt: "תארו הצפנה במפתח ציבורי ואת מגבלותיה, ואז את הסכמה ההיברידית: איך עובר המפתח ובמה מוצפנים הנתונים אחר כך.",
+        hadOfficial: false,
+        official: "",
+        proposed: "<p>למפתח ציבורי יש זוג: פומבי מצפין, פרטי מפענח. זה איטי, ומפתח פומבי בלי אימות ניתן להחלפה בדרך (MITM). בסכמה ההיברידית מעבירים מפתח סימטרי בעזרת המפתח הפומבי, ואחר כך מצפינים את הנתונים בסימטרי. אימות המפתח הפומבי נעשה בתעודה מול סמכות סרטיפיקטים (Certificate Authority).</p>",
+        verdictKind: "new",
+        verdict: "המודל הוא של מבחן לדוגמה א' ושל יחידה 5. בלי תעודה, שלב העברת המפתח חשוף.",
+      },
+      {
+        id: "q8",
+        title: "שאלה 8 · טבלה וירטואלית",
+        prompt: "מהי פונקציה וירטואלית, מהו vptr לפי מודל הקורס, ואיך נבחר המימוש כשמצביע לבסיס מצביע לאובייקט נגזר.",
+        hadOfficial: false,
+        official: "",
+        proposed: "<p>בלי virtual הקריאה נקבעת לפי טיפוס המצביע. עם virtual, לכל מחלקה יש טבלה של כתובות מימוש, ולכל אובייקט יש vptr. במודל הקורס ה-vptr יושב בתחילת האובייקט ומצביע לטבלה של המחלקה האמיתית. הקריאה היא קפיצה לכניסה בטבלה, לא לפי טיפוס המצביע הסטטי. לא כותבים לטבלה.</p>",
+        verdictKind: "new",
+        verdict: "הסבר בלבד, כמו שאלה 8 במבחן לדוגמה א'.",
+      },
+      {
+        id: "q9",
+        title: "שאלה 9 · מילון, משפט וקובץ",
+        prompt: "לרשימת מילים: מילון מאורך לכל מילה; משפט שבו המילה הראשונה וכל מילה שמסתיימת ב-n מתחילות באות גדולה; זוגות שמות לקובץ pairs.txt.",
+        hadOfficial: false,
+        official: "",
+        proposed: `<pre class="exam-code" dir="ltr">lengths = {w: len(w) for w in words}
+out = []
+for i, w in enumerate(words):
+    out.append(w.capitalize() if i == 0 or w.endswith("n") else w)
+phrase = " ".join(out)
+names = ("Noa", "Amit", "Dana", "Roni")
+pairs = list(zip(names[0::2], names[1::2]))
+try:
+    with open("pairs.txt", "w", encoding="utf-8") as f:
+        f.write("\\n".join(f"{a} - {b}" for a, b in pairs))
+except OSError:
+    print("Error writing to file pairs.txt")</pre>`,
+        verdictKind: "new",
+        verdict: "אותם שלושה סעיפים כמו שאלה 9 במבחן לדוגמה א'. open בלי מצב כתיבה לא כותב.",
+      },
+    ],
+  },
+  {
+    id: "sim-style-2021c",
+    title: "סימולצייה שלוקטה באמצעות AI · ב'",
+    minutes: 180,
+    pick: 3,
+    note: "אותם תפקידי שאלות כמו בבחינה לדוגמה 2021ג: חלק א על פולימורפיזם, protected, מילים שמורות, הפניה ו-htons. חלק ב: פייתון, SQLite, ASLR ו-DEP, וניתוח גלישה בלי מטען.",
+    partA: [
+      {
+        id: "a1",
+        prompt: "Animal::speak וירטואלית. Animal::eat אינה וירטואלית. Dog דורס את שתיהן. Animal* a = new Dog(); a->speak(); a->eat();",
+        options: [
+          { id: "a", text: "שתיהן Dog, כי האובייקט הוא Dog." },
+          { id: "b", text: "שתיהן Animal, כי המצביע הוא Animal*." },
+          { id: "c", text: "speak של Dog, eat של Animal." },
+          { id: "d", text: "שגיאת קומפילציה על דריסה בלי virtual." },
+        ],
+        answer: "c",
+      },
+      {
+        id: "a2",
+        prompt: "שדה protected ב-C++ נגיש:",
+        options: [
+          { id: "a", text: "רק מאותה מחלקה." },
+          { id: "b", text: "מהמחלקה ומיורשת, לא מקוד חיצוני רגיל." },
+          { id: "c", text: "מכל קובץ באותה תיקייה." },
+          { id: "d", text: "רק ממחלקה חברה, בלי יורשות." },
+        ],
+        answer: "b",
+      },
+      {
+        id: "a3",
+        prompt: "int, float, str, bool בפייתון הם:",
+        options: [
+          { id: "a", text: "כולם מילים שמורות." },
+          { id: "b", text: "טיפוסים מובנים (builtins), לא keywords." },
+          { id: "c", text: "מילים שמורות רק בפייתון 2." },
+          { id: "d", text: "שקולים ל-private." },
+        ],
+        answer: "b",
+      },
+      {
+        id: "a4",
+        prompt: "העברה לפי הפניה (reference) עדיפה על העברה לפי ערך כי:",
+        options: [
+          { id: "a", text: "תמיד מעתיקים מהר יותר." },
+          { id: "b", text: "לא נוצר עותק של האובייקט, והזהות שלו נשמרת." },
+          { id: "c", text: "אין מצביעים בשפה." },
+          { id: "d", text: "היא אף פעם לא עדיפה." },
+        ],
+        answer: "b",
+      },
+      {
+        id: "a5",
+        prompt: "htons על מספר פורט:",
+        options: [
+          { id: "a", text: "בודקת שהשרת מאזין." },
+          { id: "b", text: "ממירה לסדר בתים של הרשת (big-endian)." },
+          { id: "c", text: "הופכת מחרוזת למספר." },
+          { id: "d", text: "מחליפה IPv4 ב-IPv6." },
+        ],
+        answer: "b",
+      },
+    ],
+    partB: [
+      {
+        id: "q6",
+        title: "שאלה 6 · פייתון: מילים, מחלקה וקובץ",
+        prompt: "הדפיסו מילים שמסתיימות ב-ly באותיות קטנות. מחלקת Lab(name, city, seats) ותת-מחלקה RemoteLab עם מילון כלים. קראו שורות name,city,seats מקובץ והדפיסו כמה מעבדות וכמה מקומות יחד.",
+        hadOfficial: false,
+        official: "",
+        proposed: `<pre class="exam-code" dir="ltr">def ly_words(text):
+    for w in text.split():
+        if w.endswith("ly"):
+            print(w.lower(), end=" ")
+
+class Lab:
+    def __init__(self, name, city, seats):
+        self.name, self.city, self.seats = name, city, int(seats)
+
+class RemoteLab(Lab):
+    def __init__(self, name, city, seats, tools):
+        super().__init__(name, city, seats)
+        self.tools = dict(tools)
+
+def load(path):
+    labs = []
+    try:
+        lines = open(path, encoding="utf-8").read().splitlines()
+    except OSError:
+        print("Could not read from file:", path)
+        return
+    for line in lines:
+        parts = [p.strip() for p in line.split(",")]
+        if len(parts) != 3 or not parts[0]:
+            continue
+        labs.append(Lab(parts[0], parts[1], parts[2]))
+    print("Number of labs:", len(labs))
+    print("Total seats", sum(x.seats for x in labs))</pre>`,
+        verdictKind: "new",
+        verdict: "אותו שלד כמו שאלה 6 בבחינה לדוגמה 2021ג: סינון מילה, ירושה, וקובץ עם טיפול בשגיאה.",
+      },
+      {
+        id: "q7",
+        title: "שאלה 7 · SQLite",
+        prompt: "ב-C/C++ פתחו grades.db, צרו Grades(Name, Id, Score), הכניסו שתי רשומות קבועות וסגרו. בפייתון קבלו מזהה והדפיסו ציון. מה נשבר אם מדביקים את המזהה למחרוזת, ואיך נמנעים.",
+        hadOfficial: false,
+        official: "",
+        proposed: `<pre class="exam-code" dir="ltr">sqlite3 *db;
+if (sqlite3_open("grades.db", &amp;db) != SQLITE_OK) return 1;
+sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS Grades(Name TEXT, Id INTEGER, Score INTEGER);", 0, 0, 0);
+sqlite3_exec(db, "INSERT INTO Grades VALUES('Ada', 1, 90);", 0, 0, 0);
+sqlite3_exec(db, "INSERT INTO Grades VALUES('Mimi', 2, 80);", 0, 0, 0);
+sqlite3_close(db);
+
+import sqlite3
+conn = sqlite3.connect("grades.db")
+sid = input("id: ")
+row = conn.execute("SELECT Score FROM Grades WHERE Id = ?", (sid,)).fetchone()
+print(row[0] if row else "not found")
+conn.close()</pre>
+<p>הדבקה עם format או f-string מכניסה את הקלט לתחביר. סימן שאלה וטיפל משאירים אותו נתון. exec מתאים כאן רק כי שתי ההכנסות קבועות.</p>`,
+        verdictKind: "new",
+        verdict: "כמו שאלה 7 בבחינה לדוגמה: DDL קבוע ב-exec, וקלט רק דרך פרמטר.",
+      },
+      {
+        id: "q8",
+        title: "שאלה 8 · ASLR ו-DEP",
+        prompt: "לכל אחד מ-ASLR ו-DEP: מה המטרה, איך זה פועל, ומה הוא לא מתקן. בלי מטען.",
+        hadOfficial: false,
+        official: "",
+        proposed: `<p><strong>ASLR</strong> מערבב כתובות בין הרצות, כדי שכתובת קבועה של מחסנית או קוד לא תישאר יעד. רואים את זה בהדפסת כתובת מקומית בשתי הרצות. הוא לא מתקן העתקה בלי גבול, ודליפת כתובת מחלישה אותו.</p>
+<pre class="exam-code" dir="ltr">int local = 0;
+printf("%p\\n", (void *)&amp;local);</pre>
+<p><strong>DEP / NX</strong> מסמן אזורי נתונים כלא-להרצה. קפיצה למערך תווים נעצרת. דריסת כתובת חזרה אל קוד שכבר מותר להרצה לא נמחקה על ידי זה. קנרית המחסנית היא שכבה נוספת: ערך לפני כתובת החזרה נבדק לפני ret.</p>`,
+        verdictKind: "new",
+        verdict: "שאלה 8 בבחינה לדוגמה היא ASLR ו-DEP. הקנרית נוספת כשכבה מאותו נושא, בלי קוד תקיפה.",
+      },
+      {
+        id: "q9",
+        title: "שאלה 9 · גלישה במחסנית",
+        prompt: "char buf[16] ומעתיקים לתוכו שורה בלי גבול. מה החולשה, מה עלול להישבר במחסנית, ואיך מתקנים. בלי מטען.",
+        hadOfficial: false,
+        official: "",
+        proposed: "<p>ההעתקה לא מכירה את 16 הבתים. כתיבה רציפה עוברת את החוצץ אל מה שיושב מעליו במחסנית, כולל כתובת החזרה ש-<code>ret</code> שולף. קנרית שנשתלה לפני הכתובת נדרסת בגלישה רציפה, והבדיקה לפני <code>ret</code> עוצרת. זה לא תיקון: הבאג נשאר. התיקון הוא קריאה או העתקה עם גבול ואפס סיום, למשל <code>fgets(buf, sizeof buf, stdin)</code>.</p>",
+        verdictKind: "new",
+        verdict: "כמו שאלה 9 בבחינה לדוגמה: מה נשבר ואיך מתקנים. שם זו גלישת ערימה לשדה סמוך; כאן גלישת מחסנית לכתובת חזרה.",
       },
     ],
   }

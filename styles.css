@@ -2920,6 +2920,35 @@ a.card,
   margin: 0 0 0.4rem;
 }
 
+.ai-bubble {
+  display: inline-block;
+  margin-inline-end: 0.35rem;
+  padding: 0.02rem 0.42rem 0.08rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  text-decoration: none;
+  vertical-align: 0.12em;
+  cursor: help;
+}
+
+.ai-bubble:hover,
+.ai-bubble:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-bubble {
+    transition: none;
+  }
+}
+
 .drill-score {
   font-size: 1.35rem;
   font-weight: 800;
