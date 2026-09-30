@@ -15,6 +15,7 @@
   let filterText = "";
   let filterKind = "all";
   let filterUnit = "all";
+  let filterUnedited = false;
   let userQuery = "";
   let bound = false;
 
@@ -55,12 +56,31 @@
     return "הפעולה נכשלה. נסו שוב.";
   }
 
+  function stable(value) {
+    if (Array.isArray(value)) return "[" + value.map(stable).join(",") + "]";
+    if (value && typeof value === "object") {
+      return "{" + Object.keys(value).sort().map((key) => JSON.stringify(key) + ":" + stable(value[key])).join(",") + "}";
+    }
+    return JSON.stringify(value == null ? null : value);
+  }
+
+  function isEdited(item) {
+    if (!CSContent.isCloud(item.id)) return false;
+    const bundled = CSContent.bundledItem(item.id);
+    if (!bundled) return true;
+    const html = (value) => String(value || "").replace(/\r\n/g, "\n").trim();
+    const left = stable({ title: item.title || "", html: html(item.html), body: item.body || {} });
+    const right = stable({ title: bundled.title || "", html: html(bundled.html), body: bundled.body || {} });
+    return left !== right;
+  }
+
   function filteredItems() {
     const q = filterText.trim().toLowerCase();
     return CSContent.catalog()
       .filter((item) => {
         if (filterKind !== "all" && item.kind !== filterKind) return false;
         if (filterUnit !== "all" && item.unit_id !== filterUnit) return false;
+        if (filterUnedited && isEdited(item)) return false;
         if (!q) return true;
         return (item.title || "").toLowerCase().indexOf(q) !== -1 || item.id.toLowerCase().indexOf(q) !== -1;
       })
@@ -88,6 +108,70 @@
     return `<label>${label}<input name="${name}" type="text" value="${esc(value || "")}" /></label>`;
   }
 
+  function sanitizeHtml(html) {
+    const allowed = { P: 1, BR: 1, STRONG: 1, B: 1, EM: 1, I: 1, U: 1, CODE: 1, PRE: 1, UL: 1, OL: 1, LI: 1, H2: 1, H3: 1, H4: 1, BLOCKQUOTE: 1, A: 1, DIV: 1, DL: 1, DT: 1, DD: 1 };
+    const drop = { SCRIPT: 1, STYLE: 1, IFRAME: 1, OBJECT: 1, EMBED: 1, LINK: 1, META: 1 };
+    const box = document.createElement("template");
+    box.innerHTML = String(html || "");
+    function walk(parent) {
+      [...parent.childNodes].forEach((node) => {
+        if (node.nodeType === 3) return;
+        if (node.nodeType !== 1) {
+          node.remove();
+          return;
+        }
+        const tag = node.tagName;
+        if (drop[tag]) {
+          node.remove();
+          return;
+        }
+        if (!allowed[tag]) {
+          walk(node);
+          while (node.firstChild) parent.insertBefore(node.firstChild, node);
+          node.remove();
+          return;
+        }
+        const href = tag === "A" ? String(node.getAttribute("href") || "").trim() : "";
+        const panel = tag === "DIV" && /(^|\s)panel(\s|$)/.test(node.className || "");
+        walk(node);
+        [...node.attributes].forEach((attr) => node.removeAttribute(attr.name));
+        if (tag === "A" && /^(https?:|mailto:|#|\/)/i.test(href) && !/^javascript:/i.test(href)) node.setAttribute("href", href);
+        if (panel) node.className = "panel";
+        if (tag === "DIV" && !panel) {
+          while (node.firstChild) parent.insertBefore(node.firstChild, node);
+          node.remove();
+        }
+      });
+    }
+    walk(box.content);
+    const holder = document.createElement("div");
+    holder.appendChild(box.content);
+    return holder.innerHTML;
+  }
+
+  function richField() {
+    return `<div class="rich-field" data-rich="html">
+      <div class="admin-actions rich-tools">
+        <button type="button" class="ghost-btn" data-rich-cmd="bold"><b>B</b></button>
+        <button type="button" class="ghost-btn" data-rich-cmd="italic"><i>I</i></button>
+        <button type="button" class="ghost-btn" data-rich-cmd="underline"><u>U</u></button>
+        <button type="button" class="ghost-btn" data-rich-block="p">פסקה</button>
+        <button type="button" class="ghost-btn" data-rich-block="h3">כותרת</button>
+        <button type="button" class="ghost-btn" data-rich-cmd="insertUnorderedList">רשימה</button>
+        <button type="button" class="ghost-btn" data-rich-cmd="insertOrderedList">מספור</button>
+        <button type="button" class="ghost-btn" data-rich-cmd="code">קוד</button>
+        <button type="button" class="ghost-btn" data-rich-cmd="panel">תיבה</button>
+      </div>
+      <div class="rich-editor" data-rich-editor contenteditable="true" role="textbox" aria-multiline="true" dir="rtl"></div>
+    </div>`;
+  }
+
+  function richHtml(form) {
+    const editor = form && form.querySelector("[data-rich='html'] [data-rich-editor]");
+    if (!editor) return null;
+    return sanitizeHtml(editor.innerHTML);
+  }
+
   function editorHtml(item) {
     if (!item) return `<p class="muted">בחרו פריט מהרשימה.</p>`;
     const body = item.body || {};
@@ -102,7 +186,7 @@
       fields += `<label>סטטוס<select name="status"><option value="ready"${body.status !== "soon" ? " selected" : ""}>פתוח</option><option value="soon"${body.status === "soon" ? " selected" : ""}>בקרוב</option></select></label>`;
       fields += field("goals", "מטרות, שורה לכל מטרה", (body.goals || []).join("\n"), true);
     } else if (item.kind === "section" || item.kind === "summary_part") {
-      fields += field("html", "HTML", "", true);
+      fields += `<label>טקסט${richField()}</label>`;
     } else if (item.kind === "summary_unit") {
       fields += field("intro", "פתיח", body.intro, true);
     } else if (item.kind === "card") {
@@ -123,7 +207,7 @@
       fields += field("prompt", "שאלה", body.prompt, true);
       fields += `<label class="check-line"><input name="hadOfficial" type="checkbox"${body.hadOfficial ? " checked" : ""}> יש ניסוח רשמי</label>`;
       fields += field("official", "מה היה בפתרון הקיים", body.official, true);
-      fields += field("html", "פתרון (HTML)", "", true);
+      fields += `<label>פתרון${richField()}</label>`;
       fields += `<label>סוג חוות דעת<select name="verdictKind">
         <option value="ok"${body.verdictKind === "ok" ? " selected" : ""}>תקין</option>
         <option value="fix"${body.verdictKind === "fix" ? " selected" : ""}>תיקון</option>
@@ -131,7 +215,10 @@
       </select></label>`;
       fields += field("verdict", "חוות דעת", body.verdict, true);
     }
-    const preview = item.html ? `<div class="admin-preview" data-admin-preview-box>${item.html}</div>` : `<div class="admin-preview" data-admin-preview-box hidden></div>`;
+    const safePreview = item && item.html ? sanitizeHtml(item.html) : "";
+    const preview = safePreview
+      ? `<div class="admin-preview" data-admin-preview-box>${safePreview}</div>`
+      : `<div class="admin-preview" data-admin-preview-box hidden></div>`;
     return `<form class="admin-form" data-admin-form data-item="${esc(item.id)}">
       <p class="meta">${esc(kindLabel(item.kind))} · <span dir="ltr">${esc(item.id)}</span></p>
       ${fields}
@@ -166,6 +253,8 @@
     set("note", body.note);
     set("official", body.official);
     set("verdict", body.verdict);
+    const editor = form.querySelector("[data-rich='html'] [data-rich-editor]");
+    if (editor) editor.innerHTML = sanitizeHtml(item.html || "");
   }
 
   function readOptions(text) {
@@ -209,7 +298,7 @@
         .map((line) => line.trim())
         .filter(Boolean);
     } else if (item.kind === "section" || item.kind === "summary_part") {
-      next.html = String(data.get("html") || "");
+      next.html = richHtml(form) || "";
     } else if (item.kind === "summary_unit") {
       next.body.intro = String(data.get("intro") || "");
     } else if (item.kind === "card") {
@@ -237,7 +326,7 @@
       next.body.official = String(data.get("official") || "");
       next.body.verdictKind = String(data.get("verdictKind") || "new");
       next.body.verdict = String(data.get("verdict") || "");
-      next.html = String(data.get("html") || "");
+      next.html = richHtml(form) || "";
     }
     return next;
   }
@@ -493,6 +582,7 @@
           <label>סוג<select data-admin-kind>${KINDS.map(([id, label]) => `<option value="${id}"${filterKind === id ? " selected" : ""}>${label}</option>`).join("")}</select></label>
           <label>יחידה<select data-admin-unit>${units.map((id) => `<option value="${id}"${filterUnit === id ? " selected" : ""}>${id === "all" ? "הכל" : "יחידה " + id}</option>`).join("")}</select></label>
           <label>חיפוש<input type="search" data-admin-filter value="${esc(filterText)}" placeholder="כותרת"></label>
+          <label class="check-line"><input type="checkbox" data-admin-unedited${filterUnedited ? " checked" : ""}> רק מה שעוד לא נערך</label>
         </div>
         <div data-admin-list>${listHtml()}</div>
       </div>
@@ -583,17 +673,43 @@
     bound = true;
     document.addEventListener("submit", onSubmit);
     document.addEventListener("mousedown", (e) => {
-      if (e.target.closest("[data-banner-cmd], [data-banner-size-apply]")) e.preventDefault();
+      if (e.target.closest("[data-banner-cmd], [data-banner-size-apply], [data-rich-cmd], [data-rich-block]")) e.preventDefault();
     });
     document.addEventListener("paste", (e) => {
       const node = e.target && e.target.nodeType === 1 ? e.target : e.target && e.target.parentElement;
-      const editor = node && node.closest && node.closest("[data-banner-editor]");
+      const editor = node && node.closest && (node.closest("[data-banner-editor]") || node.closest("[data-rich-editor]"));
       if (!editor) return;
       e.preventDefault();
+      const html = (e.clipboardData && e.clipboardData.getData("text/html")) || "";
       const text = (e.clipboardData && e.clipboardData.getData("text/plain")) || "";
-      document.execCommand("insertText", false, text);
+      if (editor.hasAttribute("data-rich-editor") && html) document.execCommand("insertHTML", false, sanitizeHtml(html));
+      else document.execCommand("insertText", false, text);
     });
     document.addEventListener("click", async (e) => {
+      const richCmd = e.target.closest("[data-rich-cmd]");
+      if (richCmd) {
+        const name = richCmd.getAttribute("data-rich-cmd");
+        if (name === "code") {
+          const sel = window.getSelection();
+          if (!sel || !sel.rangeCount || sel.getRangeAt(0).collapsed) document.execCommand("insertHTML", false, "<code>קוד</code>");
+          else {
+            const range = sel.getRangeAt(0);
+            const code = document.createElement("code");
+            code.appendChild(range.extractContents());
+            range.insertNode(code);
+          }
+        } else if (name === "panel") {
+          document.execCommand("insertHTML", false, '<div class="panel"><p>תיבה</p></div>');
+        } else document.execCommand(name);
+        return;
+      }
+      const richBlock = e.target.closest("[data-rich-block]");
+      if (richBlock) {
+        const tag = richBlock.getAttribute("data-rich-block");
+        document.execCommand("formatBlock", false, tag);
+        document.execCommand("formatBlock", false, "<" + tag + ">");
+        return;
+      }
       const cmd = e.target.closest("[data-banner-cmd]");
       if (cmd) {
         document.execCommand(cmd.getAttribute("data-banner-cmd"));
@@ -712,6 +828,10 @@
       }
       if (e.target.matches("[data-admin-unit]")) {
         filterUnit = e.target.value;
+        repaintList();
+      }
+      if (e.target.matches("[data-admin-unedited]")) {
+        filterUnedited = e.target.checked;
         repaintList();
       }
     });

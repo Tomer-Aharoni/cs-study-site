@@ -104,6 +104,19 @@ function esc(s) {
   );
 }
 
+function quizContentId(qid) {
+  const unit = (COURSE.units || []).find((item) =>
+    (window["UNIT" + item.id + "_QUIZZES"] || []).some((quiz) => quiz.id === qid)
+  );
+  return unit ? "quiz:" + unit.id + ":" + qid : "";
+}
+
+function editLink(id, label) {
+  if (!id || !window.CSAuth || !CSAuth.isAdmin()) return "";
+  const href = "#/admin/item/" + encodeURIComponent(id);
+  return `<a class="edit-link" href="${href}" aria-label="${esc(label ? "עריכת " + label : "עריכת התוכן")}" title="עריכה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></a>`;
+}
+
 function getProgress() {
   try {
     const raw = JSON.parse(localStorage.getItem("cs-study-progress") || "");
@@ -416,6 +429,31 @@ function applyTheme(next) {
   });
 }
 
+function siteFooter() {
+  return `<footer class="site-footer">
+    <nav class="footer-links" aria-label="יצירת קשר">
+      <a class="footer-link" href="https://www.linkedin.com/in/tomer-ah7" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V24h-4V8.5zM8.5 8.5h3.8v2.1h.1c.5-1 1.8-2.1 3.8-2.1 4 0 4.8 2.6 4.8 6V24h-4v-7.7c0-1.8 0-4.1-2.5-4.1s-2.9 2-2.9 4V24h-4V8.5z"/></svg>
+        LinkedIn
+      </a>
+      <a class="footer-link" href="https://github.com/tomer-aharoni" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .5A12 12 0 0 0 8.2 23.9c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.5-1.2-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1.1 1.7 1.1 1.7 1.1 1 .1.8 1.8 2.8 1.3.1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6a4.7 4.7 0 0 1 1.2-3.2 4.3 4.3 0 0 1 .1-3.2s1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0C16.9 4.8 18 5.1 18 5.1a4.3 4.3 0 0 1 .1 3.2 4.7 4.7 0 0 1 1.2 3.2c0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+        GitHub
+      </a>
+      <a class="footer-link" href="mailto:tomeraharoni7@gmail.com">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M3 6h18v12H3z"/><path fill="none" stroke="currentColor" stroke-width="1.8" d="m3 7 9 7 9-7"/></svg>
+        דוא״ל
+      </a>
+    </nav>
+    <div class="footer-disclaimer">
+      <p>למידה מהנה ובהצלחה!</p>
+      <p>האתר נבנה בעזרת בינה מלאכותית ולכן ייתכנו טעויות. אשמח לעדכון אם מצאתם, על מנת שאוכל לתקן.</p>
+      <p>© כל הזכויות על המבחנים וחומרי הלמידה שמורות לאוניברסיטה הפתוחה. האתר מיועד לתלמידי האוניברסיטה הפתוחה בלבד, ואין לעשות שימוש חיצוני בתכנים.</p>
+      <p class="footer-credit">רעיון והשראה: <a href="https://www.linkedin.com/in/yair-kurtzman-382417247/" target="_blank" rel="noopener noreferrer">יאיר קורצמן</a>, שבנה <a href="https://all-the-courses.pages.dev/" target="_blank" rel="noopener noreferrer">אחלה אתר</a> לקורסים מערכות הפעלה ושפות תכנות ופתח לי את התיאבון ליצור את האתר הזה גם. אם אהבתם, לכו לפרגן בלינקדאין שלו :)</p>
+    </div>
+  </footer>`;
+}
+
 function shell(body, opts) {
   const stage = !!(opts && opts.stage);
   const r = parseRoute();
@@ -431,6 +469,7 @@ function shell(body, opts) {
       </div>
       <a class="wordmark is-float" href="#/">${esc(COURSE.code)}</a>
       <main class="page page-stage">${body}</main>
+      ${siteFooter()}
     `;
   }
   const pageClass = [
@@ -463,6 +502,7 @@ function shell(body, opts) {
       </div>
     </header>
     <main class="${pageClass}">${body}</main>
+    ${siteFooter()}
   `;
 }
 
@@ -496,7 +536,7 @@ function renderStage() {
       <div class="hero rise">
         <p class="eyebrow">${COURSE.code} · ${COURSE.languages.join(" · ")}</p>
         <button type="button" class="hero-pill" data-why-toggle aria-expanded="false">על האתר</button>
-        <h1>${esc(COURSE.name)}</h1>
+        <h1>${esc(COURSE.name)} ${editLink("course", COURSE.name)}</h1>
         <p class="hero-lead">${esc(COURSE.blurb)} שבע יחידות לפי הסדר. כל אחת נפתחת להסבר, להמחשה ולמעבדה.</p>
       </div>
       <div class="why" data-why>
@@ -571,7 +611,7 @@ function quizBlock(q) {
     )
     .join("");
   return `<div class="quiz panel" data-qid="${esc(q.id)}">
-    <p><strong>תרגול.</strong> ${esc(q.prompt)}</p>
+    <div class="box-head"><p><strong>תרגול.</strong> ${esc(q.prompt)}</p>${editLink(quizContentId(q.id), "השאלה")}</div>
     ${opts}
     <p class="feedback" hidden></p>
   </div>`;
@@ -1237,7 +1277,7 @@ function renderUnit(id) {
   const sections = u.sections
     .map((s) => {
       const extra = attachAfterSection(attach[s.id], usedLabs, usedQuizzes);
-      return `<section class="section" id="${esc(s.id)}"><h2>${esc(s.title)}</h2>${s.html}</section>${extra}`;
+      return `<section class="section" id="${esc(s.id)}"><div class="box-head"><h2>${esc(s.title)}</h2>${editLink("section:" + id + ":" + s.id, s.title)}</div>${s.html}</section>${extra}`;
     })
     .join("");
   const leftoverLabs = ((window.UNIT_LAB_KEYS || {})[id] || [])
@@ -1277,7 +1317,7 @@ function renderUnit(id) {
     <p class="back-row"><a class="back" href="${base}/learn">כל היחידות</a></p>
     <header class="unit-head">
       <p class="eyebrow">יחידה ${u.id}</p>
-      <h1>${esc(u.title)}</h1>
+      <div class="box-head"><h1>${esc(u.title)}</h1>${editLink("unit:" + u.id, u.title)}</div>
       ${meta && meta.blurb ? `<p class="muted lead">${esc(meta.blurb)}</p>` : ""}
     </header>
     <div class="read">
@@ -1288,7 +1328,7 @@ function renderUnit(id) {
       </aside>
       <div class="read-main">
         <section class="section" id="unit-goals">
-          <h2>מה נלמד ביחידה זו</h2>
+          <div class="box-head"><h2>מה נלמד ביחידה זו</h2>${editLink("unit:" + u.id, "מטרות היחידה")}</div>
           <ul class="goals">${u.goals.map((g) => `<li>${esc(g)}</li>`).join("")}</ul>
         </section>
         ${sections}
@@ -1314,7 +1354,7 @@ function setCardsPlacement(value) {
 function cardArticle(c) {
   const extra = (window.SUMMARY_DETAIL || {})[c.id];
   const more = extra ? `<p class="card-detail">${esc(extra)}</p>` : "";
-  return `<article class="card card-rich"><p class="kind">${esc(c.kind)}</p><h2><bdi>${esc(c.title)}</bdi></h2><p>${esc(c.body)}</p>${more}</article>`;
+  return `<article class="card card-rich"><p class="kind">${esc(c.kind)}</p><div class="box-head"><h2><bdi>${esc(c.title)}</bdi></h2>${editLink("card:" + c.id, c.title)}</div><p>${esc(c.body)}</p>${more}</article>`;
 }
 
 function cardsForUnit(unitId) {
@@ -1375,7 +1415,7 @@ function proseChapter(ch) {
       return `<section class="prose-part" id="sum-${esc(ch.unit)}-${esc(p.id)}">
         <div class="prose-part-head">
           <h3>${esc(p.title)}</h3>
-          <button type="button" class="ghost-btn bookmark-btn${on ? " is-on" : ""}" data-bookmark="${esc(markId)}">${on ? "סומן לחזרה" : "סימנייה לחזרה"}</button>
+          <span class="prose-part-actions">${editLink("summary:" + ch.unit + ":" + p.id, p.title)}<button type="button" class="ghost-btn bookmark-btn${on ? " is-on" : ""}" data-bookmark="${esc(markId)}">${on ? "סומן לחזרה" : "סימנייה לחזרה"}</button></span>
         </div>
         ${p.html}
       </section>`;
@@ -1383,7 +1423,7 @@ function proseChapter(ch) {
     .join("");
   const after = cardsPlacement() === "after" ? cardsBlock(ch.unit, `כרטיסיות ליחידה ${ch.unit}`) : "";
   return `<article class="prose-chapter" id="sum-${esc(ch.unit)}">
-    <h2>${esc(ch.title)}</h2>
+    <div class="box-head"><h2>${esc(ch.title)}</h2>${editLink("summary:" + ch.unit, ch.title)}</div>
     <p class="lead">${esc(ch.intro)}</p>
     ${parts}
     ${after}
@@ -1688,7 +1728,7 @@ function renderRound(mode) {
     <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
     <p class="drill-meta">שאלה ${round.index + 1} מתוך ${round.ids.length}${unitName ? " · יחידה " + unitName.id : ""}</p>
     <section class="drill" data-drill>
-      <h1>${esc(q.prompt)}</h1>
+      <h1>${esc(q.prompt)} ${editLink(quizContentId(q.id), "השאלה")}</h1>
       ${opts}
       ${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}
       ${fb}
@@ -1888,7 +1928,7 @@ function examMcqHtml(exam, run, review) {
       const hint = foldHtml("💡 רמז לפתרון", practiceHintHtml(q));
       const solution = review ? foldHtml("פתרון מפורט ודרך חישוב", practiceSolutionHtml(q)) : "";
       return `<div class="quiz panel" data-qid="${q.id}">
-        <p><strong>${esc(q.prompt)}</strong></p>
+        <div class="box-head"><p><strong>${esc(q.prompt)}</strong></p>${editLink("exam:" + exam.id + ":a:" + q.id, "שאלת המבחן")}</div>
         ${opts}
         ${hint}
         ${mark}
@@ -1918,7 +1958,7 @@ function examPartBHtml(exam, run, review) {
       }
       const hint = foldHtml("💡 רמז לפתרון", practiceHintHtml(q));
       return `<article class="section exam-bq" id="${q.id}">
-        <h2>${esc(q.title)}</h2>
+        <div class="box-head"><h2>${esc(q.title)}</h2>${editLink("exam:" + exam.id + ":b:" + q.id, q.title)}</div>
         <p>${esc(q.prompt)}</p>
         ${hint}
         ${pickBtn}
@@ -1935,7 +1975,7 @@ function renderExam(exam, review) {
     if (review) {
       return shell(`
         <p class="back-row"><a class="back" href="${base}">לתרגול</a></p>
-        <h1>${esc(exam.title)}</h1>
+        <h1>${esc(exam.title)} ${editLink("exam:" + exam.id, exam.title)}</h1>
         <p>אין סימולציה פתוחה. התחילו מועד ואז סיימו כדי לראות פתרונות.</p>
         <p><button type="button" class="primary" data-exam-start="${exam.id}">התחלת סימולציה</button></p>
       `);
@@ -1949,7 +1989,7 @@ function renderExam(exam, review) {
     return shell(`
       <p class="back-row"><a class="back" href="${base}">לתרגול</a></p>
       <p class="eyebrow">סימולציה · בדיקה</p>
-      <h1>${esc(exam.title)}</h1>
+      <h1>${esc(exam.title)} ${editLink("exam:" + exam.id, exam.title)}</h1>
       <p class="drill-score">חלק א: ${good} מתוך ${exam.partA.length}.</p>
       <p class="muted">${esc(exam.note)}</p>
       <h2>חלק א</h2>
@@ -1965,7 +2005,7 @@ function renderExam(exam, review) {
       <p class="eyebrow">סימולציה · ${exam.minutes} דקות</p>
       <p class="exam-clock" data-exam-clock></p>
     </div>
-    <h1>${esc(exam.title)}</h1>
+    <h1>${esc(exam.title)} ${editLink("exam:" + exam.id, exam.title)}</h1>
     <p class="muted">${esc(exam.note)} חלק א: כולן. חלק ב: בחרו ${exam.pick} מתוך ${exam.partB.length}. הפתרונות נפתחים בסוף — לא תוך כדי.</p>
     <h2>חלק א · רב-ברירה</h2>
     ${examMcqHtml(exam, run, false)}
@@ -1978,11 +2018,11 @@ function renderExam(exam, review) {
 function examHubHtml() {
   const cards = (window.EXAM_SIMS || [])
     .map(
-      (e) => `<a class="card exam-card" href="#/course/${COURSE.id}/practice/exam/${e.id}">
+      (e) => `<div class="editable-wrap"><a class="card exam-card" href="#/course/${COURSE.id}/practice/exam/${e.id}">
         <p class="meta">${e.minutes} דק׳ · בחרו ${e.pick} פתוחות</p>
         <h2>${esc(e.title)}</h2>
         <p>${esc(e.note)}</p>
-      </a>`
+      </a>${editLink("exam:" + e.id, e.title)}</div>`
     )
     .join("");
   return `<section class="section">
