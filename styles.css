@@ -4369,3 +4369,194 @@ a.card,
     max-height: 40vh;
   }
 }
+
+.tool-dock {
+  position: fixed;
+  z-index: 45;
+  inset-inline-end: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+}
+
+.tool-fab {
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--accent-ink);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.tool-fab svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.tool-fab:hover,
+.tool-fab:focus-visible,
+.tool-item:hover,
+.tool-item:focus-visible,
+.print-entry:hover,
+.print-entry:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  outline: none;
+}
+
+.tool-panel {
+  width: min(16rem, calc(100vw - 2rem));
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tool-kicker {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.tool-item,
+.print-entry {
+  font: inherit;
+  font-weight: 700;
+  text-align: start;
+  text-decoration: none;
+  color: var(--accent-ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+}
+
+.stage-print {
+  text-align: center;
+  margin: 0.8rem 0 0;
+}
+
+.print-entry {
+  display: inline-flex;
+}
+
+.print-actions,
+.print-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.print-options {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  margin: 1rem 0;
+}
+
+.print-tree,
+.print-kids {
+  list-style: none;
+  padding-inline-start: 0;
+  margin: 0.4rem 0;
+}
+
+.print-kids {
+  padding-inline-start: 1.2rem;
+}
+
+.print-row {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  padding: 0.2rem 0;
+}
+
+.print-sheet-host[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tool-panel {
+    animation: none;
+  }
+}
+
+@media print {
+  .tool-dock,
+  .topbar,
+  .stage-tools,
+  .wordmark,
+  .site-footer,
+  .edit-link,
+  .toc-fab,
+  .rail,
+  .pager,
+  .back-row,
+  .lab-actions,
+  .print-setup,
+  .hero-pill,
+  .stage-search,
+  .stage-print,
+  button,
+  .ghost-btn,
+  .primary {
+    display: none !important;
+  }
+
+  .viz [hidden],
+  .side-draw,
+  .print-static .side-draw {
+    display: block !important;
+  }
+
+  .print-static .lab-actions,
+  .print-sheet button,
+  .print-sheet .viz button,
+  .viz button {
+    display: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  body.is-range-print .page > :not(.print-sheet-host),
+  body.is-range-print .site-banners,
+  body.is-range-print .site-footer {
+    display: none !important;
+  }
+
+  body.is-range-print .print-sheet-host {
+    display: block !important;
+  }
+
+  .print-sheet {
+    color: #111;
+    background: #fff;
+  }
+
+  .print-block,
+  .print-quiz,
+  .viz,
+  .lab {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

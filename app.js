@@ -37,7 +37,7 @@ function safeDecode(s) {
 function parseRoute() {
   const raw = (location.hash || "#/").replace(/^#/, "");
   const parts = raw.split("/").filter(Boolean);
-  if (parts[0] === "me" || parts[0] === "admin") {
+  if (parts[0] === "me" || parts[0] === "admin" || parts[0] === "print") {
     return {
       parts: parts,
       isHome: false,
@@ -60,6 +60,7 @@ function parseRoute() {
       adminItem: parts[0] === "admin" && parts[1] === "item" ? safeDecode(parts.slice(2).join("/")) : "",
       adminBanners: parts[0] === "admin" && parts[1] === "banners",
       adminBannerId: parts[0] === "admin" && parts[1] === "banners" && parts[2] ? safeDecode(parts[2]) : "",
+      print: parts[0] === "print",
     };
   }
   const area = parts[2] || "hub";
@@ -83,6 +84,7 @@ function parseRoute() {
     admin: false,
     adminUsers: false,
     adminItem: "",
+    print: false,
   };
 }
 
@@ -405,6 +407,19 @@ function siteFooter() {
   </footer>`;
 }
 
+function toolDock() {
+  return `<div class="tool-dock">
+    <div class="tool-panel" data-tool-panel hidden>
+      <p class="tool-kicker">כלים</p>
+      <button type="button" class="tool-item" data-print-current>הדפסת העמוד הנוכחי</button>
+      <a class="tool-item" href="#/print">בחירת טווחים להדפסה</a>
+    </div>
+    <button type="button" class="tool-fab" data-tool-toggle aria-expanded="false" aria-controls="tool-panel" title="כלים נוספים" aria-label="כלים נוספים">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>`;
+}
+
 function shell(body, opts) {
   const stage = !!(opts && opts.stage);
   const r = parseRoute();
@@ -420,6 +435,7 @@ function shell(body, opts) {
       </div>
       <a class="wordmark is-float" href="#/">${esc(COURSE.code)}</a>
       <main class="page page-stage">${body}</main>
+      ${toolDock()}
       ${siteFooter()}
     `;
   }
@@ -444,6 +460,7 @@ function shell(body, opts) {
                   ${navLink(base + "/summary", "סיכום", base + "/summary")}
                   ${navLink(base + "/practice", "תרגול", base + "/practice")}
                   ${navLink(base + "/search", "חיפוש", base + "/search")}
+                  ${navLink("#/print", "הדפסה", "#/print")}
                 </nav>`
               : ""
           }
@@ -453,6 +470,7 @@ function shell(body, opts) {
       </div>
     </header>
     <main class="${pageClass}">${body}</main>
+    ${toolDock()}
     ${siteFooter()}
   `;
 }
@@ -519,6 +537,7 @@ function renderStage() {
         <input id="stage-q" name="q" type="search" placeholder="חיפוש מושג, יחידה או כרטיסייה" autocomplete="off" />
         <button class="primary" type="submit">חיפוש</button>
       </form>
+      <p class="stage-print"><a class="print-entry" href="#/print">בחירת טווחים להדפסה</a></p>
     </section>
   `,
     { stage: true }
@@ -2151,6 +2170,218 @@ function renderSearch() {
   `);
 }
 
+const printState = {
+  selected: new Set(),
+  exercises: true,
+  hints: false,
+  solutions: false,
+};
+
+function loadPrintState() {
+  try {
+    const raw = JSON.parse(sessionStorage.getItem("cs-print") || "");
+    if (raw && Array.isArray(raw.selected)) raw.selected.forEach((id) => printState.selected.add(id));
+    if (raw && typeof raw.exercises === "boolean") printState.exercises = raw.exercises;
+    if (raw && typeof raw.hints === "boolean") printState.hints = raw.hints;
+    if (raw && typeof raw.solutions === "boolean") printState.solutions = raw.solutions;
+  } catch (err) {
+    /* אין בחירה שמורה */
+  }
+}
+
+function savePrintState() {
+  try {
+    sessionStorage.setItem(
+      "cs-print",
+      JSON.stringify({
+        selected: [...printState.selected],
+        exercises: printState.exercises,
+        hints: printState.hints,
+        solutions: printState.solutions,
+      })
+    );
+  } catch (err) {
+    /* מצב פרטי */
+  }
+}
+
+function printTree() {
+  const units = (COURSE.units || []).map((unit) => {
+    const lesson = lessonById(unit.id);
+    const children = [{ id: "u" + unit.id + ":goals", label: "מה נלמד ביחידה" }];
+    ((lesson && lesson.sections) || []).forEach((section) => {
+      children.push({ id: "u" + unit.id + ":s:" + section.id, label: section.title });
+    });
+    if ((window.SUMMARY_PROSE || []).some((chapter) => chapter.unit === unit.id)) {
+      children.push({ id: "u" + unit.id + ":summary", label: "סיכום היחידה" });
+    }
+    if (quizzesFor(unit.id).length) children.push({ id: "u" + unit.id + ":quiz", label: "תרגילי היחידה" });
+    return { id: "u" + unit.id, label: "יחידה " + unit.id + " · " + unit.title, children: children };
+  });
+  const exams = (window.EXAM_SIMS || []).map((exam) => ({ id: "exam:" + exam.id, label: exam.title }));
+  if (exams.length) units.push({ id: "practice", label: "תרגול ומבחנים", children: exams });
+  return units;
+}
+
+function printNodeById(id, nodes) {
+  const list = nodes || printTree();
+  for (let i = 0; i < list.length; i += 1) {
+    if (list[i].id === id) return list[i];
+    const found = list[i].children && printNodeById(id, list[i].children);
+    if (found) return found;
+  }
+  return null;
+}
+
+function printBranchIds(node, out) {
+  out.push(node.id);
+  (node.children || []).forEach((child) => printBranchIds(child, out));
+}
+
+function printAllIds() {
+  const ids = [];
+  printTree().forEach((node) => printBranchIds(node, ids));
+  return ids;
+}
+
+function printTreeHtml(nodes, depth) {
+  return (nodes || [])
+    .map((node) => {
+      const on = printState.selected.has(node.id) ? " checked" : "";
+      const kids = node.children ? `<ul class="print-kids">${printTreeHtml(node.children, depth + 1)}</ul>` : "";
+      return `<li>
+        <label class="print-row"><input type="checkbox" data-print-check="${esc(node.id)}"${on}> <span>${esc(node.label)}</span></label>
+        ${kids}
+      </li>`;
+    })
+    .join("");
+}
+
+function printQuizHtml(q) {
+  const options = (q.options || []).map((opt) => `<li>${esc(opt.text)}</li>`).join("");
+  const hintText = practiceHintHtml(q);
+  const hint = printState.hints
+    ? `<div class="print-extra"><strong>רמז.</strong> ${String(hintText || "").indexOf("<") === 0 ? hintText : "<p>" + esc(hintText) + "</p>"}</div>`
+    : "";
+  const solution = printState.solutions
+    ? `<div class="print-extra"><strong>פתרון.</strong> ${practiceSolutionHtml(q)}</div>`
+    : "";
+  return `<div class="print-quiz"><p><strong>תרגול.</strong> ${esc(q.prompt)}</p>${options ? `<ul>${options}</ul>` : ""}${hint}${solution}</div>`;
+}
+
+function printSectionHtml(unitId, section, usedQuizzes) {
+  const spec = (window.SECTION_ATTACH || {})[section.id] || {};
+  let figures = "";
+  (spec.viz || []).forEach((key) => {
+    figures += window.vizHtml ? window.vizHtml(key) : "";
+  });
+  (spec.labs || []).forEach((key) => {
+    figures += labByName(key);
+  });
+  let quizzes = "";
+  if (printState.exercises) {
+    (spec.quizzes || []).forEach((qid) => {
+      if (usedQuizzes.has(qid)) return;
+      const quiz = findQuiz(qid);
+      if (!quiz) return;
+      usedQuizzes.add(qid);
+      quizzes += printQuizHtml(quiz);
+    });
+  }
+  return `<section class="print-block"><h3>${esc(section.title)}</h3>${section.html}<div class="print-static">${figures}</div>${quizzes}</section>`;
+}
+
+function printSheetHtml() {
+  const selected = printState.selected;
+  if (!selected.size) return `<p class="muted">בחרו לפחות אזור אחד.</p>`;
+  let html = `<article class="print-sheet" id="print-sheet"><header class="print-cover"><p>${esc(COURSE.code)}</p><h1>${esc(COURSE.name)}</h1></header>`;
+  (COURSE.units || []).forEach((unit) => {
+    const lesson = lessonById(unit.id);
+    const prefix = "u" + unit.id;
+    const any =
+      selected.has(prefix) ||
+      [...selected].some((id) => id.indexOf(prefix + ":") === 0);
+    if (!any || !lesson) return;
+    html += `<h2>יחידה ${esc(unit.id)} · ${esc(unit.title)}</h2>`;
+    if (selected.has(prefix) || selected.has(prefix + ":goals")) {
+      html += `<section class="print-block"><h3>מה נלמד ביחידה זו</h3><ul>${(lesson.goals || []).map((goal) => `<li>${esc(goal)}</li>`).join("")}</ul></section>`;
+    }
+    const usedQuizzes = new Set();
+    (lesson.sections || []).forEach((section) => {
+      if (selected.has(prefix) || selected.has(prefix + ":s:" + section.id)) html += printSectionHtml(unit.id, section, usedQuizzes);
+    });
+    if (selected.has(prefix) || selected.has(prefix + ":summary")) {
+      const chapter = (window.SUMMARY_PROSE || []).find((item) => item.unit === unit.id);
+      if (chapter) {
+        html += `<section class="print-block"><h3>${esc(chapter.title)}</h3><p>${esc(chapter.intro || "")}</p>`;
+        (chapter.parts || []).forEach((part) => {
+          html += `<h4>${esc(part.title)}</h4>${part.html}`;
+        });
+        html += `</section>`;
+      }
+    }
+    if (printState.exercises && (selected.has(prefix) || selected.has(prefix + ":quiz"))) {
+      quizzesFor(unit.id).forEach((quiz) => {
+        if (usedQuizzes.has(quiz.id)) return;
+        usedQuizzes.add(quiz.id);
+        html += printQuizHtml(quiz);
+      });
+    }
+  });
+  (window.EXAM_SIMS || []).forEach((exam) => {
+    if (!selected.has("practice") && !selected.has("exam:" + exam.id)) return;
+    html += `<h2>${esc(exam.title)}</h2>`;
+    (exam.partA || []).forEach((quiz) => {
+      html += printQuizHtml(quiz);
+    });
+    (exam.partB || []).forEach((quiz) => {
+      html += `<section class="print-block"><h3>${esc(quiz.title || "")}</h3><p>${esc(quiz.prompt || "")}</p>`;
+      if (printState.solutions) {
+        html += `<div class="print-extra">${quiz.solution || quiz.proposed || ""}</div>`;
+      }
+      html += `</section>`;
+    });
+  });
+  html += `</article>`;
+  return html;
+}
+
+function renderPrintPage() {
+  loadPrintState();
+  const checked = (key) => (printState[key] ? " checked" : "");
+  return `<div class="print-setup">
+    <p class="back-row"><a class="back" href="#/">לדף הבית</a></p>
+    <h1>בחירת טווחים להדפסה</h1>
+    <p class="muted">סמנו אזורים בעץ. תרשימים שבתוכן נכנסים להדפסה. המחשה עם אנימציה מוחלפת בתרשים הסטטי שלה, כולל המצבים שהלחיצה חושפת.</p>
+    <div class="print-actions">
+      <button type="button" class="ghost-btn" data-print-all>סימון הכל</button>
+      <button type="button" class="ghost-btn" data-print-clear>ניקוי הבחירה</button>
+    </div>
+    <ul class="print-tree">${printTreeHtml(printTree(), 0)}</ul>
+    <fieldset class="print-options">
+      <legend>מה לכלול בתרגילים</legend>
+      <label class="check-line"><input type="checkbox" data-print-opt="exercises"${checked("exercises")}> תרגילים</label>
+      <label class="check-line"><input type="checkbox" data-print-opt="hints"${checked("hints")}> רמזים</label>
+      <label class="check-line"><input type="checkbox" data-print-opt="solutions"${checked("solutions")}> פתרונות</label>
+    </fieldset>
+    <p><button type="button" class="primary" data-print-go>הדפסה</button></p>
+  </div>
+  <div class="print-sheet-host" data-print-host hidden></div>`;
+}
+
+function runRangePrint() {
+  const host = document.querySelector("[data-print-host]");
+  if (!host) return;
+  if (!printState.selected.size) {
+    window.alert("בחרו לפחות אזור אחד להדפסה.");
+    return;
+  }
+  host.innerHTML = printSheetHtml();
+  host.hidden = false;
+  document.body.classList.add("is-range-print");
+  window.print();
+}
+
 async function route() {
   if (!window.__csBooted) return;
   const token = (window.__routeToken = (window.__routeToken || 0) + 1);
@@ -2160,6 +2391,10 @@ async function route() {
   }
   document.body.classList.remove("toc-open");
   const r = parseRoute();
+  if (r.print) {
+    app.innerHTML = shell(renderPrintPage());
+    return;
+  }
   if (r.me) {
     app.innerHTML = shell(window.CSProgress ? CSProgress.meHtml() : `<p class="muted">אין מעקב.</p>`);
     return;
@@ -2785,6 +3020,43 @@ function handleVizClick(btn) {
 }
 
 app.addEventListener("click", async (e) => {
+  const toolToggle = e.target.closest("[data-tool-toggle]");
+  if (toolToggle) {
+    const dock = toolToggle.closest(".tool-dock");
+    const panel = dock && dock.querySelector("[data-tool-panel]");
+    if (!panel) return;
+    const open = panel.hidden;
+    panel.hidden = !open;
+    toolToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    return;
+  }
+  if (e.target.closest("[data-print-current]")) {
+    document.body.classList.add("is-print-current");
+    window.print();
+    return;
+  }
+  if (e.target.closest("[data-print-all]")) {
+    printAllIds().forEach((id) => printState.selected.add(id));
+    savePrintState();
+    route();
+    return;
+  }
+  if (e.target.closest("[data-print-clear]")) {
+    printState.selected.clear();
+    savePrintState();
+    route();
+    return;
+  }
+  if (e.target.closest("[data-print-go]")) {
+    runRangePrint();
+    return;
+  }
+  if (!e.target.closest(".tool-dock")) {
+    document.querySelectorAll("[data-tool-panel]").forEach((panel) => {
+      panel.hidden = true;
+    });
+    document.querySelectorAll("[data-tool-toggle]").forEach((btn) => btn.setAttribute("aria-expanded", "false"));
+  }
   const authIn = e.target.closest("[data-auth-in]");
   if (authIn) {
     authIn.disabled = true;
@@ -3661,6 +3933,42 @@ document.addEventListener("keydown", (e) => {
   } else if (e.key === "ArrowRight" || e.key === "ArrowUp") {
     e.preventDefault();
     moveFlip(-1);
+  }
+});
+
+app.addEventListener("change", (e) => {
+  const box = e.target.closest("[data-print-check]");
+  if (box) {
+    const node = printNodeById(box.getAttribute("data-print-check"));
+    if (!node) return;
+    const ids = [];
+    printBranchIds(node, ids);
+    ids.forEach((id) => (box.checked ? printState.selected.add(id) : printState.selected.delete(id)));
+    savePrintState();
+    const tree = document.querySelector(".print-tree");
+    if (tree) tree.innerHTML = printTreeHtml(printTree(), 0);
+    return;
+  }
+  const opt = e.target.closest("[data-print-opt]");
+  if (!opt) return;
+  const key = opt.getAttribute("data-print-opt");
+  if (key === "exercises" || key === "hints" || key === "solutions") printState[key] = opt.checked;
+  if (key === "exercises" && !opt.checked) {
+    printState.hints = false;
+    printState.solutions = false;
+    document.querySelectorAll("[data-print-opt='hints'], [data-print-opt='solutions']").forEach((input) => {
+      input.checked = false;
+    });
+  }
+  savePrintState();
+});
+
+window.addEventListener("afterprint", () => {
+  document.body.classList.remove("is-print-current", "is-range-print");
+  const host = document.querySelector("[data-print-host]");
+  if (host) {
+    host.hidden = true;
+    host.innerHTML = "";
   }
 });
 
