@@ -4095,6 +4095,7 @@ a.card,
 }
 
 .admin-form label,
+.admin-form .rich-label,
 .admin-filters label,
 .admin-users label {
   display: flex;

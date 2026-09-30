@@ -186,7 +186,7 @@
       fields += `<label>סטטוס<select name="status"><option value="ready"${body.status !== "soon" ? " selected" : ""}>פתוח</option><option value="soon"${body.status === "soon" ? " selected" : ""}>בקרוב</option></select></label>`;
       fields += field("goals", "מטרות, שורה לכל מטרה", (body.goals || []).join("\n"), true);
     } else if (item.kind === "section" || item.kind === "summary_part") {
-      fields += `<label>טקסט${richField()}</label>`;
+      fields += `<div class="rich-label"><span>טקסט</span>${richField()}</div>`;
     } else if (item.kind === "summary_unit") {
       fields += field("intro", "פתיח", body.intro, true);
     } else if (item.kind === "card") {
@@ -207,7 +207,7 @@
       fields += field("prompt", "שאלה", body.prompt, true);
       fields += `<label class="check-line"><input name="hadOfficial" type="checkbox"${body.hadOfficial ? " checked" : ""}> יש ניסוח רשמי</label>`;
       fields += field("official", "מה היה בפתרון הקיים", body.official, true);
-      fields += `<label>פתרון${richField()}</label>`;
+      fields += `<div class="rich-label"><span>פתרון</span>${richField()}</div>`;
       fields += `<label>סוג חוות דעת<select name="verdictKind">
         <option value="ok"${body.verdictKind === "ok" ? " selected" : ""}>תקין</option>
         <option value="fix"${body.verdictKind === "fix" ? " selected" : ""}>תיקון</option>
@@ -441,9 +441,9 @@
         </select></label>
         <button type="button" class="ghost-btn" data-banner-size-apply>החל גודל על הסימון</button>
       </div>
-      <label>טקסט
+      <div class="rich-label"><span>טקסט</span>
         <div class="banner-editor" data-banner-editor contenteditable="true" role="textbox" aria-multiline="true"></div>
-      </label>
+      </div>
       <label>צבע רקע<input name="bg" type="color" value="${expandHex(body.bg)}"></label>
       <label>צבע טקסט<input name="color" type="color" value="${expandHex(body.color)}"></label>
       <fieldset class="banner-scope">
