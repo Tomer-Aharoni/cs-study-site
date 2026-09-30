@@ -741,5 +741,308 @@ con.commit()</pre>`,
         verdict: "אין שחזור לשאלה הזו.",
       },
     ],
+  },
+  {
+    id: "e-2024-09-61",
+    title: "סימולציה · 19.9.2024 שאלון 61",
+    minutes: 180,
+    pick: 3,
+    note: "שאלון מודפס. חלק א מלא. שאלה 9 בלי ניצול.",
+    partA: [
+      {
+        id: "a1",
+        prompt: "מהן חולשות CVE?",
+        options: [
+          { id: "a", text: "חולשות שהתגלו בתוכנת VPN בשם CVE." },
+          { id: "b", text: "חולשות מוכרות בארגון מניסיון קודם באותו ארגון." },
+          { id: "c", text: "חולשות מוכרות בארגון הקשורות לתוכנות שהוא משתמש בהן." },
+          { id: "d", text: "חולשות אבטחה המקוטלגות במאגר ציבורי בשם CVE." },
+        ],
+        answer: "d",
+      },
+      {
+        id: "a2",
+        prompt: "מה גורם ליצירת חריגה (Exception) בפייתון?",
+        options: [
+          { id: "a", text: "פקודת raise שזורקת חריגה." },
+          { id: "b", text: "שגיאה בהפעלת התכנית שיוצרת מצב לא צפוי." },
+          { id: "c", text: "פקודת assert שהתנאי שלה לא מתמלא." },
+          { id: "d", text: "כל התשובות נכונות." },
+        ],
+        answer: "d",
+      },
+      {
+        id: "a3",
+        prompt: "Basic::tweet וירטואלית נקראת מבנאי Basic. Derived דורס. Basic* p = new Derived(). מה יודפס?",
+        options: [
+          { id: "a", text: "Basic::tweet()" },
+          { id: "b", text: "Derived::tweet()" },
+          { id: "c", text: "Basic::tweet() ואז Derived::tweet()" },
+          { id: "d", text: "תלוי בקומפיילר, אי אפשר לדעת." },
+        ],
+        answer: "a",
+      },
+      {
+        id: "a4",
+        prompt: "Frog f1(5); Frog *p1 = &f1; איפה הם נשמרים?",
+        options: [
+          { id: "a", text: "f1 במחסנית, p1 בערמה." },
+          { id: "b", text: "שניהם בערמה." },
+          { id: "c", text: "שניהם במחסנית." },
+          { id: "d", text: "p1 במחסנית, f1 בערמה." },
+        ],
+        answer: "c",
+      },
+      {
+        id: "a5",
+        prompt: "אורך כתובת IPv4 מול IPv6?",
+        options: [
+          { id: "a", text: "32 מול 64 סיביות." },
+          { id: "b", text: "32 מול 128 סיביות." },
+          { id: "c", text: "48 בשניהם." },
+          { id: "d", text: "64 מול 128 סיביות." },
+        ],
+        answer: "b",
+      },
+    ],
+    partB: [
+      {
+        id: "q6",
+        title: "שאלה 6 · Book, מילון, וחריגה",
+        prompt: "Book עם מחרוזות (שם, מחבר, שפה) ומספרים (קטלוג, מחיר, שנה) ובדיקת טיפוסים. מילון books לפי קטלוג. BookDataError. Buy לפי שם+מחבר או קטלוג.",
+        hadOfficial: false,
+        official: "",
+        proposed: `<pre class="exam-code" dir="ltr">class BookDataError(Exception):
+    pass
+
+class Book:
+    def __init__(self, name, author, lang, cat, price, year):
+        if not all(isinstance(x, str) for x in (name, author, lang)):
+            raise BookDataError("strings")
+        if not isinstance(cat, int) or not isinstance(year, int):
+            raise BookDataError("ints")
+        if isinstance(price, bool) or not isinstance(price, (int, float)):
+            raise BookDataError("price")
+        self.name, self.author, self.lang = name, author, lang
+        self.cat, self.price, self.year = cat, price, year
+
+books = {}
+
+def buy(name=None, author=None, cat=None):
+    if cat is not None:
+        b = books.get(cat)
+        if b is None:
+            raise BookDataError("unknown catalog")
+        return b
+    for b in books.values():
+        if b.name == name and b.author == author:
+            return b
+    raise BookDataError("no match")</pre>`,
+        verdictKind: "new",
+        verdict: "אין פתרון רשמי מצורף. bool הוא תת-טיפוס של int, ולכן מחיר נבדק בנפרד.",
+      },
+      {
+        id: "q7",
+        title: "שאלה 7 · קנרית מול CET",
+        prompt: "השוו קנרית המחסנית ו-CET: מטרה, פעולה, תוכנה או חומרה, ולאילו חולשות כל מנגנון עונה.",
+        hadOfficial: false,
+        official: "",
+        proposed: "<p>שניהם אפחות מול דריסת כתובת חזרה, לא תיקון של העתקה בלי גבול. קנרית: ערך סודי בין המקומיים לכתובת החזרה, נבדק לפני ret, בתוכנה (המהדר). CET / מחסנית צל: עותק מוגן של כתובת החזרה, השוואה ב-ret, בחומרה עם תמיכת המהדר. קנרית לא שומרת על vptr בערימה. CET לא מונע גלישת ערימה.</p>",
+        verdictKind: "new",
+        verdict: "ההבחנה: קנרית היא בדיקת ערך בתוכנה; CET הוא מעקב חומרתי אחרי כתובות חזרה.",
+      },
+      {
+        id: "q8",
+        title: "שאלה 8 · ערוץ משותף ושליחת קובץ",
+        prompt: "האם אפשרי: לקוח C++ מול שרת פייתון; לקוח IPv6 מול שרת IPv4; לקוח RSA מול שרת AES. אחר כך: input.txt אל 8.8.8.8, חבילה עד 64K סיביות.",
+        hadOfficial: false,
+        official: "",
+        proposed: `<p>אפשר כשהפרוטוקול זהה, בלי תלות בשפה או ב-IDE. IPv6 מול IPv4 לא ישירות; צריך תרגום (gateway / NAT64). RSA ו-AES אינם מתחלפים לבד: צריך הסכמה על האלגוריתם.</p>
+<pre class="exam-code" dir="ltr">#include &lt;arpa/inet.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;unistd.h&gt;
+enum { CHUNK = 8192 }; /* 64K bits */
+int main(void) {
+  FILE *f = fopen("input.txt", "rb");
+  if (!f) return 1;
+  int s = socket(AF_INET, SOCK_STREAM, 0);
+  struct sockaddr_in a = {0};
+  a.sin_family = AF_INET;
+  a.sin_port = htons(80);
+  inet_pton(AF_INET, "8.8.8.8", &amp;a.sin_addr);
+  if (connect(s, (struct sockaddr *)&amp;a, sizeof a) &lt; 0) return 1;
+  char buf[CHUNK];
+  size_t n;
+  while ((n = fread(buf, 1, CHUNK, f)) &gt; 0)
+    if (send(s, buf, n, 0) &lt; 0) break;
+  fclose(f);
+  close(s);
+}</pre>`,
+        verdictKind: "new",
+        verdict: "הפורט לא נקוב בשאלון. 64K סיביות הן 8192 בתים, לא 64K בתים.",
+      },
+      {
+        id: "q9",
+        title: "שאלה 9 · אורך לפני calloc",
+        prompt: "read_string קורא אורך מהשקע, ntohl, ואז calloc(length+2). מה נשבר, ואיך מתקנים? בלי מתכון ניצול.",
+        hadOfficial: false,
+        official: "",
+        proposed: "<p>אחרי המרה לסדר המכונה, <code>length + 2</code> יכול להיעטף אם האורך קרוב לקצה של <code>size_t</code>. <code>calloc</code> מקצה מעט, והקריאה עדיין לפי האורך המקורי. בקטע המודפס חסר גם פסיק, והסיום כתוב כקריאה ולא כאינדקס. התיקון: לדחות אורך לפני החיבור (<code>length &gt; SIZE_MAX - 2</code> או תקרה קבועה), ורק אז להקצות.</p>",
+        verdictKind: "new",
+        verdict: "השאלון ביקש גם ניצול. באתר נשאר מה נשבר והבדיקה שלפני החיבור.",
+      },
+    ],
+  },
+  {
+    id: "e-2025a-12-2",
+    title: "סימולציה · 2025א 12.2",
+    minutes: 180,
+    pick: 3,
+    note: "שחזור מזיכרון. שאלה 7 וחלק מהאמריקאיות לא שלמות, ולכן לא נבחנות כאן.",
+    partA: [
+      {
+        id: "a1",
+        prompt: "מה DEP מונע?",
+        options: [
+          { id: "a", text: "כל כתיבה למחסנית." },
+          { id: "b", text: "גלישת חוצץ עצמה." },
+          { id: "c", text: "SQL." },
+          { id: "d", text: "הרצת קוד מאזור שמיועד לנתונים." },
+        ],
+        answer: "d",
+      },
+      {
+        id: "a2",
+        prompt: "קריאה וירטואלית מתוך בנאי הבסיס, כשהנגזר דורס אותה, מגיעה ל:",
+        options: [
+          { id: "a", text: "מימוש הבסיס. בזמן בניית הבסיס האובייקט עדיין בסיס." },
+          { id: "b", text: "תמיד לנגזר, כי new יצר נגזר." },
+          { id: "c", text: "שגיאת קומפילציה." },
+          { id: "d", text: "שתי הגרסאות." },
+        ],
+        answer: "a",
+      },
+      {
+        id: "a3",
+        prompt: "range(50, 60) מחזיר:",
+        options: [
+          { id: "a", text: "list" },
+          { id: "b", text: "tuple" },
+          { id: "c", text: "range" },
+          { id: "d", text: "set" },
+        ],
+        answer: "c",
+      },
+      {
+        id: "a4",
+        prompt: "הפניה (reference) ב-C++ למחרוזת קיימת s1 נכתבת:",
+        options: [
+          { id: "a", text: "std::string a = s1; זו העתקה." },
+          { id: "b", text: "std::string &a = s1;" },
+          { id: "c", text: "std::string *a = &s1; זה מצביע." },
+          { id: "d", text: "std::string &a = &s1; לא מתקמפל." },
+        ],
+        answer: "b",
+      },
+      {
+        id: "a5",
+        prompt: "אפחות (Mitigation) היא:",
+        options: [
+          { id: "a", text: "מערכת בלי באגים." },
+          { id: "b", text: "רק הצפנת הערוץ." },
+          { id: "c", text: "הגנה שמזערה נזק מתקיפה, למשל זיהוי בקשות חריגות בזמן עומס." },
+          { id: "d", text: "התקיפה עצמה." },
+        ],
+        answer: "c",
+      },
+    ],
+    partB: [
+      {
+        id: "q6",
+        title: "שאלה 6 · im, קובץ, ו-HPBook",
+        prompt: "מילים מופרדות בפסיק שמתחילות ב-im: אות ראשונה גדולה והשאר קטנות. קובץ שורה-שורה לקובץ אחר. Book ו-HPBook; בלי ארגומנטים mainChar הוא harry, hermione, Ron.",
+        hadOfficial: false,
+        official: "",
+        proposed: `<pre class="exam-code" dir="ltr">def im_words(s):
+    if not isinstance(s, str):
+        raise ValueError("expected str")
+    out = []
+    for raw in s.split(","):
+        w = raw.strip()
+        if w.lower().startswith("im") and w:
+            out.append(w[0].upper() + w[1:].lower())
+    return out
+
+def convert(src, dst):
+    try:
+        with open(src, encoding="utf-8") as inf, open(dst, "w", encoding="utf-8") as out:
+            for line in inf:
+                out.write(",".join(im_words(line)) + "\\n")
+    except OSError as e:
+        print("file:", e)
+
+class Book:
+    def __init__(self, title, author, year):
+        self.title, self.author, self.year = title, author, year
+
+class HPBook(Book):
+    def __init__(self, title="Harry Potter", author="Rowling", year=1997, mainChar=None):
+        super().__init__(title, author, year)
+        self.mainChar = ["harry", "hermione", "Ron"] if mainChar is None else mainChar</pre>`,
+        verdictKind: "new",
+        verdict: "הזיכרון לא קובע אם מסננים רק מילות im. כאן כמו הדפוס של מועד ג: נשארות המילים שמתחילות ב-im.",
+      },
+      {
+        id: "q8",
+        title: "שאלה 8 · קנרית המחסנית",
+        prompt: "למה נוצרה, איך פועלת, מחסנית עם ובלי, ומנגנון נוסף מול אותה בעיה.",
+        hadOfficial: false,
+        official: "",
+        proposed: "<p>נוצרה כי העתקה בלי גבול מגיעה לכתובת החזרה. ערך סודי נשתל לפניה ונבדק לפני ret. בלי קנרית: מקומיים, מסגרת שמורה, כתובת חזרה. עם קנרית: מקומיים, קנרית, מסגרת, כתובת חזרה. נוסף: ASLR או NX/DEP. הקנרית לא מתקנת את ההעתקה.</p>",
+        verdictKind: "new",
+        verdict: "אין שרטוט רשמי. הסדר הוא של מודל הקורס.",
+      },
+      {
+        id: "q9",
+        title: "שאלה 9 · קובץ, כותרת 12 בתים, וארגז חול",
+        prompt: "לקוח פייתון שולח קובץ. כותרת: size, packet number, number of packets — 4 בתים כל אחד, big-endian. מטען עד 1024. שגיאה מסודרת אם הקובץ לא נפתח. מה ארגז חול ומה המטרה.",
+        hadOfficial: false,
+        official: "",
+        proposed: `<pre class="exam-code" dir="ltr">import socket, struct
+def send_file(host, port, path):
+    try:
+        data = open(path, "rb").read()
+    except OSError as e:
+        print("cannot open:", e)
+        return
+    step = 1024
+    n = max(1, (len(data) + step - 1) // step)
+    s = socket.socket()
+    try:
+        s.connect((host, port))
+        for i in range(n):
+            chunk = data[i * step:(i + 1) * step]
+            hdr = struct.pack("!III", len(chunk), i + 1, n)
+            s.sendall(hdr + chunk)
+    except OSError as e:
+        print("net:", e)
+    finally:
+        s.close()</pre>
+<p>ארגז חול מריץ קוד לא מהימן עם הרשאות וממשקים מצומצמים, כדי שכשל לא יהפוך לשליטה במערכת. מימוש עקרוני: תהליך נפרד, משתמש חלש, בלי רשת אם לא צריך.</p>`,
+        verdictKind: "new",
+        verdict: "הזיכרון לא קובע אם size הוא גודל המטען או גודל הקובץ. כאן גודל המטען.",
+      },
+      {
+        id: "q10",
+        title: "שאלה 10 · שרת שמקבל את אותה כותרת",
+        prompt: "שרת C++ שמקבל את הודעות שאלה 9. מה להחזיר ללקוח לא זכור.",
+        hadOfficial: false,
+        official: "",
+        proposed: "<p>קוראים 12 בתים, מפרשים שלושה <code>uint32_t</code> בסדר רשת, ואז קוראים בדיוק את גודל המטען שאושר (לכל היותר 1024). אין תשובה משוחזרת ללקוח, ולכן לא ממציאים פורמט תגובה.</p>",
+        verdictKind: "new",
+        verdict: "סעיף התגובה חסר בזיכרון.",
+      },
+    ],
   }
 );

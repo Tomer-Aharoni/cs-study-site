@@ -23,15 +23,7 @@ function quizzesFor(id) {
 }
 
 function findQuiz(qid) {
-  return [
-    ...UNIT1_QUIZZES,
-    ...(window.UNIT2_QUIZZES || []),
-    ...(window.UNIT3_QUIZZES || []),
-    ...(window.UNIT4_QUIZZES || []),
-    ...(window.UNIT5_QUIZZES || []),
-    ...(window.UNIT6_QUIZZES || []),
-    ...(window.UNIT7_QUIZZES || []),
-  ].find((q) => q.id === qid);
+  return allQuizzes().find((q) => q.id === qid) || null;
 }
 
 function safeDecode(s) {
@@ -177,7 +169,11 @@ function noteAnswer(qid, correct) {
 function allQuizzes() {
   const out = [];
   COURSE.units.forEach((u) => {
-    quizzesFor(u.id).forEach((q) => out.push(Object.assign({ unit: u.id }, q)));
+    quizzesFor(u.id).forEach((q) => out.push(Object.assign({ unit: u.id, kind: q.kind || "mcq" }, q)));
+  });
+  (window.PREP_BANK || []).forEach((q) => {
+    if (out.some((item) => item.id === q.id)) return;
+    out.push(Object.assign({ unit: String(q.topic || ""), kind: q.kind || "mcq" }, q));
   });
   return out;
 }
@@ -213,6 +209,7 @@ function startRound(unit, count) {
     ids: pool.slice(0, n).map((q) => q.id),
     index: 0,
     picked: {},
+    revealed: {},
     mode: "round",
     unit: unit,
   });
@@ -222,54 +219,8 @@ function startRound(unit, count) {
 function startReview() {
   const wrong = getProgress().wrong;
   const ids = shuffle(allQuizzes().filter((q) => wrong.includes(q.id)).map((q) => q.id));
-  saveRound({ ids: ids, index: 0, picked: {}, mode: "review", unit: "wrong" });
+  saveRound({ ids: ids, index: 0, picked: {}, revealed: {}, mode: "review", unit: "wrong" });
   const dest = `#/course/${COURSE.id}/practice/review`;
-  if (location.hash === dest) route();
-  else location.hash = dest;
-}
-
-function prepById(id) {
-  return (window.PREP_BANK || []).find((q) => q.id === id) || null;
-}
-
-function prepTopics() {
-  const bank = window.PREP_BANK || [];
-  const topics = [];
-  bank.forEach((q) => {
-    let topic = topics.find((item) => item.id === q.topic);
-    if (!topic) {
-      topic = { id: q.topic, title: q.topicTitle || q.topic, n: 0 };
-      topics.push(topic);
-    }
-    topic.n += 1;
-  });
-  return topics;
-}
-
-function loadPrepRound() {
-  try {
-    return JSON.parse(sessionStorage.getItem("cs-prep-round") || "");
-  } catch (err) {
-    return null;
-  }
-}
-
-function savePrepRound(round) {
-  sessionStorage.setItem("cs-prep-round", JSON.stringify(round));
-}
-
-function startPrep(topic, count) {
-  const pool = shuffle((window.PREP_BANK || []).filter((q) => topic === "all" || q.topic === topic));
-  if (!pool.length) return;
-  const n = count === "all" ? pool.length : Math.max(1, Math.min(Number(count) || 5, pool.length));
-  savePrepRound({
-    ids: pool.slice(0, n).map((q) => q.id),
-    index: 0,
-    picked: {},
-    revealed: {},
-    topic: topic,
-  });
-  const dest = `#/course/${COURSE.id}/practice/bank`;
   if (location.hash === dest) route();
   else location.hash = dest;
 }
@@ -1513,7 +1464,7 @@ function drillHubHtml() {
   const total = allQuizzes().length;
   const units = COURSE.units
     .map((u) => {
-      const n = quizzesFor(u.id).length;
+      const n = allQuizzes().filter((q) => q.unit === u.id).length;
       if (!n) return "";
       return `<option value="${u.id}">יחידה ${u.id} · ${esc(u.title)} (${n})</option>`;
     })
@@ -1524,7 +1475,7 @@ function drillHubHtml() {
       : `<p class="muted">תשובה שגויה, כאן או בתוך יחידה, נשמרת לחזרה.</p>`;
   return `<section class="drill-setup-card">
     <h2>סבב שאלות</h2>
-    <p class="muted">מהשאלות שכבר כתובות ביחידות. ${total} שאלות במאגר. אחרי בחירה רואים מיד אם זה נכון.</p>
+    <p class="muted">שאלות מהיחידות ומחוברת ההכנה, כולל שאלות פתוחות. ${total} שאלות. אחרי בחירה רואים מיד אם זה נכון. בשאלה פתוחה מציגים פתרון.</p>
     <form class="drill-setup" data-drill-setup>
       <label>יחידה
         <select name="unit">
@@ -1544,121 +1495,6 @@ function drillHubHtml() {
     </form>
     <p class="drill-review">${review} <a href="${base}/summary/flip">לכרטיסיות</a></p>
   </section>`;
-}
-
-function prepHubHtml() {
-  const topics = prepTopics();
-  const total = (window.PREP_BANK || []).length;
-  if (!total) return "";
-  const options = topics
-    .map((topic) => `<option value="${esc(topic.id)}">${esc(topic.title)} (${topic.n})</option>`)
-    .join("");
-  return `<section class="drill-setup-card">
-    <h2>מאגר חוברת ההכנה</h2>
-    <p class="muted">שאלות מהחוברת, לא סימולציית מועד. ${total} שאלות. כל הנושאים מגריל מכל המאגר. נושא אחד מגריל רק ממנו. אחרי רב־ברירה רואים מיד אם זה נכון. בשאלה פתוחה מציגים פתרון.</p>
-    <form class="drill-setup" data-prep-setup>
-      <label>נושא
-        <select name="topic">
-          <option value="all">כל הנושאים, באקראי (${total})</option>
-          ${options}
-        </select>
-      </label>
-      <label>כמות
-        <select name="count">
-          <option value="3">3</option>
-          <option value="5" selected>5</option>
-          <option value="10">10</option>
-          <option value="all">כל השאלות בנושא</option>
-        </select>
-      </label>
-      <button class="primary" type="submit">התחלת תרגול</button>
-    </form>
-  </section>`;
-}
-
-function renderPrepBank() {
-  const base = `#/course/${COURSE.id}`;
-  const round = loadPrepRound();
-  if (!round || !Array.isArray(round.ids)) {
-    return shell(`
-      <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
-      <h1>מאגר חוברת ההכנה</h1>
-      <p>בחרו נושא וכמות בעמוד התרגול.</p>
-      <p><a href="${base}/practice">חזרה לתרגול</a></p>
-    `);
-  }
-  if (!round.ids.length) {
-    return shell(`
-      <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
-      <h1>מאגר חוברת ההכנה</h1>
-      <p>אין שאלות בנושא שנבחר.</p>
-    `);
-  }
-  if (round.index >= round.ids.length) {
-    let mcq = 0;
-    let good = 0;
-    let open = 0;
-    round.ids.forEach((id) => {
-      const item = prepById(id);
-      if (!item) return;
-      if (item.kind === "open") open += 1;
-      else {
-        mcq += 1;
-        if (round.picked[id] === item.answer) good += 1;
-      }
-    });
-    return shell(`
-      <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
-      <h1>סוף התרגול</h1>
-      <p class="drill-score">${good} תשובות נכונות מתוך ${mcq} רב־ברירה.</p>
-      <p class="muted">${open ? open + " שאלות פתוחות עם פתרון." : ""}</p>
-      <p class="drill-end"><a class="primary-link" href="${base}/practice">תרגול חדש</a></p>
-    `);
-  }
-  const q = prepById(round.ids[round.index]);
-  if (!q) {
-    round.index += 1;
-    savePrepRound(round);
-    return renderPrepBank();
-  }
-  const kindLabel = q.kind === "open" ? "פתוחה" : "רב־ברירה";
-  const nextLabel = round.index + 1 === round.ids.length ? "סיום" : "השאלה הבאה";
-  let body = "";
-  if (q.kind === "open") {
-    const shown = !!(round.revealed || {})[q.id];
-    body = `
-      <h1>${esc(q.title || "שאלה פתוחה")}</h1>
-      <p>${esc(q.prompt)}</p>
-      ${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}
-      <button type="button" class="ghost-btn" data-prep-reveal ${shown ? "hidden" : ""}>הצגת פתרון</button>
-      <div class="panel prep-solution" ${shown ? "" : "hidden"}>
-        ${foldHtml("פתרון מפורט ודרך חישוב", q.solution || "<p>לא נמצא פתרון מלא במקור.</p>")}
-        ${q.note ? `<p class="feedback ok">${esc(q.note)}</p>` : ""}
-      </div>
-      <button type="button" class="primary" data-prep-next ${shown ? "" : "hidden"}>${nextLabel}</button>`;
-  } else {
-    const picked = round.picked[q.id];
-    const opts = q.options
-      .map((o) => {
-        const mark = picked ? (o.id === q.answer ? " correct" : o.id === picked ? " wrong" : "") : "";
-        const dis = picked ? " disabled" : "";
-        return `<button type="button" class="option${mark}" data-prep-choice="${o.id}"${dis}>${esc(o.text)}</button>`;
-      })
-      .join("");
-    const right = (q.options.find((o) => o.id === q.answer) || {}).text || "";
-    const fb = picked
-      ? `<p class="feedback ${picked === q.answer ? "ok" : "bad"}">${picked === q.answer ? "נכון." : "התשובה הנכונה: " + esc(right)}</p>
-        ${foldHtml("פתרון מפורט ודרך חישוב", practiceSolutionHtml(q))}`
-      : "";
-    body = `<h1>${esc(q.prompt)}</h1>${opts}${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}${fb}<button type="button" class="primary" data-prep-next ${picked ? "" : "hidden"}>${nextLabel}</button>`;
-  }
-  return shell(`
-    <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
-    <p class="drill-meta">שאלה ${round.index + 1} מתוך ${round.ids.length} · ${esc(q.topicTitle || "")} · ${kindLabel}</p>
-    <section class="drill" data-prep>
-      ${body}
-    </section>
-  `);
 }
 
 function renderRound(mode) {
@@ -1687,16 +1523,18 @@ function renderRound(mode) {
     `);
   }
   if (round.index >= round.ids.length) {
-    const good = round.ids.filter((id) => {
-      const q = findQuiz(id);
-      return q && round.picked[id] === q.answer;
-    }).length;
+    const graded = round.ids.filter((id) => {
+      const item = findQuiz(id);
+      return item && item.kind !== "open";
+    });
+    const good = graded.filter((id) => round.picked[id] === findQuiz(id).answer).length;
+    const openN = round.ids.length - graded.length;
     const left = getProgress().wrong.length;
     return shell(`
       <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
       <h1>סוף הסבב</h1>
-      <p class="drill-score">${good} תשובות נכונות מתוך ${round.ids.length}.</p>
-      <p class="muted">${left ? "בערימת הטעויות נשארו " + left + " שאלות." : "ערימת הטעויות ריקה."}</p>
+      <p class="drill-score">${good} תשובות נכונות מתוך ${graded.length}.</p>
+      <p class="muted">${openN ? openN + " שאלות פתוחות עם פתרון. " : ""}${left ? "בערימת הטעויות נשארו " + left + " שאלות." : "ערימת הטעויות ריקה."}</p>
       <p class="drill-end">
         <a class="primary-link" href="${base}/practice">סבב חדש</a>
         ${left ? `<button type="button" class="ghost-btn" data-start-review>חזרה על מה שנשאר</button>` : ""}
@@ -1709,30 +1547,47 @@ function renderRound(mode) {
     saveRound(round);
     return renderRound(mode);
   }
-  const picked = round.picked[q.id];
-  const opts = q.options
-    .map((o) => {
-      const mark = picked ? (o.id === q.answer ? " correct" : o.id === picked ? " wrong" : "") : "";
-      const dis = picked ? " disabled" : "";
-      return `<button type="button" class="option${mark}" data-drill-choice="${o.id}"${dis}>${esc(o.text)}</button>`;
-    })
-    .join("");
-  const fb = picked
-    ? `<p class="feedback ${picked === q.answer ? "ok" : "bad"}">${picked === q.answer ? "נכון." : "לא נכון."}</p>
-      ${foldHtml("פתרון מפורט ודרך חישוב", practiceSolutionHtml(q))}`
-    : `<p class="feedback" hidden></p>`;
   const nextLabel = round.index + 1 === round.ids.length ? "סיום" : "השאלה הבאה";
-  const unitId = (allQuizzes().find((item) => item.id === q.id) || {}).unit;
-  const unitName = COURSE.units.find((u) => u.id === unitId);
-  return shell(`
-    <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
-    <p class="drill-meta">שאלה ${round.index + 1} מתוך ${round.ids.length}${unitName ? " · יחידה " + unitName.id : ""}</p>
-    <section class="drill" data-drill>
+  const unitName = COURSE.units.find((u) => u.id === q.unit);
+  const kindLabel = q.kind === "open" ? " · פתוחה" : "";
+  let body = "";
+  if (q.kind === "open") {
+    const shown = !!(round.revealed || {})[q.id];
+    body = `
+      <h1>${esc(q.title || "שאלה פתוחה")}</h1>
+      <p>${esc(q.prompt)}</p>
+      ${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}
+      <button type="button" class="ghost-btn" data-drill-reveal ${shown ? "hidden" : ""}>הצגת פתרון</button>
+      <div class="panel prep-solution" ${shown ? "" : "hidden"}>
+        ${foldHtml("פתרון מפורט ודרך חישוב", q.solution || "<p>אין פתרון שמור.</p>")}
+        ${q.note ? `<p class="feedback ok">${esc(q.note)}</p>` : ""}
+      </div>
+      <button type="button" class="primary" data-drill-next ${shown ? "" : "hidden"}>${nextLabel}</button>`;
+  } else {
+    const picked = round.picked[q.id];
+    const opts = (q.options || [])
+      .map((o) => {
+        const mark = picked ? (o.id === q.answer ? " correct" : o.id === picked ? " wrong" : "") : "";
+        const dis = picked ? " disabled" : "";
+        return `<button type="button" class="option${mark}" data-drill-choice="${o.id}"${dis}>${esc(o.text)}</button>`;
+      })
+      .join("");
+    const fb = picked
+      ? `<p class="feedback ${picked === q.answer ? "ok" : "bad"}">${picked === q.answer ? "נכון." : "לא נכון."}</p>
+        ${foldHtml("פתרון מפורט ודרך חישוב", practiceSolutionHtml(q))}`
+      : `<p class="feedback" hidden></p>`;
+    body = `
       <h1>${esc(q.prompt)} ${editLink(quizContentId(q.id), "השאלה")}</h1>
       ${opts}
       ${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}
       ${fb}
-      <button type="button" class="primary" data-drill-next ${picked ? "" : "hidden"}>${nextLabel}</button>
+      <button type="button" class="primary" data-drill-next ${picked ? "" : "hidden"}>${nextLabel}</button>`;
+  }
+  return shell(`
+    <p class="back-row"><a class="back" href="${base}/practice">לתרגול</a></p>
+    <p class="drill-meta">שאלה ${round.index + 1} מתוך ${round.ids.length}${unitName ? " · יחידה " + unitName.id : ""}${kindLabel}</p>
+    <section class="drill" data-drill>
+      ${body}
     </section>
   `);
 }
@@ -2035,7 +1890,7 @@ function examHubHtml() {
 function renderPractice() {
   const r = parseRoute();
   const view = r.practiceView;
-  if (view === "round" || view === "review") return renderRound(view);
+  if (view === "round" || view === "review" || view === "bank") return renderRound(view === "bank" ? "round" : view);
   if (view === "bank") return renderPrepBank();
   if (view === "exam" && r.examId) {
     const exam = examById(r.examId);
@@ -2060,7 +1915,6 @@ function renderPractice() {
     <p><a href="#/course/${COURSE.id}">← חזרה לקורס</a></p>
     <h1>תרגול למבחנים</h1>
     ${examHubHtml()}
-    ${prepHubHtml()}
     ${drillHubHtml()}
     ${exams}
   `);
@@ -3097,36 +2951,15 @@ app.addEventListener("click", async (e) => {
     return;
   }
 
-  const prepChoice = e.target.closest("[data-prep-choice]");
-  if (prepChoice) {
-    const round = loadPrepRound();
+  if (e.target.closest("[data-drill-reveal]")) {
+    const round = loadRound();
     if (!round || round.index >= round.ids.length) return;
-    const q = prepById(round.ids[round.index]);
-    if (!q || q.kind !== "mcq" || round.picked[q.id]) return;
-    round.picked[q.id] = prepChoice.getAttribute("data-prep-choice");
-    savePrepRound(round);
-    app.innerHTML = renderPrepBank();
-    return;
-  }
-
-  if (e.target.closest("[data-prep-reveal]")) {
-    const round = loadPrepRound();
-    if (!round || round.index >= round.ids.length) return;
-    const q = prepById(round.ids[round.index]);
+    const q = findQuiz(round.ids[round.index]);
     if (!q || q.kind !== "open") return;
     round.revealed = round.revealed || {};
     round.revealed[q.id] = true;
-    savePrepRound(round);
-    app.innerHTML = renderPrepBank();
-    return;
-  }
-
-  if (e.target.closest("[data-prep-next]")) {
-    const round = loadPrepRound();
-    if (!round) return;
-    round.index += 1;
-    savePrepRound(round);
-    app.innerHTML = renderPrepBank();
+    saveRound(round);
+    app.innerHTML = renderRound(round.mode);
     return;
   }
 
@@ -3768,13 +3601,6 @@ app.addEventListener("submit", (e) => {
     e.preventDefault();
     const data = new FormData(drillForm);
     startRound(String(data.get("unit") || "all"), String(data.get("count") || "10"));
-    return;
-  }
-  const prepForm = e.target.closest("[data-prep-setup]");
-  if (prepForm) {
-    e.preventDefault();
-    const data = new FormData(prepForm);
-    startPrep(String(data.get("topic") || "all"), String(data.get("count") || "5"));
     return;
   }
   if (!e.target.classList.contains("risk-form")) return;
