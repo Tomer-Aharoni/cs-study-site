@@ -78,6 +78,19 @@ else:
 
 print(average(4, 6))</code></pre>
       <p>זה מדפיס 5.0 (חילוק בפייתון 3 נותן float). <code>average("a", "b")</code> לא נחסם בקומפילציה — בריצה תהיה שגיאה (אי אפשר לחבר/לחלק כך). זו בדיוק משמעות "טיפוס דינמי" במדריך: ניסיון הפעלה בזמן ריצה, לא בדיקת חתימה מראש.</p>
+      <p><strong>מלכודת מבחן: ברירת מחדל שניתנת לשינוי.</strong> ארגומנט ברירת מחדל מחושב פעם אחת, בזמן הגדרת הפונקציה, ולא מחדש בכל קריאה. רשימה ריקה בברירת המחדל היא אותו אובייקט בכל הקריאות, ולכן ערך שנוסף בקריאה אחת נשאר לקריאה הבאה.</p>
+      <pre class="code"><code>def collect(item, bucket=[]):
+    bucket.append(item)
+    return bucket
+
+collect("a")  # ["a"]
+collect("b")  # ["a", "b"] — אותה רשימה</code></pre>
+      <p>התיקון: ברירת המחדל היא <code>None</code>, ורשימה חדשה נוצרת בתוך הפונקציה.</p>
+      <pre class="code"><code>def collect(item, bucket=None):
+    if bucket is None:
+        bucket = []
+    bucket.append(item)
+    return bucket</code></pre>
     `,
   },
   {

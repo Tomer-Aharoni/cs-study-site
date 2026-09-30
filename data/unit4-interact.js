@@ -242,6 +242,20 @@ window.PY_EVAL_LAB = {
   intro: "שלושה תרחישים מדומים. לא מריצים קלט חופשי. תראו את ההבדל בין ביטוי קבוע בקוד לבין מחרוזת שהגיעה כגבול אמון.",
 };
 
+(window.UNIT4_QUIZZES = window.UNIT4_QUIZZES || []).push(
+  {
+    id: "u4-mutable-default",
+    prompt: "מה קורה כשברירת המחדל של פרמטר היא רשימה ריקה, וקוראים לפונקציה פעמיים בלי להעביר רשימה?",
+    options: [
+      { id: "a", text: "בכל קריאה נוצרת רשימה חדשה, ולכן הקריאות אינן רואות זו את זו." },
+      { id: "b", text: "הרשימה נוצרת פעם אחת בהגדרת הפונקציה, ושתי הקריאות חולקות אותה." },
+      { id: "c", text: "זו שגיאת תחביר: אסור שרשימה תהיה ברירת מחדל." },
+    ],
+    answer: "b",
+    explain: "ברירת המחדל מחושבת פעם אחת. התיקון הוא None, ויצירת רשימה חדשה בתוך הפונקציה.",
+  }
+);
+
 (window.SUMMARY_CARDS = window.SUMMARY_CARDS || []).push(
   { id: "u4-intp", unit: "4", kind: "הגדרה", title: "מפרש (Interpreter)", body: "אין קישור חובה ל-exe; ב-CPython המקור מקומפל ל-bytecode ואז מבוצע." },
   { id: "u4-ind", unit: "4", kind: "לזכור", title: "הזחה (Indentation)", body: "בלוק אחרי : לפי הזחה. ארבעה רווחים; לא מערבבים Tab ורווחים." },
@@ -259,6 +273,7 @@ window.PY_EVAL_LAB = {
   { id: "u4-ex", unit: "4", kind: "הגדרה", title: "חריגות (try, except)", body: "תופסים חריגה ספציפית; bare except תופס גם חריגות מערכת. else בהצלחה, finally תמיד." },
   { id: "u4-pkl", unit: "4", kind: "מלכודת", title: "שימור אובייקטים (pickle, shelve)", body: "dump שומר; load משחזר ויכול להריץ קוד. רק מקור אמין. מול משתמש — JSON וסכימה." },
   { id: "u4-kw", unit: "4", kind: "הגדרה", title: "ארגומנט בעל שם", body: "keyword argument: f(x=1). מיקום: לפי סדר." },
+  { id: "u4-mutdef", unit: "4", kind: "מלכודת", title: "ברירת מחדל ניתנת לשינוי", body: "רשימה בברירת מחדל נוצרת פעם אחת ומשותפת לכל הקריאות. התיקון: None, ורשימה חדשה בתוך הפונקציה." },
   { id: "u4-dec", unit: "4", kind: "הגדרה", title: "מעטפת (decorator)", body: "פונקציה שעוטפת פונקציה. בלי wraps, __name__ ו־__doc__ הם של הפונקציה הפנימית. עם wraps הם של המקור. wrapper מקבל *args וגם **kwargs." },
   { id: "u4-init", unit: "4", kind: "הגדרה", title: "אתחול מופע (__init__, self)", body: "__new__ יוצר; __init__ מאתחל. self הוא המופע. שדות גלויים כברירת מחדל." },
   { id: "u4-strd", unit: "4", kind: "טריק", title: "ייצוג כמחרוזת (__str__)", body: "print(obj) קורא לה. כמו toString." },

@@ -4,7 +4,7 @@ UNIT2.sections.push(
     title: "בנאי (constructor), מפרק (destructor), וסדר החיים",
     html: `
       <p>ה<strong>בנאי (constructor)</strong> נקרא תמיד ביצירה. שמו כשם המחלקה, בלי טיפוס חוזר. שם מאתחלים שדות ומקצים משאבים.</p>
-      <p>ה<strong>מפרק (destructor)</strong> נקרא כשהאובייקט נהרס. שמו <code>~Point</code>. שם משחררים משאבים שבבעלות האובייקט, למשל זיכרון שהוא עצמו הקצה או קובץ שהוא פתח.</p>
+      <p>ה<strong>מפרק (destructor)</strong> נקרא כשהאובייקט נהרס. שמו <code>~Point</code>. שם משחררים משאבים שבבעלות האובייקט, למשל זיכרון שהוא עצמו הקצה או קובץ שהוא פתח. למפרק אין פרמטרים, ואי אפשר להעמיס אותו: למחלקה יש מפרק אחד.</p>
       <pre class="code"><code>class Point {
     int x, y;
 public:

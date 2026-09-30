@@ -1,5 +1,16 @@
 window.UNIT2_QUIZZES = [
   {
+    id: "u2-dtor-once",
+    prompt: "מה נכון לגבי מפרק (destructor) ב-C++?",
+    options: [
+      { id: "a", text: "אפשר להעמיס כמה מפרקים, לפי מספר הפרמטרים." },
+      { id: "b", text: "למחלקה יש מפרק אחד, בלי פרמטרים, ואי אפשר להעמיס אותו." },
+      { id: "c", text: "המפרק נקרא רק אם כותבים delete, גם לאובייקט על המחסנית." },
+    ],
+    answer: "b",
+    explain: "המפרק הוא ~Class(), בלי פרמטרים ובלי העמסה. על המחסנית הוא רץ בסוף הבלוק גם בלי delete.",
+  },
+  {
     id: "u2-main",
     prompt: "מה תפקיד main בתוכנית C++?",
     options: [
@@ -261,6 +272,7 @@ window.COPY_LAB = {
   { id: "u2-stream", unit: "2", kind: "הגדרה", title: "זרמים (Streams: iostream / fstream / sstream)", body: "אותו ממשק לקלט/פלט: cin/cout, קובץ, מחרוזת. istream בסיס לקלט; getline עם פסיק מתאים לפורמט מופרד בפסיקים פשוט, ללא שדות מצוטטים." },
   { id: "u2-friend", unit: "2", kind: "הגדרה", title: "חבר (friend)", body: "הרשאה מפורשת ל־private/protected. לא ירושה ולא public." },
   { id: "u2-defctor", unit: "2", kind: "מלכודת", title: "בנאי ברירת מחדל (Default Constructor) נעלם", body: "הכרזת בנאי כלשהו מבטלת את בנאי ברירת המחדל האוטומטי. משחזרים ב־= default." },
+  { id: "u2-dtor-one", unit: "2", kind: "לזכור", title: "מפרק אחד", body: "למפרק אין פרמטרים ואי אפשר להעמיס אותו. על המחסנית הוא רץ בסוף הבלוק." },
   { id: "u2-find", unit: "2", kind: "לזכור", title: "איטרטור (Iterator) ו־std::find", body: "מיקום במכולה, לא בהכרח מצביע. find מחזיר end() אם לא נמצא." },
   { id: "u2-ns", unit: "2", kind: "הגדרה", title: "מרחב שמות (namespace)", body: "תיקיית שמות. הסטנדרט ב-std. מונע התנגשות find מול find." },
   { id: "u2-using", unit: "2", kind: "טריק", title: "לא using namespace std", body: "דף תיקונים: std::cout מפורש, פחות התנגשויות עכשיו ובעתיד." },
