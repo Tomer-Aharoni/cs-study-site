@@ -14,7 +14,7 @@ python -m http.server 8000
 
 ## חשבונות וניהול
 
-בלי קובץ `js/config.js` האתר נשאר קריא, וההתקדמות נשמרת רק בדפדפן.
+`js/config.js` מכיל את כתובת הפרויקט ואת מפתח ה-publishable. בלי ערכים תקינים האתר נשאר קריא, וההתקדמות נשמרת רק בדפדפן.
 
 כדי להפעיל התחברות Google, מעקב בחשבון ופאנל ניהול:
 
@@ -22,7 +22,7 @@ python -m http.server 8000
 2. ב-Authentication → Providers הפעילו Google. את מזהה הלקוח ואת הסוד שמים רק בלוח Supabase, לא בקוד.
 3. ב-Google Cloud הוסיפו כתובת הפניה מהצורה `https://PROJECT.supabase.co/auth/v1/callback`, וב-Supabase הוסיפו את כתובת האתר (למשל `http://localhost:8000`) ל-Redirect URLs.
 4. הריצו את [supabase/migrations/001_auth_progress_content.sql](supabase/migrations/001_auth_progress_content.sql) ב-SQL Editor.
-5. העתיקו את `js/config.example.js` אל `js/config.js` ומלאו כתובת פרויקט ומפתח `anon`. מפתח `service_role` לא נכנס לאתר.
+5. `js/config.js` כבר במאגר, עם כתובת הפרויקט ומפתח `anon` / publishable. מפתח `service_role` לא נכנס לאתר. לפרויקט Supabase אחר, העתיקו את `js/config.example.js`.
 6. התחברו פעם אחת עם Google, ואז ב-SQL:
 
 ```sql
