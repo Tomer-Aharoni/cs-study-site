@@ -99,15 +99,38 @@ function esc(s) {
 }
 
 function aiBubble() {
-  return `<abbr class="ai-bubble" title="הניסוח נבנה באמצעות AI">AI</abbr>`;
+  return `<abbr class="ai-bubble" title="נוצר באמצעות AI, לא נשלף מקבצי המקור">AI</abbr>`;
+}
+
+function contentOrigin(q, exam) {
+  const map = window.CONTENT_ORIGIN || {};
+  let mapped = { q: true, a: true };
+  if (q) {
+    const keys = [];
+    if (exam) {
+      keys.push(exam.id + ":" + q.id);
+      keys.push(exam.id + "-" + q.id);
+    }
+    keys.push(q.id);
+    for (let i = 0; i < keys.length; i += 1) {
+      if (map[keys[i]]) {
+        mapped = map[keys[i]];
+        break;
+      }
+    }
+  }
+  return {
+    q: q && q.fromAsset === true ? false : q && q.fromAsset === false ? true : !!mapped.q,
+    a: q && q.answerFromAsset === true ? false : q && q.answerFromAsset === false ? true : !!mapped.a,
+  };
 }
 
 function questionBuiltByAi(q, exam) {
-  const text = `${(q && q.prompt) || ""} ${(q && q.title) || ""}`;
-  if (text.includes("נוספה לסימולציה") || text.includes("אינה מהמועד")) return true;
-  if (exam && String(exam.title || "").includes("שלוקטה")) return true;
-  if (exam) return false;
-  return true;
+  return !!contentOrigin(q, exam).q;
+}
+
+function answerBuiltByAi(q, exam) {
+  return !!contentOrigin(q, exam).a;
 }
 
 function quizContentId(qid) {
@@ -593,7 +616,7 @@ function quizBlock(q) {
     )
     .join("");
   return `<div class="quiz panel" data-qid="${esc(q.id)}">
-    <div class="box-head"><p>${aiBubble()}<strong>תרגול.</strong> ${esc(q.prompt)}</p>${editLink(quizContentId(q.id), "השאלה")}</div>
+    <div class="box-head"><p>${questionBuiltByAi(q) ? aiBubble() : ""}<strong>תרגול.</strong> ${esc(q.prompt)}</p>${editLink(quizContentId(q.id), "השאלה")}</div>
     ${opts}
     <p class="feedback" hidden></p>
   </div>`;
@@ -1585,12 +1608,12 @@ function renderRound(mode) {
   if (q.kind === "open") {
     const shown = !!(round.revealed || {})[q.id];
     body = `
-      <h1>${aiBubble()}${esc(q.title || "שאלה פתוחה")}</h1>
+      <h1>${questionBuiltByAi(q) ? aiBubble() : ""}${esc(q.title || "שאלה פתוחה")}</h1>
       <p>${esc(q.prompt)}</p>
       ${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}
       <button type="button" class="ghost-btn" data-drill-reveal ${shown ? "hidden" : ""}>הצגת פתרון</button>
       <div class="panel prep-solution" ${shown ? "" : "hidden"}>
-        ${foldHtml(aiBubble() + "פתרון מפורט ודרך חישוב", q.solution || "<p>אין פתרון שמור.</p>")}
+        ${foldHtml((answerBuiltByAi(q) ? aiBubble() : "") + "פתרון מפורט ודרך חישוב", q.solution || "<p>אין פתרון שמור.</p>")}
         ${q.note ? `<p class="feedback ok">${esc(q.note)}</p>` : ""}
       </div>
       <button type="button" class="primary" data-drill-next ${shown ? "" : "hidden"}>${nextLabel}</button>`;
@@ -1605,7 +1628,7 @@ function renderRound(mode) {
       .join("");
     const fb = picked
       ? `<p class="feedback ${picked === q.answer ? "ok" : "bad"}">${picked === q.answer ? "נכון." : "לא נכון."}</p>
-        ${foldHtml(aiBubble() + "פתרון מפורט ודרך חישוב", practiceSolutionHtml(q))}`
+        ${foldHtml((answerBuiltByAi(q) ? aiBubble() : "") + "פתרון מפורט ודרך חישוב", practiceSolutionHtml(q))}`
       : `<p class="feedback" hidden></p>`;
     body = `
       <h1>${questionBuiltByAi(q) ? aiBubble() : ""}${esc(q.prompt)} ${editLink(quizContentId(q.id), "השאלה")}</h1>
@@ -1812,9 +1835,10 @@ function examMcqHtml(exam, run, review) {
             ? `<p class="feedback bad">לא נענתה. נכון: ${esc((q.options.find((o) => o.id === q.answer) || {}).text || "")}</p>`
             : "";
       const hint = foldHtml("💡 רמז לפתרון", practiceHintHtml(q));
-      const solution = review ? foldHtml(aiBubble() + "פתרון מפורט ודרך חישוב", practiceSolutionHtml(q)) : "";
+      const solution = review ? foldHtml((answerBuiltByAi(q, exam) ? aiBubble() : "") + "פתרון מפורט ודרך חישוב", practiceSolutionHtml(q)) : "";
       return `<div class="quiz panel" data-qid="${q.id}">
-        <div class="box-head"><p>${questionBuiltByAi(q, exam) ? aiBubble() : ""}<strong>${esc(q.prompt)}</strong></p>${editLink("exam:" + exam.id + ":a:" + q.id, "שאלת המבחן")}</div>
+        <div class="box-head"><p class="exam-prompt">${questionBuiltByAi(q, exam) ? aiBubble() : ""}<strong>${esc(q.prompt)}</strong></p>${editLink("exam:" + exam.id + ":a:" + q.id, "שאלת המבחן")}</div>
+        ${q.code ? `<pre class="code exam-code" dir="ltr">${esc(q.code)}</pre>` : ""}
         ${opts}
         ${hint}
         ${mark}
@@ -1838,14 +1862,15 @@ function examPartBHtml(exam, run, review) {
         const kind = q.verdictKind || "new";
         sol = `<div class="exam-sol">
           ${q.hadOfficial ? `<h3>מה היה בפתרון הקיים</h3><p>${esc(q.official)}</p>` : `<h3>אין פתרון רשמי קריא</h3>`}
-          ${foldHtml(aiBubble() + "פתרון מפורט ודרך חישוב", q.solution || q.proposed || "<p>לא נמצא פתרון מלא במקור.</p>")}
+          ${foldHtml((answerBuiltByAi(q, exam) ? aiBubble() : "") + "פתרון מפורט ודרך חישוב", q.solution || q.proposed || "<p>לא נמצא פתרון מלא במקור.</p>")}
           <p class="verdict ${kind === "ok" ? "ok" : kind === "fix" ? "fix" : "new"}"><strong>חוות דעת:</strong> ${esc(q.verdict)}</p>
         </div>`;
       }
       const hint = foldHtml("💡 רמז לפתרון", practiceHintHtml(q));
       return `<article class="section exam-bq" id="${q.id}">
         <div class="box-head"><h2>${questionBuiltByAi(q, exam) ? aiBubble() : ""}${esc(q.title)}</h2>${editLink("exam:" + exam.id + ":b:" + q.id, q.title)}</div>
-        <p>${esc(q.prompt)}</p>
+        <p class="exam-prompt">${questionBuiltByAi(q, exam) ? aiBubble() : ""}${esc(q.prompt)}</p>
+        ${q.code ? `<pre class="code exam-code" dir="ltr">${esc(q.code)}</pre>` : ""}
         ${hint}
         ${pickBtn}
         ${sol}
@@ -3868,7 +3893,7 @@ app.addEventListener("click", async (e) => {
   }
   fb.hidden = false;
   fb.className = "feedback " + (good ? "ok" : "bad");
-  fb.innerHTML = aiBubble() + esc(q.explain);
+  fb.innerHTML = (answerBuiltByAi(q) ? aiBubble() : "") + esc(q.explain);
   noteAnswer(q.id, good);
 });
 

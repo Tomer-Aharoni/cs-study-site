@@ -8,7 +8,8 @@
     partA: [
       {
         id: "a1",
-        prompt: "אפחות (Mitigation) פירושה:",
+        prompt: "מה פירוש המושג אפחות (Mitigation)?",
+        fromAsset: true,
         options: [
           { id: "a", text: "המערכת בלי באגים וללא בעיות אבטחה." },
           { id: "b", text: "שמירת נתונים בלי גישה לגורמים לא מורשים (סודיות)." },
@@ -21,7 +22,9 @@
       },
       {
         id: "a2",
-        prompt: "Frog f1(5); Frog *p1 = &f1; בלי new. היכן נשמרים?",
+        fromAsset: true,
+        prompt: "בקטע הבא, היכן יאוחסנו f1 ו-p1?",
+        code: "Frog f1(5);\nFrog *p1 = &f1;\nf1.hop();",
         options: [
           { id: "a", text: "f1 במחסנית, p1 בערמה." },
           { id: "b", text: "שניהם בערמה." },
