@@ -1,2 +1,2 @@
-/* טקסט שפורסם מהשרת. נוצר רק על ידי scripts/publish-content.py במחשב המנהל. */
-window.PUBLISHED_CONTENT = [];
+/* באנרים שאין להם אובייקט מקורי בתיקיית data. שאר התוכן מוטמע בקובצי המקור. */
+window.PUBLISHED_CONTENT = [{"id":"banner:igr1wyl0","kind":"banner","unit_id":null,"sort":0,"title":"בהרצה | שימו לב! כל התכנים מבוססי AI בהסתמכות על חומרי הקורס והסיכומים. התכנים ל","html":null,"body":{"bg":"#ff9e9e","mode":"all","runs":[{"bold":false,"size":"md","text":"בהרצה | שימו לב! כל התכנים מבוססי AI בהסתמכות על חומרי הקורס והסיכומים. התכנים לא נבדקו עדיין וכל הסתמכות עליהם היא באחריות המשתמש בלבד. האתר בבדיקות, מוזמנים לתת פידבק ולעזור לי לשפר את האתר :)","italic":false,"underline":false}],"color":"#850505","pages":[],"enabled":true}}];
