@@ -72,9 +72,11 @@
       session = data && data.session ? data.session : null;
       if (session) await loadProfile();
       client.auth.onAuthStateChange((event, next) => {
-        if (event === "INITIAL_SESSION") return;
+        if (event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED") return;
         session = next;
-        loadProfile().then(() => emit(event));
+        setTimeout(() => {
+          loadProfile().then(() => emit(event));
+        }, 0);
       });
     } finally {
       resolveReady();

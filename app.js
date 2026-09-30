@@ -2090,7 +2090,7 @@ function isolateLatin(root) {
   while ((node = walker.nextNode())) {
     const parent = node.parentElement;
     if (!parent || !node.nodeValue) continue;
-    if (parent.closest("pre, code, script, style, textarea, .latn, [dir='ltr']")) continue;
+    if (parent.closest("pre, code, script, style, textarea, input, select, [contenteditable], .banner-editor, .admin-form, .latn, [dir='ltr']")) continue;
     latinPhrase.lastIndex = 0;
     if (latinPhrase.test(node.nodeValue)) nodes.push(node);
   }
@@ -3800,8 +3800,18 @@ document.addEventListener("keydown", (e) => {
 
 window.addEventListener("hashchange", route);
 if (window.CSAuth) {
+  let seenAuthId = CSAuth.user() ? CSAuth.user().id : null;
   CSAuth.onChange(async (event) => {
-    if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+    const nextId = CSAuth.user() ? CSAuth.user().id : null;
+    if (event === "SIGNED_IN" || event === "USER_UPDATED") {
+      if (nextId === seenAuthId) return;
+      seenAuthId = nextId;
+    } else if (event === "SIGNED_OUT") {
+      if (!seenAuthId) return;
+      seenAuthId = null;
+    } else return;
+    const editing = document.activeElement && document.activeElement.closest("textarea, input, select, [contenteditable='true']");
+    if (editing && event !== "SIGNED_OUT") return;
     if (window.CSProgress) await CSProgress.boot();
     route();
   });
