@@ -495,6 +495,7 @@ function shell(body, opts) {
                   ${navLink(base + "/summary", "סיכום", base + "/summary")}
                   ${navLink(base + "/practice", "תרגול", base + "/practice")}
                   ${navLink(base + "/search", "חיפוש", base + "/search")}
+                  ${navLink(base + "/guide-notes", "הערות למדריך", base + "/guide-notes")}
                   ${navLink("#/print", "הדפסה", "#/print")}
                 </nav>`
               : ""
@@ -2191,6 +2192,23 @@ function renderFlip() {
       </div>
     </div>
   `);
+}
+
+function renderGuideNotes() {
+  const notes = window.STUDY_GUIDE_NOTES || [];
+  let html = `<p class="back-row"><a class="back" href="#/course/${COURSE.id}">לקורס</a></p>`;
+  html += `<h1>הערות למדריך הלמידה</h1>`;
+  html += `<p class="muted">ריכוז הערות ו"צ'יט-שיטים" מומלצים לכתיבה במדריך הלמידה הרשמי לקראת המבחן.</p>`;
+  html += `<div class="guide-notes-list">`;
+  
+  notes.forEach((note) => {
+    html += `<div class="panel quiz">
+      <div class="box-head"><h2>יחידה ${note.unit}: ${esc(note.title)}</h2></div>
+      <div class="content">${note.content}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  return shell(html);
 }
 
 function renderSearch() {

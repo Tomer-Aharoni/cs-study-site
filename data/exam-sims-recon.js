@@ -104,7 +104,7 @@
         prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. פיצול מחרוזת והדפסת מילים שמתחילות ב-pre באותיות גדולות, ומחלקת Book.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">def print_pre(text):
+        proposed: `<pre class="code" dir="ltr"><code>def print_pre(text):
     for w in text.split():
         if w.lower().startswith("pre"):
             print(w.upper())
@@ -113,7 +113,7 @@ class Book:
     def __init__(self, title, author, year):
         self.title = title
         self.author = author
-        self.year = year</pre>`,
+        self.year = year</code></pre>`,
         verdictKind: "new",
         verdict: "אין פתרון רשמי למועד הזה בסעיף הזה. זה ממלא פיצול + מחלקה. למועד 2024 הוסיפו type() לתת-מחלקה — ראו סימולציית 2024.",
       },
@@ -133,7 +133,7 @@ class Book:
         prompt: "לקוח ל-119.4.7.5:8080, שליחת message.txt, הדפסת תשובה עד 128 בתים או 5 שורות (המוקדם), בלי Traceback. אחר כך טבלת messages עם מספר סידורי ועד 5 הודעות — פרמטרים.",
         hadOfficial: false,
         official: "השאלון קיים; פתרון רשמי מלא לא היה בחומר הקריא.",
-        proposed: `<pre class="exam-code" dir="ltr">import socket, sqlite3
+        proposed: `<pre class="code" dir="ltr"><code>import socket, sqlite3
 def main():
     try:
         with open("message.txt", "rb") as f:
@@ -174,7 +174,7 @@ conn.execute("CREATE TABLE IF NOT EXISTS messages(id INTEGER, body TEXT)")
 for i, body in enumerate(replies[:5], start=1):
     conn.execute("INSERT INTO messages VALUES(?, ?)", (i, body))
 conn.commit()
-conn.close()</pre>`,
+conn.close()</code></pre>`,
         verdictKind: "new",
         verdict: "עונה בדיוק: קובץ, IP/פורט, הגבלת פלט, הודעות שגיאה, טבלה עם ? . replies במבחן מגיע מסעיף א.",
       },
@@ -301,7 +301,7 @@ conn.close()</pre>`,
         prompt: "פונקציה לשטח לפי שתי צלעות וזווית כלולה 0.5·a·b·sin(γ), ברירות מחדל ו-kwargs; הדגמה בלי כל הארגומנטים; מחלקת מצולע (הדפסה+היקף) ומשולש שווה-צלעות יורש עם שטח.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">import math
+        proposed: `<pre class="code" dir="ltr"><code>import math
 def area(a=3, b=4, gamma=90, **kwargs):
     g = kwargs.get("gamma", gamma)
     return 0.5 * a * b * math.sin(math.radians(g))
@@ -321,7 +321,7 @@ class Equilateral(Polygon):
         super().__init__([a, a, a])
     def area(self):
         a = self.sides[0]
-        return (math.sqrt(3) / 4) * a * a</pre>`,
+        return (math.sqrt(3) / 4) * a * a</code></pre>`,
         verdictKind: "new",
         verdict: "אין פתרון רשמי. מכסה נוסחה, kwargs, ירושה ושטח למשולש שווה-צלעות.",
       },
@@ -341,7 +341,7 @@ class Equilateral(Polygon):
         prompt: "שרת TCP שמקשיב לכתובת הנקובה ומחזיר echo. הכתובת אינה INADDR_ANY.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">#include &lt;arpa/inet.h&gt;
+        proposed: `<pre class="code" dir="ltr"><code>#include &lt;arpa/inet.h&gt;
 #include &lt;string.h&gt;
 #include &lt;sys/socket.h&gt;
 #include &lt;unistd.h&gt;
@@ -362,7 +362,7 @@ int main(void) {
   if (n &gt; 0) send(c, buf, (size_t)n, 0);
   close(c);
   close(ls);
-}</pre>`,
+}</code></pre>`,
         verdictKind: "new",
         verdict: "פורט לא צוין בשחזור — 8080 כמקובל בקורס. bind לכתובת הספציפית.",
       },
@@ -488,7 +488,7 @@ int main(void) {
         prompt: "א. מילים שמתחילות ב-pre באותיות גדולות (פיצול רווח/שורה). ב. Book(שם, כותב, שנה). ג. קלט שם תת-מחלקה; type; בנאי קורא ל-Book; openu_id=20535.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">def print_pre(s):
+        proposed: `<pre class="code" dir="ltr"><code>def print_pre(s):
     for w in s.split():
         if w.lower().startswith("pre"):
             print(w.upper())
@@ -502,7 +502,7 @@ Sub = type(name, (Book,), {"openu_id": 20535})
 # אם דורשים __init__ שקורא לבסיס במפורש:
 def _init(self, title, author, year):
     Book.__init__(self, title, author, year)
-Sub = type(name, (Book,), {"openu_id": 20535, "__init__": _init})</pre>`,
+Sub = type(name, (Book,), {"openu_id": 20535, "__init__": _init})</code></pre>`,
         verdictKind: "new",
         verdict: "אין רשמי. type() עם openu_id ממלא את סעיף ג כמו בשחזור.",
       },
@@ -522,7 +522,7 @@ Sub = type(name, (Book,), {"openu_id": 20535, "__init__": _init})</pre>`,
         prompt: "לקוח פייתון שולח קובץ בצ'אנקים ≤1024 לכתובת ופורט; שרת C++ מקבל ומאשר.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr"># לקוח
+        proposed: `<pre class="code" dir="ltr"><code># לקוח
 import socket
 s = socket.create_connection((HOST, PORT))
 with open("data.bin", "rb") as f:
@@ -534,7 +534,7 @@ with open("data.bin", "rb") as f:
 print(s.recv(64))
 s.close()
 
-/* שרת: recv בלולאה, send "OK" */</pre>`,
+/* שרת: recv בלולאה, send "OK" */</code></pre>`,
         verdictKind: "new",
         verdict: "HOST/PORT כמו בשאלה. אין רשמי.",
       },
@@ -660,7 +660,7 @@ s.close()
         prompt: "wordp: str או ValueError; פיצול בפסיק; מילים שמתחילות ב-im; אות ראשונה גדולה והשאר קטנות. x_file: Setup.csv לכל שורה wordp → Setup-revised.txt, קובץ חסר. מחלקת Book + type לתת-מחלקה עם MainChar.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">def wordp(s):
+        proposed: `<pre class="code" dir="ltr"><code>def wordp(s):
     if not isinstance(s, str):
         raise ValueError("expected str")
     out = []
@@ -689,7 +689,7 @@ class Book:
 cls_name = input("class: ")
 main_char = input("MainChar: ")
 Dyn = type(cls_name, (Book,), {"MainChar": main_char})
-book = Dyn("t", "a", 1999)</pre>`,
+book = Dyn("t", "a", 1999)</code></pre>`,
         verdictKind: "new",
         verdict: "אין רשמי. פיצול בפסיק כמו בשחזור; startswith im בלי תלות רישיות.",
       },
@@ -700,7 +700,7 @@ book = Dyn("t", "a", 1999)</pre>`,
         hadOfficial: false,
         official: "",
         proposed: `<p>ערבוב כתובות מקשה על שימוש בכתובת קבועה לדריסת ret. בדיקה: להדפיס כתובת מקומית בשתי הרצות. נוסף: קנרית / NX. מגבלה: דליפת כתובת מבטלת חלק מההגנה; לא מתרגלים עקיפה.</p>
-<pre class="exam-code" dir="ltr">int x; printf("%p\\n", (void *)&amp;x);</pre>`,
+<pre class="code" dir="ltr"><code>int x; printf("%p\\n", (void *)&amp;x);</code></pre>`,
         verdictKind: "new",
         verdict: "אין רשמי.",
       },
@@ -720,7 +720,7 @@ book = Dyn("t", "a", 1999)</pre>`,
         prompt: "שרת 8080, URL עד 2048, טבלת url_cache עם ?, קובץ בדיסק, dataclass, מחיקת הישן מעל 10 רשומות.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">from dataclasses import dataclass
+        proposed: `<pre class="code" dir="ltr"><code>from dataclasses import dataclass
 import sqlite3, time
 @dataclass
 class UrlRecord:
@@ -747,7 +747,7 @@ def put(conn, rec: UrlRecord):
         conn.execute("DELETE FROM url_cache WHERE url = ?", (old[0],))
         # os.remove(old[1]) אם הקובץ קיים
         n -= 1
-    conn.commit()</pre>
+    conn.commit()</code></pre>
 <p>השרת: recv, בדיקת אורך, אם במטמון קוראים קובץ, אחרת get_response, שומרים קובץ+רשומה. URL לא מודבק ל-SQL.</p>`,
         verdictKind: "new",
         verdict: "אין רשמי. ORDER BY ts + ? למחיקה ממלאים את סעיף ב' בלי הזרקה.",
@@ -864,7 +864,7 @@ def put(conn, rec: UrlRecord):
         prompt: "מילים עם pre באותיות גדולות; Book; מחלקה עם כמה סופרים; קובץ → רשימת אובייקטים.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">class Book:
+        proposed: `<pre class="code" dir="ltr"><code>class Book:
     def __init__(self, title, author, year):
         self.title, self.author, self.year = title, author, year
 class BookMany:
@@ -880,7 +880,7 @@ def load(path):
                 out.append(BookMany(p[1], p[3].split(","), p[2]))
             else:
                 out.append(Book(p[0], p[1], p[2]))
-    return out</pre>`,
+    return out</code></pre>`,
         verdictKind: "new",
         verdict: "פורמט הקובץ לא פורט בשחזור — סימן MANY ממלא \"רגיל מול כמה סופרים\".",
       },
@@ -907,7 +907,7 @@ def load(path):
         prompt: "שרת Linux קורא קובץ ושולח מקטעים 1024 עם כותרת שם/מספר/גודל. תוכנית מעבירה שורות קובץ לטבלה (מספר + תוכן) כולל CREATE.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">/* כותרת טקסטואלית פשוטה ואז send של 1024 */
+        proposed: `<pre class="code" dir="ltr"><code>/* כותרת טקסטואלית פשוטה ואז send של 1024 */
 char hdr[128];
 snprintf(hdr, sizeof hdr, "%s %d %d\\n", name, idx, (int)n);
 send(fd, hdr, strlen(hdr), 0);
@@ -919,7 +919,7 @@ con.execute("CREATE TABLE IF NOT EXISTS lines(id INTEGER, body TEXT)")
 with open("in.txt", encoding="utf-8") as f:
     for i, line in enumerate(f, 1):
         con.execute("INSERT INTO lines VALUES(?, ?)", (i, line.rstrip("\\n")))
-con.commit()</pre>`,
+con.commit()</code></pre>`,
         verdictKind: "new",
         verdict: "אין רשמי. פרמטרים ב-INSERT.",
       },
@@ -1042,7 +1042,7 @@ con.commit()</pre>`,
         prompt: "Book עם מחרוזות (שם, מחבר, שפה) ומספרים (קטלוג, מחיר, שנה) ובדיקת טיפוסים. מילון books לפי קטלוג. BookDataError. Buy לפי שם+מחבר או קטלוג.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">class BookDataError(Exception):
+        proposed: `<pre class="code" dir="ltr"><code>class BookDataError(Exception):
     pass
 
 class Book:
@@ -1067,7 +1067,7 @@ def buy(name=None, author=None, cat=None):
     for b in books.values():
         if b.name == name and b.author == author:
             return b
-    raise BookDataError("no match")</pre>`,
+    raise BookDataError("no match")</code></pre>`,
         verdictKind: "new",
         verdict: "אין פתרון רשמי מצורף. bool הוא תת-טיפוס של int, ולכן מחיר נבדק בנפרד.",
       },
@@ -1088,7 +1088,7 @@ def buy(name=None, author=None, cat=None):
         hadOfficial: false,
         official: "",
         proposed: `<p>אפשר כשהפרוטוקול זהה, בלי תלות בשפה או ב-IDE. IPv6 מול IPv4 לא ישירות; צריך תרגום (gateway / NAT64). RSA ו-AES אינם מתחלפים לבד: צריך הסכמה על האלגוריתם.</p>
-<pre class="exam-code" dir="ltr">#include &lt;arpa/inet.h&gt;
+<pre class="code" dir="ltr"><code>#include &lt;arpa/inet.h&gt;
 #include &lt;stdio.h&gt;
 #include &lt;sys/socket.h&gt;
 #include &lt;unistd.h&gt;
@@ -1108,7 +1108,7 @@ int main(void) {
     if (send(s, buf, n, 0) &lt; 0) break;
   fclose(f);
   close(s);
-}</pre>`,
+}</code></pre>`,
         verdictKind: "new",
         verdict: "הפורט לא נקוב בשאלון. 64K סיביות הן 8192 בתים, לא 64K בתים.",
       },
@@ -1234,7 +1234,7 @@ int main(void) {
         prompt: "מילים מופרדות בפסיק שמתחילות ב-im: אות ראשונה גדולה והשאר קטנות. קובץ שורה-שורה לקובץ אחר. Book ו-HPBook; בלי ארגומנטים mainChar הוא harry, hermione, Ron.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">def im_words(s):
+        proposed: `<pre class="code" dir="ltr"><code>def im_words(s):
     if not isinstance(s, str):
         raise ValueError("expected str")
     out = []
@@ -1259,7 +1259,7 @@ class Book:
 class HPBook(Book):
     def __init__(self, title="Harry Potter", author="Rowling", year=1997, mainChar=None):
         super().__init__(title, author, year)
-        self.mainChar = ["harry", "hermione", "Ron"] if mainChar is None else mainChar</pre>`,
+        self.mainChar = ["harry", "hermione", "Ron"] if mainChar is None else mainChar</code></pre>`,
         verdictKind: "new",
         verdict: "הזיכרון לא קובע אם מסננים רק מילות im. כאן כמו הדפוס של מועד ג: נשארות המילים שמתחילות ב-im.",
       },
@@ -1279,7 +1279,7 @@ class HPBook(Book):
         prompt: "לקוח פייתון שולח קובץ. כותרת: size, packet number, number of packets — 4 בתים כל אחד, big-endian. מטען עד 1024. שגיאה מסודרת אם הקובץ לא נפתח. מה ארגז חול ומה המטרה.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">import socket, struct
+        proposed: `<pre class="code" dir="ltr"><code>import socket, struct
 def send_file(host, port, path):
     try:
         data = open(path, "rb").read()
@@ -1298,7 +1298,7 @@ def send_file(host, port, path):
     except OSError as e:
         print("net:", e)
     finally:
-        s.close()</pre>
+        s.close()</code></pre>
 <p>ארגז חול מריץ קוד לא מהימן עם הרשאות וממשקים מצומצמים, כדי שכשל לא יהפוך לשליטה במערכת. מימוש עקרוני: תהליך נפרד, משתמש חלש, בלי רשת אם לא צריך.</p>`,
         verdictKind: "new",
         verdict: "הזיכרון לא קובע אם size הוא גודל המטען או גודל הקובץ. כאן גודל המטען.",
@@ -1423,7 +1423,7 @@ def send_file(host, port, path):
         prompt: "כתבו לקוח C/C++ ללינוקס שמתחבר ל-10.1.2.3 בפורט 9000, שולח את השורה PING ואז קורא עד 64 בתים או עד תו שורה, המוקדם, ומדפיס.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">#include &lt;arpa/inet.h&gt;
+        proposed: `<pre class="code" dir="ltr"><code>#include &lt;arpa/inet.h&gt;
 #include &lt;stdio.h&gt;
 #include &lt;string.h&gt;
 #include &lt;sys/socket.h&gt;
@@ -1446,7 +1446,7 @@ int main(void) {
   for (ssize_t i = 0; i &lt; n; i++) if (buf[i] == '\\n') { buf[i + 1] = 0; break; }
   fputs(buf, stdout);
   close(s);
-}</pre>`,
+}</code></pre>`,
         verdictKind: "new",
         verdict: "אותו דפוס כמו מבחן לדוגמה א': שקע TCP, htons, שליחה, וקריאה חסומה. הכתובת והטקסט כאן אחרים.",
       },
@@ -1476,7 +1476,7 @@ int main(void) {
         prompt: "לרשימת מילים: מילון מאורך לכל מילה; משפט שבו המילה הראשונה וכל מילה שמסתיימת ב-n מתחילות באות גדולה; זוגות שמות לקובץ pairs.txt.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">lengths = {w: len(w) for w in words}
+        proposed: `<pre class="code" dir="ltr"><code>lengths = {w: len(w) for w in words}
 out = []
 for i, w in enumerate(words):
     out.append(w.capitalize() if i == 0 or w.endswith("n") else w)
@@ -1487,7 +1487,7 @@ try:
     with open("pairs.txt", "w", encoding="utf-8") as f:
         f.write("\\n".join(f"{a} - {b}" for a, b in pairs))
 except OSError:
-    print("Error writing to file pairs.txt")</pre>`,
+    print("Error writing to file pairs.txt")</code></pre>`,
         verdictKind: "new",
         verdict: "אותם שלושה סעיפים כמו שאלה 9 במבחן לדוגמה א'. open בלי מצב כתיבה לא כותב.",
       },
@@ -1602,7 +1602,7 @@ except OSError:
         prompt: "הדפיסו מילים שמסתיימות ב-ly באותיות קטנות. מחלקת Lab(name, city, seats) ותת-מחלקה RemoteLab עם מילון כלים. קראו שורות name,city,seats מקובץ והדפיסו כמה מעבדות וכמה מקומות יחד.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">def ly_words(text):
+        proposed: `<pre class="code" dir="ltr"><code>def ly_words(text):
     for w in text.split():
         if w.endswith("ly"):
             print(w.lower(), end=" ")
@@ -1629,7 +1629,7 @@ def load(path):
             continue
         labs.append(Lab(parts[0], parts[1], parts[2]))
     print("Number of labs:", len(labs))
-    print("Total seats", sum(x.seats for x in labs))</pre>`,
+    print("Total seats", sum(x.seats for x in labs))</code></pre>`,
         verdictKind: "new",
         verdict: "אותו שלד כמו שאלה 6 בבחינה לדוגמה 2021ג: סינון מילה, ירושה, וקובץ עם טיפול בשגיאה.",
       },
@@ -1639,7 +1639,7 @@ def load(path):
         prompt: "ב-C/C++ פתחו grades.db, צרו Grades(Name, Id, Score), הכניסו שתי רשומות קבועות וסגרו. בפייתון קבלו מזהה והדפיסו ציון. מה נשבר אם מדביקים את המזהה למחרוזת, ואיך נמנעים.",
         hadOfficial: false,
         official: "",
-        proposed: `<pre class="exam-code" dir="ltr">sqlite3 *db;
+        proposed: `<pre class="code" dir="ltr"><code>sqlite3 *db;
 if (sqlite3_open("grades.db", &amp;db) != SQLITE_OK) return 1;
 sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS Grades(Name TEXT, Id INTEGER, Score INTEGER);", 0, 0, 0);
 sqlite3_exec(db, "INSERT INTO Grades VALUES('Ada', 1, 90);", 0, 0, 0);
@@ -1651,7 +1651,7 @@ conn = sqlite3.connect("grades.db")
 sid = input("id: ")
 row = conn.execute("SELECT Score FROM Grades WHERE Id = ?", (sid,)).fetchone()
 print(row[0] if row else "not found")
-conn.close()</pre>
+conn.close()</code></pre>
 <p>הדבקה עם format או f-string מכניסה את הקלט לתחביר. סימן שאלה וטיפל משאירים אותו נתון. exec מתאים כאן רק כי שתי ההכנסות קבועות.</p>`,
         verdictKind: "new",
         verdict: "כמו שאלה 7 בבחינה לדוגמה: DDL קבוע ב-exec, וקלט רק דרך פרמטר.",
@@ -1663,8 +1663,8 @@ conn.close()</pre>
         hadOfficial: false,
         official: "",
         proposed: `<p><strong>ASLR</strong> מערבב כתובות בין הרצות, כדי שכתובת קבועה של מחסנית או קוד לא תישאר יעד. רואים את זה בהדפסת כתובת מקומית בשתי הרצות. הוא לא מתקן העתקה בלי גבול, ודליפת כתובת מחלישה אותו.</p>
-<pre class="exam-code" dir="ltr">int local = 0;
-printf("%p\\n", (void *)&amp;local);</pre>
+<pre class="code" dir="ltr"><code>int local = 0;
+printf("%p\\n", (void *)&amp;local);</code></pre>
 <p><strong>DEP / NX</strong> מסמן אזורי נתונים כלא-להרצה. קפיצה למערך תווים נעצרת. דריסת כתובת חזרה אל קוד שכבר מותר להרצה לא נמחקה על ידי זה. קנרית המחסנית היא שכבה נוספת: ערך לפני כתובת החזרה נבדק לפני ret.</p>`,
         verdictKind: "new",
         verdict: "שאלה 8 בבחינה לדוגמה היא ASLR ו-DEP. הקנרית נוספת כשכבה מאותו נושא, בלי קוד תקיפה.",

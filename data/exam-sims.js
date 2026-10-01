@@ -85,7 +85,7 @@ window.EXAM_SIMS = [
         prompt: "כתבו קוד ב-C או ב-C++ שיפתח לקוח תקשורת אל שרת בכתובת 119.4.7.5 בפורט 8080, וישלח לו את השורות:\nGood morning server\nNice to see you\nלאחר מכן ידפיס את התשובה עד 128 בתים או עד סימן סוף שורה, הראשון מביניהם.\nמותר להשתמש בספריות שנלמדו בקורס. הקוד צריך להתקמפל ב-gcc או ב-g++ בלינוקס.",
         hadOfficial: true,
         official: "בפתרון הרשמי: סוקט POSIX, וגם ניסיון Boost. מאקרו DEST בלי מרכאות, חסר # ב-include, וב-Boost יש שגיאות הקלדה (chart, bugger, buffer).",
-        proposed: `<pre class="exam-code\" dir=\"ltr\">#include &lt;arpa/inet.h&gt;
+        proposed: `<pre class="code" dir="ltr"><code>#include &lt;arpa/inet.h&gt;
 #include &lt;stdio.h&gt;
 #include &lt;string.h&gt;
 #include &lt;sys/socket.h&gt;
@@ -122,7 +122,7 @@ int main(void) {
   fputs(buf, stdout);
   close(s);
   return 0;
-}</pre>`,
+}</code></pre>`,
         verdictKind: "fix",
         verdict: "הרעיון בפתרון הרשמי נכון (לא Winsock). המאקרו DEST בלי מחרוזת לא יתקמפל; Boost שם שבור. הגרסה למעלה ממלאת את הדרישה: לינוקס, שתי הודעות, recv עד 128, חיתוך בשורה.",
       },
@@ -157,7 +157,7 @@ int main(void) {
         prompt: "נתונה רשימת מילים בפייתון:\neverybody, in, this, group, should, be, able, to, dance, salsa, but, only, some, can, dance, bachata.\nא. צרו מילון my_length: המפתח הוא המילה, הערך הוא מספר התווים בה.\nב. תרגמו את הרשימה למשפט phrase. האות הראשונה של המילה הראשונה, ושל כל מילה שמסתיימת ב-a, צריכה להיות גדולה. אסור להשתמש בקוד בשמות המילים מהרשימה.\nג. names = (Tom, Daniel, Ofir, Ofri, Andrea, Silvia, Manuel, Jessica). חלקו לזוגות וכתבו קובץ couples.txt עם 4 שורות, זוג בכל שורה.",
         hadOfficial: true,
         official: "א. comprehension. ב. capitalize לפי endswith. ג. zip על המנה; open בלי מצב כתיבה.",
-        proposed: `<pre class="exam-code\" dir=\"ltr\">my_length = {w: len(w) for w in mylist}
+        proposed: `<pre class="code" dir="ltr"><code>my_length = {w: len(w) for w in mylist}
 
 def cap_a(w):
     return w.capitalize() if w.endswith("a") else w
@@ -171,7 +171,7 @@ try:
     with open("couples.txt", "w", encoding="utf-8") as f:
         f.write("\\n".join(f"{a} - {b}\" for a, b in pairs))
 except OSError:
-    print("Error writing to file couples.txt")</pre>`,
+    print("Error writing to file couples.txt")</code></pre>`,
         verdictKind: "fix",
         verdict: "א נכון (מילה כפולה ברשימה נדרסת במפתח). ב נכון לרעיון. ג בפתרון הרשמי: open בלי 'w' לא כותב; ובשאלון המקורי חסר גרש ב-Silvia. כאן open('w') ו-with.",
       },
@@ -275,7 +275,7 @@ except OSError:
         prompt: "כתבו בפייתון:\nא. פונקציה שמקבלת מחרוזת. המילים מופרדות ברווחים או בסימני שורה חדשה. זהו כל מילה שמסתיימת ב-ando והדפיסו אותה באותיות קטנות.\nב. מחלקה University עם בנאי (name, location, students). מחלקה יורשת OpenUniversity עם מילון מקצועות: לכל מקצוע שם ומספר קורסים.\nג. פונקציה שקוראת קובץ. שורה רגילה היא name, location, students. אם מופיע courses: מתחיל בלוק של מקצוע ומספר קורסים עד השורה done courses. הדפיסו כמה מוסדות נמצאו, את סכום הסטודנטים, ולכל OpenUniversity את המקצוע עם מספר הקורסים הגדול ביותר.",
         hadOfficial: true,
         official: "split + endswith; super().__init__; קורא שורות עם דגל openu. בקוד הרשמי: משתנה currnet_students כתוב שגוי בהצהרה, except גורף, ו-split לקורסים בלי strip.",
-        proposed: `<pre class="exam-code\" dir=\"ltr\">def find_ando(text):
+        proposed: `<pre class="code" dir="ltr"><code>def find_ando(text):
     for word in text.split():
         if word.endswith("ando"):
             print(word.lower(), end=" ")
@@ -320,7 +320,7 @@ def read_univ_list(filename):
     for u in unis:
         if isinstance(u, OpenUniversity) and u.subjects:
             maj = max(u.subjects, key=u.subjects.get)
-            print("University", u.name, "max courses in", maj, "-", u.subjects[maj], "courses.")</pre>`,
+            print("University", u.name, "max courses in", maj, "-", u.subjects[maj], "courses.")</code></pre>`,
         verdictKind: "fix",
         verdict: "המבנה הרשמי עונה על הדרישה. תיקנתי שם משתנה שבור, סגירת בלוק OpenU, ופיצול עמיד יותר לפסיקים. split() כבר מפצל גם שורות חדשות — מתאים לסעיף א.",
       },
@@ -331,7 +331,7 @@ def read_univ_list(filename):
         prompt: "א. כתבו תכנית C/C++ שניגשת לקובץ SQLite בשם table.db, יוצרת טבלת Students עם העמודות Name, Id, School, מוסיפה שתי רשומות לפי בחירתכם, וסוגרת.\nב. כתבו תכנית פייתון שפונה לאותו בסיס, מקבלת מהקלט חיפוש (למשל שם סטודנטית) ומדפיסה את School.\nג. איזו חולשת אבטחה עלולה להיות בקוד כזה, וכיצד ניתן למנוע אותה?",
         hadOfficial: true,
         official: "sqlite3_exec עם מחרוזות קבועות; בפייתון execute(...format(קלט)) — זו הזרקה. \"התיקון\" הרשמי עדיין format לתוך SQL.",
-        proposed: `<pre class="exam-code\" dir=\"ltr\">/* א. ערכים קבועים — exec סביר. נתיב יחסי, בדיקת rc. */
+        proposed: `<pre class="code" dir="ltr"><code>/* א. ערכים קבועים — exec סביר. נתיב יחסי, בדיקת rc. */
 sqlite3 *db;
 if (sqlite3_open("table.db", &amp;db) != SQLITE_OK) return 1;
 sqlite3_exec(db,
@@ -350,7 +350,7 @@ name = input("name: ")
 cur = conn.execute("SELECT School FROM Students WHERE Name = ?", (name,))
 row = cur.fetchone()
 print(row[0] if row else "not found")
-conn.close()</pre>`,
+conn.close()</code></pre>`,
         verdictKind: "fix",
         verdict: "סעיף א הרשמי ממלא יצירה והכנסה (נתיב Windows ו-#include חסרים). סעיף ב הרשמי נכשל בדרישה הדפנסיבית של הקורס: הקלט נכנס לדקדוק. סעיף ג מזהה הזרקה אבל הדוגמה עם format עדיין שבירה. הפרמטר ? הוא מה שמתאים ליחידה 7.",
       },
@@ -362,11 +362,11 @@ conn.close()</pre>`,
         hadOfficial: true,
         official: "ASLR: כתובות אקראיות; מדפיסים &amp;main ומשתנה מקומי בהרצות חוזרות. DEP/NX: לא מריצים ממגזר נתונים.",
         proposed: `<p><strong>ASLR:</strong> מקשה על ניחוש כתובת מחסנית/קוד. קוד בחינה: להדפיס כתובת של פונקציה ושל משתנה מקומי בשתי הרצות — אם משתנה, ASLR פעיל.</p>
-<pre class="exam-code\" dir=\"ltr\">#include &lt;stdio.h&gt;
+<pre class="code" dir="ltr"><code>#include &lt;stdio.h&gt;
 int main(void) {
   int local = 0;
   printf("main %p local %p\\n", (void *)main, (void *)&amp;local);
-}</pre>
+}</code></pre>
 <p><strong>DEP:</strong> דפים עם נתונים בלי הרשאת ביצוע. במבחן מספיק להסביר שקפיצה למערך תווים תיכשל אם NX דלוק. לא מביאים כאן מערך אופקודים.</p>`,
         verdictKind: "fix",
         verdict: "ההסברים הרשמיים נכונים. דוגמת ה-DEP הרשמית היא קפיצה לחוצץ עם פקודת מכונה — באתר מוחלפת בהסבר: מה נשבר (הרצה מנתונים) ואיך המנגנון חוסם, בלי מטען.",
@@ -391,8 +391,8 @@ int main(void) {
 <li><strong>מה נשבר:</strong> ההקצאות עלולות לשבת ברצף — <code>r1</code>, החוצץ שלו, <code>r2</code>, החוצץ שלו. כתיבה עודפת לחוצץ של <code>r1</code> עלולה להגיע למבנה <code>r2</code> ולשנות את המצביע <code>f_data</code> שבו. ה־<code>strcpy</code> הבא כותב לאן שהמצביע המושחת מצביע — פגיעה בשלמות, בלי לגעת בכתובת חזרה.</li>
 <li><strong>התיקון:</strong> לבדוק אורך מול <code>FIELDSIZE - 1</code>, או העתקה חסומה עם אפס סיום, ולבדוק את ההחזרה של <code>malloc</code>.</li>
 </ul>
-<pre class="exam-code" dir="ltr">strncpy(r1-&gt;f_data, argv[0], FIELDSIZE - 1);
-r1-&gt;f_data[FIELDSIZE - 1] = '\\0';</pre>`,
+<pre class="code" dir="ltr"><code>strncpy(r1-&gt;f_data, argv[0], FIELDSIZE - 1);
+r1-&gt;f_data[FIELDSIZE - 1] = '\\0';</code></pre>`,
       },
     ],
   },
