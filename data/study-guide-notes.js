@@ -4,13 +4,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "1",
     title: "הבחנה מבדלת: באג, חולשת אבטחה (Vulnerability), ניצול (Exploit) ואפחות (Mitigation)",
     content: `
-      <p>שפת המושגים הרשמית מתוך ספר הקורס (AOSSA) והמצגות, המהווה בסיס לכל שאלות חלק א' במבחנים:</p>
-      <ul>
-        <li><strong>באג (Bug / Defect):</strong> שגיאה לוגית או פונקציונלית בקוד שגורמת לסטייה מהמפרט. כל עוד אין לה השלכות על הרשאות או יעדי אבטחה, היא אינה מוגדרת כחולשה.</li>
-        <li><strong>חולשת אבטחה (Vulnerability):</strong> פגם בתכנון, במימוש או בתפעול המאפשר לגורם כלשהו לחרוג ממדיניות האבטחה (CIA). <em>החולשה קיימת בקוד מרגע כתיבתו, גם אם איש טרם גילה אותה או ניצל אותה.</em></li>
-        <li><strong>ניצול חולשה (Exploitation / Exploit):</strong> הפעולה הזדונית האקטיבית (או קוד תקיפה ייעודי) שבאמצעותה מופקת תועלת מהחולשה.</li>
-        <li><strong>אפחות (Mitigation):</strong> מנגנון הגנה הנדסי או נוהל שמטרתו למזער את הנזק והסיכון מתקיפה. <em>אפחות אינה מבטיחה הסרה מוחלטת של הבאג מהשורש, אלא מצמצמת את יכולת הניצול.</em></li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>"כל חולשת אבטחה היא באג, אך לא כל באג הוא חולשת אבטחה." חולשה נמדדת תמיד ביחס למדיניות האבטחה (Security Policy) של המערכת. אפחות (Mitigation) אינה שוות ערך לתיקון שורש (Remediation/Patch), אלא שכבת הגנה הממזערת פגיעה.</p>
@@ -37,15 +30,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "1",
     title: "משולש ה-CIA, יעדי הפגיעה ואמצעי אפחות מותאמים לכל יעד",
     content: `
-      <p>שלושת עמודי התווך של אבטחת מידע. בכל ניתוח ממצא ביקורת חובה לציין במפורש את היעד שנפגע:</p>
-      <ul>
-        <li><strong>סודיות (Confidentiality):</strong> מניעת צפייה או חשיפה של מידע לגורמים לא מורשים.
-          <br><em>אפחות מותאם:</em> הצפנה חזקה (AES, TLS), בקרת גישה (Access Control), הרשאת מינימום.</li>
-        <li><strong>שלמות (Integrity):</strong> מניעת שינוי, השחתה, הזרקה או מחיקה בלתי מורשית של מידע, קוד או מצביעים.
-          <br><em>אפחות מותאם:</em> חתימות דיגיטליות, קודי גיבוב (SHA-256, HMAC), בקרת גבולות זיכרון, הרשאות כתיבה צרות.</li>
-        <li><strong>זמינות (Availability):</strong> הבטחת נגישות המערכת והמשאבים למשתמשים מורשים בכל עת.
-          <br><em>אפחות מותאם:</em> יתירות (Redundancy), הגבלת קצב (Rate Limiting), Timeouts, תבנית Reactor.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>יעדי ה-CIA הם בלתי תלויים: מתקפת DoS פוגעת בזמינות בלבד (הנתונים לא נחשפו ולא שונו); קריאת זיכרון דרך Format String פוגעת בסודיות בלבד; שינוי מחיר במסד נתונים פוגע בשלמות בלבד.</p>
@@ -71,13 +55,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "1",
     title: "סיווג חולשות: עיצוב, מימוש, תפעול ושטחים אפורים (Gray Areas)",
     content: `
-      <p>סיווג מקור הפגם לפי שלב מחזור החיים שבו נוצר:</p>
-      <ul>
-        <li><strong>חולשת עיצוב (Design):</strong> פגם במפרט, בארכיטקטורה או בפרוטוקול. הקוד נכתב ללא אף שגיאה ופועל במדויק לפי האפיון, אך המודל עצמו פרוץ. <em>דוגמה:</em> פרוטוקול Telnet/HTTP המעביר סיסמאות בטקסט גלוי; ממשק שסומך על הלקוח לבצע אימות נתונים.</li>
-        <li><strong>חולשת מימוש (Implementation):</strong> פגם בקוד המקור שנוצר ע"י המתכנת. התכנון היה תקין אך הקוד שגוי. <em>דוגמה:</em> שימוש ב-<code>gets()</code> במקום <code>fgets()</code>; שגיאת Off-by-One; חוסר בדיקת גבולות.</li>
-        <li><strong>חולשה תפעולית (Operational):</strong> פגם שמקורו בסביבת הפריסה, בתחזוקה, בקונפיגורציה או בגורם האנושי. <em>דוגמה:</em> סיסמת ברירת מחדל admin/admin; אי-התקנת טלאי אבטחה (1-Day); השארת שירותי Debug פעילים.</li>
-        <li><strong>שטחים אפורים (Gray Areas):</strong> מקרים שבהם שתי פרשנויות עשויות להתקבל (כגון הודעות שגיאה מפורטות או מדיניות סיסמאות).</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>"תיקון קוד נקודתי לעולם אינו מרפא חולשת עיצוב." אם הפרוטוקול אינו כולל הצפנה, כתיבה מושלמת ב-C++ לא תמנע האזנה בתווך (MITM).</p>
@@ -103,13 +80,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "1",
     title: "יחסי אמון, גבולות אמון (Trust Boundaries) ושרשרת אמון (Trust Chain)",
     content: `
-      <p>הנדסת תוכנה דפנסיבית מבוססת על ההבנה שכל מתן אמון מייצר משטח תקיפה:</p>
-      <ul>
-        <li><strong>גבול אמון (Trust Boundary):</strong> הממשק המפריד בין שני רכיבים בעלי רמות אמון או הרשאות שונות (למשל: תהליך משתמש מול קרנל, קלט מהאינטרנט מול שרת פנימי).
-          <br><em>חוק ברזל:</em> <strong>כל נתון שחוצה גבול אמון נחשב עוין עד שהוכח אחרת! חובה לבצע אימות טיפוס, טווח, ואורך.</strong></li>
-        <li><strong>שרשרת אמון (Trust Chain):</strong> יחסי אמון הם טרנזיטיביים: אם A סומך על B ו-B סומך על C &larr; A סומך בפועל על C. פריצה ל-C מובילה להשתלטות על A.</li>
-        <li><strong>רשות תעודות דיגיטליות (CA) ומתקפת אדם-באמצע (MITM):</strong> הדפדפן סומך על ה-CA. אם תוקף מצליח להנפיק תעודה מזויפת בחסות CA פרוץ, שרשרת האמון קורסת, והתוקף יכול לפענח תעבורת HTTPS.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>ההבדל בין Windows 98 ל-Windows מודרני: ב-Windows 98 לא היו גבולות אמון פנימיים וכל תוכנית יכלה לפנות ישירות לזיכרון הקרנל. במערכות מודרניות, בידוד מרחב הכתובות הוא גבול אמון קשיח הנאכף בחומרה ע"י ה-MMU.</p>
@@ -133,15 +103,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "1",
     title: "צמידות חלשה ולכידות חזקה, תרשים מחלקות UML ומבנה ממשקים מאובטח",
     content: `
-      <p>עקרונות מבנה תוכנה המשרתים ישירות את אבטחת המערכת:</p>
-      <ul>
-        <li><strong>לכידות גבוהה (High Cohesion):</strong> מחלקה מתמקדת באחריות יחידה. לכידות נמוכה מייצרת "מחלקות מפלצת" המקבלות עודף הרשאות וקשות לביקורת.</li>
-        <li><strong>צמידות חלשה (Low Coupling):</strong> תלות מינימלית בין מודולים דרך ממשקים צרים. מונעת התפשטות נזק (Blast Radius) בעת פריצה לרכיב מסוים.</li>
-        <li><strong>סימוני UML בסיסיים:</strong>
-          <br><code>+</code> ציבורי (Public), <code>-</code> פרטי (Private), <code>#</code> מוגן (Protected).
-          <br><em>קשרים:</em> ירושה (חץ רציף משולש חלול, <code>is-a</code>); הרכבה (מעוין מלא, תלות חיים בלעדית); צבירה (מעוין חלול, הכלה עצמאית); תלות (חץ מקווקו); חברות (<code>&lt;&lt;friend&gt;&gt;</code> &ndash; שוברת כימוס ומגדילה צמידות!).
-        </li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>מלכודת סדר מתודות ציבוריות (API Order):</strong> אם מחלקה חושפת מתודת <code>execute()</code> ומתודת <code>check()</code> בנפרד כציבוריות, תוקף יקרא ישירות ל-<code>execute()</code>.
@@ -167,13 +128,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "1",
     title: "עקרונות תכנון דפנסיבי: הגנה לעומק, הרשאת מינימום, ברירת מחדל בטוחה ותיווך מלא",
     content: `
-      <p>ארבעת עקרונות התכנון המאובטח הקלאסיים של Saltzer & Schroeder החוזרים בכל פרקי הקורס:</p>
-      <ul>
-        <li><strong>הגנה לעומק (Defense in Depth):</strong> בניית שכבות הגנה בלתי תלויות זו בזו. כשל במנגנון הגנה אחד אינו מפיל את המערכת משום שהשכבה הבאה בולמת את התוקף (לדוגמה: אימות קלט + קנרית + ASLR + DEP + הרשאות משתמש מוגבלות).</li>
-        <li><strong>הרשאת מינימום (Least Privilege):</strong> כל תהליך או משתמש מקבל אך ורק את סט ההרשאות החיוני לביצוע משימתו (שירות כתיבת לוגים אינו מקבל הרשאה למסד נתוני לקוחות; שרת ווב לא רץ כ-root).</li>
-        <li><strong>ברירת מחדל בטוחה (Fail-Safe Defaults):</strong> ברירת המחדל היא מניעת גישה (Deny by default). גישה מאושרת רק לפי רשימה לבנה מפורשת (Whitelist). במקרה של שגיאה או תקלה &ndash; המערכת ננעלת ולא פותחת הרשאות.</li>
-        <li><strong>תיווך מלא (Complete Mediation):</strong> כל פנייה למשאב מאומתת ונבדקת מחדש בכל פעם, ללא הסתמכות עיוורת על אישורים קודמים במטמון (Cache).</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>"אפחות אינה תחליף לתיקון שורש, והגנה לעומק אינה הצדקה להשארת באג בקוד." הגנה לעומק מניחה שחולשות יתקיימו ומונעת מהן להפוך לקטסטרופה מלאה.</p>
@@ -198,21 +152,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "1",
     title: "מידול איומים בשיטת STRIDE, עץ איומים ונוסחת הסיכון (DREAD)",
     content: `
-      <p>כלים מתודולוגיים לזיהוי, סיווג ותעדוף סיכוני אבטחה בשלב התכנון:</p>
-      <ul>
-        <li><strong>מודל STRIDE (מיפוי איומים ומענים הנדסיים):</strong>
-          <br>&bull; <strong>S - Spoofing (התחזות):</strong> התחזות לישות אחרת &larr; <em>מענה: Authentication (אימות זהות, MFA, תעודות).</em>
-          <br>&bull; <strong>T - Tampering (שיבוש):</strong> שינוי בלתי מורשה של קוד או נתונים &larr; <em>מענה: Integrity (חתימות דיגיטליות, SHA-256).</em>
-          <br>&bull; <strong>R - Repudiation (התכחשות):</strong> חוסר יכולת להוכיח ביצוע פעולה &larr; <em>מענה: Non-Repudiation (חתימה, יומני ביקורת מאובטחים).</em>
-          <br>&bull; <strong>I - Information Disclosure (חשיפת מידע):</strong> דליפת מידע לגורם לא מורשה &larr; <em>מענה: Confidentiality (הצפנה, מידור).</em>
-          <br>&bull; <strong>D - Denial of Service (מניעת שירות):</strong> השבתת זמינות &larr; <em>מענה: Availability (יתירות, Rate Limiting).</em>
-          <br>&bull; <strong>E - Elevation of Privilege (הרמת הרשאות):</strong> משתמש רגיל משיג הרשאות ניהול &larr; <em>מענה: Authorization, הרשאת מינימום.</em>
-        </li>
-        <li><strong>עץ איומים (Threat Tree):</strong> שורש = מטרת התוקף; ענפים = שיטות פעולה; עלים = פעולות תקיפה קונקרטיות. עלה בעיגול = מוגן/מנוטרל ע"י אפחות; עלה במלבן = נתיב תקיפה פתוח.</li>
-        <li><strong>נוסחת הסיכון הבסיסית:</strong><br>
-          <code>Risk = Probability × Impact</code> (מכפלה! אם אחד מהם 0 &ndash; הסיכון הכולל הוא 0).</li>
-        <li><strong>מודל DREAD (ציון מ-1 עד 10):</strong> Damage (נזק), Reproducibility (שחזוריות), Exploitability (קלות ניצול), Affected Users (כמות מושפעים), Discoverability (קלות גילוי).</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>מיפוי ישיר: STRIDE מול CIA:
@@ -239,20 +178,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "1",
     title: "בקרת איכות (QA) מול ביקורת אבטחה (Auditing) ותבנית ממצא ביקורת (5 שדות חובה)",
     content: `
-      <p>ההבדל היסודי בין בדיקות תוכנה שגרתיות לביקורת אבטחה:</p>
-      <ul>
-        <li><strong>QA (בקרת איכות):</strong> שואל <em>"האם המערכת מבצעת את מה שנדרש לפי האפיון?"</em>. בודק תסריטים חוקיים ונורמטיביים (קופסה שחורה לרוב).</li>
-        <li><strong>Security Auditing (ביקורת אבטחה):</strong> שואל <em>"האם המערכת מבצעת פעולות שאסור לה לבצע תחת קלט זדוני?"</em>. כולל White-box (סקירת קוד מלאה), Black-box ומבחני חדירה (Pentest).</li>
-      </ul>
-      <h3>חמשת שדות החובה לכתיבת ממצא ביקורת אבטחה (Audit Finding)</h3>
-      <p>כל ממצא ביקורת קוד במבחן ובפרויקט חייב לכלול במדויק 5 רכיבים אלו:</p>
-      <ol>
-        <li><strong>מיקום (Location):</strong> קובץ, פונקציה ומספר שורה מדויק.</li>
-        <li><strong>סיווג החולשה (Classification):</strong> עיצוב, מימוש, או תפעול.</li>
-        <li><strong>יעד ה-CIA שנפגע (Target CIA):</strong> סודיות, שלמות, או זמינות.</li>
-        <li><strong>פוטנציאל הנזק וההשפעה (Impact):</strong> מה התוקף מרוויח ומסוגל לבצע.</li>
-        <li><strong>אפחות ותיקון (Mitigation / Remediation):</strong> כיצד לתקן את הקוד מהשורש ולהוסיף הגנה.</li>
-      </ol>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>מבחני חדירה (Penetration Testing) מבוצעים לרוב בקופסה שחורה ומטרתם הדגמת שרשור חולשות לנזק עסקי מעשי; ביקורת קוד (White-box) מאתרת חולשות עמוקות שלא יתגלו לעולם בקופסה שחורה (כגון מרוצי זמנים TOCTOU, דליפות זיכרון, וקוד ללא שימוש).</p>
@@ -279,13 +204,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "1",
     title: "איום ברמת רכיב מול איום מערכתי, ארגז חול (Sandbox) ותבנית Reactor",
     content: `
-      <p>הבחנה בין רמות הפשטה ארכיטקטוניות בהתמודדות עם איומים:</p>
-      <ul>
-        <li><strong>איום ברמת רכיב (Component-Level):</strong> פגם שמקורו בקוד מקומי ברכיב תוכנה בודד (למשל פונקציה המשתמשת ב-<code>strcpy</code>). התיקון הוא ברמת הקוד המקומי.</li>
-        <li><strong>איום מערכתי (Systemic):</strong> איום הנובע מהחיבור והאינטראקציה בין רכיבים תקינים לכאורה (תקשורת לא מוצפנת, מרוצי זמנים, שרשרת אמון שבורה, רוגלת מקלדת בסביבה, או הצפת חיבורים במקביל).</li>
-        <li><strong>ארגז חול (Sandbox):</strong> סביבת הרצה מבודדת ברמת מערכת ההפעלה המגבילה קריאות מערכת (Syscalls) וגישה לקבצים ורשת. גם אם הקוד בתוכו נפרץ, הנזק נשאר כלוא בסביבה המבודדת. <em>אינו מתקן את הבאג, אלא מגביל את רדיוס הנזק (Blast Radius).</em></li>
-        <li><strong>תבנית Reactor (הגנה מפני DoS):</strong> במקום מודל Thread-per-Client (הקורס תחת מתקפת הצפת חיבורים עקב מיצוי זיכרון והחלפות הקשר), הריאקטור משתמש בלולאת אירועים אחת (I/O Multiplexing כגון <code>select / poll / epoll</code>) המאזינה לערוצים מרובים ומטפלת רק בערוץ שבו זמינים נתונים.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>יישום תבנית Reactor ללא הגנות משלים אינו מספיק לאבטחה: חובה לקבוע תקרת חיבורים מרבית (Max Connections) ולהגדיר פס זמן (Timeout) לסגירת חיבורים רדומים כדי למנוע Slowloris DoS.</p>
@@ -308,14 +226,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "1",
     title: "מושגי עולם אמיתי ודוח מערך הסייבר: CWE מול CVE מול CVSS, ו-0-Day מול 1-Day",
     content: `
-      <p>סטנדרטים ומונחים עולמיים המשמשים לתיאור ותעדוף חולשות אבטחה:</p>
-      <ul>
-        <li><strong>CWE (Common Weakness Enumeration):</strong> מילון קטגוריות ופגמי תוכנה כלליים (הדפוס הכללי, "המחלה"). מנוהל ע"י MITRE. דוגמאות: CWE-121 (Stack-based Buffer Overflow), CWE-89 (SQL Injection).</li>
-        <li><strong>CVE (Common Vulnerabilities and Exposures):</strong> מזהה פומבי וייחודי לחולשה ספציפית במוצר מוגדר ("החולה הקונקרטי"). לדוגמה: CVE-2021-44228 עבור פרצת Log4Shell.</li>
-        <li><strong>CVSS (Common Vulnerability Scoring System):</strong> ציון מספרי מ-0.0 עד 10.0 המכמת את חומרת החולשה. Base Score נקבע לפי וקטור התקיפה, מורכבות, הרשאות נדרשות והשפעה על יעדי ה-CIA.</li>
-        <li><strong>חולשת 0-Day (יום אפס):</strong> חולשה שנודעה לתוקפים בטרם נודעה ליצרן או שטרם פורסם לה תיקון (Zero days to prepare). האפחות מתמקד בהגנה לעומק וניטור.</li>
-        <li><strong>חולשת 1-Day:</strong> חולשה שכבר נחשפה ופורסם עבורה טלאי אבטחה, אך ארגונים רבים טרם התקינו אותו. <em>דוח מערך הסייבר הלאומי 2024</em> מציין כי ניצול חולשות 1-Day במערכות לא מעודכנות הוא ציר התקיפה הנפוץ וההרסני ביותר.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>ההבדל בין CWE ל-CVE:</strong> CWE הוא סוג הפגם הכללי (למשל "גלישת חוצץ במחסנית"); CVE הוא מופע ספציפי של פגם זה בתוכנה קונקרטית בגרסה מסוימת.</p>
@@ -341,13 +251,6 @@ window.STUDY_GUIDE_NOTES = [
     unit: "2",
     title: "מודל הזיכרון של C++ בזמן ריצה וזמני חיים (Text, Data, Stack, Heap)",
     content: `
-      <p>מיפוי ארבעת אזורי הזיכרון בתהליך ריצה ב-C++:</p>
-      <ul>
-        <li><strong>Text / Code:</strong> מכיל הוראות מכונה מקומפלות. מסומן בחומרה כ-Read-Only ו-Executable (קשור ישירות ל-DEP/NX). כתיבה אליו גורמת לקריסה.</li>
-        <li><strong>Data / BSS:</strong> משתנים גלובליים וסטטיים (<code>static</code>). Data מכיל מאותחלים; BSS מכיל לא-מאותחלים. חיים מתחילת התוכנית ועד סיומה.</li>
-        <li><strong>Stack (המחסנית):</strong> זיכרון אוטומטי מהיר הפועל בשיטת LIFO. מאחסן מסגרות פונקציות: פרמטרים, כתובת חזרה, EBP שמור ומשתנים מקומיים. משתנים נהרסים אוטומטית ביציאה מהבלוק (RAII). גודלה מוגבל (מספר מגה-בייטים).</li>
-        <li><strong>Heap (הערימה):</strong> זיכרון דינמי המנוהל ידנית ע"י <code>new</code> ו-<code>delete</code> (או <code>malloc/free</code>). גודלו מוגבל רק ע"י ה-RAM והזיכרון הווירטואלי. אינו משתחרר אוטומטית ביציאה מבלוק!</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>משתנה מקומי הנוצר כ-<code>T obj;</code> יושב במחסנית ונהרס ביציאה מהבלוק. הקצאה ב-<code>new T()</code> יוצרת את האובייקט בערימה, בעוד המצביע שמחזיק את כתובתו יושב במחסנית.</p>
@@ -376,11 +279,6 @@ f1.hop();</code></pre>
     unit: "2",
     title: "מצביעים (Pointers) מול הפניות (References) ומלכודות זיכרון מת",
     content: `
-      <p>הבדלים מהותיים בין שני סוגי הגישה לכתובות זיכרון ב-C++:</p>
-      <ul>
-        <li><strong>מצביע (<code>T*</code>):</strong> משתנה עצמאי המאחסן כתובת זיכרון. יכול לקבל <code>nullptr</code>, ניתן לניתוב מחדש (Reassignment) לכתובת אחרת בכל עת, וגישה לערך מתבצעת בעזרת אופרטור הסרת הפניה (<code>*p</code>).</li>
-        <li><strong>הפניה (<code>T&</code>):</strong> שם נרדף (Alias) קבוע לאובייקט קיים. <strong>חובה לאתחל בעת ההגדרה!</strong> אינה יכולה לקבל null, ולא ניתן לנתב אותה מחדש לאובייקט אחר. תחבירית עובדים איתה כאובייקט רגיל.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>מלכודת קטלנית &ndash; החזרת הפניה או מצביע למשתנה מקומי:</strong>
@@ -409,13 +307,6 @@ f1.hop();</code></pre>
     unit: "2",
     title: "בנאי העתקה (Copy Constructor) מול אופרטור השמה (Copy Assignment) ובדיקת השמה עצמית",
     content: `
-      <p>שתי פעולות שונות לחלוטין שמתכנתים רבים נוטים לבלבל ביניהן:</p>
-      <ul>
-        <li><strong>בנאי העתקה (<code>T(const T& other)</code>):</strong> נקרא כאשר <strong>נוצר אובייקט חדש</strong> בזיכרון על בסיס אובייקט קיים:
-          <br><code>MyClass b = a;</code> או <code>MyClass b(a);</code> או העברת אובייקט לפונקציה לפי ערך.</li>
-        <li><strong>אופרטור השמה (<code>T& operator=(const T& other)</code>):</strong> נקרא כאשר מתבצעת השמה לתוך <strong>אובייקט שכבר נבנה וקיים</strong>:
-          <br><code>MyClass b; b = a;</code>.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>בדיקת השמה עצמית (Self-Assignment Check):</strong> באופרטור השמה חובה לבדוק תמיד:
@@ -445,14 +336,6 @@ f1.hop();</code></pre>
     unit: "2",
     title: "העתקה רדודה (Shallow) מול עמוקה (Deep), כלל השלוש וכלל החמישה",
     content: `
-      <p>ניהול משאבים בעת העתקת אובייקטים בעלי מצביעים לערימה:</p>
-      <ul>
-        <li><strong>העתקה רדודה (Shallow Copy):</strong> העתקת ברירת המחדל של המהדר (העתקת ביטים). עבור מצביע, מועתקת הכתובת בלבד. כתוצאה מכך, שני אובייקטים שונים מצביעים לאותו בלוק זיכרון בערימה!
-          <br><em>האסון:</em> כאשר האובייקט הראשון נהרס, המפרק שלו משחרר את הבלוק; האובייקט השני נותר עם מצביע יתום (Dangling Pointer), וכאשר הוא ייהרס יתרחש שחרור כפול (Double Free) וקריסה.</li>
-        <li><strong>העתקה עמוקה (Deep Copy):</strong> הקצאת בלוק זיכרון חדש ועצמאי בערימה ושכפול מלא של המידע. לכל אובייקט יש עותק פרטי משלו.</li>
-        <li><strong>כלל השלוש (Rule of Three):</strong> אם מחלקה מנהלת משאב ערימה וזקוקה למימוש מפורש של אחד מבין השלושה &ndash; <strong>מפרק (Destructor), בנאי העתקה (Copy Constructor), אופרטור השמה (Copy Assignment)</strong> &ndash; היא מחויבת לממש את <strong>כל השלושה!</strong></li>
-        <li><strong>כלל החמישה (Rule of Five ב-C++11):</strong> מוסיף Move Constructor ו-Move Assignment Operator לביצועים יעילים עם rvalue references.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>אם לא מימשתם בנאי העתקה ואופרטור השמה במחלקה שמחזיקה מצביע ב-<code>new</code>, המהדר ייצר העתקה רדודה אוטומטית שתוביל בוודאות ל-Double Free בעת העברה לפונקציה או השמה.</p>
@@ -478,11 +361,6 @@ public:
     unit: "2",
     title: "הקצאה ושחרור מערכים: new[] מול delete[] (מוקש בחינה קריטי)",
     content: `
-      <p>כללי הברזל של הקצאה ושחרור זיכרון ב-C++:</p>
-      <ul>
-        <li>הקצאת איבר יחיד: <code>T* p = new T();</code> &harr; שחרור ב-<code>delete p;</code></li>
-        <li>הקצאת מערך איברים: <code>T* arr = new T[100];</code> &harr; <strong>שחרור אך ורק ב-<code>delete[] arr;</code></strong></li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>שחרור מערך ב-<code>delete</code> רגיל ללא סוגריים הוא התנהגות לא מוגדרת (Undefined Behavior)!</strong>
@@ -510,12 +388,6 @@ public:
     unit: "2",
     title: "מפרק וירטואלי (Virtual Destructor) במחלקת בסיס — מוקש הבחינה המרכזי ב-C++",
     content: `
-      <p>הכשל הנפוץ ביותר בירושה פולימורפית ב-C++:</p>
-      <ul>
-        <li>כאשר מחזיקים אובייקט ממחלקה נגזרת (Derived) דרך מצביע למחלקת בסיס (<code>Base* p = new Derived();</code>):</li>
-        <li>כאשר מבצעים <code>delete p;</code> &ndash; אם המפרק של מחלקת הבסיס <strong>אינו מוגדר כ-<code>virtual</code></strong>, המהדר מבצע קישור סטטי מוקדם ומפעיל <strong>אך ורק את המפרק של מחלקת הבסיס (Base Dtor)!</strong></li>
-        <li><strong>המפרק של מחלקת הבן (Derived Dtor) אינו נקרא לעולם!</strong> כל הזיכרון, החוצצים והמשאבים שהבן הקצה בתוכו ידלפו במלואם (Memory Leak חמור והתנהגות לא מוגדרת).</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>כלל הברזל לפולימורפיזם:</strong> כל מחלקה המכילה לפחות פונקציה וירטואלית אחת, או המיועדת לשמש כמחלקת בסיס לירושה &ndash; <strong>חובה להגדיר בה מפרק וירטואלי:</strong>
@@ -557,11 +429,6 @@ int main() {
     unit: "2",
     title: "הסתרה (Hiding) מול דריסה (Overriding) ופולימורפיזם דינמי ב-C++",
     content: `
-      <p>ההבדל בין קישור מוקדם בקומפילציה לקישור מאוחר בריצה:</p>
-      <ul>
-        <li><strong>הסתרה (Function Hiding):</strong> פונקציה בבן בעלת אותו שם של פונקציה באב, כאשר באב היא <strong>ללא <code>virtual</code></strong> (או בעלת חתימת פרמטרים שונה). המהדר מקשר לפי הטיפוס הסטטי של המצביע בקומפילציה. קריאה דרך <code>Base*</code> תפעיל תמיד את פונקציית האב.</li>
-        <li><strong>דריסה (Overriding):</strong> פונקציה באב המוגדרת עם <code>virtual</code> ובן המממש אותה עם חתימה זהה בדיוק (כולל <code>const</code>). הקריאה מנותבת בזמן ריצה לפי האובייקט האמיתי (Dynamic Binding דרך vtable).</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>מילת המפתח <code>override</code> (C++11) בנגזרת מבקשת מהמהדר לוודא שמתבצעת דריסה אמיתית. אם חל שינוי בחתימה או שבאב חסר virtual, תיזרק שגיאת קומפילציה במקום הסתרה שקטה.</p>
@@ -588,11 +455,6 @@ int main() {
     unit: "2",
     title: "סדר בנייה והריסה בירושה ומלכודת קריאה ל-virtual בבנאי ובמפרק",
     content: `
-      <p>סדר הפעלת פונקציות האתחול והניקוי בהיררכיית ירושה:</p>
-      <ul>
-        <li><strong>סדר בנייה:</strong> קודם כל נבנה הבסיס (Base Ctor) ורק לאחר מכן הנגזרת (Derived Ctor). האב חייב להתקיים לפני שהבן משתמש בשדותיו.</li>
-        <li><strong>סדר הריסה:</strong> הפוך בדיוק! קודם כל נהרסת הנגזרת (Derived Dtor) ורק בסוף הבסיס (Base Dtor). הבן משחרר את שלו לפני שחלק האב מושמד.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>מלכודת קריאה ל-virtual בתוך בנאי או מפרק:</strong>
@@ -620,11 +482,6 @@ int main() {
     unit: "2",
     title: "בעיית היהלום (Diamond Problem) בירושה מרובה ופתרונה בעזרת ירושה וירטואלית",
     content: `
-      <p>בעיה הנוצרת כאשר שתי מחלקות יורשות ממחלקת בסיס אחת, ומחלקה רביעית יורשת משתיהן:</p>
-      <ul>
-        <li><code>A</code> היא מחלקת בסיס. <code>B</code> ו-<code>C</code> יורשות מ-<code>A</code>. המחלקה <code>D</code> יורשת מ-<code>B</code> ומ-<code>C</code> (ירושה מרובה: <code>class D : public B, public C</code>).</li>
-        <li><strong>הכשל:</strong> בתוך אובייקט מסוג D ישנם <strong>שני עותקים נפרדים של מחלקת הבסיס A</strong>! כל פנייה לשדה או מתודה של A מתוך D נכשלת בהידור עקב עמימות (Ambiguity).</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>הפתרון &ndash; ירושה וירטואלית (Virtual Inheritance):</strong>
@@ -660,13 +517,6 @@ int main() { Messenger m; m.run(); }</code></pre>
     unit: "2",
     title: "חיתוך אובייקט (Object Slicing) ומנגנון הטבלה הווירטואלית (Vtable & Vptr)",
     content: `
-      <p>האופן שבו מהדרים מממשים פולימורפיזם דינמי והסכנה בחיתוך מידע:</p>
-      <ul>
-        <li><strong>vtable:</strong> מערך סטטי של מצביעי פונקציות הנוצר ע"י המהדר ברמת המחלקה.</li>
-        <li><strong>vptr:</strong> מצביע מוסתר בראש כל אובייקט פולימורפי (היסט 0) המצביע ל-vtable של המחלקה.</li>
-        <li><strong>חיתוך אובייקט (Object Slicing):</strong> מתרחש כאשר משייכים או מעבירים אובייקט נגזר למשתנה מסוג מחלקת הבסיס <strong>לפי ערך (by-value)</strong>: <code>Base b = derivedObj;</code>.</li>
-        <li>המהדר מעתיק אך ורק את השדות של Base; כל שדות הנגזרת נחתכים ונעלמים, וה-vptr של האובייקט החדש מכוון ל-Base. הפולימורפיזם מתבטל לחלוטין!</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>כדי למנוע חיתוך אובייקט ולשמר התנהגות פולימורפית, <strong>חובה להעביר אובייקטים בהפניה (<code>Base&</code> / <code>const Base&</code>) או במצביע (<code>Base*</code>)!</strong></p>
@@ -689,13 +539,6 @@ int main() { Messenger m; m.run(); }</code></pre>
     unit: "2",
     title: "ניהול משאבים דטרמיניסטי (RAII) ומצביעים חכמים (unique_ptr, shared_ptr, weak_ptr)",
     content: `
-      <p>העקרונות המודרניים של C++ המייתרים שימוש ב-new ו-delete ידניים:</p>
-      <ul>
-        <li><strong>RAII (Resource Acquisition Is Initialization):</strong> קשירת משאב (זיכרון, קובץ, סוקט) לאובייקט במחסנית. הבנאי רוכש; המפרק משחרר. פועל דטרמיניסטית גם בעת זריקת חריגות ופריסת מחסנית (Stack Unwinding).</li>
-        <li><strong><code>std::unique_ptr&lt;T&gt;</code>:</strong> בעלות בלעדית. אינו ניתן להעתקה אלא רק להעברה (<code>std::move</code>). אפס תקורה ביצועית (Zero-cost). משחרר את הזיכרון אוטומטית ביציאה מהתחום.</li>
-        <li><strong><code>std::shared_ptr&lt;T&gt;</code>:</strong> בעלות משותפת. מחזיק מונה הפניות פנימי (Reference Count). הבלוק ישוחרר רק כשהמונה מתאפס.</li>
-        <li><strong><code>std::weak_ptr&lt;T&gt;</code>:</strong> מצביע בלתי מחזיק (Non-owning). אינו מעלה את מונה ההפניות. חיוני למניעת <strong>מעגלי הפניות (Cyclic References)</strong> הגורמים לדליפות זיכרון ב-shared_ptr.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>בטיחות חריגות במכולות STL:</strong> עבור <code>std::vector</code>, שימוש ב-<code>vec[i]</code> אינו מבצע שום בדיקת גבולות. שימוש ב-<code>vec.at(i)</code> מבצע בדיקת גבולות וזורק חריגת <code>std::out_of_range</code> במקרה של חריגה.</p>
@@ -720,25 +563,6 @@ int main() { Messenger m; m.run(); }</code></pre>
     unit: "3",
     title: "מבנה מסגרת המחסנית (Stack Frame), מוסכמות קריאה וסדר בתים Little-Endian",
     content: `
-      <p>המבנה הפיזי של מחסנית הקריאות בארכיטקטורת x86 והגורמים המאפשרים דריסת זיכרון:</p>
-      <ul>
-        <li><strong>כיוון גדילת המחסנית:</strong> המחסנית גדלה <strong>מכתובות גבוהות לנמוכות</strong> (הוראת push מקטינה את ESP).</li>
-        <li><strong>אוגרים מרכזיים:</strong>
-          <br>&bull; <code>ESP / RSP:</code> Stack Pointer &ndash; ראש המחסנית הנוכחי.
-          <br>&bull; <code>EBP / RBP:</code> Base Pointer &ndash; בסיס המסגרת, משמש עוגן יציב למשתנים וארגומנטים.
-          <br>&bull; <code>EIP / RIP:</code> Instruction Pointer &ndash; מצביע לפקודת המכונה הבאה לביצוע.
-        </li>
-        <li><strong>סדר הדברים במסגרת (מלמעלה למטה / מכתובת גבוהה לנמוכה):</strong>
-          <ol>
-            <li>ארגומנטים לפונקציה (שנדחפו ע"י הקורא)</li>
-            <li>כתובת חזרה (Saved Return Address / Saved EIP)</li>
-            <li>מצביע מסגרת קודם שמור (Saved EBP)</li>
-            <li>קנרית המחסנית (Stack Canary &ndash; אם מופעלת)</li>
-            <li>משתנים מקומיים וחוצצים (Buffers)</li>
-          </ol>
-        </li>
-        <li><strong>מוסכמות קריאה:</strong> <code>cdecl</code> &ndash; הקורא מנקה את המחסנית (תומך במספר משתנה של ארגומנטים כמו printf); <code>stdcall</code> &ndash; הפונקציה הנקראת מנקה את המחסנית בעצמה.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>המלכודת הארכיטקטונית של המחסנית:</strong> בעוד המחסנית גדלה מכתובות גבוהות לנמוכות, כתיבה לתוך מערך מקומי (למשל מאינדקס 0 ל-100) מתקדמת <strong>מכתובות נמוכות לגבוהות</strong> &ndash; כלומר ישירות לעבר הקנרית, ה-Saved EBP וכתובת החזרה!</p>
@@ -773,18 +597,6 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     unit: "3",
     title: "גלישת חוצץ במחסנית (Buffer Overflow), פונקציות מסוכנות ומלכודת Off-by-One",
     content: `
-      <p>הכשלים הקלאסיים בהעתקת מחרוזות וניהול חוצצים:</p>
-      <ul>
-        <li><strong>פונקציות אסורות ופסולות:</strong>
-          <br>&bull; <code>gets():</code> נמחקה מתקן C11! אינה מקבלת מגבלת אורך ואינה ניתנת לשימוש בטוח לעולם.
-          <br>&bull; <code>strcpy(), strcat(), sprintf(), scanf("%s"):</code> מסוכנות מאוד &ndash; מעתיקות עד למציאת תו <code>\\0</code> ללא בדיקת קיבולת החוצץ ביעד.
-        </li>
-        <li><strong>חלופות בטוחות:</strong>
-          <br>&bull; <code>fgets(buf, sizeof(buf), stdin):</code> קוראת עד מגבלת האורך כולל שמירת מקום ל-NULL.
-          <br>&bull; <code>snprintf(buf, sizeof(buf), ...):</code> מבטיחה אי-חריגה מסף האורך.
-          <br>&bull; ב-C++: מעבר ל-<code>std::string</code> המנהלת זיכרון באופן דינמי ואוטומטי.
-        </li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>מלכודת <code>strncpy</code>:</strong> אם אורך המחרוזת במקור מגיע למגבלה שצוינה ב-<code>n</code>, פונקציית <code>strncpy</code> <strong>אינה מוסיפה תו NULL מסיים (<code>\\0</code>)!</strong>
@@ -812,11 +624,6 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     unit: "3",
     title: "קנרית המחסנית (Stack Canary / StackGuard) — עקרון פעולה, מבנה מחסנית ומגבלות",
     content: `
-      <p>מנגנון אפחות מהדר נפוץ להגנה מפני גלישות מחסנית לינאריות:</p>
-      <ul>
-        <li><strong>עקרון הפעולה:</strong> המהדר שותל ערך אקראי סודי (Canary Word) במסגרת המחסנית בין המשתנים המקומיים לבין ה-Saved EBP וכתובת החזרה.</li>
-        <li><strong>בדיקה ביציאה:</strong> מיד לפני פקודת <code>ret</code>, המהדר משווה את הערך במחסנית לעותק השמור. אם הערך שונה &ndash; התוכנית קורסת מיד (<code>abort / __stack_chk_fail</code>) ומונעת את ביצוע החזרה.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>חמש מגבלות ומעקפי הקנרית (שאלת מבחן קלאסית 2021א שאלה 5, 2022ג, 2024):</strong>
@@ -846,16 +653,6 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     unit: "3",
     title: "הגנות מרחב כתובות והרצה: ASLR ו-DEP/NX מול מתקפות ROP",
     content: `
-      <p>מנגנוני הגנה מערכתיים ברמת מערכת ההפעלה והחומרה:</p>
-      <ul>
-        <li><strong>ASLR (Address Space Layout Randomization):</strong> מערכת ההפעלה מגרילה בכל הרצה מחדש את כתובות הבסיס של המחסנית, הערימה והספריות המשותפות (<code>libc / DLLs</code>). התוקף אינו יכול להסתמך על כתובות פונקציות קבועות מראש.
-          <br><em>מעקף:</em> דליפת זיכרון של כתובת מצביע בודדת מאפשרת חישוב כתובת הבסיס (<code>Base = Leaked_Address - Known_Offset</code>). כמו כן, קובץ ללא PIE מאפשר קפיצה לקוד קבוע.</li>
-        <li><strong>DEP / NX (Data Execution Prevention / No-Execute / W^X):</strong> הגנת חומרה (ביט NX בטבלאות הדפים של המעבד). דפי נתונים (מחסנית וערימה) מסומנים כבלתי ניתנים להרצה.
-          <br><em>חוסם לחלוטין:</em> הזרקת Shellcode למחסנית או לערימה.</li>
-        <li><strong>ROP (Return-Oriented Programming):</strong> טכניקת תקיפה מתקדמת העוקפת את DEP/NX.
-          <br>התוקף אינו מזריק קוד חדש, אלא שוזר קטעי קוד לגיטימיים קיימים במקטע ה-Text או ב-libc המסתיימים בפקודת <code>ret</code> (המכונים <strong>Gadgets</strong>). שרשרת כתובות הגאדג'טים מוזנת למחסנית, וביצוע <code>ret</code> מפעיל אותם בזה אחר זה.</li>
-        <li><strong>מחסנית צל (Shadow Stack / Intel CET):</strong> פתרון חומרתי חדש ל-ROP: המעבד מנהל מחסנית צל פנימית מבודדת שבה נשמר עותק של כתובות החזרה, ומשווה אותן ב-<code>ret</code> &ndash; חוסם ROP חומרתית!</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>משוואת הבחינה החשובה ביותר:</strong>
@@ -884,12 +681,6 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     unit: "3",
     title: "דריסת מצביע טבלה וירטואלית (Vptr Smashing) בערימה ובמחסנית",
     content: `
-      <p>שאלת בחינה פתוחה מובהקת החוזרת במועדים רבים (2026א שאלה 7, 2025ג שאלה 8):</p>
-      <ul>
-        <li><strong>מבנה האובייקט בזיכרון:</strong> באובייקט פולימורפי, השדה הראשון (היסט 0) הוא מצביע ה-<code>vptr</code>, המכוון לטבלת ה-vtable של המחלקה.</li>
-        <li><strong>מנגנון התקיפה:</strong> אם חוצץ שכן נגלש (במחסנית או בערימה), או בעקבות שגיאת Use-After-Free &ndash; התוקף דורס את שדה ה-vptr ומכוון אותו לטבלה מזויפת (Fake Vtable) שבשליטתו.</li>
-        <li><strong>הניצול:</strong> ברגע שהקוד מבצע קריאה פולימורפית (<code>obj-&gt;virtualMethod()</code>), המעבד שולף את כתובת הפונקציה מהטבלה המזויפת וקופץ לקוד זדוני (חטיפת זרימת בקרה &ndash; Control Flow Hijacking).</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>ארבע נקודות זהב לתשובה בבחינה:</strong>
@@ -916,21 +707,6 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     unit: "3",
     title: "גלישות מספרים שלמים (Integer Overflow / Underflow) ומלכודת malloc(count * size)",
     content: `
-      <p>שגיאות חישוב מתמטיות המובילות להרס מנגנוני הקצאת זיכרון:</p>
-      <ul>
-        <li><strong>גלישת מספר בלתי חתום (unsigned):</strong> מוגדרת היטב בתקן השפה כפעולת מודולו 2 בחזקת מספר הסיביות (Wrap-around). <code>UINT_MAX + 1 == 0</code>.</li>
-        <li><strong>גלישת מספר בעל סימן (signed):</strong> <strong>מוגדרת בתקן כ-Undefined Behavior (UB)!</strong> מהדרים מודרניים מניחים שגלישה כזו אינה קורית, ומוחקים בדיקות אבטחה בדיעבד כגון <code>if (a + b &lt; a)</code>.</li>
-        <li><strong>מלכודת ההקצאה הקלאסית (שחזורי 2024 ו-2025ג מועד ג):</strong>
-          <pre class="code" dir="ltr"><code>size_t count = read_input(); // ערך גדול מהרשת
-int* arr = (int*)malloc(count * sizeof(int));
-for (size_t i = 0; i &lt; count; i++) {
-    arr[i] = read_int();
-}</code></pre>
-          אם <code>count = 0x40000001</code> במערכת 32 סיביות:
-          <code>0x40000001 * 4 = 0x100000004</code> &larr; נקטם במודולו ל-<strong>4 בתים בלבד!</strong>
-          <code>malloc</code> מקצה בהצלחה חוצץ זעיר של 4 בתים. הלולאה מיד לאחר מכן מנסה לכתוב מעל מיליארד איברים &larr; <strong>גלישת ערימה קטסטרופלית (Heap Overflow)!</strong>
-        </li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>הבדיקה הדפנסיבית הנכונה למניעת גלישת כפל בהקצאה:</strong>
@@ -959,19 +735,6 @@ for (size_t i = 0; i &lt; count; i++) {
     unit: "3",
     title: "חולשת מחרוזת פורמט (Format String) — קריאה (%x/%p), כתיבה שרירותית (%n) ומניעה",
     content: `
-      <p>חולשה חמורה הנובעת מהעברת קלט משתמש כפרמטר פורמט לפונקציות ממשפחת printf:</p>
-      <ul>
-        <li><strong>שורש החולשה:</strong> קריאה כגון <code>printf(user_input);</code> במקום <code>printf("%s", user_input);</code>.
-        הפונקציה מפרשת כל תו <code>%</code> כהוראת עיצוב ושולפת ערכים מהמחסנית.</li>
-        <li><strong>ניצול לקריאה (Information Leak):</strong>
-          <br>&bull; <code>%x / %p:</code> מדפיסים ערכים מראש המחסנית &ndash; מאפשרים הדלפת כתובות חזרה (עקיפת ASLR) והדלפת ערך הקנרית (Stack Canary).
-          <br>&bull; <code>%s:</code> מתייחס לערך במחסנית ככתובת זיכרון ומדפיס את המחרוזת &ndash; מאפשר קריאת זיכרון מכל כתובת שרירותית.
-        </li>
-        <li><strong>ניצול לכתיבה שרירותית (Arbitrary Memory Write):</strong>
-          <br>&bull; <code>%n:</code> <strong>כותב את מספר התווים שהודפסו עד כה</strong> לתוך הכתובת המוצבעת ע"י הפרמטר במחסנית!
-          התוקף מעצב את רוחב ההדפסה ומשתמש ב-<code>%n</code> כדי לשכתב כתובות חזרה, מצביעי פונקציה או vptr!
-        </li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>כלל ברזל דפנסיבי:</strong> מחרוזת הפורמט של printf חייבת להיות תמיד <strong>מחרוזת קבועה סטטית (String Literal)</strong> בקוד המקור. קלט משתמש יועבר תמיד אך ורק כפרמטר נתון: <code>printf("%s", user_str);</code>.</p>
@@ -995,14 +758,6 @@ for (size_t i = 0; i &lt; count; i++) {
     unit: "3",
     title: "כשלי ניהול זיכרון בערימה: Use-After-Free, Double Free ו-Memory Leak",
     content: `
-      <p>שלושת פגמי הזיכרון המובילים בניהול ידני של הערימה ב-C/C++:</p>
-      <ul>
-        <li><strong>Use-After-Free (UAF):</strong> גישה למצביע לאחר שהבלוק שהוקצה עבורו שוחרר ב-<code>free()</code> או ב-<code>delete</code> (המצביע הופך למצביע יתום &ndash; Dangling Pointer).
-          <br><em>מנגנון הניצול:</em> מנהל הערימה ממחזר בלוקים משוחררים. אם מוקצה אובייקט חדש באותו מקום, כתיבה דרך המצביע הישן דורסת את שדותיו של האובייקט החדש (במיוחד מצביע ה-vptr שלו) ומאפשרת השתלטות מלאה.
-          <br><em>מניעה:</em> איפוס מיידי של מצביעים לאחר שחרור: <code>p = nullptr;</code>, ומעבר למצביעים חכמים (<code>std::unique_ptr</code>).</li>
-        <li><strong>Double Free:</strong> שחרור כפול של אותו בלוק זיכרון בערימה. משחית את הרשימות המקושרות הפנימיות של מנהל ה-Heap (כגון Fastbins/Tcache ב-glibc) ועלול להוביל לכתיבה שרירותית.</li>
-        <li><strong>Memory Leak (דליפת זיכרון):</strong> אי-שחרור של בלוקים שהוקצו. מוביל למיצוי משאבים מתמשך, להאטה ובסופו של דבר לקריסת התהליך &ndash; פגיעה מובהקת ביעד ה-<strong>Availability (זמינות)</strong>.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p><strong>פתרון מבני לכשלי ערימה:</strong> אימוץ עקרון RAII ושימוש ב-<code>std::unique_ptr</code> ו-<code>std::shared_ptr</code> מונע לחלוטין דליפות זיכרון ושחרור כפול על ידי ניהול בעלות אוטומטי.</p>
@@ -1030,26 +785,6 @@ ptr-&gt;action(); // שגיאה!</code></pre>
     unit: "3",
     title: "כשלים מתקדמים: TOCTOU, מחיקת איפוס סודי (Dead Store Elimination) וארגז כלי בדיקה",
     content: `
-      <p>חולשות מערכת ייחודיות וכלים מעשיים לאיתורן:</p>
-      <ul>
-        <li><strong>TOCTOU (Time-of-Check to Time-of-Use):</strong> מצב מרוץ (Race Condition) במערכת קבצים:
-          המערכת בודקת הרשאות לקובץ (למשל עם <code>access()</code>), ורק לאחר מכן פותחת אותו (עם <code>open()</code>).
-          בפער הזמן הזעיר שבין הבדיקה לשימוש, התוקף מחליף את הקובץ בקישור סימבולי (Symlink) לקובץ מערכת רגיש (כגון <code>/etc/passwd</code>).
-          <br><em>מניעה:</em> פעולות פתיחה אטומיות (<code>open</code> עם דגלי <code>O_CREAT | O_EXCL</code>) ועבודה רציפה עם מתארי קבצים (File Descriptors: <code>fstat, fchmod</code>) במקום שמות קבצים.</li>
-        <li><strong>מחיקת איפוס סודי (Dead Store Elimination):</strong>
-          מתכנתים מאפסים חוצץ סיסמאות בזיכרון בסיום הפונקציה: <code>memset(password, 0, len);</code>.
-          המהדר, בעת ביצוע אופטימיזציה, מזהה שחוצץ הסיסמה אינו נקרא עוד לעולם לפני סיום הפונקציה, ומחליט <strong>למחוק לחלוטין את פעולת ה-memset</strong> כ"קוד מת"!
-          התוצאה: הסיסמה נותרת גלויה בזיכרון ה-RAM וחשופה לזליגות.
-          <br><em>מניעה:</em> שימוש בפונקציות איפוס ייעודיות שהמהדר אינו רשאי למחוק (כגון <code>explicit_bzero</code> בלינוקס או <code>SecureZeroMemory</code> ב-Windows).</li>
-        <li><strong>מתקפות תזמון (Timing Attacks):</strong> השוואת סיסמאות בעזרת <code>strcmp</code> או <code>==</code> מסתיימת בתו הראשון שאינו תואם. מדידת זמני תגובה מאפשרת ניחוש הסיסמה תו אחר תו.
-          <br><em>מניעה:</em> השוואה בזמן קבוע (Constant-Time Comparison).</li>
-      </ul>
-      <h3>ארגז כלי הבדיקה והניתוח</h3>
-      <ul>
-        <li><strong>ניתוח סטטי (Static Analysis - כגון <code>cppcheck</code>):</strong> סריקת קוד המקור ללא הרצה; מאתר חריגות גבולות, מצביעים שלא אותחלו ופונקציות מסוכנות.</li>
-        <li><strong>ניתוח דינמי (Dynamic Analysis - כגון <code>Valgrind Memcheck</code> / <code>AddressSanitizer (ASan)</code>):</strong> הרצת התוכנית ומעקב בזמן אמת אחרי גישות לזיכרון; מזהה דליפות זיכרון, UAF וגלישות ערימה ומחסנית.</li>
-        <li><strong>עירפול (Fuzzing):</strong> כלי המזריק כמויות עצומות של קלטים אקראיים ומשובשים לתוכנית כדי לחשוף קריסות וכשלי פיענוח חבויים.</li>
-      </ul>
       <div class="note-box highlight">
         <strong>מה למרקר במדריך:</strong>
         <p>בדיקה סטטית ודינמית משלימות זו את זו: ניתוח סטטי מקיף את כל נתיבי הקוד אך סובל מ-False Positives; ניתוח דינמי בודק רק נתיבים שהופעלו בפועל אך מציג שגיאות אמיתיות בלבד.</p>
