@@ -4188,5 +4188,63 @@ window.triggerAi = function(platform) {
     });
 };
 
-initAiAssistantUI();
+// initAiAssistantUI(); replaced by Tools Menu
 // --- End AI Assistant Feature ---
+
+
+// --- Tools Menu Feature ---
+function initToolsMenuUI() {
+    // Remove old AI fab if exists
+    const oldFab = document.querySelector('.ai-fab');
+    if (oldFab) oldFab.remove();
+
+    // Avoid duplicating
+    if (document.querySelector('.tools-fab-container')) return;
+
+    const fabContainer = document.createElement('div');
+    fabContainer.className = 'tools-fab-container';
+
+    const menu = document.createElement('div');
+    menu.className = 'tools-menu';
+    menu.id = 'tools-menu';
+    menu.innerHTML = `
+        <button onclick="window.location.hash = '#/print'; toggleToolsMenu();">🖨️ הדפסה</button>
+        <button onclick="openAiSettingsModal(); toggleToolsMenu();">⚙️ הגדרות AI</button>
+    `;
+    
+    const fab = document.createElement('div');
+    fab.className = 'tools-fab';
+    fab.innerHTML = '🛠️ כלים';
+    fab.onclick = toggleToolsMenu;
+
+    fabContainer.appendChild(menu);
+    fabContainer.appendChild(fab);
+    document.body.appendChild(fabContainer);
+}
+
+window.toggleToolsMenu = function() {
+    const menu = document.getElementById('tools-menu');
+    if (menu.style.display === 'flex') {
+        menu.style.display = 'none';
+    } else {
+        menu.style.display = 'flex';
+    }
+};
+
+// Close menu on outside click
+document.addEventListener('mousedown', (e) => {
+    const container = document.querySelector('.tools-fab-container');
+    const menu = document.getElementById('tools-menu');
+    if (container && menu && menu.style.display === 'flex' && !container.contains(e.target)) {
+        menu.style.display = 'none';
+    }
+});
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+    initToolsMenuUI();
+});
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(initToolsMenuUI, 100);
+}
+// --- End Tools Menu Feature ---
