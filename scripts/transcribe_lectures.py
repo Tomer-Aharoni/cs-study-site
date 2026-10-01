@@ -11,8 +11,15 @@ def install_whisper():
     ])
 
 def main():
-    # Install dependencies first
-    install_whisper()
+    # Dependencies already handled externally
+
+    
+    # Inject winget ffmpeg path into environment so whisper can find it without shell restart
+    local_app_data = os.environ.get('LOCALAPPDATA', '')
+    ffmpeg_path = os.path.join(local_app_data, 'Microsoft', 'WinGet', 'Packages', 'Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe', 'ffmpeg-9.0.2-full_build', 'bin')
+    if os.path.exists(ffmpeg_path):
+        os.environ['PATH'] = ffmpeg_path + os.pathsep + os.environ.get('PATH', '')
+
     import whisper
 
     # Bypass SSL errors for model downloading
@@ -55,7 +62,7 @@ def main():
         
         with open(txt_path, "w", encoding="utf-8") as f:
             f.write(result["text"])
-        print(f"✅ Saved transcript to: {txt_path}")
+        print(f"[SUCCESS] Saved transcript to: {txt_path}")
 
     print("\nAll done! The agents can now read the text files.")
 

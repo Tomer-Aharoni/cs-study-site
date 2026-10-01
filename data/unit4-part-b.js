@@ -148,15 +148,40 @@ else:
     print("all ok")</code></pre>
       <p><code>with</code> סוגר את הקובץ גם אם ההמרה נכשלת. בלי <code>with</code> צריך <code>finally</code> או סגירה ידנית, וקל לשכוח את זה בענף שגיאה. <code>sys.exc_info()[0]</code> מחזיר את טיפוס החריגה שנזרקה.</p>
       <p>מילים שמורות במצגת (אי אפשר שמות משתנים): False, None, True, and, as, assert, async, await, break, class, continue, def, del, elif, else, except, finally, for, from, global, if, import, in, is, lambda, nonlocal, not, or, pass, raise, return, try, while, with, yield.</p>
-      <p><strong>שימור אובייקטים (Pickle / Shelve).</strong> <code>pickle</code> שומר אובייקט כרצף בתים: <code>pickle.dump</code> כותב לקובץ, <code>pickle.load</code> משחזר. <code>shelve</code> הוא מילון שנשמר בקובץ דרך אותו מנגנון. השחזור יכול להפעיל קוד כחלק מבניית האובייקט, ולכן טוענים רק קובץ ממקור אמין שעבורו נשמרה גם שלמות. לא <code>loads</code> על גוף בקשת משתמש. להחלפת נתונים עם מערכות אחרות מעדיפים <strong>JSON</strong>, פורמט טקסט מוסכם לנתונים, עם <strong>סכימה (schema)</strong>, תיאור של אילו שדות וערכים מותרים, ועם מגבלות גודל ואימות ערכים.</p>
+      <p><strong>שימור אובייקטים: סִדּוּר (Serialization) ושחזור מסִדּוּר (Deserialization).</strong> בזיכרון התוכנית, אובייקטים חיים כמבנים דינמיים מקושרים. כיצד ניתן לשמור אובייקט חי לקובץ בדיסק, או לשלוח אותו דרך הרשת לשרת מרוחק? לשם כך נדרשים שני תהליכים משלימים:</p>
+      <ul>
+        <li><strong>סִדּוּר (Serialization):</strong> המרת אובייקט חי מזיכרון ה־RAM לרצף בתים בינארי שניתן לאחסן בקובץ או לשדר ברשת.</li>
+        <li><strong>שחזור מסִדּוּר (Deserialization):</strong> קריאת רצף הבתים ובנייה מחדש של האובייקט המקורי בזיכרון המחשב.</li>
+      </ul>
+      <p>בפייתון, המודול המובנה לתהליך זה נקרא <code>pickle</code> (שימוש ב־<code>pickle.dump</code> / <code>dumps</code> לסִדּוּר, וב־<code>pickle.load</code> / <code>loads</code> לשחזור). המודול <code>shelve</code> הוא מעין מילון נתונים (מסד נתוני מפתח-ערך) הנשמר בדיסק, ומבוסס ישירות על מנגנון <code>pickle</code>.</p>
+      <div class="panel">
+        <p><strong>מלכודת אבטחה קריטית במבחן: הרצת קוד מרחוק (Remote Code Execution, RCE) דרך Pickle!</strong></p>
+        <p><strong>מדוע Pickle מסוכן?</strong> בניגוד לפורמטים טקסטואליים פסיביים (כמו JSON, המתעדים רק נתונים יבשים כגון מספרים ומחרוזות), פורמט Pickle הוא למעשה <em>תוכנית פעולה שלמה</em> עבור מכונה וירטואלית קטנה (Pickle VM) המרכיבה את האובייקט מחדש שלב אחר שלב.</p>
+        <p><strong>איך עובד הניצול (Exploit) דרך <code>__reduce__</code>?</strong></p>
+        <ul>
+          <li>כאשר פייתון משחזרת אובייקט, היא בודקת האם מוגדרת בו המתודה המיוחדת <code>__reduce__()</code>. תפקידה של מתודה זו הוא להורות למפרש כיצד לבנות את האובייקט מחדש.</li>
+          <li>מתודה זו מחזירה טופל (Tuple) המכיל פונקציה להפעלה (Callable) ואת הארגומנטים שלה.</li>
+          <li>תוקף שמייצר קלט Pickle זדוני יכול להגדיר ב־<code>__reduce__</code> פונקציית מערכת כגון <code>os.system</code> עם הפקודה <code>('whoami',)</code> או כל פקודה זדונית אחרת.</li>
+          <li>בעת קריאה ל־<code>pickle.load(inp)</code>, המפרש מפעיל את הפקודה של התוקף <strong>מיד ובאופן אוטומטי בהרשאות התהליך</strong>.</li>
+        </ul>
+        <p><strong>מדוע <code>try/except</code> אינו מגן מפני הנזק?</strong> המפרש מבצע את פקודת התוקף כבר בעת הרכבת האובייקט בתוך <code>pickle.load</code>, <em>לפני</em> שמוחזר ערך כלשהו ולפני שנזרקת שגיאה. לכן הנזק כבר נגרם במלואו, ועטיפת הפקודה ב־<code>try/except</code> תופסת לכל היותר שגיאת סיום אך אינה מונעת את ביצוע הפקודה הזדונית.</p>
+      </div>
+      <p><strong>הכלל הדפנסיבי (Mitigation):</strong> לעולם אין לקרוא קובץ או מחרוזת Pickle מקלט משתמש, מרשת או מכל מקור שלא הובטחה שלמותו הקריפטוגרפית (למשל בעזרת חתימת HMAC מאובטחת). לתקשורת בין מערכות וקליטת נתונים חיצוניים משתמשים אך ורק בפורמטים מבוססי טקסט בטוחים כמו <strong>JSON</strong> (דרך <code>json.loads</code>), תוך אימות קפדני לפי סכימה (Schema) והגבלת גודל הקלט.</p>
       <pre class="code"><code>import pickle
-# כתיבה למקום שבשליטתכם, לא לקלט משתמש
-with open("state.pkl", "wb") as out:
-    pickle.dump({"n": 3}, out)
 
-# קריאה רק מאותו מקור אמין
+# הדגמת הסכנה: אובייקט זדוני המגדיר __reduce__ ומריץ פקודת מערכת בעת שחזור
+class Exploit:
+    def __reduce__(self):
+        import os
+        # מחזיר פונקציה להפעלה וארגומנטים — יופעל אוטומטית בעת pickle.load!
+        return (os.system, ('whoami',))
+
+# שימוש תקין: שמירה וטעינה אך ורק בקובץ מקומי שבשליטתכם המלאה
+with open("state.pkl", "wb") as out:
+    pickle.dump({"score": 100}, out)
+
 with open("state.pkl", "rb") as inp:
-    state = pickle.load(inp)</code></pre>
+    state = pickle.load(inp)  # בטוח רק כשהמקור אמין ושלמותו מובטחת</code></pre>
     `,
   }
 );

@@ -58,8 +58,41 @@ int sockfd = socket(domain, type, protocol);</code></pre>
     id: "u5-boost",
     title: "Boost כספריות C++ לתקשורת",
     html: `
-      <p>המצגת מפנה ל־boost.org: חבילות מקור לפיתוח C++. אפשר להתקין לבד, או ב־Visual Studio 2019 דרך <strong>NuGet</strong> — מנהל חבילות שמוריד ספריות מוכנות, כולל Boost. בקורס זה תשתית לכתיבת שקעים ברמה גבוהה יותר מה־API הגולמי, ממשק התכנות הישיר של מערכת ההפעלה — לא חובה לשנן כל מחלקה.</p>
-      <p>C++ לא כוללת הצפנה בתקן השפה. כשצריך ערוץ מוצפן או צופן, קוראים לספרייה — לא ממציאים אלגוריתם. במצגת המשלימה: <strong>OpenSSL</strong> (מימוש נפוץ של TLS ושל צפנים) ו־<strong>Crypto++</strong> (ספריית C++ לאלגוריתמים קריפטוגרפיים; מופיעה גם בחומרי הקורס).</p>
+      <p>המצגת מפנה לאתר <code>boost.org</code>: אוסף ספריות קוד פתוח מובילות ב־C++, המשמשות בסיס לרבות מההרחבות בתקן הרשמי של השפה. בסביבת Visual Studio מתקינים אותן בקלות דרך מנהל החבילות <strong>NuGet</strong>. בתחום התקשורת בקורס, ספריית <strong>Boost.Asio</strong> (Asynchronous Input/Output) היא התשתית המודרנית לכתיבת יישומי רשת מונחי־עצמים, ברמה גבוהה ובטוחה בהרבה מעל ה־API המסורתי של מערכת ההפעלה, והיא מופיעה בשאלות בחינה (כגון 2026א, שאלה 8).</p>
+      <p><strong>למה Boost.Asio במקום ה־API הגולמי של שקעים?</strong> ב־API הישן (Berkeley Sockets) נדרשנו לבצע סדרת קריאות נפרדות, מסורבלות ורוויות באגים פוטנציאליים: <code>socket</code>, <code>setsockopt</code>, מילוי מבנה כתובת, <code>bind</code>, <code>listen</code>, ולבסוף <code>accept</code>, תוך בדיקת קודי שגיאה שליליים בכל צעד וניהול ידני של סגירת השקע. Boost.Asio מפשטת ומאבטחת את התהליך:</p>
+      <ul>
+        <li><code>boost::asio::io_context</code> — <strong>מנוע הקלט/פלט המרכזי:</strong> האובייקט שדרכו מתווכים מול מנגנוני התקשורת של מערכת ההפעלה. הוא אחראי על ניתוב כל פעולות התקשורת (הן הסינכרוניות והן האסינכרוניות).</li>
+        <li><strong>צד השרת (Server) — המחלקה <code>tcp::acceptor</code>:</strong> יתרונה הגדול הוא <strong>איגוד שלבי ההקמה לאובייקט יחיד!</strong> הקונסטרקטור של ה־<code>acceptor</code> מאגד בתוכו את כל שלבי ה־<code>socket()</code>, ה־<code>bind()</code> וה־<code>listen()</code> יחד עם הגדרת הכתובת והפורט (ה־<code>endpoint</code>). קריאה יחידה למתודה <code>accept()</code> ממתינה לחיבור ומחזירה ישירות אובייקט <code>tcp::socket</code> מחובר ומוכן לשיחה.</li>
+        <li><strong>צד הלקוח (Client) — המחלקה <code>tcp::resolver</code>:</strong> מתרגמת שמות מארח ופורטים לכתובות רשת (נקודות קצה / Endpoints), שלאחריהן מתבצע החיבור באמצעות <code>boost::asio::connect</code>.</li>
+        <li><strong>קריאה וכתיבה מוגנות:</strong> פונקציות כמו <code>boost::asio::read</code>, <code>boost::asio::write</code> ו־<code>socket.read_some</code> פועלות יחד עם מעטפת הזיכרון <code>boost::asio::buffer</code> — המונעת גלישות חוצץ על ידי הצמדת גודל המערך למצביע.</li>
+      </ul>
+      <pre class="code"><code>#include &lt;boost/asio.hpp&gt;
+#include &lt;iostream&gt;
+
+using boost::asio::ip::tcp;
+
+// שרת בסיסי ומודרני ב-Boost.Asio:
+void run_server(int port) {
+    // 1. יצירת מנוע הקלט/פלט של הספרייה
+    boost::asio::io_context io_context;
+
+    // 2. ה-acceptor מאגד socket, bind ו-listen בשורה אחת:
+    tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), port));
+
+    // 3. המתנה לחיבור לקוח והחזרת שקע מוכן לעבודה:
+    tcp::socket socket = acceptor.accept(); // קריאה חוסמת עד הגעת לקוח
+
+    // 4. קריאה וכתיבה בטוחות דרך מעטפת buffer:
+    char data[1024];
+    size_t length = socket.read_some(boost::asio::buffer(data));
+    boost::asio::write(socket, boost::asio::buffer(data, length));
+}</code></pre>
+      <p><strong>יתרונות דפנסיביים של Boost.Asio:</strong></p>
+      <ul>
+        <li><strong>ניהול משאבים אוטומטי (RAII, Resource Acquisition Is Initialization):</strong> השקעים והחיבורים נסגרים אוטומטית בהריסת האובייקט (בדסטרקטור) ברגע שהם יוצאים מטווח ההגדרה (Scope). מנגנון זה מונע לחלוטין דליפת מתארי קבצים (File Descriptors) במערכת ההפעלה גם במקרה של שגיאה או יציאה מוקדמת.</li>
+        <li><strong>טיפול מובנה בשגיאות באמצעות חריגות (Exceptions):</strong> במקום להסתמך על בדיקות שבירות של קודי החזרה שליליים שקל לשכוח, פעולות שנכשלות זורקות חריגה מסוג <code>boost::system::system_error</code> שניתן לטפל בה בצורה מסודרת בבלוק <code>try...catch</code>.</li>
+      </ul>
+      <p><strong>ספריות הצפנה משלימות:</strong> תקן שפת C++ אינו כולל אלגוריתמי הצפנה מובנים. כאשר נדרש ערוץ תקשורת מאובטח ומוצפן, משתמשים בספריות ייעודיות מוכחות — לעולם אין לממש אלגוריתם קריפטוגרפי לבד! במצגת המשלימה מודגשות <strong>OpenSSL</strong> (מימוש תקני ונפוץ ביותר של TLS ושל צפנים) ו־<strong>Crypto++</strong> (ספריית C++ עשירה לאלגוריתמים קריפטוגרפיים, המוזכרת בחומרי הקורס).</p>
     `,
   },
   {
@@ -104,55 +137,75 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as srv:
     id: "u5-frame",
     title: "מסגור (Framing) מעל זרם בתים של TCP",
     html: `
-      <p>TCP מעביר <strong>זרם בתים (byte stream)</strong>. אין לו גבול של "הודעה". קריאה אחת ל־<code>recv</code> יכולה לחזור עם חלק מההודעה, או עם זנב של הודעה אחת ותחילת ההודעה הבאה באותו חוצץ.</p>
-      <p>הפרוטוקול של היישום מגדיר מסגור. במטלת הקורס זו כותרת קבועה של 12 בתים, שלושה מספרים של 4 בתים כל אחד, בסדר רשת big-endian:</p>
+      <p><strong>הבעיה המרכזית ב־TCP: זרם בתים (Byte Stream) ללא גבולות הודעה.</strong> פרוטוקול TCP מבטיח שהנתונים יימסרו במלואם ולפי הסדר, אך הוא מתייחס לנתונים כאל זרם רציף של בתים (Byte Stream). ל־TCP אין שום מושג היכן "הודעה" אחת מתחילה והיכן היא מסתיימת.</p>
+      <div class="panel">
+        <p><strong>אנלוגיית צינור המים:</strong> דמיינו שאתם שופכים שלוש כוסות מים מובחנות בזו אחר זו לתוך צינור גינה ארוך. בקצה השני של הצינור המים יזרמו כסילון רציף אחד. המקבל בצד השני אינו רואה "שלוש כוסות", אלא רק זרם מים רציף! אם הוא יפתח דלי ל־2 שניות, הוא עשוי לתפוס כוס וחצי, חצי כוס, או שתי כוסות יחד.</p>
+      </div>
+      <p><strong>המלכודת הקריטית בבחינה ובפיתוח:</strong> קריאה בודדת לפונקציה <code>sock.recv(2048)</code> <strong>אינה מבטיחה קבלת הודעה שלמה!</strong> ברשת עלולים להתרחש שני תרחישים שכיחים:</p>
       <ul>
-        <li>מספר החבילה</li>
-        <li>מספר החבילות הכולל</li>
-        <li>אורך המטען (<strong>payload</strong>) — הבתים של ההודעה עצמה, בלי הכותרת</li>
+        <li><strong>קריאה חלקית (Partial Read):</strong> ביקשתם 2048 בתים, אך מערכת ההפעלה החזירה כרגע רק 150 בתים, מכיוון ששאר החבילה עדיין בדרך. אם תנסו לפענח את 150 הבתים כאילו הם ההודעה כולה — התוכנית תקרוס!</li>
+        <li><strong>התמזגות חבילות (Packet Coalescing):</strong> השולח קרא פעמיים ברצף ל־<code>send</code> עם שתי הודעות נפרדות, אך כרטיס הרשת איחד אותן למקטע TCP יחיד. קריאת <code>recv</code> אחת תחזיר את שתי ההודעות צמודות יחד.</li>
       </ul>
-      <p>קודם קוראים בדיוק 12 בתים, מפענחים, ורק אז קוראים בדיוק את האורך שכתוב. הלולאה חובה: <code>recv</code> רשאי להחזיר פחות ממה שביקשתם. אורך שמגיע מהכותרת הוא קלט, ולכן יש תקרה לפני הקריאה השנייה. בלי תקרה, שדה אורך ענקי מבקש מהשרת לצבור זיכרון.</p>
-      <pre class="code"><code>def recv_exact(conn, n):
-    buf = bytearray()
-    while len(buf) &lt; n:
-        chunk = conn.recv(n - len(buf))
-        if not chunk:
-            raise OSError("connection closed")
-        buf.extend(chunk)
-    return bytes(buf)
-
-HEADER = 12
-MAX_PAYLOAD = 2036
-header = recv_exact(conn, HEADER)
-pkt_id = int.from_bytes(header[0:4], "big")
-total = int.from_bytes(header[4:8], "big")
-size = int.from_bytes(header[8:12], "big")
-if size &gt; MAX_PAYLOAD:
-    raise ValueError("payload too large")
-payload = recv_exact(conn, size)</code></pre>
-      <p><code>struct.unpack("!III", header)</code> מפענח את אותם שלושה מספרים: <code>!</code> הוא big-endian. <code>send</code> גם הוא עלול לשלוח חלק, ולכן בצד השולח משתמשים ב־<code>sendall</code> או בלולאה עד שכל הכותרת וה־payload יצאו. 2036 הוא המקום שנשאר כשהיחידה כולה מוגבלת ל־2048 בתים (12 כותרת). הפתרון המלא של המטלה נמצא בתרגול.</p>
-      <h3>שאלת תרגול</h3>
-      <p>למה <code>recv(1024)</code> ב־TCP לא מבטיח הודעה שלמה, ואיך קוראים הודעה עם כותרת קבועה של 12 בתים ב־big-endian?</p>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>TCP הוא זרם בתים בלי גבולות הודעה. <code>struct.unpack("!III", ...)</code> מפענח שלושה מספרים של 4 בתים בסדר רשת.</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body">
-        <p><code>recv</code> מחזיר עד כמות הבתים שביקשתם, וגם פחות. אין קשר בין גבולות <code>send</code> לגבולות <code>recv</code>. לכן קוראים קודם בדיוק 12 בתים, מפענחים, בודקים שהאורך לא עובר תקרה, וקוראים בדיוק את האורך.</p>
-        <pre class="code"><code>import struct
+      <p><strong>הפתרון: מסגור (Framing) בשכבת היישום.</strong> מכיוון ש־TCP אינו תוחם הודעות, שכבת היישום (Application Layer) חייבת להגדיר פרוטוקול מסגור (Framing) המאפשר למקבל לחלץ הודעות מובחנות מתוך הזרם. שלוש שיטות המסגור הנפוצות הן: (1) תו מפריד (Delimiter כגון <code>\\n</code>), (2) אורך קבוע לכל הודעה, או (3) <strong>כותרת מקדימה עם שדה אורך (Length-Prefixed Header)</strong> — זוהי השיטה הנדרשת במטלת הקורס ובבחינות.</p>
+      <h3>פרוטוקול הכותרת בת 12 בתים (Big-Endian)</h3>
+      <p>במטלת הקורס ובשאלות מבחן מתקדמות (כגון 2025ג מועד ג), מגדירים חבילה בעלת <strong>כותרת קבועה בת 12 בתים</strong>, המורכבת משלושה שדות של 4 בתים (32 סיביות ללא סימן) בפורמט Network Byte Order (Big-Endian):</p>
+      <ol>
+        <li><strong>מספר החבילה (Packet Number / ID):</strong> 4 בתים — מספור סידורי (0, 1, 2...).</li>
+        <li><strong>סך כל החבילות (Total Packets):</strong> 4 בתים — לכמה חבילות פוצל הקובץ/המסר.</li>
+        <li><strong>אורך המטען (Payload Length):</strong> 4 בתים — כמות הבתים של הנתונים האמיתיים בחבילה הנוכחית.</li>
+      </ol>
+      <p><strong>אלגוריתם הקליטה הנכון (4 שלבים):</strong></p>
+      <ol>
+        <li><strong>קריאת הכותרת במלואה:</strong> קוראים בלולאה <em>בדיוק 12 בתים</em> באמצעות פונקציית עזר <code>receive_exact</code>.</li>
+        <li><strong>פענוח הכותרת:</strong> מפענחים את 12 הבתים באמצעות <code>struct.unpack("!III", header)</code> — הסימן <code>!</code> מציין סדר רשת (Big-Endian), ו־<code>III</code> מציין שלושה מספרים שלמים של 4 בתים (32 סיביות).</li>
+        <li><strong>בדיקה דפנסיבית נגד DoS:</strong> בודקים ששדה האורך אינו עולה על תקרת הגודל המקסימלית המותרת (<code>MAX_PAYLOAD</code>). ללא בדיקה זו, תוקף יכול לשלוח אורך זדוני של 4GB ולגרום לשרת לקרוס ממצוקת זיכרון!</li>
+        <li><strong>קריאת המטען:</strong> קוראים בלולאה <em>בדיוק <code>size</code> בתים</em> לתוך חוצץ המטען.</li>
+      </ol>
+      <pre class="code"><code>import socket
+import struct
 
 def receive_exact(sock, n):
-    buf = bytearray()
-    while len(buf) &lt; n:
-        chunk = sock.recv(n - len(buf))
+    """פונקציית עזר המבטיחה לקרוא בדיוק n בתים מזרם ה-TCP בלולאה"""
+    buffer = bytearray()
+    while len(buffer) &lt; n:
+        chunk = sock.recv(n - len(buffer))
         if not chunk:
-            raise ConnectionError("socket closed")
-        buf.extend(chunk)
-    return bytes(buf)
+            raise ConnectionError("החיבור נסגר במפתיע על ידי הצד השני")
+        buffer.extend(chunk)
+    return bytes(buffer)
 
-def read_framed_message(sock, max_payload=2036):
-    header = receive_exact(sock, 12)
-    pkt_id, total, size = struct.unpack("!III", header)
-    if size &gt; max_payload:
-        raise ValueError("payload too large")
-    return pkt_id, total, receive_exact(sock, size)</code></pre>
+def parse_framed_message(sock, max_payload=2036):
+    # שלב 1: קריאת כותרת קבועה בת 12 בתים
+    header_bytes = receive_exact(sock, 12)
+
+    # שלב 2: פענוח בפורמט Network Byte Order (Big-Endian)
+    pkt_id, total_pkts, payload_len = struct.unpack("!III", header_bytes)
+
+    # שלב 3: אימות דפנסיבי למניעת מתקפת מיצוי זיכרון (DoS)
+    if payload_len &gt; max_payload:
+        raise ValueError(f"Payload size {payload_len} exceeds limit of {max_payload}")
+
+    # שלב 4: קריאת המטען במדויק לפי האורך שחולץ מהכותרת
+    payload = receive_exact(sock, payload_len)
+
+    return pkt_id, total_pkts, payload</code></pre>
+      <div class="panel">
+        <p><strong>הבהרת חישוב גודל החבילה (מצגת המרצה מול מבחן 2025ג):</strong></p>
+        <ul>
+          <li><strong>במצגת הרשמית:</strong> גודל החבילה הכולל (Header + Payload) מוגבל ל־2048 בתים. לכן גודל המטען המקסימלי הוא <code>DATA_SIZE = 2048 - 12 = 2036</code> בתים.</li>
+          <li><strong>בשחזור מבחן 2025ג מועד ג:</strong> הוגדר שהנתונים עצמם מפוצלים למנות של עד 2048 בתים (למשל קובץ של 5120 בתים פוצל ל־2048, 2048, ו־1024), ועליהם נוספה הכותרת בת 12 הבתים.</li>
+          <li><strong>המלצה למבחן:</strong> שתי הגישות תקינות. הגדירו קבוע ברור בקוד (כמו <code>PACKET_SIZE = 2048</code> או <code>DATA_SIZE = 2048</code>) והוסיפו הערה קצרה על כוונתכם.</li>
+        </ul>
+      </div>
+      <h3>שאלת תרגול לבחינה</h3>
+      <p>מדוע קריאת <code>recv(1024)</code> בלבד אינה מספיקה לקליטת הודעה ב־TCP, וכיצד שיטת המסגור באמצעות כותרת 12 בתים פותרת את הבעיה?</p>
+      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>התייחסו להבדל בין זרם בתים (Byte Stream) לבין גבולות הודעה (Message Boundaries), ולצורך בלולאת <code>receive_exact</code> סביב <code>recv</code>.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body">
+        <p><strong>תשובה מלאה:</strong></p>
+        <ol>
+          <li><strong>אופי הזרם ב־TCP:</strong> פרוטוקול TCP מספק זרם בתים רציף ללא שימור גבולות ההודעה שנשלחו ב־<code>send</code>. קריאת <code>recv(1024)</code> תחזיר כל כמות בתים שזמינה כרגע בחוצץ המערכת (בין 1 ל־1024), ועלולה לקרוא הודעה חלקית (Partial Read) או מספר הודעות שהתמזגו יחד (Packet Coalescing).</li>
+          <li><strong>פתרון המסגור:</strong> שכבת היישום מגדירה כותרת קבועה של 12 בתים המכילה את אורך המטען (Payload Length) ב־Big-Endian. המקבל מריץ לולאת קריאה מדויקת (<code>receive_exact</code>) שמבטיחה לקבל תחילה בדיוק 12 בתים, מפענח באמצעות <code>struct.unpack("!III", ...)</code>, בודק שהאורך תקין, ולאחר מכן מפעיל שוב את הלולאה כדי לקרוא בדיוק את כמות הבתים של המטען.</li>
+        </ol>
       </div></details>
     `,
   }
