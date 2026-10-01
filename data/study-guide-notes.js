@@ -5,23 +5,21 @@ window.STUDY_GUIDE_NOTES = [
     title: "הבחנה מבדלת: באג, חולשת אבטחה (Vulnerability), ניצול (Exploit) ואפחות (Mitigation)",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>"כל חולשת אבטחה היא באג, אך לא כל באג הוא חולשת אבטחה." חולשה נמדדת תמיד ביחס למדיניות האבטחה (Security Policy) של המערכת. אפחות (Mitigation) אינה שוות ערך לתיקון שורש (Remediation/Patch), אלא שכבת הגנה הממזערת פגיעה.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>"כל חולשה היא באג, לא כל באג הוא חולשה." חולשה נמדדת מול Security Policy. אפחות (Mitigation) אינה תיקון שורש אלא מזעור נזק.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (מתוך שחזורי 2021א מועד 74 ו-2022ג):</strong>
-        <p>שאלה אמריקאית שחוזרת על עצמה שואלת: <em>"מהי ההגדרה המדויקת של אפחות (Mitigation)?"</em>
-        <br><strong>המסיח הנכון:</strong> הגנת המערכת בפני תקיפה לצורך מזעור הנזק העלול להיגרם ממנה.
-        <br><strong>מסיחים שגויים נפוצים:</strong> "מצב שבו המערכת נקייה לחלוטין מבאגים" (שגוי! אפחות לא מנקה באגים), או "שמירה על סודיות המידע בלבד" (שגוי! זו הגדרת סודיות).</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>הגדרת <strong>אפחות (Mitigation)</strong>: הגנה לצורך <em>מזעור נזק</em>. מסיח שגוי נפוץ: "מערכת נקייה מבאגים".</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>צ'יט-שיט השוואתי:</strong>
-        <table border="1" style="border-collapse:collapse; width:100%; font-size:0.9em;">
-          <tr><th>מושג</th><th>מהות</th><th>דוגמה מהחיים</th></tr>
-          <tr><td><strong>באג</strong></td><td>סטייה ממפרט ללא פגיעה ב-CIA</td><td>כפתור ביטול מציג טקסט הפוך</td></tr>
-          <tr><td><strong>חולשה</strong></td><td>פגם המאפשר עקיפת מדיניות אבטחה</td><td>פונקציית <code>gets()</code> שאינה בודקת אורך קלט</td></tr>
-          <tr><td><strong>ניצול</strong></td><td>הפעלת מטען תקיפה הלכה למעשה</td><td>שליחת מחרוזת של 200 בתים הדורסת כתובת חזרה</td></tr>
-          <tr><td><strong>אפחות</strong></td><td>שכבת בלימה ומזעור נזק</td><td>קנרית מחסנית שעוצרת את התהליך לפני <code>ret</code></td></tr>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <table border="1" style="border-collapse:collapse; width:100%; font-size:0.85em;">
+          <tr><th>מושג</th><th>תמצות</th><th>דוגמה</th></tr>
+          <tr><td><strong>באג</strong></td><td>סטייה ממפרט</td><td>כפתור הפוך</td></tr>
+          <tr><td><strong>חולשה</strong></td><td>פגם באבטחה</td><td><code>gets()</code> ללא גבול</td></tr>
+          <tr><td><strong>ניצול</strong></td><td>תקיפה מעשית</td><td>דריסת כתובת חזרה</td></tr>
+          <tr><td><strong>אפחות</strong></td><td>מזעור נזק</td><td>קנרית מחסנית</td></tr>
         </table>
       </div>
     `
@@ -31,22 +29,19 @@ window.STUDY_GUIDE_NOTES = [
     title: "משולש ה-CIA, יעדי הפגיעה ואמצעי אפחות מותאמים לכל יעד",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>יעדי ה-CIA הם בלתי תלויים: מתקפת DoS פוגעת בזמינות בלבד (הנתונים לא נחשפו ולא שונו); קריאת זיכרון דרך Format String פוגעת בסודיות בלבד; שינוי מחיר במסד נתונים פוגע בשלמות בלבד.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>יעדי CIA בלתי תלויים: DoS פוגע רק בזמינות; דליפת זיכרון פוגעת רק בסודיות; שינוי ערך פוגע רק בשלמות.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (ניתוח תרחישים):</strong>
-        <p>כאשר מוצג תרחיש בשאלות פתוחות, הקפידו על התאמה מדויקת:
-        <br>• גיבוי שנשאר פתוח ברשת / לוג המכיל סיסמאות / Heartbleed &rarr; <strong>פגיעה בסודיות</strong>.
-        <br>• הזרקת SQL המעדכנת יתרות / דריסת מצביע בזיכרון / זיוף תעודת זהות &rarr; <strong>פגיעה בשלמות</strong>.
-        <br>• קריסת שרת עקב Segfault / הצפת DDoS / נעילת קבצים ע"י כופרה &rarr; <strong>פגיעה בזמינות</strong>.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>זיהוי יעד בתרחיש: לוג סיסמאות/Heartbleed = <strong>סודיות</strong> &bull; הזרקת SQL/שינוי זיכרון = <strong>שלמות</strong> &bull; קריסת תהליך/DDoS = <strong>זמינות</strong>.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>צ'יט-שיט מיפוי CIA &rarr; מנגנוני אפחות:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><strong>סודיות:</strong> הצפנה (AES/RSA) &bull; ערוץ מאובטח (TLS) &bull; מידור הרשאות.</li>
-          <li><strong>שלמות:</strong> גיבוב קריפטוגרפי (SHA-2) &bull; חתימה דיגיטלית &bull; בדיקת גבולות מערך &bull; W^X.</li>
-          <li><strong>זמינות:</strong> חסימת הצפות (Rate Limiter) &bull; Timeouts לחיבורים &bull; מניעת דליפות זיכרון ב-RAII.</li>
+          <li><strong>סודיות (C):</strong> הצפנה, TLS, מידור הרשאות.</li>
+          <li><strong>שלמות (I):</strong> גיבוב קריפטוגרפי, חתימה, W^X, בדיקת גבולות.</li>
+          <li><strong>זמינות (A):</strong> Rate Limit, Timeouts, מניעת דליפות.</li>
         </ul>
       </div>
     `
@@ -56,22 +51,20 @@ window.STUDY_GUIDE_NOTES = [
     title: "סיווג חולשות: עיצוב, מימוש, תפעול ושטחים אפורים (Gray Areas)",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>"תיקון קוד נקודתי לעולם אינו מרפא חולשת עיצוב." אם הפרוטוקול אינו כולל הצפנה, כתיבה מושלמת ב-C++ לא תמנע האזנה בתווך (MITM).</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>תיקון קוד אינו פותר חולשת עיצוב: אם הפרוטוקול לקוי (כמו Telnet ללא הצפנה), כתיבה מושלמת לא תועיל.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שאלת Telnet ושאלות סיווג):</strong>
-        <p>במבחן נשאלה השאלה: <em>"מערכת שרתים מעבירה סיסמאות בפרוטוקול Telnet. מהו סיווג החולשה?"</em>
-        <br><strong>תשובה: חולשת עיצוב!</strong> כי Telnet תוכנן במקור ללא הצפנה. גם אם תכתוב את שרת ה-Telnet הטוב בעולם ללא באג יחיד – הסיסמאות יזרמו בגלוי.
-        <br>לעומת זאת, אם המפרט דרש קריאת 16 בתים והמתכנת השתמש ב-<code>strcpy</code> ללא גבול &rarr; <strong>חולשת מימוש</strong>.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>Telnet מעביר סיסמה בגלוי = <strong>חולשת עיצוב</strong> (המפרט שגוי). שימוש ב-<code>strcpy</code> ללא בדיקה = <strong>חולשת מימוש</strong> (באג בקוד).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>טבלת החלטה מהירה:</strong>
-        <table border="1" style="border-collapse:collapse; width:100%; font-size:0.9em;">
-          <tr><th>האם הקוד תואם למפרט?</th><th>האם הפרוטוקול מאובטח?</th><th>הסיווג</th></tr>
-          <tr><td>לא (יש באג בקוד)</td><td>תקין</td><td><strong>חולשת מימוש</strong></td></tr>
-          <tr><td>כן (הקוד מדויק)</td><td>לא (המודל שבור)</td><td><strong>חולשת עיצוב</strong></td></tr>
-          <tr><td>כן (קוד ועיצוב תקינים)</td><td>תקין (הבעיה בהתקנה/ניהול)</td><td><strong>חולשה תפעולית</strong></td></tr>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <table border="1" style="border-collapse:collapse; width:100%; font-size:0.85em;">
+          <tr><th>כשל</th><th>סיווג</th><th>דוגמה</th></tr>
+          <tr><td>באג בקוד</td><td><strong>מימוש</strong></td><td>גלישת חוצץ</td></tr>
+          <tr><td>כשל במפרט</td><td><strong>עיצוב</strong></td><td>Telnet בגלוי</td></tr>
+          <tr><td>קונפיגורציה</td><td><strong>תפעול</strong></td><td>אי-התקנת טלאי</td></tr>
         </table>
       </div>
     `
@@ -81,20 +74,18 @@ window.STUDY_GUIDE_NOTES = [
     title: "יחסי אמון, גבולות אמון (Trust Boundaries) ושרשרת אמון (Trust Chain)",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>ההבדל בין Windows 98 ל-Windows מודרני: ב-Windows 98 לא היו גבולות אמון פנימיים וכל תוכנית יכלה לפנות ישירות לזיכרון הקרנל. במערכות מודרניות, בידוד מרחב הכתובות הוא גבול אמון קשיח הנאכף בחומרה ע"י ה-MMU.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>גבול אמון מפריד רמות הרשאה. שרשרת אמון חזקה רק כחוזק החוליה החלשה ביותר שלה.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>בשאלות ניתוח ארכיטקטורה, תמיד חפשו: <em>"היכן עובר גבול האמון והאם הרכיב הפנימי סומך על בדיקות של רכיב חיצוני?"</em>
-        הסתמכות של השרת על כך שהלקוח ביצע בדיקת אורך (Client-side validation) היא שבירה קטלנית של גבול האמון (חולשת עיצוב חמורה).</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>הסתמכות שרת על בדיקת לקוח (Client-side validation) = שבירת גבול אמון ו<strong>חולשת עיצוב</strong> קריטית.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>צ'יט-שיט עקרונות גבול אמון:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li>אין בדיקה בצד הלקוח בלבד &ndash; השרת חייב לבדוק שוב תמיד.</li>
-          <li>כל קלט חיצוני (רשת, קובץ, argv, משתני סביבה) הוא מעבר לגבול אמון.</li>
-          <li>שרשרת אמון נמדדת לפי החוליה החלשה ביותר שלה (Weakest Link).</li>
+          <li><strong>כלל ברזל:</strong> שרת בודק הכל מחדש תמיד.</li>
+          <li><strong>מעבר גבול:</strong> רשת, קלט משתמש, argv, משתני סביבה.</li>
         </ul>
       </div>
     `
@@ -104,22 +95,20 @@ window.STUDY_GUIDE_NOTES = [
     title: "צמידות חלשה ולכידות חזקה, תרשים מחלקות UML ומבנה ממשקים מאובטח",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>מלכודת סדר מתודות ציבוריות (API Order):</strong> אם מחלקה חושפת מתודת <code>execute()</code> ומתודת <code>check()</code> בנפרד כציבוריות, תוקף יקרא ישירות ל-<code>execute()</code>.
-        <em>הפתרון המאובטח:</em> שתי המתודות חייבות להיות פרטיות, ומתודה ציבורית יחידה תאכוף קריאה ל-check לפני execute.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>הסתרת סדר ביצוע (API Order): פונקציות <code>check()</code> ו-<code>execute()</code> חייבות להיות פרטיות, עטופות במתודה ציבורית יחידה.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (מיפוי שמות משתמשים - User Enumeration):</strong>
-        <p>טיפול בשגיאות ממשק: החזרת הודעה "שם משתמש שגוי" מול "סיסמה שגויה" היא חולשת אבטחה! היא מאפשרת לתוקף לבצע Brute-Force כדי למפות שמות משתמשים תקפים במערכת.
-        <strong>הפתרון הדפנסיבי:</strong> הודעה כללית ואחידה תמיד: <em>"שם משתמש או סיסמה שגויים"</em>, בתוספת השהיית זמן מדורגת.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>הודעות שגיאה שונות ("משתמש לא קיים" מול "סיסמה שגויה") מאפשרות מיפוי משתמשים (User Enumeration). חובה: הודעה אחידה.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>צ'יט-שיט קשרי UML:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><code>Base &lt;|-- Derived</code> : ירושה (Generalization / is-a)</li>
-          <li><code>Car *-- Engine</code> : הרכבה (Composition - מנוע מת עם הרכב)</li>
-          <li><code>Course o-- Student</code> : צבירה (Aggregation - סטודנט חי ללא הקורס)</li>
-          <li><code>A ..&gt; B</code> : תלות (Dependency)</li>
+          <li><code>&lt;|--</code> ירושה (is-a).</li>
+          <li><code>*--</code> הרכבה (Composition &ndash; חיים תלויים).</li>
+          <li><code>o--</code> צבירה (Aggregation &ndash; עצמאיים).</li>
+          <li><code>..&gt;</code> תלות (Dependency).</li>
         </ul>
       </div>
     `
@@ -129,21 +118,20 @@ window.STUDY_GUIDE_NOTES = [
     title: "עקרונות תכנון דפנסיבי: הגנה לעומק, הרשאת מינימום, ברירת מחדל בטוחה ותיווך מלא",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>"אפחות אינה תחליף לתיקון שורש, והגנה לעומק אינה הצדקה להשארת באג בקוד." הגנה לעומק מניחה שחולשות יתקיימו ומונעת מהן להפוך לקטסטרופה מלאה.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>הגנה לעומק מניחה שחולשות יתקיימו ומונעת קריסה מלאה, אך אינה מצדיקה השארת באגים בקוד.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שאלת שירות לוגים):</strong>
-        <p>שאלה במבחן: <em>"שירות שכל תפקידו לרשום שגיאות לקובץ לוג רץ עם הרשאות מנהל מלאות (Root). איזה עיקרון הופר?"</em>
-        <br><strong>תשובה: הרשאת מינימום (Least Privilege)!</strong> שירות לוגים זקוק להרשאת הוספה (Append) לקובץ בודד בלבד.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>שירות לוגים שרץ כ-Root = הפרת <strong>Least Privilege</strong> (זקוק רק להרשאת הוספה לקובץ בודד).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>סיכום עקרונות במילה אחת:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
           <li><strong>Defense in Depth:</strong> שכבות מרובות.</li>
-          <li><strong>Least Privilege:</strong> מינימום הרשאות.</li>
-          <li><strong>Fail-Safe Defaults:</strong> ברירת מחדל חסומה (Whitelist).</li>
-          <li><strong>Complete Mediation:</strong> בדיקה בכל פנייה מחדש.</li>
+          <li><strong>Least Privilege:</strong> מינימום הרשאה לנחיצות.</li>
+          <li><strong>Fail-Safe:</strong> ברירת מחדל חסומה (Whitelist).</li>
+          <li><strong>Complete Mediation:</strong> אימות בכל גישה מחדש.</li>
         </ul>
       </div>
     `
@@ -153,23 +141,17 @@ window.STUDY_GUIDE_NOTES = [
     title: "מידול איומים בשיטת STRIDE, עץ איומים ונוסחת הסיכון (DREAD)",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>מיפוי ישיר: STRIDE מול CIA:
-        <br>T &harr; Integrity &bull; I &harr; Confidentiality &bull; D &harr; Availability.
-        <br>שלושת הנוספים מרחיבים את המודל: S (אימות), R (אי-התכחשות), E (הרשאות).</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>מיפוי STRIDE ל-CIA: Tampering &harr; I &bull; Information Disclosure &harr; C &bull; DoS &harr; A. נוספים: Spoofing, Repudiation, Elevation.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>זכרו את נוסחת הסיכון כמכפלה: אירוע בעל פוטנציאל נזק קטסטרופלי (נזק = 10) שההסתברות לו היא 0.0001 (כגון שרת שנפגע מברק ישיר) יקבל ציון סיכון נמוך בהרבה מחולשת XSS קלה לניצול המתרחשת יומיום.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>סיכון = מכפלת נזק בהסתברות. נזק עצום בהסתברות אפסית מקבל ציון סיכון כולל נמוך.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>ראשי תיבות DREAD:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><strong>D</strong>amage &ndash; פוטנציאל הנזק</li>
-          <li><strong>R</strong>eproducibility &ndash; קלות השחזור</li>
-          <li><strong>E</strong>xploitability &ndash; קלות הניצול הטכני</li>
-          <li><strong>A</strong>ffected Users &ndash; היקף המשתמשים הנפגעים</li>
-          <li><strong>D</strong>iscoverability &ndash; קלות גילוי הפרצה</li>
+          <li><strong>D:</strong> נזק &bull; <strong>R:</strong> שחזור &bull; <strong>E:</strong> ניצול &bull; <strong>A:</strong> משתמשים &bull; <strong>D:</strong> גילוי.</li>
         </ul>
       </div>
     `
@@ -179,23 +161,18 @@ window.STUDY_GUIDE_NOTES = [
     title: "בקרת איכות (QA) מול ביקורת אבטחה (Auditing) ותבנית ממצא ביקורת (5 שדות חובה)",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>מבחני חדירה (Penetration Testing) מבוצעים לרוב בקופסה שחורה ומטרתם הדגמת שרשור חולשות לנזק עסקי מעשי; ביקורת קוד (White-box) מאתרת חולשות עמוקות שלא יתגלו לעולם בקופסה שחורה (כגון מרוצי זמנים TOCTOU, דליפות זיכרון, וקוד ללא שימוש).</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>Penetration Test מדגים שרשור תקיפה מעשי (קופסה שחורה); ביקורת קוד (White-box) מאתרת כשלי TOCTOU וזיכרון נסתרים.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (תבנית תשובה מוכנה לשאלת ממצא ביקורת):</strong>
-        <p>כאשר נדרש לנתח קוד פגום, כתבו ישירות לפי התבנית:
-        <br><strong>1. מיקום:</strong> קובץ <code>server.cpp</code>, פונקציה <code>login()</code>, שורה 42.
-        <br><strong>2. סיווג:</strong> חולשת מימוש (קריאה ל-gets ללא בדיקת אורך).
-        <br><strong>3. יעד CIA:</strong> שלמות וסודיות (חטיפת זרימת בקרה וקריאת זיכרון).
-        <br><strong>4. השפעה:</strong> גלישת מחסנית המאפשרת דריסת כתובת חזרה והרצת פקודות ב-ROP.
-        <br><strong>5. אפחות:</strong> החלפה ל-<code>fgets(buf, sizeof(buf), stdin)</code> וקימפול עם Stack Canary ו-DEP.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>5 שדות חובה בממצא ביקורת: 1. מיקום &bull; 2. סיווג (מימוש/עיצוב) &bull; 3. יעד CIA &bull; 4. השפעה מעשית &bull; 5. אפחות מומלץ.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>צ'יט-שיט QA מול Auditing:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><strong>QA:</strong> בודק משתמש רגיל &bull; קלט תקין &bull; דרישות פונקציונליות.</li>
-          <li><strong>Auditing:</strong> מניח יריב זדוני &bull; קלט חריג/גבולי &bull; מדיניות אבטחה.</li>
+          <li><strong>QA:</strong> משתמש רגיל, קלט תקין, פונקציונליות.</li>
+          <li><strong>Auditing:</strong> תוקף זדוני, מקרי קצה, מדיניות אבטחה.</li>
         </ul>
       </div>
     `
@@ -205,19 +182,18 @@ window.STUDY_GUIDE_NOTES = [
     title: "איום ברמת רכיב מול איום מערכתי, ארגז חול (Sandbox) ותבנית Reactor",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>יישום תבנית Reactor ללא הגנות משלים אינו מספיק לאבטחה: חובה לקבוע תקרת חיבורים מרבית (Max Connections) ולהגדיר פס זמן (Timeout) לסגירת חיבורים רדומים כדי למנוע Slowloris DoS.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>בשרת Reactor חובה לקבוע תקרת חיבורים מרבית ו-Timeout למניעת הרעבת משאבים (Slowloris DoS).</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שחזור 2021א ו-2022ג שאלה 9):</strong>
-        <p>שאלה פתוחה: <em>"מה מטרתו של Sandbox, ומה נשבר כאשר מריצים בתוכו <code>exec</code> על קוד שהתקבל מלקוח ללא בדיקה?"</em>
-        <br><strong>תשובה:</strong> מטרת ארגז החול היא בידוד נזק; הרצת <code>exec</code> ישירה שוברת את גבול האמון ומאפשרת לקוד הלקוח לנצל הרשאות של תהליך הארגז חול או לבצע בריחה מארגז החול (Sandbox Escape) אם הוגדרו קריאות מערכת רחבות מדי.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>הרצת <code>exec</code> ישירה בתוך ארגז חול שוברת את גבול האמון ועלולה להוביל לבריחה מהארגז (Sandbox Escape).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>צ'יט-שיט שרתי רשת:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><strong>Thread-per-client:</strong> פגיע ל-DoS &bull; צריכת זיכרון מחסנית לכל חוט &bull; תקורה גבוהה.</li>
-          <li><strong>Reactor:</strong> עמיד יותר &bull; חוט יחיד עם I/O Multiplexing &bull; דורש timeouts ותקרת ערוצים.</li>
+          <li><strong>Thread-per-client:</strong> תקורה כבדה, פגיע ל-DoS.</li>
+          <li><strong>Reactor:</strong> חוט יחיד עם I/O Multiplexing, חסכוני.</li>
         </ul>
       </div>
     `
@@ -227,20 +203,18 @@ window.STUDY_GUIDE_NOTES = [
     title: "מושגי עולם אמיתי ודוח מערך הסייבר: CWE מול CVE מול CVSS, ו-0-Day מול 1-Day",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>ההבדל בין CWE ל-CVE:</strong> CWE הוא סוג הפגם הכללי (למשל "גלישת חוצץ במחסנית"); CVE הוא מופע ספציפי של פגם זה בתוכנה קונקרטית בגרסה מסוימת.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>CWE = סוג הפגם הכללי. CVE = מופע ספציפי בתוכנה מסוימת. CVSS = ציון חומרה (0-10).</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>אם בשאלה מופיע תרחיש של שרת שנפרץ שבועיים לאחר שפורסם עדכון אבטחה שהמנהל שכח להתקין &ndash; זוהי <strong>חולשת 1-Day</strong> וסיווגה הוא <strong>חולשה תפעולית (Operational)</strong>!</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>פריצה עקב אי-התקנת עדכון אבטחה שפורסם = <strong>חולשת 1-Day</strong> וסיווגה <strong>חולשה תפעולית</strong>.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>צ'יט-שיט מושגי עולם אמיתי:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><strong>CWE:</strong> סוג הפגם הכללי (Abstract Flaw Type).</li>
-          <li><strong>CVE:</strong> מזהה פרצה קונקרטית בתוכנה מסוימת (Specific Vulnerability ID).</li>
-          <li><strong>CVSS:</strong> ציון חומרה כמותי מ-0.0 עד 10.0.</li>
-          <li><strong>0-Day:</strong> חולשה ללא טלאי קיים &bull; <strong>1-Day:</strong> חולשה פומבית עם טלאי שטרם הותקן.</li>
+          <li><strong>0-Day:</strong> אין טלאי &bull; <strong>1-Day:</strong> קיים טלאי שלא עודכן.</li>
+          <li><strong>CWE:</strong> קטגוריה כללית &bull; <strong>CVE:</strong> פגיעות ספציפית &bull; <strong>CVSS:</strong> חומרה.</li>
         </ul>
       </div>
     `
@@ -252,25 +226,20 @@ window.STUDY_GUIDE_NOTES = [
     title: "מודל הזיכרון של C++ בזמן ריצה וזמני חיים (Text, Data, Stack, Heap)",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>משתנה מקומי הנוצר כ-<code>T obj;</code> יושב במחסנית ונהרס ביציאה מהבלוק. הקצאה ב-<code>new T()</code> יוצרת את האובייקט בערימה, בעוד המצביע שמחזיק את כתובתו יושב במחסנית.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p><code>T obj;</code> נוצר במחסנית ונהרס אוטומטית ביציאה מהבלוק. <code>new T</code> מוקצה בערימה ומשתחרר רק ב-<code>delete</code>.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שאלת שחזור 2021א מועד 74 שאלה 2):</strong>
-        <p>נתון הקוד:
-        <pre class="code" dir="ltr"><code>Frog f1(5);
-Frog *p1 = &f1;
-f1.hop();</code></pre>
-        <strong>שאלה:</strong> היכן יאוחסנו <code>f1</code> ו-<code>p1</code>?
-        <br><strong>תשובה: שניהם במחסנית (Stack)!</strong> מכיוון שלא נעשה שימוש ב-<code>new</code>, <code>f1</code> הוא משתנה מקומי במחסנית, ו-<code>p1</code> הוא מצביע מקומי במחסנית המחזיק את כתובת <code>f1</code>.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p><code>Frog f1; Frog *p1 = &f1;</code> &ndash; שניהם יושבים במחסנית (Stack)! אין כאן <code>new</code> ולכן אין שום הקצאה בערימה.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>צ'יט-שיט השוואת אזורי זיכרון:</strong>
-        <table border="1" style="border-collapse:collapse; width:100%; font-size:0.9em;">
-          <tr><th>אזור</th><th>מי מקצה?</th><th>מתי משתחרר?</th><th>סכנת אבטחה מרכזית</th></tr>
-          <tr><td><strong>Stack</strong></td><td>מהדר / חומרה</td><td>ביציאה מהבלוק (אוטומטי)</td><td>גלישת חוצץ ודריסת כתובת חזרה</td></tr>
-          <tr><td><strong>Heap</strong></td><td>המתכנת (new)</td><td>רק בקריאה ל-delete</td><td>זליגת זיכרון, UAF, Double Free</td></tr>
-          <tr><td><strong>Data/BSS</strong></td><td>מערכת ההפעלה</td><td>בסיום התהליך</td><td>משתנים גלובליים משותפים (Race conditions)</td></tr>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <table border="1" style="border-collapse:collapse; width:100%; font-size:0.85em;">
+          <tr><th>אזור</th><th>הקצאה</th><th>שחרור</th><th>סכנה</th></tr>
+          <tr><td><strong>Stack</strong></td><td>מהדר</td><td>יציאה מבלוק</td><td>גלישת חוצץ, דריסת ret</td></tr>
+          <tr><td><strong>Heap</strong></td><td>new</td><td>delete ידני</td><td>UAF, דליפה, Double Free</td></tr>
+          <tr><td><strong>Data/BSS</strong></td><td>OS</td><td>סיום תוכנית</td><td>Race Conditions בגלובליים</td></tr>
         </table>
       </div>
     `
@@ -280,25 +249,19 @@ f1.hop();</code></pre>
     title: "מצביעים (Pointers) מול הפניות (References) ומלכודות זיכרון מת",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>מלכודת קטלנית &ndash; החזרת הפניה או מצביע למשתנה מקומי:</strong>
-        <pre class="code" dir="ltr"><code>int& badFunc() {
-    int x = 42;
-    return x; // אסור בהחלט! משתנה מקומי במחסנית
-}</code></pre>
-        ביציאה מהפונקציה מסגרת המחסנית משתחררת. הפניה או המצביע שחזרו מצביעים לזיכרון מת (Dangling). כל שימוש בהם הוא Undefined Behavior ופרצת אבטחה חמורה!</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>איסור חמור על החזרת הפניה או מצביע למשתנה מקומי: ביציאה מהפונקציה המחסנית מתפרקת ונוצר Dangling Pointer (UB).</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>העברת אובייקטים לפונקציה: העברה לפי ערך (by-value) מבצעת העתקה של כל האובייקט (איטית וגורמת לחיתוך). העברה בהפניה קבועה (<code>const T&</code>) מונעת העתקה, מהירה ביותר, ומגנה על האובייקט מפני שינוי בלתי מורשה.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>העברה לפי ערך (by-value) גורמת להעתקה מיותרת ולחיתוך אובייקט. העברה ב-<code>const T&</code> מונעת העתקה ושומרת פולימורפיזם.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>השוואה מהירה: Pointer מול Reference:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li>יכול להיות <code>nullptr</code>? מצביע: כן &bull; הפניה: לא.</li>
-          <li>חובה לאתחל ביצירה? מצביע: לא &bull; הפניה: כן.</li>
-          <li>ניתן לניתוב מחדש? מצביע: כן &bull; הפניה: לא (השמה משנה את האובייקט המוצבע).</li>
-          <li>תחביר גישה לשדה: מצביע: <code>p-&gt;x</code> &bull; הפניה: <code>r.x</code>.</li>
+          <li><strong>Nullptr:</strong> מצביע כן, הפניה לא.</li>
+          <li><strong>אתחול חובה:</strong> מצביע לא, הפניה כן.</li>
+          <li><strong>ניתוב מחדש:</strong> מצביע כן, הפניה לא.</li>
         </ul>
       </div>
     `
@@ -308,27 +271,18 @@ f1.hop();</code></pre>
     title: "בנאי העתקה (Copy Constructor) מול אופרטור השמה (Copy Assignment) ובדיקת השמה עצמית",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>בדיקת השמה עצמית (Self-Assignment Check):</strong> באופרטור השמה חובה לבדוק תמיד:
-        <pre class="code" dir="ltr"><code>if (this == &other) return *this;</code></pre>
-        ללא בדיקה זו, כאשר יבוצע <code>a = a;</code>, השלב הבא שבו משחררים את המשאב הישן של האובייקט ישמיד את הנתונים של עצמנו בטרם יועתקו, ויגרום לקריסה או ל-Use-After-Free!</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>ב-<code>operator=</code> חובה לבדוק השמה עצמית <code>if (this == &other) return *this;</code> לפני שחרור הזיכרון הקיים.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (מבנה חובה לאופרטור השמה):</strong>
-        <p>ארבעת השלבים שחובה לכתוב בכל מימוש של <code>operator=</code>:
-        <ol>
-          <li><code>if (this == &other) return *this;</code> (השמה עצמית).</li>
-          <li><code>delete[] data;</code> (שחרור זיכרון קיים).</li>
-          <li>הקצאת זיכרון חדש והעתקת הנתונים מ-other (העתקה עמוקה).</li>
-          <li><code>return *this;</code> (החזרת הפניה לעצמנו לתמיכה בשרשור <code>a = b = c;</code>).</li>
-        </ol></p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p><code>T b = a;</code> מפעיל <strong>בנאי העתקה</strong> (אובייקט חדש נולד). <code>b = a;</code> מפעיל <strong>operator=</strong> (האובייקט כבר היה קיים).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>איך לדעת במבחן מי מופעל?</strong>
-        <ul>
-          <li>יש טיפוס בצד שמאל? &rarr; <code>MyClass b = a;</code> &rarr; <strong>בנאי העתקה!</strong> (אובייקט חדש נולד).</li>
-          <li>אין טיפוס בצד שמאל? &rarr; <code>b = a;</code> &rarr; <strong>אופרטור השמה!</strong> (האובייקט b כבר היה קיים).</li>
-        </ul>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <ol>
+          <li>בדיקת <code>this == &other</code> &bull; 2. <code>delete[]</code> ישן &bull; 3. הקצאה והעתקה עמוקה &bull; 4. <code>return *this;</code></li>
+        </ol>
       </div>
     `
   },
@@ -337,23 +291,16 @@ f1.hop();</code></pre>
     title: "העתקה רדודה (Shallow) מול עמוקה (Deep), כלל השלוש וכלל החמישה",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>אם לא מימשתם בנאי העתקה ואופרטור השמה במחלקה שמחזיקה מצביע ב-<code>new</code>, המהדר ייצר העתקה רדודה אוטומטית שתוביל בוודאות ל-Double Free בעת העברה לפונקציה או השמה.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>אי-מימוש בנאי העתקה במחלקה שמחזיקה מצביע גורם להעתקה רדודה ול-Double Free בהעברה לפונקציה.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>אם בשאלת קוד מופיע אובייקט שמקצה זיכרון בבנאי ומשחרר במפרק, אך אין לו Copy Ctor, וב-main מועבר האובייקט כפרמטר לפונקציה לפי ערך (by-value) &ndash; סמנו מיד: <strong>התרסקות בריצה עקב Double Free!</strong></p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>העברת אובייקט עם מצביע by-value ללא Copy Ctor מובילה לקריסה ודאית ב-<strong>Double Free</strong> בסיום הפונקציה.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>תבנית כלל השלוש:</strong>
-        <pre class="code" dir="ltr"><code>class Buffer {
-    char* data;
-    size_t size;
-public:
-    ~Buffer() { delete[] data; } // 1. מפרק
-    Buffer(const Buffer& o) { ... } // 2. בנאי העתקה
-    Buffer& operator=(const Buffer& o) { ... } // 3. אופרטור השמה
-};</code></pre>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <p>כלל השלוש: אם מנהלים זיכרון ידנית ב-<code>new</code>, חובה לממש <strong>מפרק</strong>, <strong>בנאי העתקה</strong>, ו-<strong>אופרטור השמה</strong>.</p>
       </div>
     `
   },
@@ -362,24 +309,19 @@ public:
     title: "הקצאה ושחרור מערכים: new[] מול delete[] (מוקש בחינה קריטי)",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>שחרור מערך ב-<code>delete</code> רגיל ללא סוגריים הוא התנהגות לא מוגדרת (Undefined Behavior)!</strong>
-        מנהל הערימה שומר בתחילת בלוק המערך את מספר האיברים. קריאה ל-delete רגיל מפעילה את המפרק רק עבור האיבר הראשון, מתעלמת משאר האיברים, ומשחיתה את מבני הבקרה של מנהל ה-Heap.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>שחרור מערך שהוקצה ב-<code>new[]</code> באמצעות <code>delete</code> ללא סוגריים הוא Undefined Behavior והשחתת ערימה.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שאלת שחזור מתוך בנק הבחינות):</strong>
-        <p>נתון הקוד: <code>char* buf = new char[100]; delete buf;</code>.
-        <br><strong>שאלה:</strong> מהי הקביעה המדויקת?
-        <br><strong>תשובה נכונה:</strong> זוהי התנהגות לא מוגדרת (UB) והשחתת ערימה!
-        <br><strong>מסיח מטעה נפוץ:</strong> "זה תקין עבור טיפוסים פרימיטיביים כמו char כי אין להם מפרק" &ndash; <strong>שגוי לחלוטין!</strong> התקן אוסר ערבוב בין new[] ל-delete ללא יוצא מן הכלל.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p><code>delete p;</code> על מערך פרימיטיבי (כגון <code>char*</code>) הוא <strong>UB חמור</strong>! אין הקלות לטיפוסים פרימיטיביים.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>התאמת הקצאות ושחרורים:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><code>malloc / calloc</code> &harr; <code>free</code> (שפת C)</li>
-          <li><code>new</code> &harr; <code>delete</code> (איבר בודד)</li>
-          <li><code>new[]</code> &harr; <code>delete[]</code> (מערך)</li>
-          <li><em>ערבוב ביניהם הוא תמיד Undefined Behavior!</em></li>
+          <li><code>new</code> &harr; <code>delete</code></li>
+          <li><code>new[]</code> &harr; <code>delete[]</code></li>
+          <li><code>malloc</code> &harr; <code>free</code></li>
         </ul>
       </div>
     `
@@ -389,38 +331,18 @@ public:
     title: "מפרק וירטואלי (Virtual Destructor) במחלקת בסיס — מוקש הבחינה המרכזי ב-C++",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>כלל הברזל לפולימורפיזם:</strong> כל מחלקה המכילה לפחות פונקציה וירטואלית אחת, או המיועדת לשמש כמחלקת בסיס לירושה &ndash; <strong>חובה להגדיר בה מפרק וירטואלי:</strong>
-        <pre class="code" dir="ltr"><code>virtual ~Base() {}</code></pre></p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>כל מחלקת בסיס פולימורפית חייבת <code>virtual ~Base() {}</code>, אחרת מחיקה דרך מצביע אב לא תפעיל את מפרק הבן.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שאלת שחזור 2021א מועד 74 שאלה 4):</strong>
-        <p>נתון הקוד:
-        <pre class="code" dir="ltr"><code>class Foo {
-    char* buffer1;
-public:
-    Foo(size_t s) { buffer1 = new char[s]; }
-    ~Foo() { delete[] buffer1; } // שגיאה: לא וירטואלי!
-};
-class Bar : public Foo {
-    char* buffer2;
-public:
-    Bar(size_t s) : Foo(s) { buffer2 = new char[s]; }
-    ~Bar() { delete[] buffer2; }
-};
-int main() {
-    Foo* f = new Bar(100);
-    delete f;
-}</code></pre>
-        <strong>שאלה:</strong> האם יש זליגת זיכרון?
-        <br><strong>תשובה נכונה: כן, של <code>buffer2</code>!</strong>
-        <br><strong>הסבר:</strong> <code>buffer1</code> משתחרר כי <code>~Foo()</code> רץ; אך <code>~Bar()</code> לא רץ לעולם כי <code>~Foo()</code> אינו וירטואלי, ולכן <code>buffer2</code> זולג.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p><code>Base* p = new Derived(); delete p;</code> ללא מפרק וירטואלי מפעיל רק את <code>~Base()</code> &ndash; כל משאבי הבן <strong>זולגים</strong>!</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>מה קורה ב-delete דרך מצביע אב?</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li>בלי <code>virtual ~Base()</code> &rarr; מופעל רק <code>~Base()</code> &rarr; <strong>זליגת משאבי הבן!</strong></li>
-          <li>עם <code>virtual ~Base()</code> &rarr; מופעל <code>~Derived()</code> ואחריו <code>~Base()</code> &rarr; <strong>שחרור מלא ותקין!</strong></li>
+          <li><strong>בלי virtual:</strong> רק מפרק האב נקרא &rarr; זליגת זיכרון הבן.</li>
+          <li><strong>עם virtual:</strong> מפרק הבן נקרא תחילה, אחריו האב &rarr; תקין.</li>
         </ul>
       </div>
     `
@@ -430,23 +352,18 @@ int main() {
     title: "הסתרה (Hiding) מול דריסה (Overriding) ופולימורפיזם דינמי ב-C++",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>מילת המפתח <code>override</code> (C++11) בנגזרת מבקשת מהמהדר לוודא שמתבצעת דריסה אמיתית. אם חל שינוי בחתימה או שבאב חסר virtual, תיזרק שגיאת קומפילציה במקום הסתרה שקטה.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>דריסה דורשת <code>virtual</code> באב וחתימה זהה. ללא <code>virtual</code> מתבצעת הסתרה בלבד (קישור סטטי לפי טיפוס המצביע).</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שחזור 2021ג שאלה 1):</strong>
-        <p>תרגיל מעקב פלטים: Base מגדיר <code>virtual void f() { g(); }</code>, <code>void g() { h(); }</code> (ללא virtual!), ו-<code>virtual void h()</code>.
-        <br>כאשר קוראים ל-<code>b-&gt;f()</code> כשהאובייקט הוא <code>Der</code>:
-        <br>1. <code>f()</code> וירטואלית ולכן מגיעה ל-<code>Base::f</code>.
-        <br>2. מתוכה נקראת <code>g()</code>. מכיוון ש-<code>g</code> <strong>אינה וירטואלית</strong>, מופעלת <code>Base::g</code> (קישור סטטי!).
-        <br>3. מתוכה נקראת <code>h()</code>. מכיוון ש-<code>h</code> <strong>וירטואלית</strong>, מופעלת <code>Der::h</code>!
-        <br><strong>כלל הזהב לפענוח במבחן:</strong> פונקציה לא-וירטואלית נקבעת לפי טיפוס המצביע; פונקציה וירטואלית נקבעת לפי האובייקט האמיתי.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>כלל הניתוב: פונקציה <strong>ללא virtual</strong> נקבעת לפי סוג המצביע; פונקציה <strong>עם virtual</strong> נקבעת לפי סוג האובייקט האמיתי.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>חוקי הניתוב במבחן:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li>קריאה ללא virtual &rarr; <code>Base*</code> קורא תמיד ל-<code>Base::func</code> (הסתרה).</li>
-          <li>קריאה עם virtual &rarr; <code>Base*</code> קורא ל-<code>Derived::func</code> (דריסה פולימורפית).</li>
+          <li>ללא virtual &rarr; קריאה למתודת המצביע (הסתרה).</li>
+          <li>עם virtual &rarr; קריאה למתודת האובייקט בפועל (דריסה).</li>
         </ul>
       </div>
     `
@@ -456,25 +373,19 @@ int main() {
     title: "סדר בנייה והריסה בירושה ומלכודת קריאה ל-virtual בבנאי ובמפרק",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>מלכודת קריאה ל-virtual בתוך בנאי או מפרק:</strong>
-        בזמן ריצת בנאי מחלקת הבסיס, חלקי מחלקת הבן טרם נבנו, ומצביע ה-vptr מכוון לטבלת ה-vtable של מחלקת הבסיס.
-        <strong>לכן, קריאה לפונקציה וירטואלית מתוך בנאי האב תפעיל תמיד את המימוש של האב &ndash; ולא של הבן!</strong>
-        באופן דומה, במפרק האב חלקי הבן כבר הושמדו, ולכן שוב תופעל גרסת האב.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>בבנאים ובמפרקים אין פולימורפיזם! קריאה למתודה וירטואלית מפעילה תמיד את גרסת המחלקה שהבנאי/מפרק שלה רץ כעת.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>אם רואים בשאלת הדפסה קריאה לפונקציה וירטואלית בתוך Constructor או בתוך Destructor &ndash; אל תתפתו לנתב למחלקת הבן! באותו רגע פועל המימוש של המחלקה שהבנאי/מפרק שלה רץ כעת.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>קריאה ל-virtual בתוך <code>Base()</code> או <code>~Base()</code> תפעיל <strong>אך ורק את Base</strong> (חלקי הנגזרת טרם נבנו או כבר נהרסו).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>סדר כרונולוגי:</strong>
-        <ol>
-          <li><code>Base::Base()</code> (vptr מכוון ל-Base)</li>
-          <li><code>Derived::Derived()</code> (vptr מתעדכן ל-Derived)</li>
-          <li>... שימוש באובייקט ...</li>
-          <li><code>Derived::~Derived()</code> (vptr חוזר ל-Base)</li>
-          <li><code>Base::~Base()</code></li>
-        </ol>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <ul>
+          <li><strong>בנייה:</strong> אב תחילה, ואז בן.</li>
+          <li><strong>הריסה:</strong> בן תחילה, ואז אב (סדר הפוך).</li>
+        </ul>
       </div>
     `
   },
@@ -483,33 +394,19 @@ int main() {
     title: "בעיית היהלום (Diamond Problem) בירושה מרובה ופתרונה בעזרת ירושה וירטואלית",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>הפתרון &ndash; ירושה וירטואלית (Virtual Inheritance):</strong>
-        <pre class="code" dir="ltr"><code>struct B : virtual public A {};
-struct C : virtual public A {};
-class D : public B, public C {};</code></pre>
-        מילת המפתח <code>virtual</code> בהוראת הירושה מורה למהדר לחלוק מופע פיזי יחיד של מחלקת הבסיס A עבור כל המחלקות הנגזרות.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>פתרון בעיית היהלום: ירושה וירטואלית <code>: virtual public Base</code> המבטיחה מופע פיזי יחיד של מחלקת הבסיס.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שחזור 2021א מועד 74 שאלה 3):</strong>
-        <p>נתון הקוד:
-        <pre class="code" dir="ltr"><code>struct Thread { void run() {} };
-struct Sender : public Thread {};
-struct Receiver : public Thread {};
-class Messenger : public Sender, public Receiver {};
-int main() { Messenger m; m.run(); }</code></pre>
-        <strong>שאלה:</strong> מדוע הקוד לא יתקמפל?
-        <br><strong>תשובה: בגלל בעיית היהלום!</strong> יש שני עותקים של Thread, והקריאה <code>m.run()</code> היא עמומה.
-        <br><em>שימו לב למסיח:</em> "בגלל בעיית המשולש" &ndash; מסיח פיקטיבי!</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>ללא ירושה וירטואלית, קריאה למתודת הבסיס מהמחלקה התחתונה נכשלת בקומפילציה עקב עמימות (שני עותקים!).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>תרשים יהלום:</strong>
-        <pre dir="ltr"><code>      Thread
-     /      \\
-  Sender   Receiver
-     \\      /
-    Messenger</code></pre>
-        <em>ללא virtual: 2 עותקי Thread. עם virtual: עותק יחיד ומשותף.</em>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <ul>
+          <li>ירושה רגילה: שני עותקי בסיס ועמימות.</li>
+          <li>ירושה וירטואלית: עותק יחיד ומשותף.</li>
+        </ul>
       </div>
     `
   },
@@ -518,19 +415,18 @@ int main() { Messenger m; m.run(); }</code></pre>
     title: "חיתוך אובייקט (Object Slicing) ומנגנון הטבלה הווירטואלית (Vtable & Vptr)",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>כדי למנוע חיתוך אובייקט ולשמר התנהגות פולימורפית, <strong>חובה להעביר אובייקטים בהפניה (<code>Base&</code> / <code>const Base&</code>) או במצביע (<code>Base*</code>)!</strong></p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>מניעת חיתוך אובייקט (Slicing): העברה בהפניה (<code>Base&</code>) או במצביע (<code>Base*</code>) &ndash; לעולם לא לפי ערך.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>אם רואים פונקציה המקבלת <code>void print(Base b)</code> לפי ערך &ndash; זהו חיתוך אובייקט ודאי! כל קריאה לפונקציה וירטואלית בתוכה תפעיל רק את המימוש של Base.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p><code>void f(Base b)</code> מקבלת לפי ערך: שדות הנגזרת נחתכים, ה-vptr מאופס ל-Base, והפולימורפיזם מושמד.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>צ'יט-שיט מניעת Slicing:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><code>void foo(Base b)</code> &rarr; חיתוך אובייקט! (רע)</li>
-          <li><code>void foo(const Base& b)</code> &rarr; פולימורפיזם נשמר, אפס העתקות! (מצוין)</li>
-          <li><code>void foo(Base* b)</code> &rarr; פולימורפיזם נשמר! (מצוין)</li>
+          <li><code>Base b</code> &rarr; חיתוך אובייקט (שגיאה).</li>
+          <li><code>Base& / Base*</code> &rarr; פולימורפיזם נשמר במלואו (תקין).</li>
         </ul>
       </div>
     `
@@ -540,19 +436,19 @@ int main() { Messenger m; m.run(); }</code></pre>
     title: "ניהול משאבים דטרמיניסטי (RAII) ומצביעים חכמים (unique_ptr, shared_ptr, weak_ptr)",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>בטיחות חריגות במכולות STL:</strong> עבור <code>std::vector</code>, שימוש ב-<code>vec[i]</code> אינו מבצע שום בדיקת גבולות. שימוש ב-<code>vec.at(i)</code> מבצע בדיקת גבולות וזורק חריגת <code>std::out_of_range</code> במקרה של חריגה.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>בטיחות במכולות: גישה עם <code>vec[i]</code> אינה בודקת גבולות; גישה עם <code>vec.at(i)</code> בודקת וזורקת חריגה.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>אם נשאלתם כיצד לתקן דליפת זיכרון של שני אובייקטים המצביעים זה על זה באמצעות <code>shared_ptr</code> &ndash; התשובה היא להמיר את אחד המצביעים ל-<code>std::weak_ptr</code> כדי לשבור את מעגל ההפניות.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>מעגל הפניות של <code>shared_ptr</code> גורם לדליפת זיכרון. הפתרון: המרת אחד המצביעים ל-<code>std::weak_ptr</code>.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>מתי להשתמש בכל מצביע חכם?</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li>ברירת מחדל ראשונה תמיד: <code>std::unique_ptr</code> (בעלות בלעדית ופשוטה).</li>
-          <li>נדרש שיתוף בעלות בין כמה רכיבים: <code>std::shared_ptr</code>.</li>
-          <li>מצביע לתצפית ללא בעלות או למניעת מעגל: <code>std::weak_ptr</code>.</li>
+          <li><strong>unique_ptr:</strong> בעלות בלעדית (ברירת מחדל).</li>
+          <li><strong>shared_ptr:</strong> בעלות משותפת עם מונה.</li>
+          <li><strong>weak_ptr:</strong> צפייה ללא בעלות ושבירת מעגלים.</li>
         </ul>
       </div>
     `
@@ -564,32 +460,16 @@ int main() { Messenger m; m.run(); }</code></pre>
     title: "מבנה מסגרת המחסנית (Stack Frame), מוסכמות קריאה וסדר בתים Little-Endian",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>המלכודת הארכיטקטונית של המחסנית:</strong> בעוד המחסנית גדלה מכתובות גבוהות לנמוכות, כתיבה לתוך מערך מקומי (למשל מאינדקס 0 ל-100) מתקדמת <strong>מכתובות נמוכות לגבוהות</strong> &ndash; כלומר ישירות לעבר הקנרית, ה-Saved EBP וכתובת החזרה!</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>המחסנית גדלה מכתובות גבוהות לנמוכות, אך כתיבה לחוצץ מתקדמת מנמוכות לגבוהות &ndash; ישירות לעבר כתובת החזרה.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שאלת Little-Endian משוחזרת מועד 2025ג מועד ג):</strong>
-        <p>נתון הקוד הבא:
-        <pre class="code" dir="ltr"><code>int x = 0xC00010FF;
-char buffer[4];
-memcpy(buffer, &x, sizeof(x));</code></pre>
-        <strong>שאלה:</strong> מה יהיה ערך הבתים ב-<code>buffer[0]</code> עד <code>buffer[3]</code>?
-        <br><strong>תשובה:</strong> מכיוון שמערכות x86 הן <strong>Little-Endian</strong>, הבית הפחות משמעותי (LSB) נשמר בכתובת הנמוכה ביותר:
-        <br><code>buffer[0] = 0xFF</code> (LSB)
-        <br><code>buffer[1] = 0x10</code>
-        <br><code>buffer[2] = 0x00</code>
-        <br><code>buffer[3] = 0xC0</code> (MSB)
-        <br><em>אזהרה: המסיח הנפוץ מציג את הסדר ההפוך (Big-Endian: C0, 00, 10, FF)!</em></p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>ב-Little-Endian: <code>0xC00010FF</code> נשמר בזיכרון כ-<code>FF 10 00 C0</code> (הבית הנמוך LSB בכתובת הנמוכה ביותר).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>תרשים זיכרון המסגרת:</strong>
-        <pre dir="ltr"><code>[כתובת גבוהה]
-  |  ארגומנטים (Arguments)
-  |  כתובת חזרה (Saved Return Address) &lt;-- יעד השתלטות ראשי
-  |  Saved EBP
-  |  Stack Canary (אם מופעל)
-  |  משתנים מקומיים / חוצצים (כתיבה מתקדמת כלפי מעלה!)
-[כתובת נמוכה - ESP]</code></pre>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <p>מבנה מחסנית (מגבוה לנמוך): ארגומנטים &larr; כתובת חזרה (Ret) &larr; Saved EBP &larr; קנרית &larr; חוצצים מקומיים.</p>
       </div>
     `
   },
@@ -598,24 +478,20 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     title: "גלישת חוצץ במחסנית (Buffer Overflow), פונקציות מסוכנות ומלכודת Off-by-One",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>מלכודת <code>strncpy</code>:</strong> אם אורך המחרוזת במקור מגיע למגבלה שצוינה ב-<code>n</code>, פונקציית <code>strncpy</code> <strong>אינה מוסיפה תו NULL מסיים (<code>\\0</code>)!</strong>
-        החוצץ נותר בלתי סגור, וכל קריאה הבאה (כמו <code>strlen</code> או <code>printf("%s")</code>) תמשיך לקרוא תאי זיכרון שכנים.
-        <em>התיקון הדפנסיבי:</em> תמיד להוסיף ידנית: <code>buf[sizeof(buf) - 1] = '\\0';</code>.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p><code>strncpy</code> אינה מוסיפה תו NULL מסיים אם המחרוזת מלאה! חובה לסגור ידנית או להשתמש ב-<code>snprintf</code>.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (חולשת Off-by-One והסטת מחסנית):</strong>
-        <p>טעות אינדקס קלאסית: לולאה עם תנאי שוויון: <code>for (int i = 0; i &lt;= 32; i++) buf[i] = ...;</code> במערך של 32 בתים.
-        <br>הלולאה כותבת בית 33 בודד מעבר לגבול. ב-x86, בית בודד זה דורס את הבית התחתון של <strong>Saved EBP</strong>.
-        <br>בעת החזרה מהפונקציה, המהדר מבצע <code>leave</code> (המשחזר את ESP מתוך EBP) ו-<code>ret</code>. המחסנית מוסטת לאזור שבשליטת התוקף &ndash; מתקפה המכונה <strong>Stack Pivoting</strong>.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>גלישת בית יחיד (Off-by-One בלולאה <code>&lt;= SIZE</code>) דורסת את הבית הנמוך של EBP ומאפשרת הסטת מחסנית (Stack Pivoting).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>השוואת פונקציות C:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><code>gets(buf)</code> &rarr; <strong>אסור לחלוטין!</strong></li>
-          <li><code>strcpy(dst, src)</code> &rarr; <strong>מסוכן מאוד</strong> (אין בדיקת גודל).</li>
-          <li><code>strncpy(dst, src, n)</code> &rarr; <strong>זהיר</strong> (דורש סגירת NULL ידנית).</li>
-          <li><code>snprintf(dst, sizeof(dst), ...)</code> &rarr; <strong>בטוח ומומלץ</strong>.</li>
+          <li><code>gets()</code> &rarr; אסור לחלוטין.</li>
+          <li><code>strcpy()</code> &rarr; מסוכן (אין גבול).</li>
+          <li><code>strncpy()</code> &rarr; דורש סגירת NULL ידנית.</li>
+          <li><code>snprintf()</code> &rarr; בטוח ומומלץ.</li>
         </ul>
       </div>
     `
@@ -625,26 +501,18 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     title: "קנרית המחסנית (Stack Canary / StackGuard) — עקרון פעולה, מבנה מחסנית ומגבלות",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>חמש מגבלות ומעקפי הקנרית (שאלת מבחן קלאסית 2021א שאלה 5, 2022ג, 2024):</strong>
-        <ol>
-          <li><strong>מגינה רק על המחסנית:</strong> אינה מגינה כלל על חוצצים בערימה (Heap Buffer Overflow)!</li>
-          <li><strong>אינה מגינה על משתנים מקומיים:</strong> משתנים מקומיים, דגלי הרשאה ומצביעי פונקציה הנמצאים לפני הקנרית באותה מסגרת נדרסים ונפגעים ללא אזהרה.</li>
-          <li><strong>אינה מגינה על vptr בערימה:</strong> דריסת מצביע טבלה וירטואלית של אובייקט בערימה אינה מפעילה את הקנרית.</li>
-          <li><strong>עקיפה באמצעות זליגת זיכרון (Information Leak):</strong> אם התוקף מדליף את ערך הקנרית (למשל דרך Format String), הוא יכול לשתול אותו במדויק בתוך מחרוזת הגלישה ולעקוף את הבדיקה.</li>
-          <li><strong>אינה מתקנת את שורש הבאג:</strong> הבאג קיים וגורם לקריסה (פגיעה בזמינות / DoS).</li>
-        </ol></p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>קנרית מוצבת לפני Saved EBP. מגינה רק מדריסת כתובת חזרה במחסנית; אינה מגינה על משתנים מקומיים או על הערימה.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>שאלה במבחן: <em>"האם הפעלת Stack Canary מגנה מפני גלישת חוצץ בערימה (Heap)?"</em>
-        <br><strong>תשובה: לא!</strong> הקנרית קיימת אך ורק במסגרות מחסנית של פונקציות.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>הקנרית אינה מגנה על גלישת ערימה (Heap), נחשפת בזליגת זיכרון (Format String), ואינה מונעת DoS (התרסקות).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>סיכום תפקיד הקנרית:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li>בולמת: גלישת מחסנית לינארית הדורסת את כתובת החזרה.</li>
-          <li>אינה בולמת: גלישת ערימה &bull; שינוי משתנים מקומיים &bull; מתקפות קריאה &bull; מעקף עם זליגת ערך הקנרית.</li>
+          <li><strong>בולמת:</strong> דריסת כתובת חזרה לינארית במחסנית.</li>
+          <li><strong>לא בולמת:</strong> גלישת ערימה, דריסת משתנים מקומיים, קריאת זיכרון.</li>
         </ul>
       </div>
     `
@@ -654,25 +522,21 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     title: "הגנות מרחב כתובות והרצה: ASLR ו-DEP/NX מול מתקפות ROP",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>משוואת הבחינה החשובה ביותר:</strong>
-        <br>• האם DEP מגן מפני הזרקת Shellcode למחסנית? &rarr; <strong>כן!</strong>
-        <br>• האם DEP מגן מפני מתקפת ROP? &rarr; <strong>לא!</strong> (כי ROP משתמש בקוד במקטע Text שכבר מורשה להרצה).
-        <br>• מה מגן מפני ROP? &rarr; ASLR (מבלבל כתובות גאדג'טים), ו-CET / Shadow Stack (חוסם ברמת חומרה).</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>DEP חוסם הרצת Shellcode במחסנית אך אינו מגן מ-ROP (המשתמש בקוד קיים). ASLR ו-CET מגנים מ-ROP.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שחזורי 2021-2024):</strong>
-        <p>שאלה: <em>"תוכנית קומפלה עם הגנת DEP בלבד, ללא ASLR. האם היא פגיעה להשתלטות?"</em>
-        <br><strong>תשובה: כן, באמצעות ROP / ret2libc!</strong> מכיוון שאין ASLR, כתובות הפונקציות ב-libc (כגון <code>system()</code>) קבועות וידועות מראש, ו-DEP אינו מונע קפיצה אליהן.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>תוכנית עם DEP בלבד (ללא ASLR) פגיעה לחלוטין ל-<strong>ROP / ret2libc</strong> לקוד קיים (כגון <code>system()</code>).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>מטריצת הגנות:</strong>
-        <table border="1" style="border-collapse:collapse; width:100%; font-size:0.9em;">
-          <tr><th>מנגנון</th><th>רמת הגנה</th><th>ממה מגן?</th><th>וקטור מעקף</th></tr>
-          <tr><td><strong>Canary</strong></td><td>מהדר</td><td>דריסת Saved EIP במחסנית</td><td>זליגת ערך (Format String), גלישת ערימה</td></tr>
-          <tr><td><strong>DEP/NX</strong></td><td>חומרה (MMU)</td><td>ביצוע Shellcode במחסנית/ערימה</td><td>ROP (שימוש בקוד קיים)</td></tr>
-          <tr><td><strong>ASLR</strong></td><td>מערכת הפעלה</td><td>קפיצה לכתובות קבועות</td><td>זליגת זיכרון של כתובת בודדת, No-PIE</td></tr>
-          <tr><td><strong>Shadow Stack</strong></td><td>חומרה (CET)</td><td>דריסת כתובת חזרה ו-ROP</td><td>קפיצות שאינן מבוססות ret (כגון vptr)</td></tr>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <table border="1" style="border-collapse:collapse; width:100%; font-size:0.85em;">
+          <tr><th>מנגנון</th><th>שכבה</th><th>מטרה</th><th>מעקף</th></tr>
+          <tr><td><strong>Canary</strong></td><td>Compiler</td><td>הגנת ret</td><td>זליגת ערך</td></tr>
+          <tr><td><strong>DEP/NX</strong></td><td>MMU</td><td>חסימת הרצה במחסנית</td><td>ROP / ret2libc</td></tr>
+          <tr><td><strong>ASLR</strong></td><td>OS</td><td>גיבוב כתובות</td><td>דליפת כתובת</td></tr>
+          <tr><td><strong>CET</strong></td><td>Hardware</td><td>חסימת ROP (Shadow Stack)</td><td>קפיצות עקיפות</td></tr>
         </table>
       </div>
     `
@@ -682,24 +546,16 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     title: "דריסת מצביע טבלה וירטואלית (Vptr Smashing) בערימה ובמחסנית",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>ארבע נקודות זהב לתשובה בבחינה:</strong>
-        <ol>
-          <li>מילת המפתח <code>private</code> אינה מהווה הגנת זיכרון! (היא נאכפת ע"י המהדר בקומפילציה בלבד; בזיכרון הפיזי הכל בתים רציפים הניתנים לדריסה).</li>
-          <li>קנרית המחסנית (Stack Canary) <strong>אינה מגנה</strong> על vptr של אובייקטים בערימה.</li>
-          <li>שינוי סדר השדות במחלקה אינו אפחות הנדסי תקני.</li>
-          <li><strong>ההגנות האמיתיות:</strong> בדיקות גבולות קפדניות בקוד, שימוש ב-CFI (Control Flow Integrity), והפעלת ASLR.</li>
-        </ol></p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p><code>private</code> אינו מספק הגנת זיכרון. קנרית אינה מגנה על vptr בערימה. הגנה אמיתית: CFI ובדיקת גבולות קפדנית.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שאלת שחזור 2026א שאלה 7):</strong>
-        <p>קוד נתון: מבנה עם חוצץ <code>char buf[64]</code> ואובייקט <code>Widget</code> פולימורפי סמוך. מתבצעת גלישה ל-buf.
-        <br><strong>שאלה:</strong> כיצד התוקף משיג הרצת קוד?
-        <br><strong>תשובה:</strong> הגלישה מ-buf דורסת את ה-vptr של Widget; התוקף מכוון אותו למבנה בערימה המדמה vtable; הקריאה <code>w-&gt;render()</code> קופצת לכתובת הזדונית.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>גלישה לחוצץ שכן דורסת את ה-vptr &larr; הפניה ל-Fake Vtable &larr; קריאה למתודה וירטואלית מפעילה קוד תוקף.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>שרשרת vptr hijacking:</strong>
-        <p><code>גלישת חוצץ שכן &rarr; שכתוב כתובת vptr &rarr; הצבעה ל-Fake Vtable &rarr; קריאה למתודה וירטואלית &rarr; קפיצה לקוד תוקף</code></p>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <p>גלישת חוצץ שכן &larr; דריסת vptr &larr; זיוף Vtable בערימה &larr; קריאה וירטואלית &larr; הרצת קוד זדוני.</p>
       </div>
     `
   },
@@ -708,25 +564,18 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     title: "גלישות מספרים שלמים (Integer Overflow / Underflow) ומלכודת malloc(count * size)",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>הבדיקה הדפנסיבית הנכונה למניעת גלישת כפל בהקצאה:</strong>
-        <pre class="code" dir="ltr"><code>if (count &gt; SIZE_MAX / sizeof(int)) {
-    // דיווח שגיאה וחסימת הקצאה!
-    return ERROR_OVERFLOW;
-}</code></pre>
-        בודקים חלוקה <strong>לפני</strong> ביצוע פעולת הכפל!</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>מניעת גלישת כפל בהקצאה: <code>if (count &gt; SIZE_MAX / sizeof(T)) return ERR;</code> (בדיקת חלוקה לפני הכפל!).</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שחזור 2025ג מועד ג שאלה 6):</strong>
-        <p>קוד נתון: <code>calloc(length + 2, sizeof(char));</code> כאשר length מגיע כקלט.
-        <br><strong>שאלה:</strong> מהי חולשת האבטחה?
-        <br><strong>תשובה: Integer Overflow בחיבור!</strong> אם length שווה ל-<code>SIZE_MAX - 1</code>, החיבור של 2 גולש ל-0 או 1, calloc מקצה בלוק זעיר, והעתקת המחרוזת גורמת לגלישת ערימה.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p><code>malloc(len + 1)</code> כאשר <code>len = UINT_MAX</code> גולש ל-0 &ndash; מוקצה חוצץ זעיר והעתקה אליו מובילה ל-Heap Overflow.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>בדיקות בטוחות לפעולות חשבון:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li>בדיקת חיבור בטוח: <code>if (a &gt; SIZE_MAX - b) // overflow</code></li>
-          <li>בדיקת כפל בטוח: <code>if (b != 0 &amp;&amp; a &gt; SIZE_MAX / b) // overflow</code></li>
+          <li><strong>חיבור:</strong> <code>if (a &gt; MAX - b)</code></li>
+          <li><strong>כפל:</strong> <code>if (b != 0 &amp;&amp; a &gt; MAX / b)</code></li>
         </ul>
       </div>
     `
@@ -736,20 +585,19 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     title: "חולשת מחרוזת פורמט (Format String) — קריאה (%x/%p), כתיבה שרירותית (%n) ומניעה",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>כלל ברזל דפנסיבי:</strong> מחרוזת הפורמט של printf חייבת להיות תמיד <strong>מחרוזת קבועה סטטית (String Literal)</strong> בקוד המקור. קלט משתמש יועבר תמיד אך ורק כפרמטר נתון: <code>printf("%s", user_str);</code>.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>מחרוזת פורמט חייבת להיות קבועה סטטית בקוד: לעולם לא <code>printf(user)</code>, תמיד <code>printf("%s", user)</code>.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>במבחן נשאל: <em>"כיצד מציין הפורמט <code>%n</code> שונה מכל שאר מצייני הפורמט ב-printf?"</em>
-        <br><strong>תשובה:</strong> כל מצייני הפורמט האחרים (<code>%d, %s, %p, %x</code>) <strong>קוראים</strong> נתונים ומציגים אותם; מציין <code>%n</code> הוא היחיד שמבצע <strong>כתיבה (Write) לתוך הזיכרון!</strong></p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p><code>%n</code> הוא המציין היחיד שמבצע <strong>כתיבה</strong> לזיכרון. שאר המציינים (<code>%x, %s, %p</code>) מבצעים קריאה והדלפה.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>סכנות Format String:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><code>%x / %p</code> &rarr; הדלפת מחסנית, חשיפת Canary &amp; ASLR base.</li>
-          <li><code>%s</code> &rarr; קריאת זיכרון שרירותית (סודיות).</li>
-          <li><code>%n</code> &rarr; כתיבת זיכרון שרירותית והשתלטות (שלמות וביצוע).</li>
+          <li><code>%x / %p:</code> הדלפת ערכי מחסנית וקנרית.</li>
+          <li><code>%s:</code> קריאת זיכרון שרירותית.</li>
+          <li><code>%n:</code> כתיבה שרירותית לזיכרון.</li>
         </ul>
       </div>
     `
@@ -759,24 +607,20 @@ memcpy(buffer, &x, sizeof(x));</code></pre>
     title: "כשלי ניהול זיכרון בערימה: Use-After-Free, Double Free ו-Memory Leak",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p><strong>פתרון מבני לכשלי ערימה:</strong> אימוץ עקרון RAII ושימוש ב-<code>std::unique_ptr</code> ו-<code>std::shared_ptr</code> מונע לחלוטין דליפות זיכרון ושחרור כפול על ידי ניהול בעלות אוטומטי.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>איפוס מצביע ל-<code>nullptr</code> מיד לאחר שחרור מונע UAF ו-Double Free. אימוץ RAII מונע כשלים אלה מהשורש.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן (שאלת ניתוח קוד UAF):</strong>
-        <p>אם רואים בקוד:
-        <pre class="code" dir="ltr"><code>free(ptr);
-// ... קוד נוסף שמקצה אובייקט חדש ...
-ptr-&gt;action(); // שגיאה!</code></pre>
-        זהו Use-After-Free קלאסי! הקריאה ל-action תתבצע על האובייקט החדש שהתמקם באותה כתובת זיכרון.</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>גישה למצביע לאחר <code>free(p)</code> = <strong>Use-After-Free</strong> (הזיכרון יועד לאובייקט חדש והקריאה תשחית אותו).</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>טבלת השוואת כשלי ערימה:</strong>
-        <table border="1" style="border-collapse:collapse; width:100%; font-size:0.9em;">
-          <tr><th>כשל</th><th>הגדרה</th><th>סכנה עיקרית</th><th>אפחות מומלץ</th></tr>
-          <tr><td><strong>UAF</strong></td><td>שימוש במצביע לאחר free</td><td>חטיפת בקרה / דריסת vptr</td><td>איפוס ל-nullptr, unique_ptr</td></tr>
-          <tr><td><strong>Double Free</strong></td><td>קריאה כפולה ל-free</td><td>השחתת מטא-דאטה בערימה</td><td>איפוס ל-nullptr, בדיקת בעלות</td></tr>
-          <tr><td><strong>Memory Leak</strong></td><td>חוסר שחרור משאבים</td><td>מיצוי זיכרון ו-DoS</td><td>עקרון RAII, מכולות STL</td></tr>
+        <strong>תמצות קצרצר של מושגים:</strong>
+        <table border="1" style="border-collapse:collapse; width:100%; font-size:0.85em;">
+          <tr><th>כשל</th><th>מהות</th><th>סכנה</th><th>אפחות</th></tr>
+          <tr><td><strong>UAF</strong></td><td>שימוש לאחר שחרור</td><td>חטיפת בקרה</td><td>איפוס ל-nullptr</td></tr>
+          <tr><td><strong>Double Free</strong></td><td>שחרור כפול</td><td>השחתת ערימה</td><td>איפוס ל-nullptr</td></tr>
+          <tr><td><strong>Leak</strong></td><td>אי-שחרור משאב</td><td>מיצוי זיכרון</td><td>עקרון RAII</td></tr>
         </table>
       </div>
     `
@@ -786,19 +630,19 @@ ptr-&gt;action(); // שגיאה!</code></pre>
     title: "כשלים מתקדמים: TOCTOU, מחיקת איפוס סודי (Dead Store Elimination) וארגז כלי בדיקה",
     content: `
       <div class="note-box highlight">
-        <strong>מה למרקר במדריך:</strong>
-        <p>בדיקה סטטית ודינמית משלימות זו את זו: ניתוח סטטי מקיף את כל נתיבי הקוד אך סובל מ-False Positives; ניתוח דינמי בודק רק נתיבים שהופעלו בפועל אך מציג שגיאות אמיתיות בלבד.</p>
+        <strong>מה למרקר במדריך הלמידה:</strong>
+        <p>TOCTOU נמנע ע"י פעולות אטומיות במתארי קבצים. ניתוח סטטי מכסה את כל הקוד; ניתוח דינמי מנטר שגיאות אמת בריצה.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>טיפ למבחן:</strong>
-        <p>אם נשאלתם כיצד למנוע מרוץ זמנים מסוג TOCTOU בפתיחת קובץ &ndash; התשובה היא <strong>פתיחה אטומית באמצעות מתארי קבצים</strong> (ולא בדיקת access מקדימה!).</p>
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>בדיקת הרשאה עם <code>access()</code> לפני <code>open()</code> = חולשת <strong>TOCTOU</strong> קלאסית. הפתרון: פתיחה אטומית ישירה.</p>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>ארגז כלי בדיקה:</strong>
+        <strong>תמצות קצרצר של מושגים:</strong>
         <ul>
-          <li><strong>cppcheck:</strong> ניתוח סטטי &bull; אין צורך בהרצה &bull; מאתר פונקציות מסוכנות.</li>
-          <li><strong>Valgrind / ASan:</strong> ניתוח דינמי &bull; מנטר זיכרון בריצה &bull; מאתר UAF ודליפות.</li>
-          <li><strong>Fuzzer:</strong> קלטים אקראיים &bull; מגלה מקרי קצה חבויים.</li>
+          <li><strong>cppcheck:</strong> ניתוח סטטי, ללא הרצה.</li>
+          <li><strong>Valgrind / ASan:</strong> ניתוח דינמי בריצה לאיתור UAF ודליפות.</li>
+          <li><strong>Fuzzer:</strong> קלטים אקראיים לגילוי מקרי קצה.</li>
         </ul>
       </div>
     `
@@ -806,562 +650,553 @@ ptr-&gt;action(); // שגיאה!</code></pre>
 {
     unit: "4",
     title: "צ'יט-שיט מבחן: יצירת מחלקה דינמית עם type(name, bases, dict)",
-    content: `<p><b>תחביר מלא של יצירה דינמית בזמן ריצה:</b></p>
-<pre class="code" dir="ltr"><code># הגדרת פונקציה שתשמש כמתודה (חובה self כפרמטר ראשון!):
-def say_hello(self):
-    return f"Hello, I am {self.name}"
-
-# קריאה ל-type עם 3 ארגומנטים:
-# 1. שם המחלקה (str)
-# 2. טאפל מחלקות אב (tuple)
-# 3. מילון מתודות ושדות (dict)
-DynamicPerson = type("DynamicPerson", (object,), {
-    "species": "Homo sapiens",
-    "greet": say_hello
-})
-
-p = DynamicPerson()
-p.name = "Alice"
-print(p.greet())  # מדפיס: Hello, I am Alice</code></pre>
-<ul>
-  <li><b>מלכודת מבחן קריטית — פסיק בטאפל של אב יחיד:</b> בירושה ממחלקה אחת בלבד, חובה לכתוב <code>(BaseClass,)</code> עם פסיק בסוף! אם כותבים <code>(BaseClass)</code>, פייתון מתייחסת לזה כאל ביטוי סוגריים חשבוני רגיל וזורקת שגיאת <code>TypeError: bases must be types</code>.</li>
-  <li><b>שאלת מבחן קלאסית:</b> יצירת מחלקות באופן אוטומטי מתוך רשימת מילים או קטגוריות מקובץ.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>תחביר <code>type(name, bases_tuple, dict)</code>: מקבל שם מחלקה (מחרוזת), טאפל של מחלקות אב, ומילון מתודות ושדות. כל מתודה חייבת לקבל <code>self</code> כפרמטר ראשון.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>מלכודת הפסיק בטאפל:</strong> בירושה ממחלקה בודדת חובה פסיק: <code>(BaseClass,)</code>! ללא פסיק <code>(BaseClass)</code> נחשב ביטוי סוגריים רגיל וזורק <code>TypeError: bases must be types</code>.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <pre class="code" dir="ltr"><code>say = lambda self: f"Hi {self.name}"
+Person = type("Person", (object,), {"greet": say})
+p = Person(); p.name = "Alice"; print(p.greet())</code></pre>
+      </div>
+    `
   },
   {
     unit: "4",
     title: "צ'יט-שיט מבחן: עיבוד מחרוזות, מילים, וספירת תדירויות (שאלת 6)",
-    content: `<p>שאלות 6 במבחנים רבות עוסקות בעיבוד טקסט ומילים מתוך קובץ או מחרוזת:</p>
-<pre class="code" dir="ltr"><code>def process_words(filename):
-    word_counts = {}
-    with open(filename, "r", encoding="utf-8") as f:
-        for line in f:
-            # split() ללא ארגומנט מפרק לפי כל רווח לבן: רווחים כפולים, \t, \n
-            words = line.split()
-            for w in words:
-                clean_w = w.strip(".,!?:;"'").lower()
-                if not clean_w:
-                    continue
-                # זיהוי מילים שמתחילות ומסתיימות באותה אות:
-                if clean_w[0] == clean_w[-1]:
-                    pass
-                # המרת אות ראשונה לגדולה והשאר קטנות (Capitalize):
-                # clean_w.capitalize() או: clean_w[0].upper() + clean_w[1:]
-                
-                # ספירת תדירות בטוחה ללא KeyError:
-                word_counts[clean_w] = word_counts.get(clean_w, 0) + 1
-    return word_counts</code></pre>
-<ul>
-  <li><b>אי־השתנות של str:</b> מתודות כמו <code>upper()</code>, <code>replace()</code> או חיתוך אינן משנות את המחרוזת המקורית, אלא מחזירות תמיד אובייקט חדש.</li>
-  <li><b>אינדוקס שלילי:</b> <code>s[-1]</code> מחזיר את התו האחרון; חיתוך <code>s[::-1]</code> הופך את המחרוזת.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>אי-השתנות של str:</strong> מתודות כמו <code>upper()</code>, <code>strip()</code> או חיתוך לעולם אינן משנות את המחרוזת המקורית, אלא מחזירות אובייקט חדש.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><code>line.split()</code> ללא פרמטר מפצל לפי כל רווח לבן (כולל רווחים כפולים ו-<code>\\n</code>). לספירת מילים ללא <code>KeyError</code> השתמשו ב-<code>d[w] = d.get(w, 0) + 1</code>.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p><code>s[::-1]</code> היפוך מחרוזת &bull; <code>s[-1]</code> תו אחרון &bull; <code>w.strip(".,!?:;\\"'")</code> ניקוי פיסוק &bull; <code>w[0] == w[-1]</code> אות ראשונה ואחרונה זהות.</p>
+      </div>
+    `
   },
   {
     unit: "4",
     title: "מלכודת מבחן: היעדר העמסת פונקציות (Function Overloading) וברירות מחדל מוטביליות",
-    content: `<ul>
-  <li><b>אין העמסת פונקציות בפייתון:</b> אם נגדיר באותה מחלקה שתי מתודות בעלות אותו שם אך חתימה שונה (למשל אחת עם פרמטר אחד והשנייה עם שניים) — <b>ההגדרה השנייה פשוט תדרוס ותמחק לחלוטין את הראשונה!</b><br>
-  <i>הפתרון הדפנסיבי:</i> שימוש בערכי ברירת מחדל אופציונליים (<code>def f(x, y=None)</code>) או בדיקת טיפוסים דינמית עם <code>isinstance()</code>.</li>
-  <li><b>מלכודת ברירת מחדל ניתנת לשינוי (Mutable Default Argument):</b>
-<pre class="code" dir="ltr"><code># שגיאה קשה: הרשימה נוצרת פעם אחת בלבד בעת טעינת הפונקציה ומשותפת לכל הקריאות!
-def add_to_list(val, my_list=[]):
-    my_list.append(val)
-    return my_list
-
-# פתרון דפנסיבי תקני:
-def add_to_list_safe(val, my_list=None):
-    if my_list is None:
-        my_list = []
-    my_list.append(val)
-    return my_list</code></pre>
-  </li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>אין העמסת פונקציות בפייתון!</strong> הגדרת מתודה שנייה בעלת אותו שם דורסת ומוחקת לחלוטין את הראשונה. פתרון דפנסיבי: פרמטרי ברירת מחדל (<code>y=None</code>) או <code>*args</code>.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>מלכודת ברירת מחדל מוטבילית:</strong> <code>def f(lst=[])</code> יוצר את הרשימה פעם אחת בלבד בטעינת הקוד והיא משותפת לכל הקריאות! פתרון: <code>lst=None</code> ואז בדיקת <code>if lst is None: lst = []</code>.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <pre class="code" dir="ltr"><code>def safe_append(val, lst=None):
+    if lst is None: lst = []
+    lst.append(val); return lst</code></pre>
+      </div>
+    `
   },
   {
     unit: "4",
     title: "מה למרקר במדריך: כינוי כפול (Aliasing), העתקה רדודה לעומת עמוקה, ו-is מול ==",
-    content: `<p><b>כינוי כפול (Aliasing):</b> השמה <code>b = a</code> אינה מעתיקה רשימה, אלא יוצרת הפניה נוספת לאותו אובייקט בזיכרון. שינוי דרך <code>b</code> משנה מיד את <code>a</code>.</p>
-<p><b>העתקה רדודה (Shallow Copy) מול עמוקה (Deep Copy):</b></p>
-<pre class="code" dir="ltr"><code>import copy
-a = [[1, 2], [3, 4]]
-b = a.copy()          # העתקה רדודה (או a[:])
-b[0].append(99)
-print(a[0])           # פלט: [1, 2, 99]! האיברים הפנימיים עדיין משותפים!
-
-c = copy.deepcopy(a)  # העתקה עמוקה מלאה
-c[0].append(100)
-print(a[0])           # פלט: [1, 2, 99] - נשאר ללא שינוי!</code></pre>
-<p><b>השוואת <code>is</code> מול <code>==</code>:</b> <code>is</code> בודק האם שתי הפניות מצביעות לאותו אובייקט פיזי בזיכרון (זהות כתובת לפי <code>id()</code>); <code>==</code> קורא למתודה <code>__eq__</code> ובודק האם הערכים והתכנים שווים.</p>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><code>is</code> בודק זהות פיזית בזיכרון (<code>id(a) == id(b)</code>); בעוד <code>==</code> בודק שוויון תוכן (מתודת <code>__eq__</code>). השמה <code>b = a</code> יוצרת כינוי (Alias) לאותו אובייקט בדיוק.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p>העתקה רדודה (<code>a.copy()</code> או <code>a[:]</code>) מעתיקה רק את המעטפת החיצונית. אם יש רשימות מקוננות, שינוי בהן ישתקף במקור! חובה <code>copy.deepcopy()</code> להפרדה מלאה.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p><code>b = a</code> (כינוי זהה) &bull; <code>b = a[:]</code> (העתקה רדודה: איברים פנימיים משותפים) &bull; <code>b = copy.deepcopy(a)</code> (העתקה עמוקה עצמאית לחלוטין).</p>
+      </div>
+    `
   },
   {
     unit: "4",
     title: "צ'יט-שיט מבחן: בריחת ארגז חול ברפלקציה (Python Sandbox Escape) מול ast.literal_eval",
-    content: `<p><b>סכנת eval ו-exec:</b> מאפשרות הרצת קוד שרירותי (RCE). ניסיון לחסום פקודות ע״י איפוס הפונקציות המובנות (<code>eval(code, {"__builtins__": {}})</code>) נכשל לחלוטין באמצעות <b>רפלקציה (Reflection)</b>:</p>
-<pre class="code" dir="ltr"><code># מנגנון העקיפה של התוקף:
-# 1. יצירת אובייקט פשוט וטיפוס למחלקת object
-subclasses = ().__class__.__base__.__subclasses__()
-
-# 2. סריקת מאות המחלקות הטעונות לאיתור מודול מערכת (למשל catch_warnings או Popen)
-target = [c for c in subclasses if c.__name__ == 'catch_warnings'][0]
-
-# 3. חילוץ מודול os דרך המילון הגלובלי והפעלת פקודות מערכת:
-os_mod = target.__repr__.__globals__['sys'].modules['os']
-os_mod.system('whoami')  # RCE מלא!</code></pre>
-<p><b>הפתרון הדפנסיבי: <code>ast.literal_eval()</code></b> — מפרסר בבטחה אך ורק מבני נתונים בסיסיים (מספרים, מחרוזות, רשימות, מילונים, טאפלים, בוליאנים, None). אם הקלט מכיל קריאה לפונקציה, אופרטור או קוד זדוני — נזרקת שגיאת <code>ValueError</code> או <code>SyntaxError</code> ללא הרצה.</p>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><code>eval()</code> ו-<code>exec()</code> מאפשרות הרצת קוד שרירותי (RCE). איפוס <code>__builtins__</code> אינו מגן: תוקף משתמש ברפלקציה <code>().__class__.__base__.__subclasses__()</code> כדי לטפס ל-<code>object</code> ולשלוף את <code>os.system</code>.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>הפתרון הדפנסיבי:</strong> <code>ast.literal_eval()</code> &ndash; מפרסר בבטחה אך ורק מבני נתונים בסיסיים (מספרים, מחרוזות, רשימות, מילונים) וזורק שגיאה מיידית על כל קריאת פונקציה או קוד זדוני.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p><code>eval/exec</code> &larr; מסוכן תמיד (עקיף ברפלקציה) &bull; <code>ast.literal_eval</code> &larr; בטוח (נתונים פסיביים בלבד, ללא הרצת קוד).</p>
+      </div>
+    `
   },
   {
     unit: "4",
     title: "מה למרקר במדריך: סכנות סריאליזציה עם pickle ו-shelve (__reduce__ RCE)",
-    content: `<p><b>מנגנון הכשל ב-pickle:</b> בעת שחזור אובייקט ע״י <code>pickle.loads()</code>, פייתון מאפשרת לאובייקט להגדיר את המתודה המיוחדת <code>__reduce__()</code>. מתודה זו מחזירה טאפל המכיל פונקציה להפעלה ורשימת ארגומנטים.</p>
-<p>תוקף יכול להרכיב בייטקוד סדורי של pickle שמפעיל ישירות את <code>os.system("rm -rf /")</code> או פותח Reverse Shell בעת הטעינה בשרת:</p>
-<pre class="code" dir="ltr"><code>import pickle, os
-
-class Exploit:
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>מודול <code>pickle</code> (ו-<code>shelve</code> המבוסס עליו) אינו מאובטח! בעת דה-סריאליזציה (<code>loads</code>), מתודת <code>__reduce__</code> של האובייקט נקראת ומאפשרת לתוקף להריץ פקודות מערכת שרירותיות (RCE).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>כלל ברזל:</strong> לעולם אין לפתוח קובץ <code>pickle</code> ממקור חיצוני או מהרשת! להעברת נתונים בין מערכות יש להשתמש אך ורק בפורמט טקסטואלי בטוח כגון JSON.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <pre class="code" dir="ltr"><code>class Exploit:
     def __reduce__(self):
         return (os.system, ('cat /etc/passwd',))
-
-malicious_bytes = pickle.dumps(Exploit())
-# טעינת הבייטים בשרת תריץ מיד את הפקודה!
-pickle.loads(malicious_bytes)</code></pre>
-<p><b>כלל ברזל במבחן:</b> לעולם אין לקרוא קובץ <code>pickle</code> או <code>shelve</code> ממקור רשת או ממשתמש חיצוני! להעברת נתונים בין מערכות יש להשתמש אך ורק בפורמטים טקסטואליים בטוחים (כמו JSON) יחד עם אימות סכימה.</p>`
+# pickle.loads(pickle.dumps(Exploit())) -> מריץ פקודה מיד!</code></pre>
+      </div>
+    `
   },
   {
     unit: "4",
     title: "טיפ מבחן: כימוס, שיבוש שמות (Name Mangling) וחטיפת מודולים (sys.path)",
-    content: `<ul>
-  <li><b>כימוס בפייתון:</b>
-    <ul>
-      <li>קו תחתון בודד (<code>_x</code>): מוסכמת מתכנתים בלבד לשימוש פנימי. אין שום אכיפה מצד המפרש.</li>
-      <li>שני קווים תחתונים (<code>__x</code>): מפעיל <b>Name Mangling</b> — המפרש משנה את השם אוטומטית ל־<code>_ClassName__x</code>. המטרה: מניעת דריסה מקרית בירושה מרובה, ולא אבטחה (השדה עדיין נגיש לחלוטין תחת שמו המשובש).</li>
-    </ul>
-  </li>
-  <li><b>חטיפת מודולים (sys.path Hijacking):</b> בעת ביצוע <code>import foo</code>, פייתון סורקת את <code>sys.path</code> לפי סדר. האיבר הראשון (<code>sys.path[0]</code>) הוא התיקייה שבה נמצא הסקריפט המורץ. אם תוקף שותל קובץ בשם <code>math.py</code> או <code>socket.py</code> באותה תיקייה, המפרש יטען את הקובץ המקומי במקום את הספרייה הסטנדרטית.</li>
-  <li><b>בלוק ההגנה:</b> <code>if __name__ == "__main__":</code> מבטיח שקוד בדיקה או הרצה ראשית לא יתבצע כאשר הקובץ מיובא כספרייה ע״י קוד אחר.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><code>_x</code> היא מוסכמה לשימוש פנימי ללא אכיפה. <code>__x</code> מפעיל <strong>Name Mangling</strong> (משתנה ל-<code>_ClassName__x</code>) למניעת התנגשות בירושה &ndash; זהו אינו מנגנון אבטחה והשדה עדיין נגיש.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>חטיפת מודולים (sys.path[0]):</strong> האיבר הראשון בסריקה הוא תיקיית הסקריפט. קובץ מקומי בשם <code>math.py</code> ידרוס את המודול הסטנדרטי. בלוק <code>if __name__ == "__main__":</code> מונע הרצת קוד בייבוא.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p><code>_x</code> = מוסכמה &bull; <code>__x</code> = שיבוש שם לשם המחלקה &bull; <code>sys.path[0]</code> = תיקייה נוכחית קודמת לספריות מערכת.</p>
+      </div>
+    `
   },
   {
     unit: "5",
     title: "צ'יט-שיט מבחן: תבנית שרת ולקוח TCP ב-C++ ובפייתון ומלכודות קריטיות",
-    content: `<p><b>מחזור חיי שרת ולקוח TCP:</b></p>
-<pre class="code" dir="ltr"><code># שרת בפייתון:
-import socket
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as srv:
-    srv.bind(("127.0.0.1", 8080))  # לא INADDR_ANY שחושף לעולם!
-    srv.listen(5)
-    # accept מחזיר שקע חדש מול הלקוח! השקע המקורי srv ממשיך להאזין:
-    client_sock, client_addr = srv.accept()
-    with client_sock:
-        data = client_sock.recv(1024)
-        client_sock.sendall(data)</code></pre>
-<ul>
-  <li><b>מלכודת ה-accept:</b> שקע ההאזנה (Listening Socket) משמש אך ורק לקבלת חיבורים חדשים. התקשורת מול הלקוח מתבצעת תמיד דרך שקע השיחה החדש המוחזר מ־<code>accept()</code>.</li>
-  <li><b>בדיקת שגיאות ב-C++:</b> <code>socket()</code> מחזיר <code>-1</code> בכישלון. אסור לבדוק <code>== 0</code> (מתאר 0 הוא stdin החוקי).</li>
-  <li><b>מלכודת תו האפס במחרוזות ב-C++:</b> <code>recv()</code> קוראת בתים בינאריים גולמיים ו<strong>אינה מוסיפה תו אפס סיום (<code>\0</code>)</strong>! הדפסה עיוורת ע״י <code>printf("%s", buf)</code> גוררת קריאה מעבר לגבולות החוצץ (Buffer Over-read) ודליפת מידע. יש להוסיף ידנית: <code>buf[bytes_received] = '\0';</code>.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>שקע ההאזנה (Listening Socket) משמש אך ורק לקבלת חיבורים ב-<code>listen/accept</code>. כל התקשורת מול הלקוח מתבצעת תמיד דרך השקע <strong>החדש</strong> שחוזר מ-<code>accept()</code>.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>מלכודת <code>recv()</code> ב-C++:</strong> הקריאה אינה מוסיפה תו סיום <code>\\0</code>! הדפסה ישירה ב-<code>printf("%s")</code> גוררת Buffer Over-read ודליפת זיכרון. חובה לבצע: <code>buf[bytes] = '\\0'</code>. בבדיקת שגיאות: <code>-1</code> מסמן שגיאה (ולא <code>0</code>!).</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט סדר שרת TCP:</strong>
+        <p><code>socket()</code> &rarr; <code>bind()</code> &rarr; <code>listen()</code> &rarr; <code>accept()</code> &rarr; <code>recv()/send()</code> &rarr; <code>close()</code>. קשירה ל-<code>127.0.0.1</code> בטוחה מקשירה ל-<code>0.0.0.0</code> (INADDR_ANY).</p>
+      </div>
+    `
   },
   {
     unit: "5",
     title: "צ'יט-שיט מבחן: בעיית ה-Framing מעל TCP ושליחת קבצים בצ'אנקים עם כותרת struct.pack",
-    content: `<p><b>TCP כ-Byte Stream:</b> אין גבולות הודעה! <code>recv(1024)</code> עשוי להחזיר רק חלק מההודעה, או מספר הודעות צמודות. חובה לממש <b>מסגור (Framing)</b>.</p>
-<p><b>קריאה שלמה מדויקת (תבנית חובה):</b></p>
-<pre class="code" dir="ltr"><code>def recv_exact(sock, n):
-    buf = bytearray()
-    while len(buf) < n:
-        chunk = sock.recv(n - len(buf))
-        if not chunk:
-            raise ConnectionError("Connection closed before receiving all bytes")
-        buf.extend(chunk)
-    return bytes(buf)</code></pre>
-<p><b>תרגיל המרצה — שליחת קובץ בחבילות (Chunks) עם כותרת 12 בתים ב-Big-Endian:</b></p>
-<pre class="code" dir="ltr"><code>import struct, math, socket
-
-MAX_PACKET_SIZE = 2048
-HEADER_SIZE = 12
-CHUNK_SIZE = MAX_PACKET_SIZE - HEADER_SIZE  # 2036 בתים נטו
-
-with open("file.bin", "rb") as f:
-    data = f.read()
-
-total_packets = math.ceil(len(data) / CHUNK_SIZE) or 1
-with socket.create_connection(("8.8.8.8", 7070)) as sock:
-    for pkt_num in range(1, total_packets + 1):
-        chunk = data[(pkt_num - 1) * CHUNK_SIZE : pkt_num * CHUNK_SIZE]
-        # כותרת: מספר חבילה, סה"כ חבילות, גודל Data - כולם Big-Endian 4-bytes:
-        header = struct.pack(">III", pkt_num, total_packets, len(chunk))
-        sock.sendall(header + chunk)</code></pre>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>TCP כ-Byte Stream:</strong> אין גבולות הודעה! <code>recv(n)</code> עשוי להחזיר פחות מ-n בתים או לחבר מספר הודעות צמודות. חובה לממש מסגור (Framing) כגון כותרת אורך קבועה או תו מפריד.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p>תבנית קריאה מלאה <code>recv_exact</code>: יש לקרוא בלולאה עד צבירת כל הבתים הנדרשים. אם <code>recv</code> החזיר 0 בתים &ndash; השקע נסגר בצד השני ויש לזרוק חריגת ניתוק.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <pre class="code" dir="ltr"><code># כותרת 12 בתים ברשת (Big-Endian):
+header = struct.pack(">III", pkt_num, total_pkts, len(chunk))
+sock.sendall(header + chunk)</code></pre>
+      </div>
+    `
   },
   {
     unit: "5",
     title: "מה למרקר במדריך: 7 שכבות מודל OSI מול TCP/IP ומלכודת שכבת הייצוג (Presentation)",
-    content: `<ul>
-  <li><b>שכבה 1 (פיזית - Physical):</b> ביטים גולמיים, כבלים, Wi-Fi.</li>
-  <li><b>שכבה 2 (ערוץ הנתונים - Data Link):</b> מסגרות (Frames), כתובת פיזית <b>MAC בת 48 סיביות (6 בתים)</b>, מתג (Switch) ברשת מקומית (LAN).</li>
-  <li><b>שכבה 3 (רשת - Network):</b> חבילות (Packets), כתובות IP (IPv4 באורך 32 סיביות / 4 בתים; IPv6 באורך 128 סיביות / 16 בתים), נתב (Router) ברשת רחבה (WAN).</li>
-  <li><b>שכבה 4 (תובלה - Transport):</b> תקשורת קצה לקצה בין תהליכים, <b>פורטים (16 סיביות)</b>, TCP (אמין, זרם בתים) מול UDP (לא אמין, Datagrams). סדר בתים ברשת Big-Endian (המרה ע״י <code>htons</code>/<code>ntohs</code> ו־<code>htonl</code>/<code>ntohl</code>).</li>
-  <li><b>שכבה 5 (שיחה - Session):</b> ניהול מושבי שיחה ותיאום.</li>
-  <li><b>שכבה 6 (ייצוג - Presentation) — מוקש בחינה מובהק:</b> אחראית על פורמט נתונים, קידוד תווים (ASCII, UTF-8), דחיסה ו<strong>הצפנה (SSL/TLS)</strong>!</li>
-  <li><b>שכבה 7 (יישום - Application):</b> HTTP, DNS, SSH, SMTP, FTP.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>שכבה 6 (Presentation) &ndash; מוקש בחינה מובהק:</strong> אחראית על קידוד נתונים (ASCII, UTF-8), דחיסה ו<strong>הצפנה (SSL/TLS)</strong>! שכבה 4 (Transport) אחראית לפורטים (16 סיביות) ולסדר בתים ברשת (Big-Endian).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p>כתובת MAC שייכת לשכבה 2 (48 סיביות / 6 בתים, מתג). כתובת IP שייכת לשכבה 3 (IPv4: 32 סיביות / 4 בתים; IPv6: 128 סיביות, נתב). המרת סדר בתים: <code>htons/ntohs</code> לפורטים, <code>htonl/ntohl</code> לכתובות IP.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט 7 שכבות:</strong>
+        <p>1. פיזית (Bits) &bull; 2. Data Link (Frames, MAC) &bull; 3. Network (Packets, IP) &bull; 4. Transport (Segments, Ports, TCP/UDP) &bull; 5. Session &bull; 6. Presentation (הצפנה/TLS) &bull; 7. Application (HTTP, DNS).</p>
+      </div>
+    `
   },
   {
     unit: "5",
     title: "מלכודת מבחן ענקית: NAT אינו חומת אש (Firewall)",
-    content: `<p><b>NAT (Network Address Translation):</b> מנגנון בשכבת הרשת המתרגם טווח של כתובות IP פרטיות (כגון 192.168.0.0/16 או 10.0.0.0/8) לכתובת IP ציבורית אחת כלפי חוץ. מטרתו המקורית היא לחסוך בכתובות IPv4 ציבוריות.</p>
-<p><b>שאלת מפתח שחוזרת במבחנים: האם NAT מספק הגנה ואבטחה?</b></p>
-<ul>
-  <li><b>תשובה: לא! NAT אינו חומת אש (Firewall).</b></li>
-  <li>הוא אינו בודק את תוכן החבילות, אינו מסנן תעבורה זדונית, ואינו מגן מפני נוזקות, סוסים טרויאניים או הזרקות ברמת היישום (SQLi, XSS).</li>
-  <li>העובדה שכתובת פרטית אינה נגישה ישירות מחוץ לרשת אינה מונעת מתוכנה זדונית פנימית ליזום חיבור החוצה (Reverse Connection) או להיפגע מפרוטוקולים שפותחים פורטים (כגון UPnP).</li>
-  <li>חומת אש אמיתית (Firewall) נדרשת כדי לסנן חבילות לפי מדיניות אבטחה, לפקח על מצב החיבורים (Stateful Inspection) ולחסום פורטים מסוכנים.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>NAT אינו חומת אש (Firewall)!</strong> תכליתו היא שימור כתובות IPv4 ע"י תרגום טווח כתובות פרטיות לכתובת ציבורית אחת. הוא אינו מספק אבטחה או סינון תוכן.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p>בשאלות מבחן: האם NAT מגן מפני תקיפות? <strong>תשובה: לא!</strong> הוא אינו מסנן חבילות זדוניות, אינו חוסם Reverse Shell שיוצא מבפנים ואינו מגן מהזרקות יישום. רק Firewall אוכף מדיניות אבטחה.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p><strong>NAT:</strong> חסכון בכתובות IP &bull; <strong>Firewall:</strong> סינון חבילות, בדיקת מצב חיבורים (Stateful Inspection) וחסימת פורטים מסוכנים.</p>
+      </div>
+    `
   },
   {
     unit: "5",
     title: "צ'יט-שיט מבחן: חוטים מול תהליכים, מרוץ נתונים (Data Race) וסכנת std::thread ללא join",
-    content: `<ul>
-  <li><b>תהליכים (Processes):</b> מרחב זיכרון וירטואלי מבודד לחלוטין. שיתוף מידע מחייב IPC. בידוד חזק אך תקורה כבדה.</li>
-  <li><b>חוטים (Threads):</b> חולקים את אותו מרחב זיכרון (ערימה משותפת, משתנים גלובליים וסטטיים משותפים; מחסנית מקומית נפרדת לכל חוט). מהירים, אך חשופים למרוצי נתונים.</li>
-  <li><b>מרוץ נתונים (Data Race):</b> גישה בו־זמנית של שני חוטים לאותו זיכרון ללא סנכרון כשלפחות אחת כותבת. ב-C++ זהו <b>Undefined Behavior (UB)</b>.
-    <br><code>counter++</code> אינו פעולה אטומית (הוא מורכב מ־3 שלבי מכונה: Read, Add, Write)! שני חוטים שמבצעים זאת בו־זמנית ידרסו עדכונים זה של זה.
-    <br><i>פתרון:</i> <code>std::atomic&lt;int&gt; counter{0};</code> או נעילה עם <code>std::mutex</code>.</li>
-  <li><b>מלכודת <code>std::thread</code> ב-C++:</b> כל חוט שנוצר נמצא במצב <code>joinable</code>. אם אובייקט החוט נהרס לפני שנקראה עליו מתודת <code>join()</code> או <code>detach()</code> — המערכת מפעילה מיד <code>std::terminate()</code> והתוכנית כולה מתרסקת!</li>
-  <li><b>נעילת RAII:</b> תמיד משתמשים ב־<code>std::lock_guard&lt;std::mutex&gt; lock(mtx);</code> המבטיחה שחרור מנעול אוטומטי ביציאה מבלוק או בעת זריקת חריגה (מניעת Deadlock).</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><code>counter++</code> אינו פעולה אטומית (כולל Read, Add, Write)! גישה מקבילית ללא סנכרון כשיש כותב היא Data Race המהווה Undefined Behavior (UB) ב-C++. פתרון: <code>std::atomic&lt;int&gt;</code> או נעילה.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>מלכודת <code>std::thread</code>:</strong> אם אובייקט חוט נהרס לפני שנקרא עליו <code>join()</code> או <code>detach()</code>, מופעלת מיד <code>std::terminate()</code> והתוכנית מתרסקת! נעילה תתבצע תמיד ב-RAII דרך <code>std::lock_guard</code> למניעת Deadlock.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p>תהליכים = מרחב זיכרון נפרד (IPC) &bull; חוטים = ערימה משותפת, מחסנית נפרדת לכל חוט &bull; מניעת Deadlock: רכישת מנעולים בסדר גלובלי אחיד.</p>
+      </div>
+    `
   },
   {
     unit: "5",
     title: "מה למרקר במדריך: נעילת המפרש (GIL בפייתון) וריבוי מעבדים (multiprocessing)",
-    content: `<p><b>נעילת המפרש העולמית (GIL - Global Interpreter Lock):</b> במפרש הסטנדרטי של פייתון (CPython), מנעול ה־GIL מאפשר רק לחוט אחד בכל רגע נתון לבצע Bytecode של פייתון.</p>
-<ul>
-  <li><b>משימות קלט/פלט (I/O-Bound):</b> עבודה מול רשת, שקעים, או קבצים בדיסק. במשימות אלו ריבוי חוטים (<code>threading</code>) יעיל מאוד, משום שה־GIL משתחרר אוטומטית בעת המתנה לקלט/פלט של מערכת ההפעלה.</li>
-  <li><b>משימות חישוביות (CPU-Bound):</b> עיבוד תמונה, קריפטוגרפיה, או חישובים מתמטיים כבדים. בריבוי חוטים בפייתון <b>אין שום ניצול של מספר ליבות</b> (למעשה יש האטה עקב מלחמה על ה־GIL!).
-  <br><b>הפתרון הדפנסיבי:</b> שימוש במודול <code>multiprocessing</code>, המייצר תהליכים נפרדים של מערכת ההפעלה, שלכל אחד מהם מפרש, מרחב זיכרון ו־GIL עצמאיים לחלוטין.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>ה-GIL ב-CPython מאפשר רק לחוט אחד בכל רגע לבצע Bytecode של פייתון. לכן, ריבוי חוטים (<code>threading</code>) אינו מנצל ריבוי ליבות במשימות חישוביות (CPU-Bound).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p>במשימות I/O-Bound (רשת, קבצים) מודול <code>threading</code> יעיל כי ה-GIL משתחרר בהמתנה למערכת ההפעלה. למשימות CPU-Bound (עיבוד תמונה, קריפטו) חובה להשתמש ב-<code>multiprocessing</code> שמייצר תהליכים עם GIL עצמאי לכל אחד.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p>I/O-Bound &larr; <code>threading</code> (ה-GIL משתחרר בקלט/פלט) &bull; CPU-Bound &larr; <code>multiprocessing</code> (תהליכים נפרדים וניצול ליבות מלא).</p>
+      </div>
+    `
   },
   {
     unit: "5",
     title: "צ'יט-שיט מבחן: ריבוב קלט/פלט (Reactor / Selectors) מול מודל חוט לכל לקוח",
-    content: `<p><b>הבעיה במודל חוט לכל לקוח (Thread-per-client):</b> הקצאת חוט לכל חיבור גורמת לתקורה עצומה בהקצאת מחסניות ובהחלפות הקשר (Context Switches). תוקף יכול לפתוח אלפי חיבורים סרק (Slowloris / DoS) ולהפיל את השרת עקב מחסור במשאבי זיכרון.</p>
-<p><b>הפתרון: תבנית Reactor וריבוב קלט/פלט (I/O Multiplexing):</b></p>
-<ul>
-  <li>שימוש במודול <code>selectors</code> בפייתון (או <code>select</code>/<code>epoll</code> ב-C++).</li>
-  <li>חוט יחיד או מאגר חוטים מצומצם רושם עניין באירועים (קריאה/כתיבה) על פני אלפי שקעים במקביל.</li>
-  <li>השרת ישן בתוך <code>sel.select()</code> ומתעורר אך ורק כאשר יש מידע מוכן לקריאה, ומנתב את הטיפול לפונקציית Callback מתאימה.</li>
-  <li><b>בקרות הגנה חיוניות:</b> הגדרת זמני קצוב (Timeouts) לחיבורים רדומים, הגבלת קצב בקשות (Rate Limiting), ותקרת חיבורים מקסימלית.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>מודל Thread-per-client פגיע למתקפות DoS/Slowloris בגלל תקורה כבדה של הקצאת מחסניות והחלפות הקשר (Context Switches) עבור אלפי חיבורי סרק.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>תבנית Reactor:</strong> חוט יחיד מאזין לאלפי שקעים במקביל באמצעות <code>selectors</code>/<code>epoll</code> ומתעורר רק כשיש מידע מוכן לקריאה. הגנות חובה: הגדרת Timeouts לחיבורים רדומים ותקרת חיבורים מקסימלית.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p>Thread-per-client: תקורה כבדה וסכנת DoS &bull; Reactor (I/O Multiplexing): חוט יחיד, מונחה אירועים (Event-driven), עמידות גבוהה בעומסים.</p>
+      </div>
+    `
   },
   {
     unit: "5",
     title: "צ'יט-שיט מבחן: הצפנה היברידית (TLS), קריפטוגרפיה פוסט־קוונטית (PQC) ואיומי שור/גרובר",
-    content: `<p><b>הצפנה היברידית (TLS/HTTPS):</b> שילוב בין אסימטרי לסימטרי. בשלב הלחיצה הראשונית (Handshake) משתמשים בהצפנה אסימטרית (RSA / ECDH) לאימות תעודת השרת (CA) ולהסכמה על מפתח סודי ארעי (Session Key). מיד לאחר מכן עוברים להצפנה סימטרית מהירה (AES-GCM) להעברת כל תוכן הנתונים.</p>
-<p><b>איומי מחשוב קוונטי ו־PQC:</b></p>
-<ul>
-  <li><b>אלגוריתם שור (Shor):</b> פותר פירוק לגורמים ראשוניים ולוגריתם בדיד בזמן פולינומי. מפצח לחלוטין את כל ההצפנה האסימטרית הקלאסית: <b>RSA, Diffie-Hellman, ECC</b>!</li>
-  <li><b>אלגוריתם גרובר (Grover):</b> מאיץ חיפוש ממצה ומוציא שורש ממרחב המפתחות הסימטריים. מפחית את חוזק AES-128 ל־64 סיביות (אינו מספק). פתרון: הגדלת מפתחות סימטריים ל־<b>AES-256</b> (המספק 128 סיביות הגנה קוונטית).</li>
-  <li><b>איום Harvest Now, Decrypt Later:</b> תוקפים אוגרים תעבורה מוצפנת כיום לפענוח עתידי במחשב קוונטי.</li>
-  <li><b>תקני NIST PQC:</b> Crystals-Kyber (ML-KEM) למפתחות; Crystals-Dilithium ו־SPHINCS+ לחתימות.</li>
-</ul>
-<p><b>מתקפת שידור חוזר (Replay):</b> שידור מחדש של הודעה אותנטית שנקלטה בעבר. <i>אפחות:</i> שילוב מספר חד־פעמי (Nonce), חותמת זמן (Timestamp), ומוני רצף בצד המקבל.</p>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>הצפנה היברידית (TLS):</strong> הצפנה אסימטרית (RSA/ECDH) משמשת בשלב הלחיצה (Handshake) לאימות השרת והחלפת מפתח סודי ארעי; תוכן הנתונים עצמו מוצפן בהצפנה סימטרית מהירה (AES-GCM).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>איום קוונטי:</strong> אלגוריתם שור (Shor) שובר לחלוטין את כל ההצפנה האסימטרית הקלאסית (RSA, DH, ECC). אלגוריתם גרובר (Grover) מוציא שורש ממפתחות סימטריים &ndash; לכן חובה להגדיל ל-<strong>AES-256</strong> (המספק 128 סיביות הגנה קוונטית).</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p>מתקפת Replay נמנעת ע"י Nonce וחותמת זמן &bull; תקני NIST PQC: מפתחות ML-KEM (Kyber), חתימות ML-DSA (Dilithium) ו-SPHINCS+.</p>
+      </div>
+    `
   },
   {
     unit: "6",
     title: "צ'יט-שיט מבחן: מכונות וירטואליות (VM) מול קונטיינרים (Containers) — מבחן 2025ג",
-    content: `<table border="1" cellpadding="5" style="border-collapse:collapse; width:100%;">
-  <tr style="background:#f2f2f2;">
-    <th>מאפיין</th>
-    <th>מכונה וירטואלית (VM)</th>
-    <th>קונטיינר (Container / Docker)</th>
-  </tr>
-  <tr>
-    <td><b>רמת הווירטואליזציה</b></td>
-    <td>חומרה מלאה מעל Hypervisor (סוג 1 או 2)</td>
-    <td>מערכת הפעלה מעל Namespaces ו־cgroups</td>
-  </tr>
-  <tr>
-    <td><b>ליבת מערכת הפעלה (Kernel)</b></td>
-    <td><b>ליבה נפרדת ועצמאית</b> לכל VM</td>
-    <td><b>ליבה משותפת</b> של השרת המארח לכולם!</td>
-  </tr>
-  <tr>
-    <td><b>רמת בידוד</b></td>
-    <td>בידוד חזק במיוחד מבוסס חומרה (VM Escape נדיר)</td>
-    <td>בידוד תהליכים לוגי (באג ליבה = בריחה מכל הקונטיינרים)</td>
-  </tr>
-  <tr>
-    <td><b>זמן עליה ומשאבים</b></td>
-    <td>איטי (דקות), צורך גיגה־בייטים של RAM</td>
-    <td>מהיר ביותר (שניות), צורך מגה־בייטים בודדים</td>
-  </tr>
-  <tr>
-    <td><b>הכרעת מבחן 2025ג</b></td>
-    <td><b>מתי נבחר ב־VM:</b> להרצת קוד זר שאינו מהימן כלל, להפרדת דיירים רגישים בענן, או כשנדרשת ליבה שונה (Windows על Linux).</td>
-    <td><b>מתי נבחר ב־Container:</b> לפריסה מהירה של מיקרו־שירותים פנימיים מהימנים, חסכון במשאבים, וסביבות פיתוח וטסטים.</td>
-  </tr>
-</table>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>ההבדל הארכיטקטוני המרכזי: לכל VM יש ליבת מערכת הפעלה (Kernel) עצמאית ונפרדת; קונטיינרים חולקים כולם את אותה ליבת מארח יחידה דרך Namespaces ו-cgroups.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן (הכרעת 2025ג):</strong>
+        <p>להרצת קוד זר עוין או הפרדת דיירים רגישים נבחר ב-<strong>VM</strong> (בידוד חומרה חזק). לפריסת מיקרו-שירותים פנימיים מהירים וחסכון במשאבים נבחר ב-<strong>Container</strong>.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <table border="1" cellpadding="4" style="border-collapse:collapse; width:100%; font-size:0.9em;">
+          <tr style="background:#f2f2f2;"><th>מאפיין</th><th>מכונה וירטואלית (VM)</th><th>קונטיינר (Docker)</th></tr>
+          <tr><td><b>וירטואליזציה</b></td><td>חומרה מלאה (Hypervisor)</td><td>מערכת הפעלה (Namespaces, cgroups)</td></tr>
+          <tr><td><b>Kernel</b></td><td>ליבה עצמאית ונפרדת לכל מכונה</td><td>ליבה משותפת של המארח לכולם</td></tr>
+          <tr><td><b>בידוד אבטחתי</b></td><td>חזק מאוד (VM Escape נדיר)</td><td>בידוד תהליכים לוגי (פגיע לבאג ליבה)</td></tr>
+          <tr><td><b>משאבים ועליה</b></td><td>איטי (דקות), צורך גיגה-בייטים</td><td>מהיר (שניות), צורך מגה-בייטים</td></tr>
+        </table>
+      </div>
+    `
   },
   {
     unit: "6",
     title: "צ'יט-שיט מבחן: תכנון ארגז חול (Sandbox) להרצת קוד זר ומהדר מקוון — מבחן 2021א",
-    content: `<p><b>הסכנות בהרצת קוד לקוח (exec / קומפילציה):</b> הרצת קוד שרירותי (RCE), גניבת סודות מתוך <code>os.environ</code>, מחיקת קבצים, פתיחת סוקטים לתקיפת הרשת הפנימית, ו־DoS ע״י לולאות אינסופיות או פצצת מזלג (Fork Bomb).</p>
-<p><b>חמשת עקרונות המימוש של ארגז חול דפנסיבי:</b></p>
-<ol>
-  <li><b>משתמש נטול הרשאות:</b> הרצת תהליך הלקוח תחת משתמש מוגבל (כגון <code>nobody</code>) ללא הרשאות מנהל.</li>
-  <li><b>מערכת קבצים מבודדת:</b> שימוש ב־<code>chroot</code> או Mount Namespace עם מערכת קבצים לקריאה בלבד (Read-only root), וספרייה זמנית זעירה.</li>
-  <li><b>סינון קריאות מערכת (Syscalls):</b> שימוש ב־<code>seccomp</code> לחסימת קריאות מסוכנות (<code>socket</code>, <code>fork</code>, <code>execve</code>, <code>ptrace</code>).</li>
-  <li><b>מכסות משאבים קשיחות:</b> הגבלת זמן CPU (שעון מעורר/Timeout), תקרת זיכרון RAM, והגבלת מספר תהליכים ע״י <code>cgroups</code> ו־<code>setrlimit</code>.</li>
-  <li><b>בידוד רשת מוחלט:</b> ניתוק ממשקי הרשת למניעת כל תקשורת פנימית או חיצונית.</li>
-</ol>
-<p><b>מה נשאר כבעיה במבחן ("אילו בעיות נשארות?"):</b> חולשות יום־אפס בליבת מערכת ההפעלה, ערוצים צדדיים (Side-Channel — מדידת זמני ביצוע וצריכת זיכרון), ובאגים במנגנון הבקר עצמו.</p>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>בידוד רב-שכבתי להרצת קוד זר: משתמש מוגבל (<code>nobody</code>), מערכת קבצים לקריאה בלבד (<code>chroot</code>), חסימת קריאות מערכת (<code>seccomp</code>), הגבלת משאבים (<code>cgroups</code>) וניתוק רשת מלא.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן (שאלת "אילו בעיות נשארות?"):</strong>
+        <p>גם בארגז חול מוקפד נותרות חולשות יום-אפס (0-Day) בליבת מערכת ההפעלה, מתקפות ערוץ צדדי (Side-Channel) למדידת זמנים וזיכרון, ובאגים במנגנון הבקר עצמו.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט 5 עקרונות Sandbox:</strong>
+        <p>1. משתמש ללא הרשאות &bull; 2. מערכת קבצים לקריאה בלבד &bull; 3. סינון Syscalls (seccomp) &bull; 4. מכסות CPU/RAM (cgroups, rlimit) &bull; 5. בידוד רשת מוחלט.</p>
+      </div>
+    `
   },
   {
     unit: "6",
     title: "מה למרקר במדריך: מדיניות המוצא הזהה (SOP) וההבדל המהותי בין XSS ל-CSRF",
-    content: `<p><b>Same-Origin Policy (SOP):</b> מוצא מוגדר ע״י <code>(scheme, host, port)</code>. הדפדפן מונע מסקריפט במוצא אחד לקרוא תוכן DOM, עוגיות או תשובות רשת ממוצא אחר. <b>שימו לב:</b> ה־SOP אינו מונע שליחת בקשות כותבות (כגון טופס POST)!</p>
-<ul>
-  <li><b>XSS (Cross-Site Scripting):</b> התוקף <b>מזריק סקריפט JavaScript זדוני</b> לתוך הדף של הקורבן. הסקריפט רץ בהקשר המוצא הלגיטימי ולכן <b>עוקף את ה־SOP</b> לחלוטין ויכול לקרוא עוגיות או לבצע פעולות בשם המשתמש.
-    <br><i>מניעה:</i> קידוד פלט מותאם־הקשר (Context-aware escaping), עוגיות עם דגל <code>HttpOnly</code>, ומדיניות אבטחת תוכן (CSP).</li>
-  <li><b>CSRF (Cross-Site Request Forgery):</b> התוקף <b>אינו מזריק סקריפט לאתר המותקף</b>, אלא מפתה את הקורבן להיכנס לאתר זדוני השולח בקשה משנת־מצב אל אתר היעד. הדפדפן מצרף אוטומטית את העוגיות. התוקף אינו רואה את התשובה (כי ה־SOP חוסם קריאה), אך הפעולה כבר בוצעה!
-    <br><i>מניעה:</i> אסימוני אנטי־CSRF סודיים (Synchronizer Tokens), עוגיות <code>SameSite=Strict/Lax</code>, ובדיקת כותרות <code>Origin</code>/<code>Referer</code>.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>Same-Origin Policy:</strong> מוצא מוגדר ע"י פרוטוקול, מארח ופורט. הוא מונע <i>קריאת</i> מידע ממוצא אחר, אך אינו חוסם <i>שליחת</i> בקשות (כמו שליחת טופס POST ברשת).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>ההבדל בין XSS ל-CSRF:</strong> ב-XSS התוקף <strong>מזריק קוד JS</strong> לאתר היעד ועוקף את ה-SOP לחלוטין. ב-CSRF התוקף <strong>אינו מריץ קוד</strong> באתר היעד, אלא מפתה לשליחת בקשה המצרפת עוגיות אוטומטית.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p>מניעת XSS: קידוד פלט מותאם-הקשר, <code>HttpOnly</code> ו-CSP &bull; מניעת CSRF: אסימוני Anti-CSRF (Tokens), ודגל <code>SameSite=Strict/Lax</code>.</p>
+      </div>
+    `
   },
   {
     unit: "6",
     title: "מלכודת מבחן: ניהול מושב, אבטחת עוגיות (HttpOnly, Secure, SameSite) ו-Web 2.0",
-    content: `<p><b>עוגיות וניהול מושב (Session Management):</b> HTTP הוא פרוטוקול חסר מצב (Stateless). מזהה המושב (Session ID) בעוגיה מגדיר את זהות המשתמש מול השרת. לעולם אין לשמור בעוגיה שדות הרשאה שניתנים לעריכה כגון <code>role=admin</code>!</p>
-<p><b>שלושת דגלי החובה במבחן לכל עוגיית מושב:</b></p>
-<ol>
-  <li><code>HttpOnly</code>: מונע מסקריפטים (JavaScript דרך <code>document.cookie</code>) לקרוא את העוגיה. <b>מסכל גניבת מושב בעת פרצת XSS!</b></li>
-  <li><code>Secure</code>: מבטיח שהעוגיה תישלח אך ורק בחיבור HTTPS מוצפן. <b>מסכל האזנה בציתות רשת (MITM / Sniffing)!</b></li>
-  <li><code>SameSite=Strict</code> (או <code>Lax</code>): מורה לדפדפן לא לשלוח את העוגיה בבקשות שמקורן באתר אחר. <b>מסכל מתקפות CSRF!</b></li>
-</ol>
-<p><b>Web 2.0:</b> תכנים המועלים ע״י משתמשים (תגובות, פרופילים) מהווים גבול אמון מרכזי ומשטח תקיפה פורה ל־Stored XSS והעלאת קבצים זדוניים.</p>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>HTTP הוא Stateless; מזהה המושב (Session ID) מגדיר את זהות המשתמש מול השרת. לעולם אין לשמור בעוגיה שדות הניתנים לעריכה בצד הלקוח כמו <code>role=admin</code>!</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן (3 דגלי החובה לעוגיה):</strong>
+        <p><code>HttpOnly</code> מונע גישה מ-JavaScript ומסכל גניבת מושב ב-XSS; <code>Secure</code> שולח רק ב-HTTPS ומסכל ציתות רשת (MITM); <code>SameSite=Strict/Lax</code> מונע שליחה מאתר זר ומסכל CSRF.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p><code>HttpOnly</code> &larr; הגנה מגניבת סשן ב-XSS &bull; <code>Secure</code> &larr; הגנה מציתות MITM &bull; <code>SameSite</code> &larr; הגנה מ-CSRF.</p>
+      </div>
+    `
   },
   {
     unit: "6",
     title: "מה למרקר במדריך: מודלי שירות בענן (IaaS, PaaS, SaaS, FaaS) ומודל האחריות המשותפת",
-    content: `<ul>
-  <li><b>IaaS (Infrastructure as a Service - כגון EC2):</b> תשתית חומרה וירטואלית. הספק אחראי על החומרה וההיפרוויזר; הלקוח אחראי על מערכת ההפעלה, טלאי אבטחה, סביבת זמן ריצה והאפליקציה.</li>
-  <li><b>PaaS (Platform as a Service - כגון App Engine):</b> פלטפורמת פיתוח והרצה מנוהלת. הספק אחראי על החומרה, מערכת ההפעלה והשרתים; הלקוח אחראי על קוד היישום והנתונים.</li>
-  <li><b>FaaS / Serverless (כגון AWS Lambda):</b> פונקציות מונעות־אירועים. סקיילינג אוטומטי מ־0; תשלום לפי מילי־שניות ביצוע. סיכונים: הרשאות יתר בתפקידי IAM והזרקת אירועים.</li>
-  <li><b>SaaS (Software as a Service - כגון Gmail, Office 365):</b> תוכנה מוגמרת. הספק מנהל את כל השכבות; הלקוח מנהל משתמשים והרשאות.</li>
-  <li><b>עקרון האחריות המשותפת במבחן:</b> שום מודל ענן אינו פוטר את המפתח מאבטחת הקוד שלו! באגים באפליקציה, פרצות SQL Injection, כשלי הרשאות או דליפת מפתחות API הם תמיד באחריות הבלעדית של הלקוח.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>אחריות משותפת בענן:</strong> שום מודל שירות אינו פוטר את המפתח מאבטחת הקוד שלו. פרצות אפליקטיביות (כמו SQLi) ודליפת מפתחות API הן תמיד באחריות הבלעדית של הלקוח!</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p>ב-IaaS הלקוח מנהל את מערכת ההפעלה והטלאים. ב-PaaS וב-FaaS (Serverless) הספק מנהל את מערכת ההפעלה וזמן הריצה, והלקוח אחראי על קוד האפליקציה והנתונים בלבד.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט מודלי ענן:</strong>
+        <p>IaaS: חומרה מנוהלת (VMs) &bull; PaaS: פלטפורמה מנוהלת (App Engine) &bull; FaaS: פונקציות לפי אירוע (Lambda) &bull; SaaS: שירות שלם מנוהל (Gmail).</p>
+      </div>
+    `
   },
   {
     unit: "6",
     title: "טיפ מבחן: רשת עמוקה (Deep Web) מול Tor, ומגבלות צומת היציאה (Exit Node)",
-    content: `<ul>
-  <li><b>הרשת העמוקה (Deep Web):</b> כלל התכנים ברשת שאינם מאונדקסים ע״י מנועי חיפוש ציבוריים (Google), כגון מסדי נתונים פנימיים, פורטלים סגורים, תיבות מייל ורשתות ארגוניות. זהו מונח טכני ניטרלי לחלוטין ואינו מעיד על פשיעה.</li>
-  <li><b>רשת Tor:</b> רשת ניתוב אנונימית המעבירה תעבורה דרך 3 צמתים אקראיים (Guard, Middle, Exit Node) תוך הצפנת שכבות (בצל).</li>
-  <li><b>מלכודת מבחן קריטית — מגבלת צומת היציאה:</b>
-    <br>Tor מספק אנונימיות במסלול בלבד (מסתיר מיהו השולח), אך <b>אינו מחליף הצפנת TLS!</b>
-    <br>צומת היציאה (Exit Node) מפענח את שכבת ההצפנה האחרונה ושולח את המידע לשרת היעד. אם החיבור אינו מוצפן ב־HTTPS, מפעיל צומת היציאה יכול לרחרח (Sniff) סיסמאות, עוגיות ותוכן מלא העובר בגלוי!</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>Deep Web:</strong> כל תוכן שאינו מאונדקס ע"י מנועי חיפוש (כמו תיבות מייל ומסדי נתונים פנימיים) &ndash; מונח ניטרלי שאינו מעיד על פשיעה. רשת Darknet/Tor היא רק תת-קבוצה ייעודית.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן (מלכודת צומת היציאה):</strong>
+        <p>Tor מספק אנונימיות זהות במסלול בלבד אך <strong>אינו תחליף ל-TLS/HTTPS!</strong> צומת היציאה (Exit Node) מפענח את שכבת ההצפנה האחרונה ורואה תעבורת HTTP לא מוצפנת בגלוי (סיסמאות ועוגיות).</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p>Tor מצפין ב-3 צמתים (Guard, Middle, Exit) &bull; צומת יציאה רואה תעבורה גלויה מול שרת היעד &bull; חובה להשתמש ב-HTTPS גם בתוך Tor.</p>
+      </div>
+    `
   },
   {
     unit: "7",
     title: "מה למרקר במדריך: תת-השפות של SQL (DQL, DML, DDL, DCL) והשפעתן על יעדי CIA",
-    content: `<table border="1" cellpadding="5" style="border-collapse:collapse; width:100%;">
-  <tr style="background:#f2f2f2;">
-    <th>תת-שפה</th>
-    <th>פקודות מרכזיות</th>
-    <th>יעד האבטחה (CIA) שנפגע בהזרקה</th>
-  </tr>
-  <tr>
-    <td><b>DQL (Data Query)</b></td>
-    <td><code>SELECT</code></td>
-    <td><b>סודיות (Confidentiality):</b> שליפת נתונים רגישים, סיסמאות וכרטיסי אשראי ע״י תוקף בלתי מורשה.</td>
-  </tr>
-  <tr>
-    <td><b>DML (Data Manipulation)</b></td>
-    <td><code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code></td>
-    <td><b>שלמות (Integrity) וזמינות (Availability):</b> שינוי בלתי מורשה של נתונים (שינוי ציונים) או מחיקת שורות.</td>
-  </tr>
-  <tr>
-    <td><b>DDL (Data Definition)</b></td>
-    <td><code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>, <code>TRUNCATE</code></td>
-    <td><b>זמינות ושלמות:</b> הריסת מבנה הסכימה, מחיקת טבלאות שלמות והשבתת בסיס הנתונים.</td>
-  </tr>
-  <tr>
-    <td><b>DCL (Data Control)</b></td>
-    <td><code>GRANT</code>, <code>REVOKE</code></td>
-    <td><b>בקרת גישה:</b> הסלמת הרשאות ומתן גישת מנהל (DBA) לתוקף.</td>
-  </tr>
-</table>
-<p><b>מפתחות:</b> <i>Primary Key</i> — מזהה ייחודי של שורה, לעולם אינו NULL; <i>Foreign Key</i> — שדה המקשר למפתח ראשי בטבלה אחרת ואוכף שלמות קשרים (Referential Integrity).</p>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>מפתח ראשי (Primary Key) מזהה שורה באופן ייחודי ולעולם אינו NULL. מפתח זר (Foreign Key) מקשר למפתח ראשי בטבלה אחרת ואוכף שלמות קשרים (Referential Integrity).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p>מיפוי פקודות SQL ליעדי CIA: פקודת <code>SELECT</code> (DQL) פוגעת בסודיות (Confidentiality); פקודות <code>INSERT/UPDATE/DELETE</code> (DML) ו-<code>DROP/TRUNCATE</code> (DDL) פוגעות בשלמות ובזמינות.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <table border="1" cellpadding="4" style="border-collapse:collapse; width:100%; font-size:0.9em;">
+          <tr style="background:#f2f2f2;"><th>תת-שפה</th><th>פקודות</th><th>יעד CIA שנפגע בהזרקה</th></tr>
+          <tr><td><b>DQL</b></td><td><code>SELECT</code></td><td><b>סודיות</b> &ndash; הדלפת נתונים רגישים</td></tr>
+          <tr><td><b>DML</b></td><td><code>INSERT, UPDATE, DELETE</code></td><td><b>שלמות וזמינות</b> &ndash; שינוי ומחיקת שורות</td></tr>
+          <tr><td><b>DDL</b></td><td><code>CREATE, ALTER, DROP</code></td><td><b>זמינות ושלמות</b> &ndash; הריסת טבלאות וסכימה</td></tr>
+          <tr><td><b>DCL</b></td><td><code>GRANT, REVOKE</code></td><td><b>בקרת גישה</b> &ndash; הסלמת הרשאות לתוקף</td></tr>
+        </table>
+      </div>
+    `
   },
   {
     unit: "7",
     title: "מלכודת מבחן ענקית ב-C API של SQLite: אינדקס 1-based ב-Bind מול 0-based ב-Column",
-    content: `<p><b>בחינות C++ רבות בודקות בדיוק את האינדוקס של הפונקציות ב-SQLite C API:</b></p>
-<pre class="code" dir="ltr"><code>sqlite3_stmt* stmt;
-// 1. קומפילציית השאילתה מראש:
-sqlite3_prepare_v2(db, "SELECT Name, Score FROM Students WHERE Id = ?", -1, &stmt, nullptr);
-
-// 2. קשירת ערך לפרמטר (?) - שים לב: האינדקס מתחיל מ-1!
-sqlite3_bind_int(stmt, 1, student_id); // מלכודת: אם תכתוב 0, תקבל שגיאת SQLITE_RANGE!
-
-// 3. צעידה לשורה הבאה:
-if (sqlite3_step(stmt) == SQLITE_ROW) {
-    // 4. שליפת עמודות - שים לב: אינדקס העמודה מתחיל מ-0!
-    const unsigned char* name = sqlite3_column_text(stmt, 0); // עמודה ראשונה: Name
-    int score = sqlite3_column_int(stmt, 1);                  // עמודה שנייה: Score
-    std::cout << name << ": " << score << std::endl;
-}
-
-// 5. חובה לשחרר את ה-statement למניעת דליפת זיכרון:
-sqlite3_finalize(stmt);</code></pre>
-<ul>
-  <li><b>כלל הברזל לבחינה:</b> בקשירה (<code>sqlite3_bind_*</code>) האינדקס מתחיל מ־<b>1</b>; בשליפה (<code>sqlite3_column_*</code>) האינדקס מתחיל מ־<b>0</b>!</li>
-  <li><b>פונקציית <code>sqlite3_exec()</code>:</b> מתאימה להרצת פקודות DDL סטטיות בלבד (כמו <code>CREATE TABLE</code> קבוע), ואין להשתמש בה לעולם עם קלט משתמש.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>חובת שחרור statement:</strong> בסיום שימוש ב-<code>sqlite3_stmt*</code> חובה לקרוא ל-<code>sqlite3_finalize(stmt)</code> למניעת דליפת זיכרון. פונקציית <code>sqlite3_exec()</code> מיועדת ל-DDL סטטי בלבד.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן (מלכודת האינדוקס הקריטית ב-C API):</strong>
+        <p>בקשירת פרמטרים (<code>sqlite3_bind_*</code>) האינדקס מתחיל מ-<strong>1</strong> (העברת 0 זורקת <code>SQLITE_RANGE</code>); בשליפת עמודות (<code>sqlite3_column_*</code>) האינדקס מתחיל מ-<strong>0</strong>!</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט אינדוקס SQLite ב-C++:</strong>
+        <p><code>sqlite3_bind_*</code> &larr; 1-based (ה-? הראשון הוא 1) &bull; <code>sqlite3_column_*</code> &larr; 0-based (העמודה הראשונה היא 0) &bull; צעידה: <code>sqlite3_step</code> &bull; שחרור: <code>sqlite3_finalize</code>.</p>
+      </div>
+    `
   },
   {
     unit: "7",
     title: "צ'יט-שיט מבחן: SQLite בפייתון — שאילתות פרמטריות, טופל פסיק (val,) ו-commit",
-    content: `<p><b>תבנית העבודה התקנית בפייתון:</b></p>
-<pre class="code" dir="ltr"><code>import sqlite3
-
-try:
-    conn = sqlite3.connect("students.db")
-    cursor = conn.cursor()
-    
-    # יצירת טבלה:
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Students (
-            Id INTEGER PRIMARY KEY,
-            Name TEXT NOT NULL,
-            Score INTEGER
-        )
-    ''')
-    
-    # הכנסת נתונים עם שאילתה פרמטרית:
-    sid = 123
-    name = "Tomer"
-    score = 95
-    # מלכודת פייתון: בטאפל של פרמטר בודד חובה פסיק: (sid,)
-    cursor.execute("INSERT INTO Students VALUES (?, ?, ?)", (sid, name, score))
-    
-    # חובה commit על פעולות DML (INSERT/UPDATE/DELETE) כדי לקבע בדיסק!
-    conn.commit()
-    
-    # שליפה פרמטרית:
-    cursor.execute("SELECT Name, Score FROM Students WHERE Id = ?", (sid,))
-    row = cursor.fetchone()
-    if row:
-        print(f"Name: {row[0]}, Score: {row[1]}")
-
-except sqlite3.Error as e:
-    print("Database error:", e)
-finally:
-    if conn:
-        conn.close()</code></pre>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>חובת commit:</strong> בפעולות משנות נתונים (DML: <code>INSERT/UPDATE/DELETE</code>) חובה לקרוא ל-<code>conn.commit()</code>, אחרת השינויים יאבדו בסגירת החיבור ולא יישמרו בדיסק.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן (מלכודת הטאפל):</strong>
+        <p>כשמעבירים פרמטר בודד לשאילתה פרמטרית, חובה להעביר טאפל עם פסיק <code>(val,)</code>! ללא פסיק, פייתון מתייחסת לביטוי כאל סוגריים רגילים ומפרקת את המחרוזת לתווים בודדים.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <pre class="code" dir="ltr"><code># שאילתה פרמטרית תקנית בפייתון:
+cursor.execute("SELECT * FROM Users WHERE id = ?", (user_id,))
+conn.commit(); conn.close()</code></pre>
+      </div>
+    `
   },
   {
     unit: "7",
     title: "מלכודת מבחן עליונה: מצייני מקום (?) לא עובדים על שמות טבלאות ועמודות (Identifiers) — חובת Whitelist",
-    content: `<p><b>מוקש הבחינה המתוחכם ביותר:</b> מצייני מקום (<code>?</code>) בשאילתות פרמטריות נתמכים עבור <b>ערכי נתונים (Data Literals) בלבד</b>!</p>
-<p><b>מה קורה אם מנסים להשתמש ב־? עבור שם עמודה או טבלה?</b></p>
-<pre class="code" dir="ltr"><code># שגיאה! תחביר בלתי חוקי שיזרוק OperationalError או יתפרש כמחרוזת קבועה:
-cursor.execute("SELECT * FROM Users ORDER BY ?", (sort_column,))</code></pre>
-<p><b>הפתרון הדפנסיבי התקני במבחן — רשימה לבנה קשיחה (Strict Whitelist):</b></p>
-<pre class="code" dir="ltr"><code>ALLOWED_SORT_COLUMNS = {
-    "name": "Name",
-    "score": "Score",
-    "date": "RegistrationDate"
-}
-
-user_input = request.args.get("sort_by")
-if user_input not in ALLOWED_SORT_COLUMNS:
-    raise ValueError("Invalid sorting column")
-
-# כעת ורק כעת בטוח לשרשר את השם המאושר מתוך המילון הפנימי:
-safe_column = ALLOWED_SORT_COLUMNS[user_input]
-cursor.execute(f"SELECT * FROM Users ORDER BY {safe_column} ASC")</code></pre>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>מצייני מקום (<code>?</code>) עובדים על <strong>ערכי נתונים (Data) בלבד</strong>! לא ניתן להשתמש ב-<code>?</code> עבור שמות טבלאות או עמודות (Identifiers כמו ב-<code>ORDER BY ?</code>).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>הפתרון הדפנסיבי לשמות דינמיים:</strong> שימוש ברשימה לבנה קשיחה (Whitelist) במילון. בודקים שהקלט קיים במילון המאושר, ומשרשרים לשאילתה אך ורק את הערך המאומת מתוך המילון.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <pre class="code" dir="ltr"><code>COLS = {"name": "Name", "score": "Score"}
+if col_input not in COLS: raise ValueError("Invalid column")
+cursor.execute(f"SELECT * FROM Users ORDER BY {COLS[col_input]}")</code></pre>
+      </div>
+    `
   },
   {
     unit: "7",
     title: "צ'יט-שיט מבחן: מנגנון הזרקות SQL (SQLi), אשליות f-string/format, וטכניקות מעקף",
-    content: `<p><b>מנגנון התקיפה:</b> קלט כמו <code>admin' --</code> או <code>' OR '1'='1</code> פורץ מתוך גבולות הגרש של הליטרל ומזריק תנאי אמת (Tautology) או מבטל את שאר השאילתה ע״י תווי הערה (<code>--</code>).</p>
-<ul>
-  <li><b>אשליית ה־f-string:</b> כתיבה של <code>f"SELECT * FROM users WHERE user='{uname}'"</code> היא אסון אבטחתי! פייתון מפענחת את המחרוזת <i>לפני</i> שהיא מועברת למסד הנתונים, ולכן מפרסר ה־SQL רואה את תווי התוקף כהוראות תחביר לכל דבר.</li>
-  <li><b>כשלי מילוט תווים (Escaping) ורשימות שחורות (Blacklists):</b> ניסיון להחליף גרשים (<code>replace("'", "''")</code>) נכשל לחלוטין מול הזרקות מספריות:
-    <br><code>SELECT * FROM users WHERE id = 1 OR 1=1</code> (אין צורך בגרש כלל!).</li>
-  <li><b>הגנה מוחלטת:</b> שאילתות פרמטריות (Prepared Statements) הן קו ההגנה היחיד שמפריד באופן מוחלט בין קוד ה־SQL לבין הנתונים.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p>שרשור מחרוזות (כולל f-strings ו-format) ל-SQL שובר את גבול האמון ומאפשר הזרקת תחביר. מילוט גרשים (Escaping) נכשל לחלוטין מול הזרקות מספריות (כמו <code>WHERE id = 1 OR 1=1</code> ללא גרש!).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p><strong>קו ההגנה היחיד:</strong> שאילתות פרמטריות (Prepared Statements עם <code>?</code>). ה-DB מפרסר את מבנה הפקודה תחילה, ומתייחס לקלט כנתון טהור שלעולם אינו משנה את עץ התחביר.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט תבניות SQLi:</strong>
+        <p>עקיפת אימות: <code>' OR '1'='1</code> &bull; חיתוך סיסמה: <code>admin' --</code> &bull; שליפת מידע: <code>' UNION SELECT null, password FROM users --</code>.</p>
+      </div>
+    `
   },
   {
     unit: "7",
     title: "מה למרקר במדריך: עקרונות Clean Code באבטחה — SOLID, KISS, DRY וחוק קרניגן",
-    content: `<ul>
-  <li><b>KISS (Keep It Simple, Stupid):</b> פשטות וקריאות. קוד פשוט קל לתחזק ולבדוק בביקורת אבטחה.
-    <br><b>חוק קרניגן (Kernighan's Law):</b> "ניפוי שגיאות (Debugging) קשה פי שניים מכתיבת הקוד מלכתחילה. לכן, אם אתם כותבים את הקוד בצורה הכי מתוחכמת שאתם יכולים, לפי ההגדרה אינכם חכמים מספיק כדי לנפות ממנו שגיאות".</li>
-  <li><b>DRY (Don't Repeat Yourself):</b> מניעת שכפול קוד. שכפול שאילתות או בדיקות אבטחה גורר באגים כשמתקנים באג במקום אחד ושוכחים מקום אחר.</li>
-  <li><b>עקרון האחריות היחידה (SRP):</b> מחלקה צריכה לעסוק בנושא אחד בלבד.
-    <br><i>שאלת מבחן קלאסית:</i> מחלקה שגם מתחברת לשקע תקשורת, גם מחשבת מחיר וגם בונה דף HTML — מפרה את SRP לחלוטין! חובה להפריד לשלוש מחלקות נפרדות.</li>
-  <li><b>שייום והעלמת מספרי קסם:</b> החלפת ערכים קבועים מסתוריים בקבועים בעלי שם מפורש (כגון <code>MAX_LOGIN_ATTEMPTS = 3</code>).</li>
-  <li><b>הערות מסבירות (Why, Not What):</b> תיעוד הרציונל והשיקול הביטחוני, ולא פעולות תחביר ברורות מאליהן.</li>
-</ul>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>חוק קרניגן:</strong> "ניפוי שגיאות קשה פי שניים מכתיבת הקוד. אם כתבתם אותו בצורה הכי מתוחכמת שאפשר, אינכם חכמים מספיק כדי לנפות ממנו שגיאות". עקרון KISS וסילוק מספרי קסם הם מפתח לקוד הניתן לביקורת אבטחה.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן (שאלת הפרת SRP):</strong>
+        <p>מחלקה אחת שגם מנהלת חיבור רשת, גם מעבדת נתונים עסקיים וגם כותבת ל-DB מפרה את עקרון האחריות היחידה (Single Responsibility). יש לפצלה לשלוש מחלקות ייעודיות ונפרדות.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <p><strong>SRP:</strong> אחריות יחידה וסיבה בודדת לשינוי &bull; <strong>DRY:</strong> מניעת שכפול בדיקות אבטחה &bull; הערות בקוד: לתעד <i>למה</i> (Why) ולא <i>מה</i> (What).</p>
+      </div>
+    `
   },
   {
     unit: "7",
     title: "צ'יט-שיט מבחן: פירוק קוד חץ (Arrow Anti-Pattern) בעזרת תנאי שמירה (Guard Clauses)",
-    content: `<p><b>קוד חץ (Arrow Code):</b> קינון עמוק ומסורבל של תנאי <code>if</code> המקשה על הקריאה ומסתיר כשלי אבטחה.</p>
-<pre class="code" dir="ltr"><code># קוד חץ מסורבל (Bad):
-def transfer_funds(sender, receiver, amount):
-    if sender is not None:
-        if receiver is not None:
-            if amount > 0:
-                if sender.balance >= amount:
-                    sender.balance -= amount
-                    receiver.balance += amount
-                    return True
-    return False
-
-# פירוק באמצעות תנאי שמירה ויציאה מוקדמת (Guard Clauses - Clean & Safe):
-def transfer_funds_clean(sender, receiver, amount):
-    if sender is None or receiver is None:
-        return False
-    if amount <= 0:
-        return False
-    if sender.balance < amount:
-        return False
-        
-    # הנתיב הראשי נשאר שטוח, נקי וקריא לחלוטין ללא הזחות מיותרות!
-    sender.balance -= amount
-    receiver.balance += amount
-    return True</code></pre>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><strong>Arrow Anti-Pattern:</strong> קינון עמוק של תנאי <code>if</code> מקשה על מעקב ובדיקות אבטחה ומסתיר באגים. הפתרון הוא תנאי שמירה (Guard Clauses) ויציאה מוקדמת לשמירה על נתיב ריצה שטוח וקריא.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p>בשאלות שיפור קוד (Refactoring): החליפו מיד בלוקי <code>if-else</code> מקוננים בבדיקות כשל שליליות בתחילת הפונקציה (<code>if invalid: return False</code>).</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <pre class="code" dir="ltr"><code># תנאי שמירה ונתיב שטוח (Clean & Safe):
+if not sender or not receiver: return False
+if amount <= 0 or sender.balance < amount: return False
+sender.balance -= amount; receiver.balance += amount; return True</code></pre>
+      </div>
+    `
   },
   {
     unit: "7",
     title: "טיפ מבחן: קריאת קבצים והזנה בטוחה ל-SQLite ללא כפילויות (executemany / INSERT OR IGNORE)",
-    content: `<p><b>שאלת מבחן שחוזרת תכופות:</b> קריאת קובץ נתונים (CSV או טקסט) והזנת הרשומות ל־SQLite ללא כפילויות וללא פגיעה בביצועים:</p>
-<pre class="code" dir="ltr"><code>import sqlite3
-
-def load_data_safely(db_path, csv_path):
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    
-    # מפתח ראשי מונע כפילויות ברמת הסכימה:
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS Users (
-            UserId INTEGER PRIMARY KEY,
-            Username TEXT NOT NULL
-        )
-    ''')
-    
-    rows_to_insert = []
-    with open(csv_path, "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split(",")
-            if len(parts) == 2:
-                uid, uname = int(parts[0]), parts[1]
-                rows_to_insert.append((uid, uname))
-                
-    # שימוש ב-INSERT OR IGNORE למניעת קריסה על כפילויות של Primary Key:
-    # שימוש ב-executemany בתוך טרנזקציה יחידה לביצועים מרביים:
-    cursor.executemany("INSERT OR IGNORE INTO Users VALUES (?, ?)", rows_to_insert)
-    conn.commit()
-    conn.close()</code></pre>`
+    content: `
+      <div class="note-box highlight">
+        <strong>מה למרקר:</strong>
+        <p><code>INSERT OR IGNORE</code> מונע קריסת תוכנית בהתנגשות מפתח ראשי (Primary Key) בדילוג שקט על שורות כפולות. לביצועים מרביים משתמשים ב-<code>cursor.executemany()</code> בטרנזקציה יחידה.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>טיפ למבחן:</strong>
+        <p>בשאלות הזנת קבצים ל-DB: יש לצבור את כל השורות התקינות לטאפלים ברשימה, ולהזין בפקודה אחת ע"י <code>executemany("INSERT OR IGNORE...", rows)</code> וסיום ב-<code>conn.commit()</code>.</p>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>צ'יט שיט:</strong>
+        <pre class="code" dir="ltr"><code># הזנה מרוכזת ובטוחה מכפילויות:
+cursor.executemany("INSERT OR IGNORE INTO Users VALUES (?, ?)", rows)
+conn.commit()</code></pre>
+      </div>
+    `
   }
 ];
