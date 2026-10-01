@@ -4063,7 +4063,7 @@ async function boot() {
   watchLatin();
 }
 boot();
-\n
+
 // --- AI Assistant Feature ---
 const AI_PROMPT_SETTINGS_KEY = 'aiPromptSettings';
 let currentAiSettings = localStorage.getItem(AI_PROMPT_SETTINGS_KEY) || 'הסבר לי בפירוט, בגובה העיניים, עם דוגמאות במידת הצורך.';
@@ -4071,8 +4071,17 @@ let currentAiSettings = localStorage.getItem(AI_PROMPT_SETTINGS_KEY) || 'הסב�
 function initAiAssistantUI() {
     const fab = document.createElement('div');
     fab.className = 'ai-fab';
+    fab.setAttribute('role', 'button');
+    fab.setAttribute('tabindex', '0');
+    fab.setAttribute('aria-label', 'הגדרות עוזר AI');
     fab.innerHTML = '⚙️ AI';
     fab.onclick = openAiSettingsModal;
+    fab.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openAiSettingsModal();
+        }
+    };
     document.body.appendChild(fab);
 
     const tooltip = document.createElement('div');
@@ -4126,11 +4135,21 @@ document.addEventListener('selectionchange', () => {
     if (text.length > 0 && text.length < 3000) {
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
+        if (!rect || (rect.width === 0 && rect.height === 0)) return;
         
         lastSelectedText = text;
         tooltip.style.display = 'flex';
-        tooltip.style.top = (rect.top + window.scrollY - tooltip.offsetHeight - 12) + 'px';
-        tooltip.style.left = (rect.left + window.scrollX + (rect.width / 2) - (tooltip.offsetWidth / 2)) + 'px';
+        const tipW = tooltip.offsetWidth || 210;
+        const tipH = tooltip.offsetHeight || 38;
+        const rawLeft = rect.left + window.scrollX + (rect.width / 2) - (tipW / 2);
+        const maxLeft = (document.documentElement.clientWidth || window.innerWidth) - tipW - 8;
+        tooltip.style.left = Math.max(8, Math.min(rawLeft, maxLeft)) + 'px';
+
+        let targetTop = rect.top + window.scrollY - tipH - 12;
+        if (targetTop < window.scrollY + 50) {
+            targetTop = rect.bottom + window.scrollY + 10;
+        }
+        tooltip.style.top = targetTop + 'px';
     } else {
         tooltip.style.display = 'none';
         lastSelectedText = '';
