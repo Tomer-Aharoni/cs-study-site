@@ -4593,3 +4593,139 @@ a.card,
     page-break-inside: avoid;
   }
 }
+\n
+/* AI Assistant Styles */
+.ai-fab {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 12px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    z-index: 9999;
+    font-weight: bold;
+    color: #0f172a;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+}
+.ai-fab:hover {
+    background: rgba(255, 255, 255, 0.7);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+.ai-tooltip {
+    display: none;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 6px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    z-index: 10000;
+    gap: 6px;
+}
+.ai-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 7px;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.9) transparent transparent transparent;
+}
+.ai-tooltip button {
+    background: rgba(241, 245, 249, 0.8);
+    border: 1px solid rgba(203, 213, 225, 0.8);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+    transition: all 0.2s;
+}
+.ai-tooltip button:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+    transform: translateY(-1px);
+}
+.ai-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 10001;
+    justify-content: center;
+    align-items: center;
+}
+.ai-modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    text-align: right;
+    border: 1px solid rgba(255,255,255,0.8);
+}
+.ai-modal-content h3 { 
+    margin-top: 0; 
+    color: #0f172a;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+}
+.ai-modal-content p {
+    color: #475569;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+.ai-modal-content textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: #334155;
+    background: #f8fafc;
+}
+.ai-modal-content textarea:focus {
+    outline: none;
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+.ai-modal-content button {
+    padding: 10px 20px;
+    margin-left: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: #e2e8f0;
+    color: #475569;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+.ai-modal-content button:hover {
+    background: #cbd5e1;
+    color: #0f172a;
+}
+.ai-modal-content button.primary {
+    background: #0284c7;
+    color: white;
+}
+.ai-modal-content button.primary:hover {
+    background: #0369a1;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
