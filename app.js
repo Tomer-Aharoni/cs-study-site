@@ -448,6 +448,7 @@ function toolDock() {
       <p class="tool-kicker">כלים</p>
       <button type="button" class="tool-item" data-print-current>הדפסת העמוד הנוכחי</button>
       <a class="tool-item" href="#/print">בחירת טווחים להדפסה</a>
+        <button type="button" class="tool-item" onclick="openAiSettingsModal()">⚙️ הגדרות עוזר AI</button>
     </div>
     <button type="button" class="tool-fab" data-tool-toggle aria-expanded="false" aria-controls="tool-panel" title="כלים נוספים" aria-label="כלים נוספים">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
@@ -4064,25 +4065,14 @@ async function boot() {
 }
 boot();
 
+
+
 // --- AI Assistant Feature ---
 const AI_PROMPT_SETTINGS_KEY = 'aiPromptSettings';
 let currentAiSettings = localStorage.getItem(AI_PROMPT_SETTINGS_KEY) || 'הסבר לי בפירוט, בגובה העיניים, עם דוגמאות במידת הצורך.';
 
 function initAiAssistantUI() {
-    const fab = document.createElement('div');
-    fab.className = 'ai-fab';
-    fab.setAttribute('role', 'button');
-    fab.setAttribute('tabindex', '0');
-    fab.setAttribute('aria-label', 'הגדרות עוזר AI');
-    fab.innerHTML = '⚙️ AI';
-    fab.onclick = openAiSettingsModal;
-    fab.onkeydown = (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            openAiSettingsModal();
-        }
-    };
-    document.body.appendChild(fab);
+    if (document.getElementById('ai-tooltip')) return;
 
     const tooltip = document.createElement('div');
     tooltip.className = 'ai-tooltip';
@@ -4135,21 +4125,11 @@ document.addEventListener('selectionchange', () => {
     if (text.length > 0 && text.length < 3000) {
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
-        if (!rect || (rect.width === 0 && rect.height === 0)) return;
         
         lastSelectedText = text;
         tooltip.style.display = 'flex';
-        const tipW = tooltip.offsetWidth || 210;
-        const tipH = tooltip.offsetHeight || 38;
-        const rawLeft = rect.left + window.scrollX + (rect.width / 2) - (tipW / 2);
-        const maxLeft = (document.documentElement.clientWidth || window.innerWidth) - tipW - 8;
-        tooltip.style.left = Math.max(8, Math.min(rawLeft, maxLeft)) + 'px';
-
-        let targetTop = rect.top + window.scrollY - tipH - 12;
-        if (targetTop < window.scrollY + 50) {
-            targetTop = rect.bottom + window.scrollY + 10;
-        }
-        tooltip.style.top = targetTop + 'px';
+        tooltip.style.top = (rect.top + window.scrollY - tooltip.offsetHeight - 12) + 'px';
+        tooltip.style.left = (rect.left + window.scrollX + (rect.width / 2) - (tooltip.offsetWidth / 2)) + 'px';
     } else {
         tooltip.style.display = 'none';
         lastSelectedText = '';
@@ -4188,63 +4168,9 @@ window.triggerAi = function(platform) {
     });
 };
 
-// initAiAssistantUI(); replaced by Tools Menu
-// --- End AI Assistant Feature ---
-
-
-// --- Tools Menu Feature ---
-function initToolsMenuUI() {
-    // Remove old AI fab if exists
-    const oldFab = document.querySelector('.ai-fab');
-    if (oldFab) oldFab.remove();
-
-    // Avoid duplicating
-    if (document.querySelector('.tools-fab-container')) return;
-
-    const fabContainer = document.createElement('div');
-    fabContainer.className = 'tools-fab-container';
-
-    const menu = document.createElement('div');
-    menu.className = 'tools-menu';
-    menu.id = 'tools-menu';
-    menu.innerHTML = `
-        <button onclick="window.location.hash = '#/print'; toggleToolsMenu();">🖨️ הדפסה</button>
-        <button onclick="openAiSettingsModal(); toggleToolsMenu();">⚙️ הגדרות AI</button>
-    `;
-    
-    const fab = document.createElement('div');
-    fab.className = 'tools-fab';
-    fab.innerHTML = '🛠️ כלים';
-    fab.onclick = toggleToolsMenu;
-
-    fabContainer.appendChild(menu);
-    fabContainer.appendChild(fab);
-    document.body.appendChild(fabContainer);
-}
-
-window.toggleToolsMenu = function() {
-    const menu = document.getElementById('tools-menu');
-    if (menu.style.display === 'flex') {
-        menu.style.display = 'none';
-    } else {
-        menu.style.display = 'flex';
-    }
-};
-
-// Close menu on outside click
-document.addEventListener('mousedown', (e) => {
-    const container = document.querySelector('.tools-fab-container');
-    const menu = document.getElementById('tools-menu');
-    if (container && menu && menu.style.display === 'flex' && !container.contains(e.target)) {
-        menu.style.display = 'none';
-    }
-});
-
-// Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-    initToolsMenuUI();
-});
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(initToolsMenuUI, 100);
+    setTimeout(initAiAssistantUI, 100);
+} else {
+    document.addEventListener('DOMContentLoaded', initAiAssistantUI);
 }
-// --- End Tools Menu Feature ---
+// --- End AI Assistant Feature ---
