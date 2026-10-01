@@ -54,7 +54,13 @@ window.EXAM_RECONS = [
         <li>ד. הגנת המערכת בפני תקיפה לצורך מזעור הנזק העלול להיגרם ממנה.</li>
       </ul>
       <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>חשבו אם אפחות מסיר את עצם קיום החולשה בקוד, או שהוא מצמצם את הנגישות והנזק שהתוקף יכול לגרום.</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ד'.</strong> אפחות אינו בהכרח תיקון שמבטל את החולשה מהשורש (כמו א'), אלא הגנה היקפית או הנדסית — קנרית, ASLR, הרשאה מינימלית — שממזערת את הנזק בזמן תקיפה. תיקון השורש עדיף כשאפשר; אפחות היא שכבה נוספת.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ד'.</strong> אפחות אינו בהכרח תיקון שמבטל את החולשה מהשורש (כמו א'), אלא הגנה היקפית או הנדסית — קנרית, ASLR, הרשאה מינימלית — שממזערת את הנזק בזמן תקיפה. תיקון השורש עדיף כשאפשר; אפחות היא שכבה נוספת.</p>
+      <p><strong>למה המסיחים שגויים?</strong></p>
+      <ul>
+        <li>• <strong>א' שגויה:</strong> מערכת נקייה מבאגים היא שאיפה תאורטית או יעד של בדיקות איכות (QA/Auditing), אך אינה הגדרת אפחות. אפחות מניחה שחולשות עשויות להתקיים ונועדה להקשות על ניצולן ולמזער נזק.</li>
+        <li>• <strong>ב' שגויה:</strong> שמירה על הנתונים מפני גישה בלתי מורשית היא הגדרת סודיות (Confidentiality) מתוך משולש ה-CIA, ולא הגדרת אפחות.</li>
+        <li>• <strong>ג' שגויה:</strong> תקיפת מערכת היא ניצול חולשה (Exploitation / Attack), ההפך הגמור ממנגנון הגנה ואפחות.</li>
+      </ul></div></details>
       <p><strong>שאלה 2 (אמריקאית):</strong> היכן יאוחסנו <code>f1</code> ו־<code>p1</code>?</p>
       <pre class="code" dir="ltr">Frog f1(5);
 Frog *p1 = &amp;f1;
@@ -66,7 +72,12 @@ f1.hop();</pre>
         <li>ד. <code>p1</code> במחסנית, <code>f1</code> בערימה.</li>
       </ul>
       <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>בדקו אם נעשה שימוש ב־<code>new</code>. איפה יושבים משתנה מקומי ומצביע שמוגדרים ישירות בתוך פונקציה?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ג'.</strong> <code>f1</code> הוא אובייקט מקומי על מסגרת המחסנית של <code>main</code>. <code>p1</code> הוא מצביע מקומי, גם הוא על המחסנית, ומחזיק את כתובת <code>f1</code>. בלי <code>new</code> שום דבר לא הוקצה בערימה.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ג'.</strong> <code>f1</code> הוא אובייקט מקומי על מסגרת המחסנית של <code>main</code>. <code>p1</code> הוא מצביע מקומי, גם הוא על המחסנית, ומחזיק את כתובת <code>f1</code>. בלי <code>new</code> שום דבר לא הוקצה בערימה.</p>
+      <p><strong>למה המסיחים שגויים?</strong></p>
+      <ul>
+        <li>• <strong>א' ו-ד' שגויות:</strong> שום משתנה אינו מוקצה בערימה (Heap) מכיוון שלא נעשה שימוש באופרטור new או בפונקציה malloc.</li>
+        <li>• <strong>ב' שגויה:</strong> שני המשתנים הם משתנים לוקאליים אוטומטיים בפונקציה main ולכן יושבים שניהם על מסגרת המחסנית (Stack Frame). המצביע p1 מאוחסן במחסנית ומחזיק את כתובת הזיכרון של f1 שנמצאת גם היא במחסנית.</li>
+      </ul></div></details>
       <p><strong>שאלה 3 (אמריקאית):</strong> מדוע הקוד לא יתקמפל?</p>
       <pre class="code" dir="ltr">struct Thread { void run() {} };
 struct Sender : public Thread {};
@@ -84,7 +95,13 @@ int main() {
         <li>ד. הקוד יתקמפל.</li>
       </ul>
       <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p><code>Messenger</code> יורש גם מ־<code>Sender</code> וגם מ־<code>Receiver</code>. כמה עותקים של <code>Thread</code>, וכך של <code>run()</code>, קיימים בתוך מופע <code>Messenger</code>?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ג' (בעיית היהלום).</strong> <code>Sender</code> ו־<code>Receiver</code> יורשים שניהם מ־<code>Thread</code> בירושה רגילה, ולכן במופע <code>m</code> יש שני עותקים של <code>Thread</code>. הקריאה <code>m.run()</code> דו־משמעית, כי המהדר לא יודע לאיזה עותק להתקשר. הפתרון: ירושה וירטואלית (<code>virtual public Thread</code>) שמשאירה עותק אחד.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ג' (בעיית היהלום).</strong> <code>Sender</code> ו־<code>Receiver</code> יורשים שניהם מ־<code>Thread</code> בירושה רגילה, ולכן במופע <code>m</code> יש שני עותקים של <code>Thread</code>. הקריאה <code>m.run()</code> דו־משמעית, כי המהדר לא יודע לאיזה עותק להתקשר. הפתרון: ירושה וירטואלית (<code>virtual public Thread</code>) שמשאירה עותק אחד.</p>
+      <p><strong>למה המסיחים שגויים?</strong></p>
+      <ul>
+        <li>• <strong>א' שגויה:</strong> ירושה מרובה (Multiple Inheritance) כשלעצמה מותרת וחוקית לחלוטין ב-C++; השגיאה הספציפית נובעת מכפילות של מחלקת הבסיס המשותפת בראש היהלום.</li>
+        <li>• <strong>ב' שגויה:</strong> אין מושג כזה "בעיית המשולש" בהנדסת תוכנה או ב-C++ (זהו מסיח פיקטיבי).</li>
+        <li>• <strong>ד' שגויה:</strong> הקוד נכשל בוודאות בהידור בשל קריאה עמומה (Ambiguous call to member 'run').</li>
+      </ul></div></details>
       <p><strong>שאלה 4 (אמריקאית):</strong> האם יש זליגת זיכרון?</p>
       <pre class="code" dir="ltr">class Foo {
     char* buffer1;
@@ -109,7 +126,13 @@ int main() {
         <li>ד. לא, אין זליגה.</li>
       </ul>
       <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>המצביע <code>f</code> הוא <code>Foo*</code>, אבל האובייקט הוא <code>Bar</code>. האם <code>~Foo()</code> מוגדר <code>virtual</code>?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ב' (של <code>buffer2</code>).</strong> המפרק <code>~Foo()</code> אינו וירטואלי, ולכן <code>delete f;</code> דרך <code>Foo*</code> מפעיל רק את <code>~Foo()</code> (קישור סטטי). <code>~Bar()</code> לא רץ, ו־<code>buffer2</code> זולג. <code>buffer1</code> כן משתחרר כי <code>~Foo()</code> רץ. התיקון: <code>virtual ~Foo()</code>.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ב' (של <code>buffer2</code>).</strong> המפרק <code>~Foo()</code> אינו וירטואלי, ולכן <code>delete f;</code> דרך <code>Foo*</code> מפעיל רק את <code>~Foo()</code> (קישור סטטי). <code>~Bar()</code> לא רץ, ו־<code>buffer2</code> זולג. <code>buffer1</code> כן משתחרר כי <code>~Foo()</code> רץ. התיקון: <code>virtual ~Foo()</code>.</p>
+      <p><strong>למה המסיחים שגויים?</strong></p>
+      <ul>
+        <li>• <strong>א' שגויה:</strong> buffer1 אינו זולג כלל, משום שהמפרק ~Foo() נקרא ומשחרר אותו כראוי בעזרת delete[] buffer1.</li>
+        <li>• <strong>ג' שגויה:</strong> buffer1 משתחרר בהצלחה; רק buffer2 זולג.</li>
+        <li>• <strong>ד' שגויה:</strong> ישנה זליגת זיכרון ודאית של buffer2 (בגודל 100 בתים), כיוון שמפרק הנגזרת ~Bar() לעולם אינו נקרא.</li>
+      </ul></div></details>
       <p><strong>שאלה 5 (פתוחה):</strong> נתחו את מנגנון קנרית המחסנית (Stack Canary): הבעיה שהובילה אליו, אופן הפעולה, מבנה המחסנית עם ובלי הקנרית, וחלופה.</p>
       <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>הקנרית היא ערך סודי שנשתל במחסנית לפני כתובת החזרה. מה קורה לערך הזה כשגלישה רציפה מנסה להגיע לכתובת החזרה?</p></div></details>
       <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ul>
@@ -156,7 +179,14 @@ int main() {
         <li><code>d-&gt;f()</code>: <code>f</code> מורשת מ־<code>Base</code>, אותו מסלול. פלט: <code>D::h</code>, <code>B::g</code>, <code>B::f</code>.</li>
         <li><code>b-&gt;g()</code>: <code>b</code> מסוג <code>Base*</code> ו־<code>g</code> אינה וירטואלית, לכן <code>Base::g</code>. בתוכה <code>h()</code> הווירטואלית נותנת <code>Der::h</code>. פלט: <code>D::h</code>, <code>B::g</code>.</li>
         <li><code>d-&gt;g()</code>: <code>d</code> מסוג <code>Der*</code>, לכן <code>Der::g</code> (הסתרה). בתוכה <code>Der::h</code>. פלט: <code>D::h</code>, <code>D::g</code>.</li>
-      </ol><p>הכלל: קריאה לפונקציה לא־וירטואלית נקבעת לפי טיפוס המצביע; קריאה וירטואלית נקבעת לפי טיפוס האובייקט בפועל.</p></div></details>
+      </ol>
+      <p>הכלל: קריאה לפונקציה לא־וירטואלית נקבעת לפי טיפוס המצביע; קריאה וירטואלית נקבעת לפי טיפוס האובייקט בפועל.</p>
+      <p><strong>למה המסיחים שגויים?</strong></p>
+      <ul>
+        <li>• <strong>הטענה שמופעל רק B:: בכל הקריאות שגויה:</strong> הפונקציה h היא וירטואלית ולכן תמיד מנותבת למימוש הנגזר (Der::h) בזמן ריצה כשהאובייקט הוא Der.</li>
+        <li>• <strong>הטענה שמופעל רק D:: בכל הקריאות שגויה:</strong> הפונקציה g אינה וירטואלית, ולכן קריאה דרך מצביע Base* או מתוך Base::f מנותבת בקומפילציה ל-Base::g בלבד.</li>
+        <li>• <strong>הטענה ש-g היא תמיד D::g שגויה:</strong> ללא virtual אין קישור דינמי עבור g; מתרחשת הסתרה (Hiding) ולא דריסה (Overriding), כך ש-Base* אינו מודע לקיומה של Der::g.</li>
+      </ul></div></details>
       <p><strong>שאלה 9 (פתוחה):</strong> שני מבני <code>field</code> על הערימה, <code>strcpy</code> מ־<code>argv</code>. מה החולשה, מה נשבר, ואיך מתקנים?</p>
       <pre class="code" dir="ltr">#define FIELDSIZE (16)
 struct field {
@@ -226,6 +256,12 @@ memcpy(buffer, &amp;x, sizeof(int));</pre>
         <li>המספר <code>0xC00010FF</code> מורכב מארבעה בתים: הנמוך ביותר (LSB) <code>0xFF</code>, אחריו <code>0x10</code>, אחריו <code>0x00</code>, והגבוה ביותר (MSB) <code>0xC0</code>.</li>
         <li>ב־little-endian הבית הנמוך נשמר בכתובת הנמוכה, כלומר ב־<code>buffer[0]</code>.</li>
         <li>לכן: <code>buffer[0] = 0xFF</code>, <code>buffer[1] = 0x10</code>, <code>buffer[2] = 0x00</code>, <code>buffer[3] = 0xC0</code>.</li>
+      </ul>
+      <p><strong>למה המסיחים שגויים?</strong></p>
+      <ul>
+        <li>• <strong>ב' שגויה:</strong> הערך 0x10 אינו הופך ל-0x01; הבתים אינם משנים את ערכם הפנימי אלא רק את סדר הופעתם בזיכרון.</li>
+        <li>• <strong>ג' שגויה:</strong> זהו סדר Big-Endian (סדר רשת), שבו הבית הגבוה (MSB) נשמר בכתובת הנמוכה. מעבדי Intel x86 הם Little-Endian.</li>
+        <li>• <strong>ד' שגויה:</strong> סדר הבתים מעורבב באופן שגוי ואינו תואם שום ארכיטקטורת חומרה תקנית.</li>
       </ul></div></details>
       <p><strong>שאלה (פתוחה) · גלישה נומרית לפני <code>calloc</code>:</strong> מה החולשה, מה נשבר, ואיך מתקנים?</p>
       <pre class="code" dir="ltr">char* read_string(int sock) {

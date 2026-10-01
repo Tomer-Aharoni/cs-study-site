@@ -2,7 +2,7 @@ UNIT7.sections.push({
   id: "u7-hw",
   title: "תרגילי SQL מהמרצה",
   html: `
-<p>פתרונות מהמרצה לשאלות SQLite. הקלט נכנס דרך <code>?</code>, לא בהדבקה למחרוזת. הם סגורים בהתחלה.</p><details class="fold"><summary>2021א · שקע וטבלת הודעות</summary><div class="fold-body"><p>קוראים קובץ, שולחים ב־TCP, מדפיסים עד חמש שורות תשובה, ושומרים ב־INSERT עם פרמטרים. <code>recv(128)</code> פעם אחת לא מבטיח שהגיעו חמש שורות: בזרם TCP הקריאה יכולה לחזור חלקית, כמו <code>recv_exact</code> ביחידה 5. <code>executescript</code> מריץ כמה פקודות SQL ממחרוזת אחת; כאן המחרוזת קבועה בקוד, בלי קלט. <code>NOT NULL</code> אומר שהתא לא יכול להישאר ריק. <code>enumerate(messages, 1)</code> נותן מספר שורה שמתחיל ב־1, יחד עם כל הודעה.</p><pre class="code"><code>import socket
+<p>להלן פתרונות מודרכים לשאלות SQLite מבחינות עבר של המרצה. בכל הפתרונות הקלט החיצוני נקשר אך ורק באמצעות מצייני מקום (<code>?</code>) ושאילתות פרמטריות, ללא שרשור מחרוזות. השאלות מובאות בתוך תיבות נפתחות לתרגול עצמי:</p><details class="fold"><summary>2021א · שקע וטבלת הודעות</summary><div class="fold-body"><p>קוראים קובץ, שולחים ב־TCP, מדפיסים עד חמש שורות תשובה, ושומרים ב־INSERT עם פרמטרים. <code>recv(128)</code> פעם אחת לא מבטיח שהגיעו חמש שורות: בזרם TCP הקריאה יכולה לחזור חלקית, כמו <code>recv_exact</code> ביחידה 5. <code>executescript</code> מריץ כמה פקודות SQL ממחרוזת אחת; כאן המחרוזת קבועה בקוד, בלי קלט. <code>NOT NULL</code> אומר שהתא לא יכול להישאר ריק. <code>enumerate(messages, 1)</code> נותן מספר שורה שמתחיל ב־1, יחד עם כל הודעה.</p><pre class="code"><code>import socket
 import sqlite3
 HOST = "119.4.7.5"
 PORT = 8080
@@ -40,7 +40,7 @@ def main():
         save_messages(messages)
     except (OSError, UnicodeError, sqlite3.Error) as error:
         print("Error:", error)
-main()</code></pre></div></details><details class="fold"><summary>2021א (75/78) · Students לפי שם</summary><div class="fold-body"><p>אם מדביקים את השם לתוך מחרוזת השאילתה, זו הזרקת SQL. האפחות היא <code>?</code> והעברת השם בנפרד. במחרוזות SQL עדיף גרש בודד. בפתרון כאן יש גרשיים כפולים; SQLite מקבל אותם כמחרוזת כשאין עמודה בשם הזה, אבל מנוע אחר עלול לקרוא אותם כשם עמודה. <code>fetchall</code> מחזיר את כל שורות התוצאה לרשימה.</p><pre class="code"><code>import sqlite3
+main()</code></pre></div></details><details class="fold"><summary>2021א (75/78) · Students לפי שם</summary><div class="fold-body"><p>אם מדביקים את השם לתוך מחרוזת השאילתה, זו הזרקת SQL. האפחות (Mitigation) היא <code>?</code> והעברת השם בנפרד כפרמטר. במחרוזות SQL תקניות עדיף להשתמש בגרש בודד. בפתרון כאן נעשה שימוש בגרשיים כפולים; SQLite מקבל אותם כמחרוזת ליטרלית כאשר אין עמודה בשם הזה, אך במנועים אחרים גרשיים כפולים שמורים לשמות עמודות ומזהים. פונקציית <code>fetchall()</code> מחזירה את כל שורות התוצאה כמערך/רשימה של טאפלים.</p><pre class="code"><code>import sqlite3
 conn = sqlite3.connect("server.db")
 conn.executescript("""
     CREATE TABLE Students(
@@ -58,11 +58,11 @@ cur = conn.cursor()
 name = input("Enter student name: ")
 cur.execute("SELECT * FROM Students WHERE Name = ?", [name])
 rows = cur.fetchall()
-if len(rows) &gt; 0:
+if len(rows) > 0:
     print(rows[0][2])
 else:
     print("Student not found")
-conn.close()</code></pre></div></details><details class="fold"><summary>2021ג · Students ו־School</summary><div class="fold-body"><pre class="code"><code>import sqlite3
+conn.close()</code></pre></div></details><details class="fold"><summary>2021ג · Students ו־School</summary><div class="fold-body"><p>שאילתת שליפה ממוקדת של שם בית הספר (<code>School</code>) לפי שם סטודנט שנקלט מהמשתמש. הקלט מועבר בפרמטר נפרד <code>[name]</code> ללא שרשור, והתוצאה המבוקשת נשלפת ישירות מהאיבר הראשון של השורה הראשונה (<code>rows[0][0]</code>).</p><pre class="code"><code>import sqlite3
 conn = sqlite3.connect("server.db")
 conn.executescript("""
     CREATE TABLE Students(
