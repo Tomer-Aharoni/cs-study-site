@@ -2484,6 +2484,8 @@ async function route() {
     scrollSummaryFocus();
   } else if (r.area === "search") {
     app.innerHTML = renderSearch();
+  } else if (r.area === "guide-notes") {
+    app.innerHTML = renderGuideNotes();
   } else if (r.area === "practice") {
     app.innerHTML = renderPractice();
     mountExamClock();
