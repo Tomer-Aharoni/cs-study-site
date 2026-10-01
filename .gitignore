@@ -1,2 +1,5 @@
 _extract/
 _extract_run.py
+
+# Ignore large audio files
+irena_lectures_mp3/
