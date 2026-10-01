@@ -565,6 +565,13 @@ function renderStage() {
           <span class="portal-kicker">לחזרה</span>
           <strong>מעבר<br>לסיכום</strong>
         </a>
+
+        <a class="portal portal-guide-notes" href="${base}/guide-notes" style="--portal: #0284c7;">
+          <span class="portal-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+          <span class="portal-kicker">למדריך הלמידה</span>
+          <strong>הערות<br>למדריך</strong>
+        </a>
+
       </div>
       <nav class="course-path" data-path aria-label="יחידות הקורס">
         ${stops}
@@ -2200,7 +2207,20 @@ function renderGuideNotes() {
   let html = `<p class="back-row"><a class="back" href="#/course/${COURSE.id}">לקורס</a></p>`;
   html += `<h1>הערות למדריך הלמידה</h1>`;
   html += `<p class="muted">ריכוז הערות ו"צ'יט-שיטים" מומלצים לכתיבה במדריך הלמידה הרשמי לקראת המבחן.</p>`;
-  html += `<div class="guide-notes-list">`;
+  
+    html += `
+    <div class="panel quiz is-bad" style="background-color: var(--bad-bg); border-color: var(--bad); padding: 15px; margin-bottom: 25px; border-radius: 12px; box-shadow: var(--shadow-sm);">
+      <h3 style="margin-top:0; color: var(--bad); display:flex; align-items:center; gap:8px;">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        שימו לב - הנחיות למבחן
+      </h3>
+      <p style="margin-bottom:0; color: var(--ink);">
+        חובה על הסטודנט לבדוק מול צוות הקורס אם מותר להכניס את מדריך הלמידה עם הערות למבחן בסמסטר הנוכחי, ומה היקף ההערות שמותר לכתוב במדריך. בנוסף, ההערות כאן הן בגדר המלצה - מומלץ מאוד לעבור על המדריך באופן עצמאי ולחשוב אילו הערות נוספות כדאי לכם להוסיף.
+      </p>
+    </div>
+    `;
+
+    html += `<div class="guide-notes-list">`;
   
   notes.forEach((note) => {
     html += `<div class="panel quiz">
