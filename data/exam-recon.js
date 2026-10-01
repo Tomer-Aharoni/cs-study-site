@@ -62,9 +62,9 @@ window.EXAM_RECONS = [
         <li>• <strong>ג' שגויה:</strong> תקיפת מערכת היא ניצול חולשה (Exploitation / Attack), ההפך הגמור ממנגנון הגנה ואפחות.</li>
       </ul></div></details>
       <p><strong>שאלה 2 (אמריקאית):</strong> היכן יאוחסנו <code>f1</code> ו־<code>p1</code>?</p>
-      <pre class="code" dir="ltr">Frog f1(5);
+      <pre class="code" dir="ltr"><code>Frog f1(5);
 Frog *p1 = &amp;f1;
-f1.hop();</pre>
+f1.hop();</code></pre>
       <ul>
         <li>א. <code>f1</code> במחסנית, <code>p1</code> בערימה.</li>
         <li>ב. שניהם בערימה.</li>
@@ -79,7 +79,7 @@ f1.hop();</pre>
         <li>• <strong>ב' שגויה:</strong> שני המשתנים הם משתנים לוקאליים אוטומטיים בפונקציה main ולכן יושבים שניהם על מסגרת המחסנית (Stack Frame). המצביע p1 מאוחסן במחסנית ומחזיק את כתובת הזיכרון של f1 שנמצאת גם היא במחסנית.</li>
       </ul></div></details>
       <p><strong>שאלה 3 (אמריקאית):</strong> מדוע הקוד לא יתקמפל?</p>
-      <pre class="code" dir="ltr">struct Thread { void run() {} };
+      <pre class="code" dir="ltr"><code>struct Thread { void run() {} };
 struct Sender : public Thread {};
 struct Receiver : public Thread {};
 class Messenger : public Sender, public Receiver {};
@@ -87,7 +87,7 @@ class Messenger : public Sender, public Receiver {};
 int main() {
     Messenger m;
     m.run(); // שגיאת קומפילציה
-}</pre>
+}</code></pre>
       <ul>
         <li>א. בגלל ירושה מרובה.</li>
         <li>ב. בגלל בעיית המשולש.</li>
@@ -103,7 +103,7 @@ int main() {
         <li>• <strong>ד' שגויה:</strong> הקוד נכשל בוודאות בהידור בשל קריאה עמומה (Ambiguous call to member 'run').</li>
       </ul></div></details>
       <p><strong>שאלה 4 (אמריקאית):</strong> האם יש זליגת זיכרון?</p>
-      <pre class="code" dir="ltr">class Foo {
+      <pre class="code" dir="ltr"><code>class Foo {
     char* buffer1;
 public:
     Foo(size_t size) { buffer1 = new char[size]; }
@@ -118,7 +118,7 @@ public:
 int main() {
     Foo* f = new Bar(100);
     delete f;
-}</pre>
+}</code></pre>
       <ul>
         <li>א. כן, של <code>buffer1</code>.</li>
         <li>ב. כן, של <code>buffer2</code>.</li>
@@ -154,7 +154,7 @@ int main() {
       <p>חלק ב (בבחינות האלה חוזר): SQLite ב-C++/פייתון; תקשורת; אפחות זיכרון.</p>
       <h3>שאלות מהשאלון · רמזים ופתרונות</h3>
       <p><strong>שאלה 1 (אמריקאית):</strong> מה יודפס?</p>
-      <pre class="code" dir="ltr">class Base {
+      <pre class="code" dir="ltr"><code>class Base {
 public:
     virtual void f() { g(); cout &lt;&lt; "B::f" &lt;&lt; endl; }
     void g() { h(); cout &lt;&lt; "B::g" &lt;&lt; endl; }
@@ -172,7 +172,7 @@ int main() {
     d-&gt;f(); cout &lt;&lt; "---" &lt;&lt; endl;
     b-&gt;g(); cout &lt;&lt; "---" &lt;&lt; endl;
     d-&gt;g();
-}</pre>
+}</code></pre>
       <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p><code>f()</code> וירטואלית ב־<code>Base</code>. <code>g()</code> <strong>אינה</strong> וירטואלית. <code>h()</code> וירטואלית. כשקוראים ל־<code>g()</code> מתוך <code>Base::f()</code>, לאיזו גרסה מגיעים?</p></div></details>
       <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ol>
         <li><code>b-&gt;f()</code>: <code>f</code> וירטואלית ו־<code>Der</code> לא דורסת אותה, לכן <code>Base::f</code>. בתוכה <code>g()</code> אינה וירטואלית, לכן <code>Base::g</code>. בתוכה <code>h()</code> וירטואלית והאובייקט הוא <code>Der</code>, לכן <code>Der::h</code>. פלט: <code>D::h</code>, <code>B::g</code>, <code>B::f</code>.</li>
@@ -188,7 +188,7 @@ int main() {
         <li>• <strong>הטענה ש-g היא תמיד D::g שגויה:</strong> ללא virtual אין קישור דינמי עבור g; מתרחשת הסתרה (Hiding) ולא דריסה (Overriding), כך ש-Base* אינו מודע לקיומה של Der::g.</li>
       </ul></div></details>
       <p><strong>שאלה 9 (פתוחה):</strong> שני מבני <code>field</code> על הערימה, <code>strcpy</code> מ־<code>argv</code>. מה החולשה, מה נשבר, ואיך מתקנים?</p>
-      <pre class="code" dir="ltr">#define FIELDSIZE (16)
+      <pre class="code" dir="ltr"><code>#define FIELDSIZE (16)
 struct field {
     unsigned char f_id;
     char* f_data;
@@ -203,7 +203,7 @@ void handle_fields(int argc, char** argv) {
     r2-&gt;f_data = (char*)malloc(FIELDSIZE);
     strcpy(r1-&gt;f_data, argv[0]);
     strcpy(r2-&gt;f_data, argv[1]);
-}</pre>
+}</code></pre>
       <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>מה קורה כשמחרוזת ארוכה מ־16 בתים נכנסת ל־<code>r1-&gt;f_data</code>? אילו הקצאות יושבות על הערימה בצמוד לחוצץ הזה?</p></div></details>
       <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ul>
         <li><strong>החולשה:</strong> <code>strcpy</code> לא בודק את אורך הקלט מול <code>FIELDSIZE</code>. זו גלישת ערימה (Heap Buffer Overflow).</li>
@@ -211,8 +211,8 @@ void handle_fields(int argc, char** argv) {
         <li><strong>באג נוסף בשאלה:</strong> עם <code>argc != 2</code>, <code>argv[0]</code> הוא שם התוכנית ו־<code>argv[1]</code> הוא הארגומנט היחיד. זה לא "שני ערכי קלט" רגילים.</li>
         <li><strong>התיקון:</strong> לבדוק אורך מול <code>FIELDSIZE - 1</code> לפני ההעתקה, או העתקה חסומה עם אפס סיום, ולבדוק את ההחזרה של <code>malloc</code>.</li>
       </ul>
-      <pre class="code" dir="ltr">strncpy(r1-&gt;f_data, argv[0], FIELDSIZE - 1);
-r1-&gt;f_data[FIELDSIZE - 1] = '\\0';</pre>
+      <pre class="code" dir="ltr"><code>strncpy(r1-&gt;f_data, argv[0], FIELDSIZE - 1);
+r1-&gt;f_data[FIELDSIZE - 1] = '\\0';</code></pre>
       <p>הרחקת המצביע מהחוצץ אינה תחליף לבדיקת הגבול.</p></div></details>
     `,
   },
@@ -241,9 +241,9 @@ r1-&gt;f_data[FIELDSIZE - 1] = '\\0';</pre>
       <h3>שאלות נוספות · רמזים ופתרונות</h3>
       <p class="muted">שתי השאלות הבאות לקוחות ממסמך שמאחד את מועד ג ואת מועד 81. המספור שלהן אינו תואם את מפתח חלק א שלמעלה, ולכן אינו משנה אותו.</p>
       <p><strong>שאלה (אמריקאית) · סדר בתים:</strong> הקוד רץ על מעבד Intel ב־32 סיביות. מה ערכי <code>buffer[0]</code> עד <code>buffer[3]</code>?</p>
-      <pre class="code" dir="ltr">char buffer[sizeof(int)];
+      <pre class="code" dir="ltr"><code>char buffer[sizeof(int)];
 int x = 0xC00010FF;
-memcpy(buffer, &amp;x, sizeof(int));</pre>
+memcpy(buffer, &amp;x, sizeof(int));</code></pre>
       <ul>
         <li>א. <code>FF, 10, 00, C0</code></li>
         <li>ב. <code>FF, 01, 00, C0</code></li>
@@ -264,7 +264,7 @@ memcpy(buffer, &amp;x, sizeof(int));</pre>
         <li>• <strong>ד' שגויה:</strong> סדר הבתים מעורבב באופן שגוי ואינו תואם שום ארכיטקטורת חומרה תקנית.</li>
       </ul></div></details>
       <p><strong>שאלה (פתוחה) · גלישה נומרית לפני <code>calloc</code>:</strong> מה החולשה, מה נשבר, ואיך מתקנים?</p>
-      <pre class="code" dir="ltr">char* read_string(int sock) {
+      <pre class="code" dir="ltr"><code>char* read_string(int sock) {
     char* string;
     size_t length = 0;
     if (read(sock, &amp;length, sizeof(length)) &lt; 0) return NULL;
@@ -276,16 +276,16 @@ memcpy(buffer, &amp;x, sizeof(int));</pre>
     }
     string[length] = '\\0';
     return string;
-}</pre>
+}</code></pre>
       <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p><code>length</code> מגיע מהרשת. מה יקרה ל־<code>length + 2</code> אם הערך קרוב מאוד ל־<code>SIZE_MAX</code>?</p></div></details>
       <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ul>
         <li><strong>החולשה:</strong> גלישה נומרית (Integer Overflow) בחישוב <code>length + 2</code>, לפני ההקצאה.</li>
         <li><strong>מה נשבר:</strong> <code>size_t</code> נעטף מודולו 2<sup>n</sup>. ערך <code>length</code> קרוב ל־<code>SIZE_MAX</code> הופך את <code>length + 2</code> למספר קטן — למשל ב־<code>size_t</code> של 32 סיביות, <code>0xFFFFFFFF + 2</code> נעטף ל־1. <code>calloc</code> מקצה בלוק קטן, אבל <code>read_bytes</code> עדיין קורא <code>length</code> בתים לתוכו, וגם <code>string[length]</code> כותב מעבר לבלוק. זו גלישת ערימה.</li>
         <li><strong>התיקון:</strong> לדחות אורך לא סביר, ולבדוק לפני החיבור שהוא לא יגלוש:</li>
       </ul>
-      <pre class="code" dir="ltr">if (length &gt; MAX_ALLOWED_STRING_SIZE || length &gt; SIZE_MAX - 2) {
+      <pre class="code" dir="ltr"><code>if (length &gt; MAX_ALLOWED_STRING_SIZE || length &gt; SIZE_MAX - 2) {
     return NULL; /* דחיית קלט לא תקין */
-}</pre>
+}</code></pre>
       <p>הבדיקה חייבת לבוא לפני החיבור. אחרי העטיפה אי אפשר לשחזר את הגודל המקורי מהתוצאה.</p></div></details>
     `,
   },
