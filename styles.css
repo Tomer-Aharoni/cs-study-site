@@ -113,11 +113,23 @@ a {
   color: inherit;
 }
 
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.85rem;
+}
+
 .nav a {
-  margin-inline-start: 0.9rem;
   text-decoration: none;
   color: var(--muted);
   font-weight: 600;
+  padding: 0.4rem 0.05rem;
+}
+
+.nav a:hover,
+.nav a:focus-visible {
+  color: var(--accent-ink);
 }
 
 .nav a.active {
@@ -224,6 +236,7 @@ a.card:hover,
 pre {
   margin: 0.75rem 0;
   max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -240,6 +253,7 @@ code {
   border-radius: 10px;
   overflow-x: auto;
   max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   font-size: 0.9rem;
   direction: ltr;
@@ -2111,6 +2125,10 @@ bdi.latn {
 }
 
 @media (max-width: 640px) {
+  .page {
+    padding-bottom: 6rem;
+  }
+
   .mem-cols,
   .copy-cols,
   .race-board,
@@ -2271,8 +2289,10 @@ textarea {
   gap: 0.35rem 0.25rem;
 }
 
-.nav a:first-child {
-  margin-inline-start: 0;
+.rail a:hover,
+.rail a:focus-visible {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
 }
 
 .theme-toggle,
@@ -2682,6 +2702,19 @@ a.path-row:hover {
   align-items: start;
 }
 
+.rail,
+.read-main,
+.section,
+.prose-part,
+.lab,
+.quiz,
+.panel,
+.viz,
+.fold,
+.card {
+  min-width: 0;
+}
+
 .rail {
   position: sticky;
   top: 5rem;
@@ -2858,16 +2891,20 @@ a.card,
 
 @media (max-width: 860px) {
   .read {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .rail {
-    position: sticky;
-    top: 4.15rem;
+    position: static;
+    top: auto;
     max-height: none;
-    z-index: 15;
+    z-index: auto;
     background: var(--glass);
     backdrop-filter: blur(14px);
+  }
+
+  .section {
+    scroll-margin-top: 14.5rem;
   }
 
   .rail-kicker,
@@ -3124,7 +3161,7 @@ a.card,
   align-items: baseline;
   gap: 0.5rem;
   position: sticky;
-  top: 0;
+  top: 5.2rem;
   z-index: 3;
   background: var(--glass);
   backdrop-filter: blur(10px);
@@ -4986,4 +5023,18 @@ a.card,
 }
 [data-theme="dark"] .tools-menu button:hover {
     background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 860px) {
+  .exam-bar {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .tool-dock {
+    top: auto;
+    bottom: 1rem;
+    transform: none;
+  }
 }
