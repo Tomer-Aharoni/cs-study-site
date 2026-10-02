@@ -1912,6 +1912,8 @@ function mountTopbarScroll() {
   if (window.__topbarScroll) return;
   window.__topbarScroll = true;
   let last = window.scrollY;
+  let up = 0;
+  let down = 0;
   let ticking = false;
   window.addEventListener(
     "scroll",
@@ -1926,8 +1928,27 @@ function mountTopbarScroll() {
         last = y;
         if (!bar) return;
         const focused = bar.contains(document.activeElement);
-        if (y < 24 || delta < -6 || focused) bar.classList.remove("is-away");
-        else if (delta > 8) bar.classList.add("is-away");
+        if (y < 24 || focused) {
+          bar.classList.remove("is-away");
+          up = 0;
+          down = 0;
+          return;
+        }
+        if (delta > 4) {
+          up = 0;
+          down += delta;
+          if (down >= 12) {
+            bar.classList.add("is-away");
+            down = 0;
+          }
+        } else if (delta < -4) {
+          down = 0;
+          up += -delta;
+          if (up >= 72) {
+            bar.classList.remove("is-away");
+            up = 0;
+          }
+        }
       });
     },
     { passive: true }
