@@ -43,8 +43,13 @@ py scripts/publish-content.py --write
 
 ## מבנה
 
-- `index.html` — מעטפת
-- `app.js` — ניווט בין קורס / לימוד / סיכום / תרגול
-- `data/course.js` — מטא־נתוני הקורס
-- `data/unit1.js` / `unit1-interact.js` — יחידה 1
-- `data/unit2.js` / `unit2-interact.js` — יחידה 2 (C++)
+- `index.html` — מעטפת. סדר התגיות קובע את סדר הטעינה.
+- `app.js` — ניווט, מעטפת, והאזנה ללחיצות. הפונקציות גלובליות כי `js/content-store.js` קורא להן.
+- `js/labs.js`, `js/summary.js`, `js/practice.js`, `js/print.js` — אותן פונקציות, מחולקות לפי מסך. נטענות לפני `app.js`.
+- `js/ai.js` — עוזר לטקסט מסומן. נטען אחרי `app.js`.
+- `styles.css` — עיצוב
+- `js/auth.js`, `js/banners.js`, `js/content-store.js`, `js/progress-sync.js`, `js/admin.js` — התחברות, באנרים, שמירת תוכן והתקדמות
+- `data/` — תוכן הקורס. נשאר בתיקייה שטוחה: `index.html` ו־`scripts/publish-content.py` פונים לקבצים בשם `data/unitN*.js`.
+- `scripts/publish-content.py` — העתקת תוכן שפורסם מהשרת אל קבצי המקור
+- `scripts/agent-tools/` — כלי עיבוד מקורות והערות שלא נטענים באתר. נשארים להמשך עבודה של סוכנים.
+- `notebookLLM_review/` — מקורות עומק לסיכומים. לא חלק מהאתר הרץ.
