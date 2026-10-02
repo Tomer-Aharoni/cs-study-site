@@ -1908,6 +1908,32 @@ if (window.CSAuth) {
     route();
   });
 }
+function mountTopbarScroll() {
+  if (window.__topbarScroll) return;
+  window.__topbarScroll = true;
+  let last = window.scrollY;
+  let ticking = false;
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        const bar = document.querySelector(".topbar");
+        const y = window.scrollY;
+        const delta = y - last;
+        last = y;
+        if (!bar) return;
+        const focused = bar.contains(document.activeElement);
+        if (y < 24 || delta < -6 || focused) bar.classList.remove("is-away");
+        else if (delta > 8) bar.classList.add("is-away");
+      });
+    },
+    { passive: true }
+  );
+}
+
 async function boot() {
   try {
     if (window.CSContent) await CSContent.boot();
@@ -1920,6 +1946,7 @@ async function boot() {
     /* המעקב המקומי נשאר */
   }
   window.__csBooted = true;
+  mountTopbarScroll();
   route();
   watchLatin();
 }

@@ -85,6 +85,12 @@ a {
   background: var(--glass);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--line);
+  transition: transform 0.28s ease;
+}
+
+.topbar.is-away {
+  transform: translateY(-100%);
+  pointer-events: none;
 }
 
 .topbar-inner,
@@ -2260,7 +2266,8 @@ textarea {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fold > summary {
+  .fold > summary,
+  .topbar {
     transition: none;
   }
 }
