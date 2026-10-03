@@ -774,73 +774,6 @@ function mountRail() {
   });
 }
 
-const latinPhrase =
-  /[A-Za-z0-9+#][A-Za-z0-9_+#.'’:\-]*(?:\([A-Za-z0-9_+#*&, .'"’:\<\>\[\]\-]*\))*(?:(?:[ \t]*[\/&+][ \t]*|[ \t]*-[ \t]*|[ \t]*,[ \t]+|[ \t]+)[A-Za-z0-9+#][A-Za-z0-9_+#.'’:\-]*(?:\([A-Za-z0-9_+#*&, .'"’:\<\>\[\]\-]*\))*)* /g;
-
-function isolateLatin(root) {
-  if (!root) return;
-  const nodes = [];
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  let node;
-  while ((node = walker.nextNode())) {
-    const parent = node.parentElement;
-    if (!parent || !node.nodeValue) continue;
-    if (
-      parent.closest(
-        "pre, code, script, style, textarea, input, select, [contenteditable], .banner-editor, .admin-form, .latn, [dir='ltr']"
-      )
-    )
-      continue;
-    latinPhrase.lastIndex = 0;
-    if (latinPhrase.test(node.nodeValue)) nodes.push(node);
-  }
-  nodes.forEach((textNode) => {
-    const text = textNode.nodeValue;
-    const ranges = [];
-    latinPhrase.lastIndex = 0;
-    let match;
-    while ((match = latinPhrase.exec(text))) {
-      let start = match.index;
-      let end = start + match[0].length;
-      while (end > start && /[.,;:!?]/.test(text[end - 1])) {
-        end--;
-      }
-      const val = text.slice(start, end);
-      if (!/[A-Za-z]/.test(val)) continue;
-
-      const prev = ranges[ranges.length - 1];
-      if (prev && start < prev[1]) prev[1] = Math.max(prev[1], end);
-      else ranges.push([start, end]);
-      if (latinPhrase.lastIndex < end) latinPhrase.lastIndex = end;
-    }
-    if (!ranges.length) return;
-    const frag = document.createDocumentFragment();
-    let cursor = 0;
-    ranges.forEach(([start, end]) => {
-      if (start > cursor) frag.append(text.slice(cursor, start));
-      const hold = document.createElement("bdi");
-      hold.className = "latn";
-      hold.dir = "ltr";
-      hold.textContent = text.slice(start, end);
-      frag.append(hold);
-      cursor = end;
-    });
-    if (cursor < text.length) frag.append(text.slice(cursor));
-    textNode.parentNode.replaceChild(frag, textNode);
-  });
-}
-
-function watchLatin() {
-  if (window.__latinObs) return;
-  const obs = new MutationObserver(() => {
-    obs.disconnect();
-    isolateLatin(app);
-    obs.observe(app, { childList: true, subtree: true });
-  });
-  window.__latinObs = obs;
-  obs.observe(app, { childList: true, subtree: true });
-}
-
 function enhance() {
   if (railObserver) {
     railObserver.disconnect();
@@ -855,7 +788,6 @@ function enhance() {
   }
   const searchInput = app.querySelector("[data-search-input]");
   if (searchInput) searchInput.focus();
-  isolateLatin(app);
 }
 
 
@@ -1965,6 +1897,5 @@ async function boot() {
   window.__csBooted = true;
   mountTopbarScroll();
   route();
-  watchLatin();
 }
 boot();
