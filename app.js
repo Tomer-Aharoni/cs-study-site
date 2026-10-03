@@ -775,19 +775,7 @@ function mountRail() {
 }
 
 const latinPhrase =
-  /[A-Za-z][A-Za-z0-9_+#.'’\-]*(?:[ \t]*[\/+,.][ \t]*|[ \t]+)[A-Za-z][A-Za-z0-9_+#.'’\-]*(?:(?:[ \t]*[\/+,.][ \t]*|[ \t]+)[A-Za-z][A-Za-z0-9_+#.'’\-]*)*/g;
-
-function expandLatin(text, start, end) {
-  if (start > 0 && text[start - 1] === "(" && text[end] === ")") {
-    start -= 1;
-    end += 1;
-  }
-  if (text[start] === "(" && start >= 2 && text[start - 1] === " ") {
-    const lead = text.slice(0, start - 1).match(/[A-Za-z][A-Za-z0-9_+#.'’\-]*$/);
-    if (lead) start = start - 1 - lead[0].length;
-  }
-  return [start, end];
-}
+  /[A-Za-z0-9+#][A-Za-z0-9_+#.'’\-]*(?:(?:[ \t]*[\/&+][ \t]*|[ \t]*-[ \t]*|[ \t]*,[ \t]+|[ \t]+)[A-Za-z0-9+#][A-Za-z0-9_+#.'’\-]*)*(?:\(\))?/g;
 
 function isolateLatin(root) {
   if (!root) return;
@@ -797,7 +785,12 @@ function isolateLatin(root) {
   while ((node = walker.nextNode())) {
     const parent = node.parentElement;
     if (!parent || !node.nodeValue) continue;
-    if (parent.closest("pre, code, script, style, textarea, input, select, [contenteditable], .banner-editor, .admin-form, .latn, [dir='ltr']")) continue;
+    if (
+      parent.closest(
+        "pre, code, script, style, textarea, input, select, [contenteditable], .banner-editor, .admin-form, .latn, [dir='ltr']"
+      )
+    )
+      continue;
     latinPhrase.lastIndex = 0;
     if (latinPhrase.test(node.nodeValue)) nodes.push(node);
   }
@@ -807,11 +800,14 @@ function isolateLatin(root) {
     latinPhrase.lastIndex = 0;
     let match;
     while ((match = latinPhrase.exec(text))) {
-      const words = match[0].split(/[^A-Za-z0-9_+#.'’\-]+/).filter(Boolean);
-      if (words.every((word) => word.length < 2)) continue;
       let start = match.index;
       let end = start + match[0].length;
-      [start, end] = expandLatin(text, start, end);
+      while (end > start && /[.,;:!?]/.test(text[end - 1])) {
+        end--;
+      }
+      const val = text.slice(start, end);
+      if (!/[A-Za-z]/.test(val)) continue;
+
       const prev = ranges[ranges.length - 1];
       if (prev && start < prev[1]) prev[1] = Math.max(prev[1], end);
       else ranges.push([start, end]);

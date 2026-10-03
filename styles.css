@@ -60,6 +60,8 @@
 body {
   margin: 0;
   overflow-x: clip;
+  direction: rtl;
+  text-align: right;
   font-family: Heebo, "Segoe UI", Arial, sans-serif;
   background-color: var(--bg);
   background-image:
@@ -514,6 +516,8 @@ button.ghost {
   display: block;
   width: 100%;
   text-align: right;
+  direction: rtl;
+  unicode-bidi: isolate;
   margin: 0.4rem 0;
   padding: 0.55rem 0.7rem;
   border: 1px solid var(--line);
@@ -1820,14 +1824,35 @@ button.ghost {
   align-items: center;
 }
 
-code {
-  direction: ltr;
+bdi,
+.latn,
+[dir="ltr"],
+[dir="rtl"],
+[dir="auto"] {
   unicode-bidi: isolate;
 }
 
-bdi.latn {
+.latn,
+bdi.latn,
+bdi[dir="ltr"],
+[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+}
+
+bdi[dir="rtl"],
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+code,
+kbd,
+samp,
+var {
   direction: ltr;
   unicode-bidi: isolate;
+  text-align: left;
 }
 
 .endian-box,
