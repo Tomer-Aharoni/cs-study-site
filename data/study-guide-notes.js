@@ -221,7 +221,17 @@ window.STUDY_GUIDE_NOTES = [
   },
 
   // --- יחידה 2: שפת C++ כבסיס לתכנות דפנסיבי ---
-  {
+    {
+    unit: "2",
+    title: "המונח volatile ומלכודת ריבוי חוטים",
+    content: `
+      <div class="note-box exam-tip">
+        <strong>מוקשים/טיפים למבחן:</strong>
+        <p>המונח <code>volatile</code> <strong>לא</strong> הופך משתנה ל-Thread-Safe ולא מונע Race Conditions! הוא רק מונע מהקומפיילר למטמֵן (אופטימיזציות) משתנה שמשתנה חיצונית (ע"י חומרה). למקביליות משתמשים ב-<code>std::atomic</code>.</p>
+      </div>
+    `
+  },
+{
     unit: "2",
     title: "מודל הזיכרון של C++ בזמן ריצה וזמני חיים (Text, Data, Stack, Heap)",
     content: `
