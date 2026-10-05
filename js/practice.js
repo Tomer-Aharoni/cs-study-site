@@ -92,11 +92,12 @@ function renderRound(mode) {
   const nextLabel = round.index + 1 === round.ids.length ? "סיום" : "השאלה הבאה";
   const unitName = COURSE.units.find((u) => u.id === q.unit);
   const kindLabel = q.kind === "open" ? " · פתוחה" : "";
+  const unitId = q.unit || ((COURSE.units || []).find((item) => (window["UNIT" + item.id + "_QUIZZES"] || []).some((quiz) => quiz.id === q.id)) || {}).id || "";
   let body = "";
   if (q.kind === "open") {
     const shown = !!(round.revealed || {})[q.id];
     body = `
-      <h1>${questionBuiltByAi(q) ? aiBubble() : ""}${esc(q.title || "שאלה פתוחה")}</h1>
+      <div class="box-head"><h1>${questionBuiltByAi(q) ? aiBubble() : ""}${esc(q.title || "שאלה פתוחה")}</h1>${shareButton("#/course/" + COURSE.id + "/learn/" + unitId + "/q/" + q.id, q.title || "שאלה פתוחה")}</div>
       <div class="study-text quiz-lead">${studyRich(q.prompt)}</div>
       ${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}
       <button type="button" class="ghost-btn" data-drill-reveal ${shown ? "hidden" : ""}>הצגת פתרון</button>
@@ -118,9 +119,12 @@ function renderRound(mode) {
       ? `<p class="feedback ${picked === q.answer ? "ok" : "bad"}">${picked === q.answer ? "נכון." : "לא נכון."}</p>
         ${foldHtml((answerBuiltByAi(q) ? aiBubble() : "") + "פתרון מפורט ודרך חישוב", practiceSolutionHtml(q))}`
       : `<p class="feedback" hidden></p>`;
+    const unitId = q.unit || ((COURSE.units || []).find((item) => (window["UNIT" + item.id + "_QUIZZES"] || []).some((quiz) => quiz.id === q.id)) || {}).id || "";
     body = `
-      <div class="study-text quiz-lead">${questionBuiltByAi(q) ? aiBubble() : ""}${studyRich(q.prompt)}</div>
-      ${editLink(quizContentId(q.id), "השאלה")}
+      <div class="box-head">
+        <div class="study-text quiz-lead">${questionBuiltByAi(q) ? aiBubble() : ""}${studyRich(q.prompt)}</div>
+        <span class="box-tools">${editLink(quizContentId(q.id), "השאלה")}${shareButton("#/course/" + COURSE.id + "/learn/" + unitId + "/q/" + q.id, "השאלה")}</span>
+      </div>
       ${opts}
       ${foldHtml("💡 רמז לפתרון", practiceHintHtml(q))}
       ${fb}
@@ -325,8 +329,8 @@ function examMcqHtml(exam, run, review) {
             : "";
       const hint = foldHtml("💡 רמז לפתרון", practiceHintHtml(q));
       const solution = review ? foldHtml((answerBuiltByAi(q, exam) ? aiBubble() : "") + "פתרון מפורט ודרך חישוב", practiceSolutionHtml(q)) : "";
-      return `<div class="quiz panel" data-qid="${q.id}">
-        <div class="box-head"><div class="study-text quiz-lead">${questionBuiltByAi(q, exam) ? aiBubble() : ""}${studyRich(q.prompt)}</div>${editLink("exam:" + exam.id + ":a:" + q.id, "שאלת המבחן")}</div>
+      return `<div class="quiz panel" id="q-${esc(q.id)}" data-qid="${q.id}">
+        <div class="box-head"><div class="study-text quiz-lead">${questionBuiltByAi(q, exam) ? aiBubble() : ""}${studyRich(q.prompt)}</div><span class="box-tools">${editLink("exam:" + exam.id + ":a:" + q.id, "שאלת המבחן")}${shareButton("#/course/" + COURSE.id + "/practice/exam/" + exam.id + "/q/" + q.id, "שאלת המבחן")}</span></div>
         ${q.code ? `<pre class="code exam-code" dir="ltr">${esc(q.code)}</pre>` : ""}
         ${opts}
         ${hint}
@@ -356,8 +360,8 @@ function examPartBHtml(exam, run, review) {
         </div>`;
       }
       const hint = foldHtml("💡 רמז לפתרון", practiceHintHtml(q));
-      return `<article class="section exam-bq" id="${q.id}">
-        <div class="box-head"><h2>${questionBuiltByAi(q, exam) ? aiBubble() : ""}${esc(q.title)}</h2>${editLink("exam:" + exam.id + ":b:" + q.id, q.title)}</div>
+      return `<article class="section exam-bq" id="q-${esc(q.id)}">
+        <div class="box-head"><h2>${questionBuiltByAi(q, exam) ? aiBubble() : ""}${esc(q.title)}</h2><span class="box-tools">${editLink("exam:" + exam.id + ":b:" + q.id, q.title)}${shareButton("#/course/" + COURSE.id + "/practice/exam/" + exam.id + "/q/" + q.id, q.title)}</span></div>
         <p class="exam-prompt study-text">${questionBuiltByAi(q, exam) ? aiBubble() : ""}${studyRich(q.prompt)}</p>
         ${q.code ? `<pre class="code exam-code" dir="ltr">${esc(q.code)}</pre>` : ""}
         ${hint}
@@ -375,7 +379,7 @@ function renderExam(exam, review) {
     if (review) {
       return shell(`
         <p class="back-row"><a class="back" href="${base}">לתרגול</a></p>
-        <h1>${esc(exam.title)} ${editLink("exam:" + exam.id, exam.title)}</h1>
+        <h1>${esc(exam.title)} <span class="box-tools">${editLink("exam:" + exam.id, exam.title)}${shareButton("#/course/" + COURSE.id + "/practice/exam/" + exam.id, exam.title)}</span></h1>
         <p>אין סימולציה פתוחה. התחילו מועד ואז סיימו כדי לראות פתרונות.</p>
         <p><button type="button" class="primary" data-exam-start="${exam.id}">התחלת סימולציה</button></p>
       `);
@@ -389,7 +393,7 @@ function renderExam(exam, review) {
     return shell(`
       <p class="back-row"><a class="back" href="${base}">לתרגול</a></p>
       <p class="eyebrow">סימולציה · בדיקה</p>
-      <h1>${esc(exam.title)} ${editLink("exam:" + exam.id, exam.title)}</h1>
+      <h1>${esc(exam.title)} <span class="box-tools">${editLink("exam:" + exam.id, exam.title)}${shareButton("#/course/" + COURSE.id + "/practice/exam/" + exam.id, exam.title)}</span></h1>
       <p class="drill-score">חלק א: ${good} מתוך ${exam.partA.length}.</p>
       <p class="muted">${esc(exam.note)}</p>
       <h2>חלק א</h2>
@@ -405,7 +409,7 @@ function renderExam(exam, review) {
       <p class="eyebrow">סימולציה · ${exam.minutes} דקות</p>
       <p class="exam-clock" data-exam-clock></p>
     </div>
-    <h1>${esc(exam.title)} ${editLink("exam:" + exam.id, exam.title)}</h1>
+    <h1>${esc(exam.title)} <span class="box-tools">${editLink("exam:" + exam.id, exam.title)}${shareButton("#/course/" + COURSE.id + "/practice/exam/" + exam.id, exam.title)}</span></h1>
     <p class="muted">${esc(exam.note)} חלק א: כולן. חלק ב: בחרו ${exam.pick} מתוך ${exam.partB.length}. הפתרונות נפתחים בסוף — לא תוך כדי.</p>
     <h2>חלק א · רב-ברירה</h2>
     ${examMcqHtml(exam, run, false)}
@@ -422,7 +426,7 @@ function examHubHtml() {
         <p class="meta">${e.minutes} דק׳ · בחרו ${e.pick} פתוחות</p>
         <h2>${esc(e.title)}</h2>
         <p>${esc(e.note)}</p>
-      </a>${editLink("exam:" + e.id, e.title)}</div>`
+      </a><span class="box-tools exam-card-tools">${editLink("exam:" + e.id, e.title)}${shareButton("#/course/" + COURSE.id + "/practice/exam/" + e.id, e.title)}</span></div>`
     )
     .join("");
   return `<section class="section">

@@ -78,7 +78,10 @@ function parseRoute() {
     practiceView: area === "practice" ? parts[3] || "hub" : null,
     examId: area === "practice" && parts[3] === "exam" ? parts[4] || null : null,
     examReview: area === "practice" && parts[3] === "exam" && parts[5] === "review",
-    section: area === "learn" ? parts[4] || null : null,
+    examFocus: area === "practice" && parts[3] === "exam" && parts[5] === "q" ? parts[6] || null : null,
+    section: learnSection(parts),
+    part: learnPart(parts),
+    quizFocus: area === "learn" && parts[4] === "q" ? parts[5] || null : null,
     searchQuery: area === "search" ? decodeURIComponent((parts.slice(3).join("/") || "").replace(/\+/g, " ")) : "",
     me: false,
     admin: false,
@@ -131,6 +134,33 @@ function questionBuiltByAi(q, exam) {
 
 function answerBuiltByAi(q, exam) {
   return !!contentOrigin(q, exam).a;
+}
+
+function learnSection(parts) {
+  if (parts[2] !== "learn" || !parts[4] || parts[4] === "q") return null;
+  const defined = window.UNIT_PARTS && UNIT_PARTS[parts[3]];
+  if (defined && defined.some((part) => part.id === parts[4])) return null;
+  return parts[4];
+}
+
+function learnPart(parts) {
+  if (parts[2] !== "learn" || !parts[4] || parts[4] === "q") return null;
+  const defined = window.UNIT_PARTS && UNIT_PARTS[parts[3]];
+  if (defined && defined.some((part) => part.id === parts[4])) return parts[4];
+  return null;
+}
+
+function pageUrl(hash) {
+  return location.origin + location.pathname + location.search + hash;
+}
+
+function shareButton(hash, label) {
+  const url = pageUrl(hash);
+  return `<button type="button" class="share-link" data-share="${esc(url)}" aria-label="${esc("העתקת קישור אל " + (label || "האזור"))}" title="העתקת קישור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></button>`;
+}
+
+function boxTools(editId, hash, label) {
+  return `<span class="box-tools">${editLink(editId, label)}${shareButton(hash, label)}</span>`;
 }
 
 function quizContentId(qid) {
@@ -624,8 +654,12 @@ function quizBlock(q) {
         `<button type="button" class="option" data-quiz="${esc(q.id)}" data-choice="${esc(o.id)}">${studyInline(o.text)}</button>`
     )
     .join("");
-  return `<div class="quiz panel" data-qid="${esc(q.id)}">
-    <div class="box-head"><p>${questionBuiltByAi(q) ? aiBubble() : ""}<strong>תרגול.</strong></p>${editLink(quizContentId(q.id), "השאלה")}</div>
+  const unitId = (COURSE.units || []).find((item) =>
+    (window["UNIT" + item.id + "_QUIZZES"] || []).some((quiz) => quiz.id === q.id)
+  );
+  const hash = unitId ? "#/course/" + COURSE.id + "/learn/" + unitId.id + "/q/" + q.id : "";
+  return `<div class="quiz panel" id="q-${esc(q.id)}" data-qid="${esc(q.id)}">
+    <div class="box-head"><p>${questionBuiltByAi(q) ? aiBubble() : ""}<strong>תרגול.</strong></p>${boxTools(quizContentId(q.id), hash, "השאלה")}</div>
     <div class="study-text quiz-lead">${studyRich(q.prompt)}</div>
     ${opts}
     <div class="feedback study-text" hidden></div>
@@ -653,6 +687,30 @@ function treeHtml(node) {
 }
 
 
+function unitParts(unitId, sections) {
+  const defined = (window.UNIT_PARTS && UNIT_PARTS[unitId]) || [];
+  const known = new Set();
+  defined.forEach((part) => part.sections.forEach((id) => known.add(id)));
+  const extra = (sections || []).map((section) => section.id).filter((id) => !known.has(id));
+  const parts = defined.map((part) => ({
+    id: part.id,
+    title: part.title,
+    sections: part.sections.filter((id) => (sections || []).some((section) => section.id === id)),
+  }));
+  if (extra.length) parts.push({ id: "x", title: "עוד", sections: extra });
+  return parts.filter((part) => part.sections.length);
+}
+
+function partById(unitId, partId, sections) {
+  return unitParts(unitId, sections).find((part) => part.id === partId) || null;
+}
+
+function partForSection(unitId, sectionId, sections) {
+  return unitParts(unitId, sections).find((part) => part.sections.indexOf(sectionId) !== -1) || null;
+}
+
+const PART_LETTERS = ["א", "ב", "ג", "ד", "ה", "ו", "ז"];
+
 function renderUnit(id) {
   const u = lessonById(id);
   if (!u) {
@@ -663,21 +721,41 @@ function renderUnit(id) {
       <p class="muted">הפרק ייכתב בהמשך באותו תבנית: הסבר, מעבדה, תרגול.</p>
     `);
   }
+  const route = parseRoute();
+  const parts = unitParts(id, u.sections);
+  const active =
+    (route.quizFocus && partForSection(id, Object.keys(window.SECTION_ATTACH || {}).find((sid) => ((SECTION_ATTACH[sid] || {}).quizzes || []).indexOf(route.quizFocus) !== -1) || "", u.sections)) ||
+    (route.section && partForSection(id, route.section, u.sections)) ||
+    partById(id, route.part, u.sections) ||
+    parts[0] ||
+    null;
+  const visible = active ? u.sections.filter((section) => active.sections.indexOf(section.id) !== -1) : u.sections;
   const usedLabs = new Set();
   const usedQuizzes = new Set();
   const attach = window.SECTION_ATTACH || {};
-  const sections = u.sections
+  const sections = visible
     .map((s) => {
       const extra = attachAfterSection(attach[s.id], usedLabs, usedQuizzes);
-      return `<section class="section" id="${esc(s.id)}"><div class="box-head"><h2>${esc(s.title)}</h2>${editLink("section:" + id + ":" + s.id, s.title)}</div>${s.html}</section>${extra}`;
+      const hash = "#/course/" + COURSE.id + "/learn/" + id + "/" + s.id;
+      return `<section class="section" id="${esc(s.id)}"><div class="box-head"><h2>${esc(s.title)}</h2>${boxTools("section:" + id + ":" + s.id, hash, s.title)}</div>${s.html}</section>${extra}`;
     })
     .join("");
   const leftoverLabs = ((window.UNIT_LAB_KEYS || {})[id] || [])
-    .filter((k) => !usedLabs.has(k))
+    .filter((key) => {
+      if (usedLabs.has(key)) return false;
+      const home = Object.keys(attach).find((sid) => ((attach[sid] || {}).labs || []).indexOf(key) !== -1);
+      if (home) return active && active.sections.indexOf(home) !== -1;
+      return active && parts.length && active.id === parts[parts.length - 1].id;
+    })
     .map(labByName)
     .join("");
   const leftoverQs = quizzesFor(id)
-    .filter((q) => !usedQuizzes.has(q.id))
+    .filter((q) => {
+      const home = Object.keys(attach).find((sid) => ((attach[sid] || {}).quizzes || []).indexOf(q.id) !== -1);
+      const inPart = !home || (active && active.sections.indexOf(home) !== -1);
+      const unplaced = !home && active && parts.length && active.id === parts[parts.length - 1].id;
+      return !usedQuizzes.has(q.id) && ((inPart && !!home) || unplaced);
+    })
     .map(quizBlock)
     .join("");
   const more = leftoverQs
@@ -685,44 +763,67 @@ function renderUnit(id) {
     : "";
   const meta = COURSE.units.find((x) => x.id === id);
   const base = `#/course/${COURSE.id}`;
+  const partIndex = active ? parts.findIndex((part) => part.id === active.id) : -1;
+  const prevPart = partIndex > 0 ? parts[partIndex - 1] : null;
+  const nextPart = partIndex >= 0 && partIndex < parts.length - 1 ? parts[partIndex + 1] : null;
   const rail = [
-    `<a href="${base}/learn/${u.id}" data-rail="unit-goals" class="is-current">מה נלמד ביחידה זו</a>`,
-    ...u.sections.map((s) => `<a href="${base}/learn/${u.id}" data-rail="${esc(s.id)}">${esc(s.title)}</a>`),
-    more ? `<a href="${base}/learn/${u.id}" data-rail="more-practice">עוד תרגול</a>` : "",
+    partIndex <= 0 ? `<a href="${base}/learn/${u.id}/${active ? active.id : ""}" data-rail="unit-goals" class="is-current">מה נלמד ביחידה זו</a>` : "",
+    ...visible.map((s) => `<a href="${base}/learn/${u.id}/${s.id}" data-rail="${esc(s.id)}">${esc(s.title)}</a>`),
+    more ? `<a href="${base}/learn/${u.id}/${active ? active.id : ""}" data-rail="more-practice">עוד תרגול</a>` : "",
   ].join("");
   const idx = COURSE.units.findIndex((x) => x.id === id);
-  const prev = COURSE.units[idx - 1];
-  const next = COURSE.units[idx + 1];
-  const pager = `<nav class="pager" aria-label="מעבר בין יחידות">
+  const prev = !prevPart ? COURSE.units[idx - 1] : null;
+  const next = !nextPart ? COURSE.units[idx + 1] : null;
+  const pager = `<nav class="pager" aria-label="מעבר בין תתי־יחידות">
       ${
-        prev && prev.status === "ready"
-          ? `<a class="pager-prev" href="${base}/learn/${prev.id}"><span>יחידה קודמת</span><strong>${esc(prev.title)}</strong></a>`
-          : "<span></span>"
+        prevPart
+          ? `<a class="pager-prev" href="${base}/learn/${u.id}/${prevPart.id}"><span>תת־יחידה קודמת</span><strong>${esc(prevPart.title)}</strong></a>`
+          : prev && prev.status === "ready"
+            ? `<a class="pager-prev" href="${base}/learn/${prev.id}"><span>יחידה קודמת</span><strong>${esc(prev.title)}</strong></a>`
+            : "<span></span>"
       }
       ${
-        next && next.status === "ready"
-          ? `<a class="pager-next" href="${base}/learn/${next.id}"><span>יחידה הבאה</span><strong>${esc(next.title)}</strong></a>`
-          : "<span></span>"
+        nextPart
+          ? `<a class="pager-next" href="${base}/learn/${u.id}/${nextPart.id}"><span>תת־יחידה הבאה</span><strong>${esc(nextPart.title)}</strong></a>`
+          : next && next.status === "ready"
+            ? `<a class="pager-next" href="${base}/learn/${next.id}"><span>יחידה הבאה</span><strong>${esc(next.title)}</strong></a>`
+            : "<span></span>"
       }
     </nav>`;
+  const partNav = parts.length
+    ? `<nav class="part-switch" aria-label="תתי־יחידות">${parts
+        .map((part, i) => {
+          const on = active && part.id === active.id ? " is-on" : "";
+          return `<a class="part-tab${on}" href="${base}/learn/${u.id}/${part.id}"><span>${PART_LETTERS[i] || part.id}</span> ${esc(part.title)}</a>`;
+        })
+        .join("")}</nav>`
+    : "";
+  const partHead = active
+    ? `<div class="box-head part-head"><h2>תת־יחידה ${PART_LETTERS[partIndex] || ""} · ${esc(active.title)}</h2>${shareButton(base + "/learn/" + u.id + "/" + active.id, active.title)}</div>`
+    : "";
+  const goals = !active || partIndex <= 0
+    ? `<section class="section" id="unit-goals">
+          <div class="box-head"><h2>מה נלמד ביחידה זו</h2>${boxTools("unit:" + u.id, base + "/learn/" + u.id + (active ? "/" + active.id : ""), "מטרות היחידה")}</div>
+          <ul class="goals">${u.goals.map((g) => `<li>${esc(g)}</li>`).join("")}</ul>
+        </section>`
+    : "";
   return shell(`
     <p class="back-row"><a class="back" href="${base}/learn">כל היחידות</a></p>
     <header class="unit-head">
       <p class="eyebrow">יחידה ${u.id}</p>
-      <div class="box-head"><h1>${esc(u.title)}</h1>${editLink("unit:" + u.id, u.title)}</div>
+      <div class="box-head"><h1>${esc(u.title)}</h1>${boxTools("unit:" + u.id, base + "/learn/" + u.id + (active ? "/" + active.id : ""), u.title)}</div>
       ${meta && meta.blurb ? `<p class="muted lead">${esc(meta.blurb)}</p>` : ""}
+      ${partNav}
+      ${partHead}
     </header>
     <div class="read">
       <aside class="rail" aria-label="פרקי היחידה">
-        <p class="rail-kicker">בתוך היחידה</p>
+        <p class="rail-kicker">בתת־היחידה</p>
         <nav>${rail}</nav>
         <a class="rail-summary" href="${base}/summary/u/${u.id}">לסיכום היחידה</a>
       </aside>
       <div class="read-main">
-        <section class="section" id="unit-goals">
-          <div class="box-head"><h2>מה נלמד ביחידה זו</h2>${editLink("unit:" + u.id, "מטרות היחידה")}</div>
-          <ul class="goals">${u.goals.map((g) => `<li>${esc(g)}</li>`).join("")}</ul>
-        </section>
+        ${goals}
         ${sections}
         ${leftoverLabs}
         ${more}
@@ -783,8 +884,12 @@ function enhance() {
   mountPath();
   mountRail();
   const r = parseRoute();
-  if (r.area === "learn" && r.section) {
-    const el = document.getElementById(r.section);
+  if (r.area === "learn" && (r.section || r.quizFocus)) {
+    const el = document.getElementById(r.quizFocus ? "q-" + r.quizFocus : r.section);
+    if (el) el.scrollIntoView({ block: "start" });
+  }
+  if (r.examFocus) {
+    const el = document.getElementById("q-" + r.examFocus);
     if (el) el.scrollIntoView({ block: "start" });
   }
   const searchInput = app.querySelector("[data-search-input]");
@@ -867,6 +972,31 @@ async function route() {
 
 
 app.addEventListener("click", async (e) => {
+  const share = e.target.closest("[data-share]");
+  if (share) {
+    e.preventDefault();
+    const url = share.getAttribute("data-share") || "";
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(url);
+      else {
+        const field = document.createElement("textarea");
+        field.value = url;
+        document.body.appendChild(field);
+        field.select();
+        document.execCommand("copy");
+        field.remove();
+      }
+      share.classList.add("is-copied");
+      share.setAttribute("title", "הקישור הועתק");
+      setTimeout(() => {
+        share.classList.remove("is-copied");
+        share.setAttribute("title", "העתקת קישור");
+      }, 1600);
+    } catch (err) {
+      share.setAttribute("title", "לא הצלחנו להעתיק");
+    }
+    return;
+  }
   const toolToggle = e.target.closest("[data-tool-toggle]");
   if (toolToggle) {
     const dock = toolToggle.closest(".tool-dock");

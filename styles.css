@@ -4524,6 +4524,88 @@ a.card,
   outline: none;
 }
 
+.box-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex: 0 0 auto;
+}
+
+.share-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.share-link svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.share-link:hover,
+.share-link:focus-visible,
+.share-link.is-copied {
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  outline: none;
+}
+
+.part-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.8rem 0 0.2rem;
+}
+
+.part-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.part-tab span {
+  color: var(--accent-ink);
+}
+
+.part-tab.is-on,
+.part-tab:hover,
+.part-tab:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  outline: none;
+}
+
+.part-head {
+  margin-top: 0.8rem;
+}
+
+.exam-card-tools {
+  position: absolute;
+  top: 0.55rem;
+  inset-inline-start: 0.55rem;
+  z-index: 2;
+}
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  outline: none;
+}
+
 .editable-wrap {
   position: relative;
 }
