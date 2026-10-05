@@ -13,8 +13,8 @@ function setCardsPlacement(value) {
 
 function cardArticle(c) {
   const extra = (window.SUMMARY_DETAIL || {})[c.id];
-  const more = extra ? `<p class="card-detail">${esc(extra)}</p>` : "";
-  return `<article class="card card-rich"><p class="kind">${esc(c.kind)}</p><div class="box-head"><h2><bdi>${esc(c.title)}</bdi></h2>${editLink("card:" + c.id, c.title)}</div><p>${esc(c.body)}</p>${more}</article>`;
+  const more = extra ? `<div class="card-detail study-text">${studyRich(extra)}</div>` : "";
+  return `<article class="card card-rich"><p class="kind">${esc(c.kind)}</p><div class="box-head"><h2><bdi>${esc(c.title)}</bdi></h2>${editLink("card:" + c.id, c.title)}</div><div class="study-text">${studyRich(c.body)}</div>${more}</article>`;
 }
 
 function cardsForUnit(unitId) {

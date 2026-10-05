@@ -621,13 +621,14 @@ function quizBlock(q) {
   const opts = q.options
     .map(
       (o) =>
-        `<button type="button" class="option" data-quiz="${esc(q.id)}" data-choice="${esc(o.id)}">${esc(o.text)}</button>`
+        `<button type="button" class="option" data-quiz="${esc(q.id)}" data-choice="${esc(o.id)}">${studyInline(o.text)}</button>`
     )
     .join("");
   return `<div class="quiz panel" data-qid="${esc(q.id)}">
-    <div class="box-head"><p>${questionBuiltByAi(q) ? aiBubble() : ""}<strong>תרגול.</strong> ${esc(q.prompt)}</p>${editLink(quizContentId(q.id), "השאלה")}</div>
+    <div class="box-head"><p>${questionBuiltByAi(q) ? aiBubble() : ""}<strong>תרגול.</strong></p>${editLink(quizContentId(q.id), "השאלה")}</div>
+    <div class="study-text quiz-lead">${studyRich(q.prompt)}</div>
     ${opts}
-    <p class="feedback" hidden></p>
+    <div class="feedback study-text" hidden></div>
   </div>`;
 }
 
@@ -1702,7 +1703,7 @@ app.addEventListener("click", async (e) => {
   }
   fb.hidden = false;
   fb.className = "feedback " + (good ? "ok" : "bad");
-  fb.innerHTML = (answerBuiltByAi(q) ? aiBubble() : "") + esc(q.explain);
+  fb.innerHTML = (answerBuiltByAi(q) ? aiBubble() : "") + studyRich(q.explain);
   noteAnswer(q.id, good);
 });
 

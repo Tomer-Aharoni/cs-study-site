@@ -708,11 +708,61 @@ button.ghost {
   margin: 0 0 0.45rem;
 }
 
-.prose-part code {
+.prose-part code,
+.section code,
+.study-text code,
+.option code,
+.feedback code,
+.fold-body code,
+.card-rich code,
+.card-detail code,
+.print-quiz code,
+.exam-sol code,
+.verdict code,
+.drill code {
   font-size: 0.92em;
   background: var(--code-inline);
   padding: 0.05rem 0.3rem;
   border-radius: 4px;
+}
+
+.study-text {
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.study-text p {
+  margin: 0.45rem 0;
+}
+
+.study-text ul {
+  margin: 0.4rem 0 0.7rem;
+  padding-inline-start: 1.2rem;
+}
+
+.study-text li {
+  margin: 0.25rem 0;
+}
+
+.quiz-lead > p:first-child {
+  font-weight: 700;
+}
+
+.drill .quiz-lead > p:first-child {
+  font-size: 1.2rem;
+}
+
+.study-text pre.code {
+  margin: 0.75rem 0;
+}
+
+.study-text pre.code code,
+pre.code code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  color: inherit;
 }
 
 .cards-chapter {

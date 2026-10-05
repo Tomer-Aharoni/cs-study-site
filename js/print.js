@@ -88,7 +88,7 @@ function printTreeHtml(nodes, depth) {
 }
 
 function printQuizHtml(q) {
-  const options = (q.options || []).map((opt) => `<li>${esc(opt.text)}</li>`).join("");
+  const options = (q.options || []).map((opt) => `<li>${studyInline(opt.text)}</li>`).join("");
   const hintText = practiceHintHtml(q);
   const hint = printState.hints
     ? `<div class="print-extra"><strong>רמז.</strong> ${String(hintText || "").indexOf("<") === 0 ? hintText : "<p>" + esc(hintText) + "</p>"}</div>`
@@ -96,7 +96,7 @@ function printQuizHtml(q) {
   const solution = printState.solutions
     ? `<div class="print-extra"><strong>פתרון.</strong> ${practiceSolutionHtml(q)}</div>`
     : "";
-  return `<div class="print-quiz"><p><strong>תרגול.</strong> ${esc(q.prompt)}</p>${options ? `<ul>${options}</ul>` : ""}${hint}${solution}</div>`;
+  return `<div class="print-quiz study-text"><p><strong>תרגול.</strong></p>${studyRich(q.prompt)}${options ? `<ul>${options}</ul>` : ""}${hint}${solution}</div>`;
 }
 
 function printSectionHtml(unitId, section, usedQuizzes) {
