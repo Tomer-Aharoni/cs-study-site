@@ -52,12 +52,49 @@ void process_telemetry_stream(int sock_fd) {
         </li>
         <li><strong>שחרור כפול (Double-Free):</strong> קריאה ל־<code>free()</code> או <code>delete</code> פעמיים על אותה כתובת זיכרון. פעולה זו משחיתה את מבני הנתונים הפנימיים של מקצה הזיכרון (כגון רשימות הבלוקים הפנויים — Free Lists), ועלולה לאפשר לתוקף להקצות שני אובייקטים שונים על אותו מתחם זיכרון בדיוק.</li>
       </ul>
-      <pre class="code"><code>User* u = new User();
-delete u;
-/* מסוכן: u עדיין מחזיק את הכתובת הישנה בערימה! */
-u = nullptr; /* נטרול עותק זה; אך עותקים אחרים של המצביע (Aliases) נשארים יתומים! */</code></pre>
+      <p><strong>תרחיש מקורי שלב־אחר־שלב: כיצד Use-After-Free מוביל להשתלטות על הביצוע:</strong></p>
+      <pre class="code"><code>struct ClientSession {
+    void (*dispatch)(const char* cmd); /* מצביע לפונקציית טיפול בפקודות */
+    char session_token[32];
+};
+
+struct ChatMessage {
+    char text[40]; /* תוכן הודעה המגיע ישירות מקלט משתמש */
+};
+
+void normal_handler(const char* cmd) {
+    printf("Normal command executed: %s\\n", cmd);
+}
+
+void privileged_action(const char* cmd) {
+    printf("PRIVILEGED ACTION EXECUTED: %s\\n", cmd);
+}
+
+/* שלב 1: הקצאת אובייקט סשן בערימה והגדרת פונקציית ברירת המחדל */
+struct ClientSession* session = (struct ClientSession*)malloc(sizeof(struct ClientSession));
+session->dispatch = normal_handler;
+
+/* שלב 2: שחרור האובייקט - אך המצביע נשאר תלוי (Dangling Pointer)! */
+free(session);
+/* שימו לב: session לא אופס (session = NULL לא בוצע), והוא עדיין מצביע לאותה כתובת בערימה! */
+
+/* שלב 3: הקצאת אובייקט חדש על ידי מודול אחר בתוכנית.
+   מקצה הערימה (Heap Allocator) משתמש מחדש באותו בלוק זיכרון שהתפנה! */
+struct ChatMessage* msg = (struct ChatMessage*)malloc(sizeof(struct ChatMessage));
+
+/* התוקף מזין לתוכן ההודעה בתים המייצגים את כתובת הפונקציה privileged_action: */
+*(uintptr_t*)(msg->text) = (uintptr_t)&privileged_action;
+
+/* שלב 4: שימוש אחרי שחרור (Use-After-Free) - הקוד הישן קורא דרך המצביע התלוי: */
+session->dispatch("grant_admin_rights");
+/* תוצאה קריטית: המעבד קורא את 8 הבתים הראשונים של הבלוק
+   (שכעת מכילים את תוכן msg->text), וקופץ ישירות ל-privileged_action! */</code></pre>
       <div class="panel">
-        <p><strong>פתרון דפנסיבי מהשורש:</strong> מעבר מלא לעיקרון <strong>RAII (Resource Acquisition Is Initialization)</strong> באמצעות מצביעים חכמים ב־C++ (כגון <code>std::unique_ptr</code> המבטיח בעלות יחידה ושחרור אוטומטי מבוקר). ב־C: קביעת נקודת שחרור יחידה ומוגדרת ואיפוס המצביע מיד לאחר השחרור.</p>
+        <p><strong>פתרון דפנסיבי מהשורש:</strong></p>
+        <ul>
+          <li><strong>ב־C — איפוס מיידי של מצביעים:</strong> לקבוע כלל שכל <code>free(ptr)</code> מלווה מיד ב־<code>ptr = NULL;</code> (יש להיזהר מכינויים נוספים / Aliases של אותו מצביע שנותרו תלויים).</li>
+          <li><strong>ב־C++ — עקרון RAII ומצביעים חכמים:</strong> שימוש בלעדי ב־<code>std::unique_ptr</code> ו־<code>std::shared_ptr</code>. הזיכרון משוחרר באופן אוטומטי ובטוח ברגע שהאובייקט יוצא מטווח ההכרה (Scope), ללא שום קריאה ידנית ל־<code>delete</code> וללא השארת מצביעים תלויים!</li>
+        </ul>
       </div>
     `,
   },
@@ -71,12 +108,20 @@ u = nullptr; /* נטרול עותק זה; אך עותקים אחרים של המ
           <br>בשפות C ו־C++, כאשר מבצעים פעולה אריתמטית או השוואה בין משתנה בעל סימן (<code>signed int</code>) לבין משתנה חסר סימן (<code>unsigned int</code>) מאותו הגודל, <strong>הערך בעל הסימן מומר באופן מרומז (Implicit Cast) ל־unsigned</strong>!
         </li>
       </ul>
-      <pre class="code"><code>int credit = -5;
-unsigned int bound = 750;
+      <pre class="code"><code>/* תרחיש מקורי: אימות הרשאות לפי ציון מוניטין של משתמש */
+int user_reputation = -5; /* משתמש שנחסם עקב הפרת אבטחה (ציון שלילי) */
+unsigned int admin_threshold = 500;
 
-/* באג קריטי: credit השלילי מומר ל-unsigned int ענק (4294967291)! */
-if (credit &gt; bound) {
-    give_holiday_bonus(); /* התנאי מתקיים והלקוח בעל החוב זוכה במענק! */
+/* באג אבטחה קריטי: Usual Arithmetic Conversions
+   השוואה בין signed int ל-unsigned int מאותו גודל ממירה במרומז את user_reputation
+   ל-unsigned int ענקי: 4,294,967,291 (בארכיטקטורת 32 סיביות)! */
+if (user_reputation &gt; admin_threshold) {
+    grant_admin_privileges(); /* התנאי מתקיים (4294967291 > 500) והמשתמש החסום מקבל גישת מנהל! */
+}
+
+/* תיקון דפנסיבי: שלילת ערכים שליליים לפני השוואה מול חסם ללא סימן */
+if (user_reputation &gt;= 0 && (unsigned int)user_reputation &gt; admin_threshold) {
+    grant_admin_privileges();
 }</code></pre>
       <ul>
         <li><strong>הרחבת טיפוסים והרחבת סימן (Sign Extension):</strong>
@@ -106,14 +151,36 @@ if (credit &gt; bound) {
           <br>הפקת מידע סודי לא מהפלט הלוגי הישיר של האלגוריתם, אלא ממדידת מדדים פיזיקליים או תפעוליים של פעולת המעבד — כגון זמני ריצה (<strong>Timing Attack</strong>), צריכת חשמל או פליטה אלקטרומגנטית.
         </li>
       </ul>
-      <p><strong>דוגמה קלאסית מערוץ צדדי (מתוך שקף 65 במצגת הקורס) — השוואת סיסמה עם <code>strcmp</code>:</strong></p>
-      <pre class="code"><code>int strcmp(const char *str1, const char *str2) {
-    while (*str1 && (*str1 == *str2))
-        str1++, str2++;
-    return *(unsigned char*)str1 - *(unsigned char*)str2;
+      <p><strong>תרחיש מקורי: התקפת ערוץ צדדי של תזמון (Timing Attack) באימות טוקן API:</strong></p>
+      <pre class="code"><code>/* פונקציה תמימה לאימות טוקן גישה המבצעת יציאה מוקדמת (Early Exit): */
+bool verify_api_token(const char* expected_token, const char* user_token) {
+    while (*expected_token && *user_token) {
+        if (*expected_token != *user_token) {
+            return false; /* יציאה מוקדמת מיד ברגע שהתו הראשון אינו תואם! */
+        }
+        expected_token++;
+        user_token++;
+    }
+    return (*expected_token == '\0' && *user_token == '\0');
 }</code></pre>
-      <p>שימו לב לאופן פעולת הלולאה: היא מבצעת <strong>יציאה מוקדמת (Early Exit)</strong> ברגע שמתגלה התו השגוי הראשון! לכן, ככל שיותר תווים מתחילת הסיסמה שהוזנה נכונים, לפונקציה ייקח מעט יותר זמן לרוץ בטרם תחזיר תשובה שלילית. תוקף המודד זמני תגובה ברמת דיוק גבוהה יכול לפצח את הסיסמה תו אחר תו בסיבוכיות ליניארית במקום לנסות את כל הצירופים האפשריים!
-      <br><strong>אפחות דפנסיבי:</strong> <strong>השוואה בזמן קבוע (Constant-Time Comparison)</strong> — פונקציה העוברת תמיד על כל אורך המחרוזת ומבצעת השוואה בלוגיקה קבועה מבלי לצאת מוקדם.</p>
+      <p><strong>כיצד התוקף מנצל את פערי התזמון?</strong>
+      <br>נניח שהטוקן הסודי מתחיל בתווי <code>"K9..."</code>:
+      <ul>
+        <li>אם התוקף שולח ניחוש המתחיל ב־<code>"A0..."</code>, הלולאה נכשלת כבר בתו הראשון וחוזרת תוך זמן קצרצר (למשל 5 ננו־שניות).</li>
+        <li>אם התוקף שולח ניחוש המתחיל ב־<code>"K0..."</code>, התו הראשון תואם! הלולאה ממשיכה לבדיקת התו השני לפני שהיא נכשלת, וזמן הריצה מתארך (למשל 10 ננו־שניות).</li>
+      </ul>
+      על ידי מדידת זמני תגובה ממוצעים בדיוק גבוה (למשל באמצעות שעון מעבד ברזולוציה גבוהה), התוקף יכול לפצח את הטוקן תו אחר תו בסיבוכיות ליניארית של \(O(256 \cdot N)\) במקום לנסות את כל הצירופים האפשריים \(O(256^N)\)!</p>
+      <p><strong>אפחות דפנסיבי — השוואה בזמן קבוע (Constant-Time Comparison):</strong></p>
+      <pre class="code"><code>/* פונקציית השוואה מאובטחת: סורקת תמיד את מלוא אורך המחרוזת ללא יציאה מוקדמת,
+   וצוברת את ההבדלים באמצעות פעולת XOR בינארית (בדומה למימוש CRYPTO_memcmp): */
+bool verify_token_constant_time(const unsigned char* expected, const unsigned char* user, size_t len) {
+    unsigned char diff = 0;
+    for (size_t i = 0; i &lt; len; i++) {
+        diff |= (expected[i] ^ user[i]);
+    }
+    return (diff == 0); /* זמן הריצה זהה לחלוטין בכל מקרה, ולכן לא דולף שום מידע תזמון! */
+}</code></pre>
+      <p><strong>מוקש בחינה מובהק:</strong> בשאלות מבחן שואלים לעיתים קרובות מדוע שימוש בפונקציה הסטנדרטית <code>strcmp</code> לבדיקת סיסמאות חושף את המערכת להתקפת ערוץ צדדי. התשובה היא מנגנון ה־Early Exit — הלולאה יוצאת מיד בתו השגוי הראשון ומסגירה מידע על נכונות התווים שנבדקו עד לאותה נקודה!</p>
     `,
   },
   {
@@ -121,8 +188,17 @@ if (credit &gt; bound) {
     title: "חולשת מחרוזת פורמט (Format String): מה נשבר וכיצד מתגוננים",
     html: `
       <p>הארגומנט הראשון של פונקציות ממשפחת <code>printf</code> (כולל <code>sprintf</code>, <code>fprintf</code> ו־<code>snprintf</code>) הוא <strong>מחרוזת פורמט (Format String)</strong> — מחרוזת המכילה הוראות עיצוב מיוחדות למעבד, ולא סתם טקסט רגיל לתצוגה.</p>
-      <pre class="code"><code>printf(user_input);          /* חולשה חמורה: קלט משתמש מתפרש ישירות כהוראות פורמט! */
-printf("%s", user_input);    /* קוד בטוח: מחרוזת הפורמט קבועה, והקלט מועבר כנתון בלבד */</code></pre>
+      <pre class="code"><code>/* תרחיש מקורי: פונקציית רישום שגיאות לקוח ברכיב שרת (Error Logging) */
+void log_client_error(const char* client_err_msg) {
+    /* חולשה חמורה: קלט בלתי מהימן מועבר ישירות כארגומנט הראשון של printf!
+       אם client_err_msg מכיל מצייני פורמט (%x, %p, %n), הפונקציה תפרש אותם כהוראות ביצוע. */
+    printf(client_err_msg);
+}
+
+/* גרסה מאובטחת: מחרוזת הפורמט קבועה וידועה מראש, והקלט מועבר כפרמטר נתונים בלבד */
+void log_client_error_safe(const char* client_err_msg) {
+    printf("%s\\n", client_err_msg);
+}</code></pre>
       <p><strong>מנגנון הפגיעות במחסנית (מוסכמת <code>cdecl</code>):</strong></p>
       <p>פונקציות המקבלות מספר משתנה של ארגומנטים (<strong>Variadic Functions</strong>) אינן יודעות בזמן ריצה כמה ארגומנטים נדחפו למחסנית. הן סומכות בעיוורון מוחלט על מחרוזת הפורמט:</p>
       <ul>

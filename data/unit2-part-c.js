@@ -189,31 +189,31 @@ delete ptr;  // בטוח לחלוטין: בזכות virtual נקרא קודם ~D
     id: "diamond",
     title: "ירושה מרובה (multiple inheritance) ובעיית היהלום (diamond problem)",
     html: `
-      <p>שפת C++ מאפשרת <strong>ירושה מרובה (Multiple Inheritance)</strong> — כלומר מחלקה שיורשת מיותר ממחלקת אב אחת. למשל, פרד (Mule) הוא שילוב של חמור (Donkey) ושל סוס (Horse). אך מה קורה כששני ההורים יורשים בעצמם מאותה מחלקת בסיס קדומה (Animal)?</p>
-      <pre class="code"><code>struct Animal {
-    int energy = 100;
-    void kick() {}
+      <p>שפת C++ מאפשרת <strong>ירושה מרובה (Multiple Inheritance)</strong> — כלומר מחלקה שיורשת מיותר ממחלקת אב אחת. למשל, ערוץ תקשורת דו־כיווני מלא (<code>DuplexSocket</code>) שמשלב יכולות קלט (<code>InputDevice</code>) ויכולות פלט (<code>OutputDevice</code>). אך מה קורה כששני ערוצי הביניים יורשים בעצמם מאותו התקן קלט/פלט בסיסי (<code>IODevice</code>)?</p>
+      <pre class="code"><code>struct IODevice {
+    int deviceId = 1;
+    void reset() {}
 };
-struct Donkey : public Animal {};
-struct Horse : public Animal {};
-struct Mule : public Donkey, public Horse {};
+struct InputDevice : public IODevice {};
+struct OutputDevice : public IODevice {};
+struct DuplexSocket : public InputDevice, public OutputDevice {};
 
-Mule m;
-m.kick();  // שגיאת קומפילציה! Member is ambiguous (דו-משמעי)</code></pre>
+DuplexSocket sock;
+sock.reset();  // שגיאת קומפילציה! Member is ambiguous (דו-משמעי)</code></pre>
       <p><strong>מדוע הקומפיילר מתלונן? (הסבר ברמת הזיכרון):</strong></p>
-      <p>מבנה ההורשה יוצר צורת מעוין (יהלום): <code>Animal</code> בראש, <code>Donkey</code> ו־<code>Horse</code> באמצע, ו־<code>Mule</code> בתחתית.
-      בזיכרון, האובייקט <code>m</code> כולל תת־אובייקט של <code>Donkey</code> (שמכיל <code>Animal</code> משלו), וגם תת־אובייקט של <code>Horse</code> (שמכיל עוד <code>Animal</code> משלו!).
-      התוצאה: בתוך <code>m</code> יש <strong>שני עותקים נפרדים של Animal</strong> בזיכרון! אם ננסה לגשת ל־<code>m.energy</code> או לקרוא ל־<code>m.kick()</code>, הקומפיילר אינו יודע לאיזה מבין שני עותקי הבסיס התכוונו.</p>
+      <p>מבנה ההורשה יוצר צורת מעוין (יהלום): <code>IODevice</code> בראש, <code>InputDevice</code> ו־<code>OutputDevice</code> באמצע, ו־<code>DuplexSocket</code> בתחתית.
+      בזיכרון, האובייקט <code>sock</code> כולל תת־אובייקט של <code>InputDevice</code> (שמכיל <code>IODevice</code> משלו), וגם תת־אובייקט של <code>OutputDevice</code> (שמכיל עוד <code>IODevice</code> משלו!).
+      התוצאה: בתוך <code>sock</code> יש <strong>שני עותקים נפרדים של IODevice</strong> בזיכרון! אם ננסה לגשת ל־<code>sock.deviceId</code> או לקרוא ל־<code>sock.reset()</code>, הקומפיילר אינו יודע לאיזה מבין שני עותקי הבסיס התכוונו.</p>
       
       <p><strong>הפתרון הפדגוגי — ירושה וירטואלית (Virtual Inheritance):</strong></p>
       <p>כדי לפתור זאת, מגדירים את הירושה של מחלקות הביניים כירושה וירטואלית באמצעות מילת המפתח <code>virtual</code>. בכך אנו מורים לקומפיילר: "אם מישהו יירש את שתינו, אנא ודא שקיים רק עותק אחד יחיד ומשותף של מחלקת הבסיס בזיכרון":</p>
-      <pre class="code"><code>struct Donkey : virtual public Animal {}; // ירושה וירטואלית
-struct Horse : virtual public Animal {};  // ירושה וירטואלית
-struct Mule : public Donkey, public Horse {};
+      <pre class="code"><code>struct InputDevice : virtual public IODevice {};  // ירושה וירטואלית
+struct OutputDevice : virtual public IODevice {}; // ירושה וירטואלית
+struct DuplexSocket : public InputDevice, public OutputDevice {};
 
-Mule m;
-m.kick();  // תקין לחלוטין! קיים רק עותק אחד משותף של Animal</code></pre>
-      <p><em>דוגמה קלאסית נוספת ממערכות:</em> מחלקת <code>Sender</code> ומחלקת <code>Receiver</code> שיורשות שתיהן ב־<code>virtual public Thread</code>, ומחלקת תקשורת <code>Messenger</code> שיורשת משתיהן — בזכות הירושה הווירטואלית, יש רק מופע <code>Thread</code> יחיד שמנוהל עבור ההודעה.</p>
+DuplexSocket sock;
+sock.reset();  // תקין לחלוטין! קיים רק עותק אחד משותף של IODevice</code></pre>
+      <p><em>הקשר ישיר לספרייה התקנית של C++:</em> זהו בדיוק המבנה של זרמי הקלט/פלט התקניים: מחלקת <code>std::iostream</code> יורשת מ־<code>std::istream</code> ומ־<code>std::ostream</code>, אשר יורשות שתיהן ב־<code>virtual public std::ios</code> — כדי להבטיח שבזרם דו־כיווני ינוהל עותק בסיס יחיד של מצב הזרם והחוצץ ולא שני עותקים מתנגשים.</p>
     `,
   }
 );
