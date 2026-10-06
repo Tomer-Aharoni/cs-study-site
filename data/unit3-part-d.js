@@ -10,27 +10,32 @@ UNIT3.sections.push(
         <li><strong>מספרים ללא סימן (<code>unsigned</code>):</strong> מייצגים ערכים אי־שליליים (0 ומעלה). לפי תקן שפת C, גלישה בחשבון <code>unsigned</code> היא <strong>מוגדרת היטב (Well-Defined)</strong> ומתבצעת מודולו 2<sup>n</sup> (כאשר n הוא מספר הסיביות). המשמעות היא שהספרות העודפות נזרקות, והתוצאה "נעטפת" (Wrap-around) בחזרה למספר קטן (למשל: <code>UINT_MAX + 1 = 0</code>).</li>
         <li><strong>מספרים בעלי סימן (<code>signed</code>):</strong> מייצגים גם מספרים חיוביים וגם שליליים. לפי תקן שפות C ו־C++, גלישה במספר בעל סימן מוגדרת כ<strong>התנהגות לא מוגדרת (Undefined Behavior — UB)</strong>! המהדר מניח בהנחות האופטימיזציה שלו שגלישת <code>signed</code> לעולם אינה מתרחשת. כתוצאה מכך, בדיקות אבטחה של מתכנתים המסתמכות על גלישת <code>signed</code> עלולות להימחק כליל על ידי המהדר!</li>
       </ul>
-      <p><strong>כיצד גלישה נומרית מובילה לגלישת ערימה? (שאלת מבחן קלאסית מ־2024 ו־2025ג):</strong></p>
-      <p>כאשר מקצים זיכרון בערימה באמצעות <code>malloc(count * sizeof(int))</code>, גודל ההקצאה מחושב בטיפוס <code>size_t</code> (הטיפוס הלא־מסומן לגדלים בזיכרון). אם הערך <code>count</code> מגיע מהמשתמש והוא ענקי, תוצאת הכפל תעבור עטיפה (Wrap-around) למספר קטן מאוד:</p>
-      <pre class="code"><code>void process_packet(int sock) {
-    unsigned int count;
-    read(sock, &count, sizeof(count)); /* התוקף שולח ערך ענקי: 0x40000001 */
+      <p><strong>כיצד גלישה נומרית מובילה לגלישת ערימה? (מוקש בחינה מובהק מ־2024 ו־2025ג):</strong></p>
+      <p>כאשר מקצים זיכרון בערימה באמצעות <code>malloc(count * sizeof(uint32_t))</code>, גודל ההקצאה מחושב בטיפוס <code>size_t</code> (הטיפוס הבלתי חתום לגדלים בזיכרון). אם הערך <code>count</code> מתקבל מקלט חיצוני ללא אימות והוא ענקי, תוצאת הכפל גולשת מעבר לקיבולת הטיפוס ועוברת עטיפה (Wrap-around) למספר קטן מאוד:</p>
+      <pre class="code"><code>/* תרחיש מקורי: פענוח רצף דגימות אותות (Telemetry Sample Stream) */
+void process_telemetry_stream(int sock_fd) {
+    uint32_t sample_count;
+    /* קריאת כמות הדגימות ישירות מתוך חבילת הרשת (גבול אמון): */
+    read(sock_fd, &sample_count, sizeof(sample_count));
 
-    /* גלישה נומרית קריטית! 
-       בחשבון 32 סיביות: 0x40000001 * 4 = 0x100000004 -> נחתך ל-4 בתים בלבד! */
-    size_t bytes_to_allocate = count * sizeof(int);
-    int* buffer = (int*)malloc(bytes_to_allocate);
-    if (!buffer) return;
+    /* התוקף מעביר ערך מתוכנן היטב: sample_count = 0x40000001
+       גלישה נומרית קריטית בעת חישוב גודל ההקצאה (בארכיטקטורת 32 סיביות):
+       0x40000001 * sizeof(uint32_t) = 0x40000001 * 4 = 0x100000004.
+       מאחר שהאוגר הוא בן 32 סיביות, הסיבית ה-33 נחתכת, והתוצאה היא 4 בתים בלבד! */
+    size_t alloc_bytes = sample_count * sizeof(uint32_t);
+    uint32_t* samples = (uint32_t*)malloc(alloc_bytes);
+    if (!samples) return;
 
-    /* דריסת ערימה מסיבית (Heap Overflow):
-       הלולאה רצה count פעמים (מעל מיליארד איטרציות!) לתוך חוצץ שהוקצה עבור 4 בתים בלבד! */
-    for (unsigned int i = 0; i &lt; count; i++) {
-        read(sock, &buffer[i], sizeof(int));
+    /* דריסת ערימה קטסטרופלית (Heap Overflow):
+       הלולאה מנסה לקרוא sample_count דגימות (1,073,741,825 פעמים!)
+       לתוך חוצץ בערימה שהוקצה עבור 4 בתים בלבד (דגימה בודדת!), ודורסת את כל הערימה! */
+    for (uint32_t i = 0; i &lt; sample_count; i++) {
+        read(sock_fd, &samples[i], sizeof(uint32_t));
     }
 }</code></pre>
       <div class="panel">
-        <p><strong>הכלל הדפנסיבי:</strong> בדיקת החישוב חייבת להתבצע <strong>לפני</strong> ביצוע פעולת הכפל!
-        <br>קוד בטוח: <code>if (count &gt; SIZE_MAX / sizeof(int)) { return ERROR; }</code></p>
+        <p><strong>הכלל הדפנסיבי:</strong> בדיקת התקינות חייבת להתבצע <strong>לפני</strong> ביצוע פעולת הכפל!
+        <br>קוד בטוח: <code>if (sample_count &gt; SIZE_MAX / sizeof(uint32_t)) { return ERROR; }</code></p>
       </div>
       <p><strong>מלכודת סימן נוספת:</strong> קריאת אורך למשתנה בעל סימן <code>int length</code>. אם הבדיקה היא <code>if (length &gt; MAX_SIZE)</code>, מספר שלילי (כגון <code>-1</code>) יעבור את הבדיקה בהצלחה! אך כאשר מעבירים אותו לפונקציית העתקה המצפה ל־<code>size_t</code> לא־מסומן, המספר <code>-1</code> מומר למספר ענקי (<code>0xFFFFFFFF</code>) והתוכנית תקרוס או תדרוס זיכרון.</p>
     `,

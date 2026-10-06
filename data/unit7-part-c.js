@@ -12,32 +12,40 @@ UNIT7.sections.push(
         <p><strong>דוגמת המפתח: מעקף אימות (Authentication Bypass) קלאסי:</strong></p>
         <p>נניח שבקוד שרת ההתחברות נכתבה השאילתה הבאה באמצעות שרשור מחרוזות (קוד פגיע):</p>
         <pre class="code"><code># קוד פגיע — שרשור f-string הופך קלט לתחביר פעיל!
-query = f"SELECT * FROM Users WHERE username = '{user_input}' AND password = '{pass_input}'"</code></pre>
-        <p>במצב תקין, המשתמש מזין <code>alice</code> וסיסמה <code>secret123</code>, והשאילתה בודקת התאמה בין השניים.
-        <br>אולם, מה יקרה אם תוקף יזין בשדה ה-<code>username</code> את הקלט הבא:
-        <br><code>admin' OR '1'='1</code> (או: <code>admin' --</code>)?</p>
-        <p>הגרש הבודד (<code>'</code>) בקלט "סוגר" בטרם עת את מחרוזת הליטרל של שם המשתמש. מיד לאחריו, המילים <code>OR '1'='1'</code> מתפרשות על ידי מנוע ה-SQL כחלק מתנאי ה-<code>WHERE</code> הלוגי! השאילתה המפוענחת במסד הופכת ל:
-        <br><code>SELECT * FROM Users WHERE username = 'admin' OR '1'='1' AND password = '...'</code></p>
-        <p>מכיוון שהביטוי <code>'1'='1'</code> הוא תמיד אמת (Tautology), תנאי ה-<code>WHERE</code> מתקיים במלואו, ובדיקת הסיסמה נעקפת לחלוטין! השרת שולף את רשומת ה-<code>admin</code>, ומאפשר לתוקף להתחבר כמנהל המערכת ללא סיסמה — פגיעה הרסנית בסודיות ובשלמות.</p>
+query = f"SELECT * FROM UserAccounts WHERE username = '{user_input}' AND password = '{pass_input}'"</code></pre>
+        <p>במצב תקין, המשתמש מזין שם משתמש <code>dan_security</code> וסיסמה <code>secretPass42</code>, והשאילתה בודקת התאמה בין השניים.
+        <br>אולם, מה יקרה אם תוקף יזין בשדה ה-<code>username</code> את אחד הקלטים הבאים?
+        <br>1. קלט מבוסס טאוטולוגיה: <code>admin' OR '1'='1</code>
+        <br>2. קלט מבוסס הערה: <code>admin' --</code></p>
+        <p><strong>ניתוח המכניזם התחבירי ומלכודות קדימות אופרטורים:</strong></p>
+        <ul>
+          <li>במקרה של קלט הערה (<code>admin' --</code>): הגרש סוגר את המחרוזת, וצמד המקפים (<code>--</code>) מסמן למנוע ה-SQL להתעלם מכל מה שמופיע בהמשך השורה! בדיקת הסיסמה (<code>AND password = ...</code>) פשוט נמחקת מתוכנית הביצוע, והשאילתה מתמצה ב־<code>SELECT * FROM UserAccounts WHERE username = 'admin'</code>.</li>
+          <li>במקרה של טאוטולוגיה (<code>admin' OR '1'='1</code>): השאילתה המפוענחת הופכת ל־<code>SELECT * FROM UserAccounts WHERE username = 'admin' OR '1'='1' AND password = '...'</code>. <em>מלכודת מבחן קריטית:</em> בשפת SQL, לאופרטור <code>AND</code> יש קדימות (Precedence) גבוהה יותר מאשר ל־<code>OR</code>! לכן המנוע קורא זאת כך: <code>(username = 'admin') OR ('1'='1' AND password = '...')</code>. התנאי <code>username = 'admin'</code> מחזיר אמת, ומאפשר לתוקף להתחבר ישירות כמנהל ללא סיסמה!</li>
+        </ul>
       </div>
 
-      <pre class="code"><code># ❌ קוד פגיע: כל דרכי השרשור בפייתון (+, format, f-string, %) מייצרות את אותו כשל!
-cur.execute("SELECT school FROM students WHERE name = '" + name + "'")
-cur.execute("SELECT school FROM students WHERE name = '{}'".format(name))
-cur.execute(f"SELECT school FROM students WHERE name = '{name}'")
+      <pre class="code"><code># ❌ קוד פגיע: כל דרכי השרשור בפייתון (+, format, f-string, %) מייצרות את אותו כשל חמור!
+cur.execute("SELECT role, email FROM UserAccounts WHERE username = '" + username + "'")
+cur.execute("SELECT role, email FROM UserAccounts WHERE username = '{}'".format(username))
+cur.execute(f"SELECT role, email FROM UserAccounts WHERE username = '{username}'")
 
-# ✅ קוד דפנסיבי: תבנית קבועה עם מציין מקום ?, והערך מועבר בטיפל נפרד
-cur.execute("SELECT school FROM students WHERE name = ?", (name,))</code></pre>
+# ✅ קוד דפנסיבי: תבנית קבועה עם מציין מקום ?, והערך מועבר ב-Tuple נפרד
+cur.execute("SELECT role, email FROM UserAccounts WHERE username = ?", (username,))</code></pre>
 
-      <pre class="code"><code>/* ❌ פגיע ב-C++: שרשור מחרוזות עם sqlite3_exec */
-std::string q = "SELECT school FROM students WHERE id = " + id;
+      <pre class="code"><code>/* ❌ פגיע ב-C++: שרשור מחרוזות גולמי עם sqlite3_exec */
+std::string q = "SELECT role, email FROM UserAccounts WHERE id = " + account_id;
 sqlite3_exec(db, q.c_str(), nullptr, nullptr, &amp;err);
 
-/* ✅ דפנסיבי ב-C++: הכנת משפט מראש וקשירת ערך עם bind */
-sqlite3_prepare_v2(db, "SELECT school FROM students WHERE id = ?", -1, &amp;st, nullptr);
-sqlite3_bind_text(st, 1, id.c_str(), -1, SQLITE_TRANSIENT);
-while (sqlite3_step(st) == SQLITE_ROW) { /* קריאת נתונים בטוחה */ }
-sqlite3_finalize(st);</code></pre>
+/* ✅ דפנסיבי ב-C++: הכנת משפט מראש (Prepared Statement) וקשירת ערך פרמטרי עם bind */
+sqlite3_stmt* stmt = nullptr;
+sqlite3_prepare_v2(db, "SELECT role, email FROM UserAccounts WHERE id = ?", -1, &amp;stmt, nullptr);
+sqlite3_bind_text(stmt, 1, account_id.c_str(), -1, SQLITE_TRANSIENT);
+while (sqlite3_step(stmt) == SQLITE_ROW) {
+    const unsigned char* role = sqlite3_column_text(stmt, 0);
+    const unsigned char* email = sqlite3_column_text(stmt, 1);
+    // עיבוד בטוח של הנתונים שנשלפו
+}
+sqlite3_finalize(stmt);</code></pre>
       <p>שימו לב לדגל <code>SQLITE_TRANSIENT</code> ב-C++: הוא מורה למנוע להעתיק את המחרוזת של הפרמטר לחיץ זיכרון פנימי בטוח, כך ששחרור המחרוזת המקורית בקוד לא ישבש את פעולת המסד.</p>
 
       <div class="panel">

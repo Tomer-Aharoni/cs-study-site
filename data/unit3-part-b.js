@@ -30,9 +30,19 @@ UNIT3.sections.push(
         <li><strong>הפונקציה <code>gets()</code>:</strong> החולשה החמורה ביותר בתולדות השפה. החתימה של <code>gets(char *str)</code> אינה מקבלת שום פרמטר המציין את גודל החוצץ! הפונקציה קוראת תווים מהקלט הסטנדרטי עד להופעת תו ירידת שורה (<code>\\n</code>). אם הקלט ארוך מהחוצץ — גלישת חוצץ היא בלתי נמנעת מבחינה מתמטית. הפונקציה הוצאה משימוש (Deprecated) ב־C99 ונמחקה כליל מהתקן ב־C11. הופעתה בקוד היא תמיד נורה אדומה בוהקת!</li>
         <li><strong>הפונקציה <code>strcpy()</code>:</strong> הפונקציה מעתיקה בתים ממחרוזת מקור למחרוזת יעד עד שהיא פוגשת בתו אפס סיום (<code>\\0</code>). היא אינה יודעת מה גודלו של חוצץ היעד, ואם מחרוזת המקור ארוכה ממנו — תתרחש גלישת חוצץ.</li>
       </ul>
-      <pre class="code"><code>void vulnerable_function(char const* user_input) {
-    char buffer[16];
-    strcpy(buffer, user_input); /* באג קריטי: אין בדיקת גבול מול גודל buffer! */
+      <pre class="code"><code>/* תרחיש מקורי: פענוח כותרת אימות (Token Header) ברכיב שרת */
+void parse_auth_token(const char* raw_header_val) {
+    char token[32];
+    /* באג קריטי: strcpy אינה בודקת את אורך המקור מול קיבולת token (32 בתים)!
+       אם raw_header_val ארוך מ-31 תווים, הבתים העודפים יגלשו וידרסו את מסגרת המחסנית. */
+    strcpy(token, raw_header_val);
+}
+
+/* חלופה בטוחה: שימוש ב-snprintf המקבל במפורש את קיבולת היעד */
+void parse_auth_token_safe(const char* raw_header_val) {
+    char token[32];
+    /* snprintf מבטיחה כתיבה של לכל היותר 32 בתים ומבטיחה תו אפס סיום: */
+    snprintf(token, sizeof(token), "%s", raw_header_val);
 }</code></pre>
       <p>כל קלט שמגיע מחוץ לתוכנית — מפרמטרים של שורת הפקודה (<code>argv</code>), מקבצים או מתקשורת רשת — מהווה <strong>גבול אמון (Trust Boundary)</strong>. לעולם אין להניח הנחות מוקדמות לגבי אורכו. כיצד מגנים בקוד?</p>
       <ul>
@@ -75,37 +85,47 @@ UNIT3.sections.push(
         <li><strong>מלכודת <code>strlen()</code> מול <code>sizeof()</code>:</strong> הפונקציה <code>strlen()</code> סופרת את מספר התווים במחרוזת <em>ללא</em> תו אפס הסיום. אם מתכנת בודק <code>if (strlen(input) &gt; sizeof(buf))</code> ולאחר מכן מעתיק עם <code>strcpy</code>, מחרוזת שאורכה זהה לגודל החוצץ תעבור את הבדיקה, אך תו אפס הסיום ייכתב בית אחד מעבר לגבול המערך! דריסה של בית בודד במחסנית עלולה לשנות את הבית הנמוך של ה־EBP השמור, ולהסיט את כל מסגרת המחסנית של הפונקציה הקוראת לשטח בשליטת התוקף.</li>
         <li><strong>גלישת חוצץ בערימה (Heap Overflow):</strong> מתרחשת כאשר חוצץ שהוקצה בערימה (באמצעות <code>malloc</code> או <code>new</code>) מועתק ללא הגבלת אורך. בערימה אין כתובת חזרה צמודה לכל בלוק, אך כתיבה עודפת דורסת את מטא־דאטה הניהול של מקצה הזיכרון, או דורסת שדות של <strong>אובייקט שכן שהוקצה בסמוך בערימה</strong>. אם האובייקט השכן מכיל מצביע לפונקציה או מצביע לטבלה וירטואלית (vptr), הדריסה מאפשרת השתלטות מלאה על מסלול הריצה!</li>
       </ul>
-      <p><strong>דוגמה קלאסית מגלישת ערימה (מתוך תרגול 4 במצגת הקורס):</strong></p>
-      <pre class="code"><code>struct Data {
-    char name[64];
-};
-struct Target {
-    int (*fp)(); /* מצביע לפונקציה */
+      <p><strong>תרחיש מקורי: גלישת ערימה ודריסת מצביע פונקציה באובייקט שכן:</strong></p>
+      <p>נבחן שירות שבו מוקצה אובייקט לניהול כרטיס פנייה (<code>SupportTicket</code>) בצמוד לאובייקט ניתוב אירועים (<code>AuditLogger</code>):</p>
+      <pre class="code"><code>struct SupportTicket {
+    char title[64];
 };
 
-struct Data* d = (struct Data*)malloc(sizeof(struct Data));
-struct Target* t = (struct Target*)malloc(sizeof(struct Target));
-t->fp = safe_function;
+struct AuditLogger {
+    void (*log_event)(const char* msg); /* מצביע לפונקציית דיווח */
+};
 
-/* פגיע: קלט באורך מעל 64 בתים גולש מהבלוק d ודורס את t->fp בבלוק השכן! */
-strcpy(d->name, argv[1]);
+/* שתי הקצאות סמוכות בזיכרון הערימה: */
+struct SupportTicket* ticket = (struct SupportTicket*)malloc(sizeof(struct SupportTicket));
+struct AuditLogger* logger = (struct AuditLogger*)malloc(sizeof(struct AuditLogger));
+logger->log_event = default_audit_logger;
 
-t->fp(); /* המעבד קופץ ישירות לכתובת שדרס התוקף בערימה! */</code></pre>
+/* באג קריטי: כותרת הפנייה מועתקת ישירות מקלט הלקוח ללא בדיקת קיבולת! */
+strcpy(ticket->title, client_payload);
+
+/* אם client_payload מכיל מעל 64 בתים:
+   המידע העודף זולג מחוץ לבלוק ticket ודורס את logger->log_event בבלוק השכן בערימה! */
+logger->log_event("Ticket logged"); /* המעבד קופץ ישירות לכתובת שהשתיל התוקף בערימה! */</code></pre>
       <p><strong>מלכודת מבחן נפוצה — גלישה בין שדות בתוך אותו מבנה נתונים:</strong></p>
-      <p>השכן בזיכרון אינו חייב להיות בלוק נפרד בערימה — הוא יכול להיות השדה הבא המוגדר בתוך אותו ה־<code>struct</code> עצמו! כאשר שדות מוגדרים ברצף, גלישה בחוצץ הראשון זולגת ישירות לשדה הבא אחריו:</p>
-      <pre class="code"><code>struct Soldier {
-    char first_name[8];
-    char last_name[10];
+      <p>השכן בזיכרון אינו חייב להיות בלוק נפרד בערימה — הוא יכול להיות השדה הבא המוגדר בתוך אותו ה־<code>struct</code> עצמו! כאשר שדות מוגדרים ברצף בזיכרון, גלישה בחוצץ הראשון זולגת ישירות לשדה הבא אחריו:</p>
+      <pre class="code"><code>/* תרחיש 1: דריסת שדה נתונים שכן (הסטת יעד העברה כספית) */
+struct PaymentOrder {
+    char sender_id[16];
+    char recipient_id[16];
 };
-/* פגיע: מחרוזת מעל 7 תווים תגלוש ותדרוס את last_name הצמוד אליה */
-strcpy(s.first_name, from_user);
+/* פגיע: קלט ארוך מ-15 תווים ב-sender_id יגלוש וידרוס את recipient_id הצמוד אליו,
+   ובכך יסיט את כספי ההעברה לחשבון שקבע התוקף! */
+strcpy(order.sender_id, untrusted_sender_input);
 
-struct Row {
-    char label[8];
-    char* data; /* שדה שכן שהוא מצביע לזיכרון */
+/* תרחיש 2: דריסת שדה מצביע שכן — כתיבה שרירותית בזיכרון (Write-what-where) */
+struct HeaderBlock {
+    char tag_name[16];
+    char* destination_ptr; /* שדה שכן שהוא מצביע לזיכרון */
 };
-/* דריסת label גולשת לשדה data ומשנה את כתובת המצביע.
-   הקריאה הבאה ל-strcpy(r.data, ...) תבצע כתיבה שרירותית לזיכרון (Write-what-where)! */</code></pre>
+/* דריסת tag_name גולשת לשדה destination_ptr ומשנה את כתובת היעד שלו.
+   הקריאה הבאה: strcpy(block.destination_ptr, payload)
+   תכתוב כעת לכל כתובת שרירותית שהתוקף שתל ב-destination_ptr! */</code></pre>
+      <p><strong>מוקש בחינה מובהק (מופיע בשחזורים, למשל 2021ב):</strong> בשאלות מבחן דפוס זה מופיע לעיתים קרובות במבנה כגון <code>soldier</code> או <code>row</code> הכולל שדה שם לצד מצביע <code>data_ptr</code>. שימו לב תמיד לסדר הגדרת השדות במבנה ולריפוד הזיכרון (Padding) — גלישה בחוצץ הראשון דורסת את המצביע הבא אחריו, מה שמאפשר כתיבה שרירותית בכל כתובת בזיכרון!</p>
       <p><strong>כיצד מתגוננים?</strong> תיקון השורש הוא הימנעות מוחלטת מ־<code>strcpy</code> ללא הגבלת קיבולת. בודקים תמיד את אורך המקור, משתמשים בממשקים בטוחים (כגון <code>snprintf</code>), ומעדיפים טיפוסי מחרוזת בטוחים כגון <code>std::string</code>.</p>
     `,
   },
@@ -127,10 +147,13 @@ void hacked_function() {
 
 Base* obj = new Base();
 
-/* 1. חילוץ המצביע ל-Vtable הנמצא בתחילת פריסת האובייקט (vptr) */
+/* 1. חילוץ המצביע ל-Vtable הנמצא בתחילת פריסת האובייקט (vptr):
+   obj מצביע לתחילת האובייקט בערימה, שם שוכן שדה ה-vptr (בהיסט 0).
+   ההמרה (uintptr_t**) מתייחסת לכתובת זו כמצביע למצביע,
+   וה-dereference (*) שולף את כתובת בסיס הטבלה הווירטואלית עצמה! */
 uintptr_t* vptr = *(uintptr_t**)obj;
 
-/* 2. שינוי הכניסה הראשונה ב-Vtable כך שתצביע לפונקציה הזדונית */
+/* 2. שינוי הכניסה הראשונה ב-Vtable כך שתצביע לפונקציה הזדונית: */
 vptr[0] = (uintptr_t)&hacked_function;
 
 /* 3. הקריאה הווירטואלית תפעיל כעת את הפונקציה הזדונית! */

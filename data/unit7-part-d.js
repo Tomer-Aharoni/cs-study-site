@@ -20,15 +20,18 @@ UNIT7.sections.push(
       <p>בלייז פסקל ניסח זאת פעם במכתב מפורסם: <em>"כתבתי מכתב ארוך רק משום שלא היה לי הפנאי לקצרו"</em> — פשטות אינה עצלנות; היא דורשת מחשבה מעמיקה ומשמעת תכנונית גבוהה.</p>
       
       <div class="panel">
-        <p><strong>דוגמת ימי השבוע — פשטות מול כפילות מסוכנת:</strong></p>
-        <p>נניח שעלינו להמיר מספר יום (1 עד 7) לשמו הטקסטואלי. גישה מסורבלת תשתמש ב־7 ענפי <code>if-else</code> או <code>switch-case</code> ארוך. כל ענף נוסף מגדיל את הסיכוי לשכוח בדיקת טווח, לשכוח <code>break</code>, או לטעות במקרה קצה.</p>
-        <p>הגישה הפשוטה והבטוחה (KISS) משתמשת במערך שמות ובבדיקת טווח מפורשת אחת בלבד:</p>
+        <p><strong>דוגמת רמות חומרה (Severity Levels) — פשטות מול כפילות מסוכנת:</strong></p>
+        <p>נניח שעלינו לתרגם קוד חומרת אירוע אבטחה (1 עד 5) לשם הטקסטואלי של רמת הסיכון. גישה מסורבלת תשתמש ב־5 ענפי <code>if-elif-else</code> או ב־<code>switch-case</code> ארוך. כל ענף נוסף מגדיל את הסיכוי לשכוח בדיקת גבולות, לטעות בהעתקת טקסט, או לייצר התנהגות בלתי מוגדרת במקרי קצה.</p>
+        <p>הגישה הפשוטה והבטוחה (KISS) משתמשת במערך שמות ובבדיקת טווח מפורשת אחת בלבד (Boundary Checking):</p>
       </div>
-      <pre class="code"><code># ✅ פשטות ואימות טווח מפורש
-names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-if not (1 &lt;= d &lt;= 7):
-    raise ValueError("Day must be between 1 and 7")
-return names[d - 1]</code></pre>
+      <pre class="code"><code># ✅ פשטות ואימות גבולות מפורש למניעת חריגות זיכרון
+SEVERITY_LEVELS = ("INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL")
+
+def get_severity_label(level: int) -> str:
+    # אימות טווח מפורש בצעד יחיד
+    if not (1 &lt;= level &lt;= len(SEVERITY_LEVELS)):
+        raise ValueError(f"Severity level must be between 1 and {len(SEVERITY_LEVELS)}")
+    return SEVERITY_LEVELS[level - 1]</code></pre>
       <p><em>ההיבט הדפנסיבי:</em> פשטות משמעה שקל מאוד להוכיח ולבדוק שאין כאן <strong>גלישת חוצץ או חריגה מגבולות המערך (Buffer Overflow / Out-of-Bounds)</strong> כפי שלמדנו ביחידה 3. אין לחסוך שורות קוד על חשבון השמטת בדיקות תקינות!</p>
     `,
   },
@@ -40,8 +43,8 @@ return names[d - 1]</code></pre>
       
       <div class="panel">
         <p><strong>מדוע DRY הוא עקרון הגנתי מובהק?</strong></p>
-        <p>נניח ששלושה מסכים שונים באפליקציה מבצעים שליפת נתוני סטודנט. אם כל מסך בונה את שאילתת ה-SQL בעצמו, המפתח עלול לתקן הזרקת SQL במסך ההתחברות, אך לשכוח לתקן את אותו הקוד במסך הפרופיל ובמסך החיפוש!
-        <br>על ידי הגדרת פונקציה יחידה ומאובטחת — כגון <code>get_student_by_id(sid)</code> המשתמשת בשאילתה פרמטרית (<code>?</code>) — אנו מבטיחים שכל המערכת נהנית מרמת אבטחה אחידה, וכל שדרוג מתבצע במקום אחד מרוכז.</p>
+        <p>נניח ששלושה שירותים שונים באפליקציה מבצעים שליפת נתוני חשבון משתמש. אם כל שירות בונה את שאילתת ה-SQL בעצמו, המפתח עלול לתקן הזרקת SQL בשירות ההתחברות, אך לשכוח לתקן את אותו הקוד בשירות הפרופיל ובשירות הדוחות!
+        <br>על ידי הגדרת פונקציה יחידה, מרוכזת ומאובטחת — כגון <code>get_user_account_by_id(account_id)</code> המשתמשת בשאילתה פרמטרית (<code>?</code>) — אנו מבטיחים שכל המערכת נהנית מרמת אבטחה אחידה, וכל תיקון או שדרוג מתבצע במקום אחד בלבד.</p>
       </div>
 
       <p><strong>סכנת ייבוש-יתר (Over-DRYing):</strong><br>
@@ -71,28 +74,31 @@ return names[d - 1]</code></pre>
       <p><strong>קוד חץ (Arrow Code / Anti-Pattern):</strong> דפוס תכנותי לקוי שבו כותבים תנאי <code>if</code> בתוך <code>if</code> בתוך <code>if</code>. ככל שהקינון מעמיק, הקוד נדחק ימינה ויוצר צורה ויזואלית של ראש חץ (<code>&gt;</code>). במבנה כזה, קשה ביותר לעקוב אחר מסלולי הכישלון והשגיאות, וקל מאוד לשכוח בדיקת אבטחה קריטית באחד מענפי ה-<code>else</code>.</p>
       
       <p><strong>❌ "קוד חץ" מסורבל ומסוכן (לפני התיקון):</strong></p>
-      <pre class="code"><code>bool processUserBad(const std::string&amp; name, int age) {
-    bool result = false;
-    if (!name.empty()) {
-        if (age &gt;= 18) {
-            if (age &lt;= 120) {
-                // לוגיקה ראשית עמוקה שקשה לבדוק
-                result = true;
+      <pre class="code"><code>bool processTransactionBad(const std::string&amp; sessionToken, double amount, int retryAttempts) {
+    bool success = false;
+    if (!sessionToken.empty()) {
+        if (amount &gt; 0.0) {
+            if (amount &lt;= 50000.0) {
+                if (retryAttempts &lt; 3) {
+                    // לוגיקה עסקית רגישה קבורה בתוך 4 רמות קינון
+                    success = executeTransfer(sessionToken, amount);
+                }
             }
         }
     }
-    return result;
+    return success;
 }</code></pre>
 
       <p><strong>✅ הפתרון הנקי והדפנסיבי: חיתוך מוקדם (Guard Clauses / Fail-Fast):</strong></p>
       <p>במקום לקנן תנאים, אנו הופכים את החשיבה: בודקים את כל מקרי הקצה, השגיאות ותנאי הדחייה מיד בתחילת הפונקציה, ויוצאים מיד (<code>return false</code> או זריקת שגיאה). לאחר שכל ה"שומרים" (Guards) עברו בהצלחה, הלוגיקה הראשית של הפונקציה (ה-Happy Path) מתבצעת ברמה השטוחה הראשית, ללא שום הזחה מיותרת!</p>
-      <pre class="code"><code>bool processUserClean(const std::string&amp; name, int age) {
-    // 1. חיתוך מוקדם (Guard Clauses) של שגיאות ומקרי קצה
-    if (name.empty()) return false;
-    if (age &lt; 18 || age &gt; 120) return false;
+      <pre class="code"><code>bool processTransactionClean(const std::string&amp; sessionToken, double amount, int retryAttempts) {
+    // 1. שומרי סף (Guard Clauses): שלילת כשלי אבטחה ומקרי קצה מיד בהתחלה
+    if (sessionToken.empty()) return false;
+    if (amount &lt;= 0.0 || amount &gt; 50000.0) return false;
+    if (retryAttempts &gt;= 3) return false;
 
-    // 2. הלוגיקה הראשית מתבצעת ברמה הראשית בצורה צלולה ובטוחה
-    return true;
+    // 2. המסלול התקין (Happy Path) רץ ברמה הראשית ללא הזחות מיותרות
+    return executeTransfer(sessionToken, amount);
 }</code></pre>
       <p><em>היתרון הדפנסיבי (Fail-Fast):</em> בדיקת כל ההרשאות, האורכים והטווחים מראש עם יציאה מיידית מונעת "זליגה" של קלט לא מהימן אל עומק המערכת ומבטלת עקיפות אימות מורכבות.</p>
 
@@ -112,13 +118,13 @@ return names[d - 1]</code></pre>
         </li>
       </ul>
 
-      <h3>שאלת תרגול לבחינה</h3>
+      <h3>שאלת תרגול עצמי</h3>
       <p>א. כיצד מונעים הזרקת SQL בעת הרצת שאילתת שליפה ב-SQLite בפייתון?<br>
       ב. הפכו את פונקציית האימות הבאה, הכתובה כ"קוד חץ", לקוד נקי ודפנסיבי בעזרת חיתוך מוקדם (Guard Clauses).</p>
-      <pre class="code"><code>bool validateUser(const std::string&amp; name, int age) {
-    if (!name.empty()) {
-        if (age &gt;= 18) {
-            if (age &lt;= 120) {
+      <pre class="code"><code>bool authorizeAccess(const std::string&amp; authToken, int accessLevel) {
+    if (!authToken.empty()) {
+        if (accessLevel &gt;= 1) {
+            if (accessLevel &lt;= 5) {
                 return true;
             }
         }
@@ -128,11 +134,11 @@ return names[d - 1]</code></pre>
       <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>ב־SQL: הגדירו מציין מקום <code>?</code> והעבירו את הקלט בטיפל (קשירה פרמטרית). ב־C++: בדקו כל תנאי שלילה בשורה נפרדת והחזירו <code>false</code> מיד.</p></div></details>
       <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body">
         <p><strong>א. מניעת הזרקת SQL:</strong> מגדירים תבנית שאילתה קבועה עם מציין מקום <code>?</code>, ומעבירים את ערך המשתמש בתוך טיפל נפרד (Tuple). כך המנוע מקמפל את השאילתה מראש ומתייחס לקלט כנתון בלבד ולא כקוד:</p>
-        <pre class="code"><code>cur.execute("SELECT * FROM Students WHERE Name = ?", (user_input,))</code></pre>
+        <pre class="code"><code>cur.execute("SELECT role, email FROM UserAccounts WHERE username = ?", (user_input,))</code></pre>
         <p><strong>ב. פירוק קוד החץ בעזרת Guard Clauses:</strong> כל כשל נבדק בשורה משלו ומחזיר <code>false</code> מיד, והמסלול התקין מגיע ל-<code>return true</code> ללא שום קינון:</p>
-        <pre class="code"><code>bool validateUserClean(const std::string&amp; name, int age) {
-    if (name.empty()) return false;
-    if (age &lt; 18 || age &gt; 120) return false;
+        <pre class="code"><code>bool authorizeAccessClean(const std::string&amp; authToken, int accessLevel) {
+    if (authToken.empty()) return false;
+    if (accessLevel &lt; 1 || accessLevel &gt; 5) return false;
     return true;
 }</code></pre>
       </div></details>
