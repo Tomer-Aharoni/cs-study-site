@@ -1426,22 +1426,22 @@ app.addEventListener("click", async (e) => {
     const fb = app.querySelector("[data-pya-fb]");
     if (op === "reset") {
       resetUnit4Labs();
-      fb.textContent = "fruit חזר ל-[banana, apple, cherry].";
+      fb.textContent = "servers חזר ל-[auth, db, web].";
     } else if (op === "alias") {
       pyAlias.linked = true;
-      pyAlias.vegs = pyAlias.fruit;
-      fb.textContent = "vegs ו-fruit הם אותו list. is יהיה True.";
+      pyAlias.backup_servers = pyAlias.servers;
+      fb.textContent = "backup_servers ו-servers הם אותו list. is יהיה True.";
     } else if (op === "copy") {
       pyAlias.linked = false;
-      pyAlias.vegs = pyAlias.fruit.slice();
+      pyAlias.backup_servers = pyAlias.servers.slice();
       fb.textContent = "copy: שני אובייקטים. == יכול להיות True, is הוא False.";
     } else if (op === "mut") {
-      pyAlias.fruit[0] = "pear";
+      pyAlias.servers[0] = "cache";
       fb.textContent = pyAlias.linked
-        ? "שיניתם fruit[0] וגם vegs השתנה — aliasing."
-        : pyAlias.vegs
-          ? "fruit השתנה. vegs (עותק) נשאר עם הערך הישן באיבר 0."
-          : "fruit[0] = pear. שיוכו קודם vegs כדי לראות את ההבדל.";
+        ? "שיניתם servers[0] וגם backup_servers השתנה — aliasing."
+        : pyAlias.backup_servers
+          ? "servers השתנה. backup_servers (עותק) נשאר עם הערך הישן באיבר 0."
+          : "servers[0] = cache. שיוכו קודם backup_servers כדי לראות את ההבדל.";
     }
     fb.className = "feedback ok";
     renderPyAlias();
