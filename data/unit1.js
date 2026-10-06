@@ -656,6 +656,7 @@ bool verify_user_session(const char* raw_token, size_t token_len) {
             <li><strong>STRIDE</strong> משמש כרשימת תיוג מנחה (Checklist) בשלב התכנון כדי להבטיח שלא נשכחה אף משפחת איומים.</li>
             <li><strong>עץ איומים (Threat Tree)</strong> ממפה כיצד האיומים מתחברים למטרות מעשיות של התוקף.</li>
             <li><strong>תבנית ממצא ביקורת (Audit Finding)</strong> מתעדת את הליקויים שנתגלו בפועל בקוד, מסווגת אותם לפי CIA, ומגדירה את התיקון ההנדסי המדויק.</li>
+          </ul>
         </div>
       `,
     },
