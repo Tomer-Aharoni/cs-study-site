@@ -222,5 +222,3 @@ request_obj = pickle.loads(raw_data)</code></pre>
     `,
   }
 );
-
-);
