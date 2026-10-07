@@ -95,7 +95,7 @@ class SelfPropagator:
       </div>
 
       <h3>שאלת תרגול (מתוך בחינות 2025ג / 2026א)</h3>
-      <p>הגדירו מחלקה בסיסית <code>Book</code> עם בנאי המאתחל <code>title</code>, <code>author</code>, <code>year</code>. לאחר מכן צרו בעזרת <code>type</code> מחלקה נגזרת דינמית בשם <code>DetectiveBook</code>, עם משתנה מחלקה <code>openu_id = 20937</code>, וצרו ממנה מופע.</p>
+      <p>הגדירו מחלקה בסיסית <code>Book</code> עם בנאי המאתחל <span dir="ltr"><code>title</code>, <code>author</code>, <code>year</code></span>. לאחר מכן צרו בעזרת <code>type</code> מחלקה נגזרת דינמית בשם <code>DetectiveBook</code>, עם משתנה מחלקה <code>openu_id = 20937</code>, וצרו ממנה מופע.</p>
       <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>החתימה היא <code>type(name, bases, dict)</code>. שימו לב לארגומנט השני כשיש הורה אחד בלבד — חובה פסיק ליצירת tuple: <code>(Book,)</code>.</p></div></details>
       <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body">
         <pre class="code"><code>class Book:

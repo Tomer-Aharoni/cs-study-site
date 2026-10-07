@@ -461,7 +461,7 @@ public:
         <div class="panel">
           <p><strong>מוקש בחינה: חולשת סדר קריאה בממשק ציבורי (Call Order Vulnerability)</strong><br>
           לכידות חזקה אינה מספקת אם מחלקה חושפת מתודות ציבוריות שניתן להפעילן בכל סדר שהוא:<br>
-          נניח שמחלקה חושפת <code>receive_payload()</code>, <code>authenticate()</code>, ו־<code>decrypt_secret()</code>.<br>
+          נניח שמחלקה חושפת <span dir="ltr"><code>receive_payload()</code>, <code>authenticate()</code></span>, ו־<code>decrypt_secret()</code>.<br>
           אם המתודות עצמאיות, תוקף או מתכנת רשלן עלולים לקרוא ישירות ל־<code>decrypt_secret()</code> מבלי לקרוא קודם ל־<code>authenticate()</code>!<br>
           <strong>הפתרון הדפנסיבי:</strong> להגדיר את המתודות הפנימיות כ־<code>private</code>, ולחשוף מתודה ציבורית יחידה (כגון <code>execute_secure_decrypt()</code>) המפעילה את השלבים בסדר מבוקר ומחייב; או לדרוש ממתודת הפענוח לקבל אובייקט "הוכחת אימות" (Token/Proof Object) שנוצר <em>אך ורק</em> בהצלחת האימות.</p>
         </div>

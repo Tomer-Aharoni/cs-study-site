@@ -40,7 +40,7 @@ int sockfd = socket(int domain, int type, int protocol);</code></pre>
       <p><strong>מבנה הכתובת <code>sockaddr_in</code>:</strong> רשומה מובנית במערכת ההפעלה המגדירה כתובת יעד של IPv4. כוללת את משפחת הכתובות (<code>sin_family = AF_INET</code>), את מספר הפורט שהומר לסדר רשת באמצעות <code>htons(PORT)</code>, ואת כתובת ה־IP בפורמט בינארי. הפונקציה <code>inet_pton</code> (Presentation to Network) ממירה מחרוזת כתובת קריאה (כגון <code>"127.0.0.1"</code> — כתובת ה־Loopback המקומית) למבנה בינארי ברשת.</p>
       <p><strong>קריאת המערכת <code>connect</code>:</strong></p>
       <pre class="code"><code>int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);</code></pre>
-      <p>קריאה זו יוזמת את תהליך לחיצת היד המשולשת של TCP (SYN, SYN-ACK, ACK) מול השרת בכתובת ובפורט שצוינו. מערכת ההפעלה מקצה ללקוח פורט מקומי זמני (Ephemeral Port). אם החיבור נכשל (למשל, אין שרת שמאזין בפורט זה), הפונקציה מחזירה <code>-1</code>.</p>
+      <p>קריאה זו יוזמת את תהליך לחיצת היד המשולשת של TCP (<span dir="ltr">SYN, SYN-ACK, ACK</span>) מול השרת בכתובת ובפורט שצוינו. מערכת ההפעלה מקצה ללקוח פורט מקומי זמני (Ephemeral Port). אם החיבור נכשל (למשל, אין שרת שמאזין בפורט זה), הפונקציה מחזירה <code>-1</code>.</p>
       <p><strong>דוגמת קוד מקורית ומלאה — לקוח TCP דפנסיבי ב־C++:</strong></p>
       <pre class="code"><code>#include &lt;iostream&gt;
 #include &lt;cstring&gt;
@@ -134,7 +134,7 @@ int main() {
     title: "שרת ב-C++: bind, listen, accept",
     html: `
       <p>שרת TCP פועל במודל פסיבי: הוא מקים שקע האזנה, קושר אותו לפורט מקומי, ממתין לבקשות חיבור מלקוחות, ומטפל בהן. סדר הפעולות המחייב ב־C++:</p>
-      <p><code>socket</code> → <code>setsockopt (SO_REUSEADDR)</code> → <code>bind</code> → <code>listen</code> → <code>accept</code> → <code>recv/send</code> → <code>close</code></p>
+      <p><span dir="ltr"><code>socket</code> → <code>setsockopt (SO_REUSEADDR)</code> → <code>bind</code> → <code>listen</code> → <code>accept</code> → <code>recv/send</code> → <code>close</code></span></p>
       <p><strong>פירוט פונקציות השרת ותפקידן:</strong></p>
       <ul>
         <li><code>setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, ...)</code> — מאפשרת לשקע לקשור את הפורט מחדש מיד לאחר הפעלה מחדש של השרת. ללא אפשרות זו, אם השרת הופסק, הפורט נותר במצב <code>TIME_WAIT</code> למשך 1–2 דקות, וניסיון הרצה מיידי ייכשל בשגיאת "Address already in use".</li>
@@ -237,10 +237,10 @@ int main() {
     title: "Boost כספריות C++ לתקשורת",
     html: `
       <p>ספריות <strong>Boost</strong> (זמינות ב־<code>boost.org</code>) הן אוסף ספריות קוד פתוח מובילות ומוערכות ב־C++, המשמשות באופן מסורתי כר פיתוח ובדיקה להצעות המאומצות לאחר מכן בתקן הרשמי של השפה (ISO C++). בסביבת הפיתוח Visual Studio מתקינים אותן ישירות דרך מנהל החבילות <strong>NuGet</strong> (או דרך <code>vcpkg</code>). בעולם התקשורת והרשתות, ספריית <strong>Boost.Asio</strong> (Asynchronous Input/Output) היא התשתית הסטנדרטית והמודרנית לכתיבת יישומי רשת מונחי־עצמים, מאובטחים ובעלי ביצועים גבוהים, בהשוואה ל־API המסורתי של מערכת ההפעלה.</p>
-      <p><strong>מדוע להשתמש ב־Boost.Asio במקום ב־API הגולמי של שקעים?</strong> ב־API הישן (Berkeley Sockets) נדרש רצף של קריאות מערכת ברמה נמוכה: <code>socket</code>, <code>setsockopt</code>, מילוי מבני כתובות C גולמיים, <code>bind</code>, <code>listen</code>, ו־<code>accept</code> — תוך סכנה מתמדת לדליפת מתארי קבצים, שגיאות המרת בתים, ובדיקות ערכי החזרה שליליים שקל לפספס. Boost.Asio עוטפת את כל הפעולות הללו במבנה מודרני מונחה־עצמים:</p>
+      <p><strong>מדוע להשתמש ב־Boost.Asio במקום ב־API הגולמי של שקעים?</strong> ב־API הישן (Berkeley Sockets) נדרש רצף של קריאות מערכת ברמה נמוכה: <span dir="ltr"><code>socket</code>, <code>setsockopt</code></span>, מילוי מבני כתובות C גולמיים, <span dir="ltr"><code>bind</code>, <code>listen</code></span>, ו־<code>accept</code> — תוך סכנה מתמדת לדליפת מתארי קבצים, שגיאות המרת בתים, ובדיקות ערכי החזרה שליליים שקל לפספס. Boost.Asio עוטפת את כל הפעולות הללו במבנה מודרני מונחה־עצמים:</p>
       <ul>
         <li><code>boost::asio::io_context</code> — <strong>מנוע הקלט/פלט המרכזי:</strong> מנהל את ערוץ התקשורת מול מערכת ההפעלה, מפעיל את לולאת האירועים (Event Loop), ומנתב פעולות קלט/פלט סינכרוניות ואסינכרוניות.</li>
-        <li><strong>צד השרת — המחלקה <code>tcp::acceptor</code>:</strong> מאגדת בתוכה בצורה אלגנטית את כל שלבי ההקמה של השרת (<code>socket</code>, <code>bind</code> ו־<code>listen</code>) לכדי אובייקט יחיד המקבל נקודת קצה (<code>endpoint</code>). קריאה למתודה <code>accept()</code> ממתינה לחיבור ומחזירה ישירות אובייקט <code>tcp::socket</code> מוכן לשיחה.</li>
+        <li><strong>צד השרת — המחלקה <code>tcp::acceptor</code>:</strong> מאגדת בתוכה בצורה אלגנטית את כל שלבי ההקמה של השרת (<span dir="ltr"><code>socket</code>, <code>bind</code></span> ו־<code>listen</code>) לכדי אובייקט יחיד המקבל נקודת קצה (<code>endpoint</code>). קריאה למתודה <code>accept()</code> ממתינה לחיבור ומחזירה ישירות אובייקט <code>tcp::socket</code> מוכן לשיחה.</li>
         <li><strong>צד הלקוח — המחלקה <code>tcp::resolver</code>:</strong> מתרגמת שמות מארח (Hostnames כגון <code>"api.example.com"</code>) ומספרי פורט לכתובות רשת (Endpoints) ומאפשרת חיבור פשוט באמצעות <code>boost::asio::connect</code>.</li>
         <li><strong>מעטפת חוצץ בטוחה (Safe Buffering):</strong> פונקציות הקלט/פלט עובדות מול <code>boost::asio::buffer</code>, שמצמידה למצביע הזיכרון את גודל החוצץ במדויק ומונעת גלישות חוצץ (Buffer Overflow). פונקציות עזר כגון <code>boost::asio::read</code> ו־<code>boost::asio::write</code> מבטיחות קריאה וכתיבה של מלוא הבתים הנדרשים ללא באגים של קריאה חלקית.</li>
       </ul>
@@ -327,7 +327,7 @@ def query_sensor_service():
         except OSError as err:
             print(f"Network error occurred: {err}")
     return None</code></pre>
-      <p><strong>שרת TCP בסיסי בפייתון:</strong> מקביל לרצף הפעולות ב־C++ (<code>socket</code> → <code>bind</code> → <code>listen</code> → <code>accept</code>):</p>
+      <p><strong>שרת TCP בסיסי בפייתון:</strong> מקביל לרצף הפעולות ב־C++ (<span dir="ltr"><code>socket</code> → <code>bind</code> → <code>listen</code> → <code>accept</code></span>):</p>
       <pre class="code"><code>import socket
 
 LISTEN_HOST = "127.0.0.1"

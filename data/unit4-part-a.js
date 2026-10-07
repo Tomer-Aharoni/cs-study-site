@@ -48,7 +48,7 @@ if user_authenticated:
 print("Authentication check complete")</code></pre>
       <ul>
         <li>הקפדה על PEP 8: תמיד 4 רווחים להזחה, ללא Tab, למניעת שגיאות <code>TabError</code>.</li>
-        <li>מבנה <code>if</code> / <code>elif</code> / <code>else</code>: הענפים מוציאים זה את זה לפי סדר בדיקתם.</li>
+        <li>מבנה <span dir="ltr"><code>if</code> / <code>elif</code> / <code>else</code></span>: הענפים מוציאים זה את זה לפי סדר בדיקתם.</li>
         <li>שרשור פקודות באותה שורה באמצעות נקודה־פסיק <code>;</code> נתמך תחבירית אך אינו מקובל. באופן דומה, כתיבת <code>if cond: print(...)</code> בשורה אחת נחשבת לפרקטיקה לא קריאה.</li>
       </ul>
       <pre class="code"><code>latency_ms = 45

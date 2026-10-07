@@ -60,7 +60,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
       <li><code>with open(filename, "rb") as f: data = f.read()</code>: קריאת הקובץ במצב בינארי (<code>"rb"</code>). <em>מוקש קריטי:</em> חובה לקרוא כבינארי; פתיחה כטקסט תשבש קבצים בינאריים עקב המרת תווי ירידת שורה (<code>\r\n</code> לעומת <code>\n</code>).</li>
       <li><code>total_packets = (len(data) + DATA_SIZE - 1) // DATA_SIZE</code>: חישוב מתמטי של חלוקה בעיגול כלפי מעלה (Ceil Division). אם הקובץ מכיל למשל 2037 בתים, נקבל <code>(2037 + 2035) // 2036 = 2</code> חבילות (חבילה מלאה של 2036 + חבילה של בית 1). אם הקובץ ריק (0 בתים), הנוסחה מחזירה 0.</li>
       <li><code>with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:</code>: יצירת שקע TCP (IPv4) מנוהל הקשר שייסגר אוטומטית.</li>
-      <li><code>s.connect((HOST, PORT))</code>: ייזום לחיצת יד משולשת (SYN, SYN-ACK, ACK) והתחברות לשרת.</li>
+      <li><code>s.connect((HOST, PORT))</code>: ייזום לחיצת יד משולשת (<span dir="ltr">SYN, SYN-ACK, ACK</span>) והתחברות לשרת.</li>
       <li><code>chunk = data[start:start + DATA_SIZE]</code>: חיתוך פרוסת הבתים עבור החבילה הנוכחית. עבור החבילה האחרונה, אורך ה־chunk עשוי להיות קטן מ־<code>DATA_SIZE</code>.</li>
       <li><code>header = packet_number.to_bytes(4, "big") + ...</code>: המרת כל מספר שלם בן 4 בתים (32 סיביות) לפורמט Big-Endian תקני של הרשת, ושרשורם לכותרת רציפה בת 12 בתים.</li>
       <li><code>s.sendall(header + chunk)</code>: שליחה בטוחה. <em>מוקש:</em> שימוש ב־<code>send()</code> רגיל עלול לשדר רק חלק מהמידע (Partial Send); הפונקציה <code>sendall()</code> מבצעת לולאה פנימית עד שכל המידע שודר במלואו.</li>

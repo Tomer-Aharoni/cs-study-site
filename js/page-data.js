@@ -3,7 +3,7 @@
   const inflight = new Map();
   const UNITS = {
     "1": {
-      main: "data/unit1.js?v=37",
+      main: "data/unit1.js?v=38",
       rest: [],
       interact: "data/unit1-interact.js?v=33",
       quizzes: "UNIT1_QUIZZES",
@@ -13,9 +13,9 @@
       rest: [
         "data/unit2-part-a.js?v=30",
         "data/unit2-part-b.js?v=30",
-        "data/unit2-part-c.js?v=37",
+        "data/unit2-part-c.js?v=38",
         "data/unit2-part-d.js?v=31",
-        "data/unit2-hw.js?v=30",
+        "data/unit2-hw.js?v=31",
       ],
       interact: "data/unit2-interact.js?v=37",
       quizzes: "UNIT2_QUIZZES",
@@ -28,16 +28,16 @@
         "data/unit3-part-c.js?v=36",
         "data/unit3-part-d.js?v=34",
       ],
-      interact: "data/unit3-interact.js?v=34",
+      interact: "data/unit3-interact.js?v=35",
       quizzes: "UNIT3_QUIZZES",
     },
     "4": {
       main: "data/unit4.js?v=30",
       rest: [
-        "data/unit4-part-a.js?v=37",
-        "data/unit4-part-b.js?v=36",
+        "data/unit4-part-a.js?v=38",
+        "data/unit4-part-b.js?v=37",
         "data/unit4-part-c.js?v=36",
-        "data/unit4-part-d.js?v=36",
+        "data/unit4-part-d.js?v=37",
         "data/unit4-hw.js?v=30",
       ],
       interact: "data/unit4-interact.js?v=37",
@@ -46,18 +46,18 @@
     "5": {
       main: "data/unit5.js?v=30",
       rest: [
-        "data/unit5-part-a.js?v=33",
-        "data/unit5-part-b.js?v=36",
+        "data/unit5-part-a.js?v=34",
+        "data/unit5-part-b.js?v=37",
         "data/unit5-part-c.js?v=34",
         "data/unit5-part-d.js?v=34",
-        "data/unit5-hw.js?v=30",
+        "data/unit5-hw.js?v=31",
       ],
-      interact: "data/unit5-interact.js?v=34",
+      interact: "data/unit5-interact.js?v=35",
       quizzes: "UNIT5_QUIZZES",
     },
     "6": {
       main: "data/unit6.js?v=30",
-      rest: ["data/unit6-part-a.js?v=34", "data/unit6-part-b.js?v=33", "data/unit6-part-c.js?v=33"],
+      rest: ["data/unit6-part-a.js?v=35", "data/unit6-part-b.js?v=33", "data/unit6-part-c.js?v=33"],
       interact: "data/unit6-interact.js?v=33",
       quizzes: "UNIT6_QUIZZES",
     },
@@ -77,8 +77,8 @@
   const VIZ = "data/viz.js?v=30";
   const BANKS = ["data/exam-prep-bank.js?v=34", "data/exam-mc-bank.js?v=1"];
   const EXAMS = ["data/exam-recon.js?v=37", "data/exam-sims.js?v=36", "data/exam-sims-recon.js?v=39"].concat(BANKS);
-  const SUMMARY = ["data/summary-prose.js?v=32", "data/summary-detail.js?v=30"];
-  const GUIDE = "data/study-guide-notes.js?v=1";
+  const SUMMARY = ["data/summary-prose.js?v=34", "data/summary-detail.js?v=31"];
+  const GUIDE = "data/study-guide-notes.js?v=2";
   const SUPABASE = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js";
 
   function inject(src) {

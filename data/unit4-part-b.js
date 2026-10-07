@@ -176,7 +176,7 @@ timeout = server_config.get("timeout", 30)  # מחזיר ברירת מחדל 30 
         <p>כתיבת <code>except:</code> ללא ציון שם מחלקת החריגה תופסת <em>כל חריגה שהיא</em>, כולל חריגות מערכת קריטיות: <code>KeyboardInterrupt</code> (בקשת המשתמש לעצור את התוכנית עם Ctrl+C) ו־<code>SystemExit</code> (יציאה מסודרת מהתהליך). הדבר גורם לתוכנית "להינעל" ולסרב לעצור גם כשהמשתמש או מערכת ההפעלה דורשים זאת!</p>
         <p>אם נדרש לתפוס את כל שגיאות התוכנה הסטנדרטיות (מבלי לפגוע בחריגות המערכת), תופסים במפורש <code>except Exception:</code>, שהיא מחלקת הבסיס של שגיאות התוכנה הרגילות. עם זאת, השיטה הדפנסיבית המומלצת היא לתפוס תמיד <strong>טיפוסי שגיאה ספציפיים</strong> (כגון <code>OSError</code>, <code>ValueError</code>, <code>KeyError</code>).</p>
       </div>
-      <p><strong>מבנה הבלוק המלא: <code>try</code>, <code>except</code>, <code>else</code>, <code>finally</code>:</strong></p>
+      <p><strong>מבנה הבלוק המלא: <span dir="ltr"><code>try</code>, <code>except</code>, <code>else</code>, <code>finally</code></span>:</strong></p>
       <ul>
         <li><code>try</code>: בלוק הקוד שבו עלולה להתרחש שגיאה.</li>
         <li><code>except ErrorType as err</code>: מטפל בשגיאה מהסוג שצוין.</li>

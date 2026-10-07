@@ -321,7 +321,7 @@ function u5SockLabHtml() {
   return labChrome({
     attr: "data-u5-sock",
     title: U5_SOCK_LAB.title,
-    brief: U5_SOCK_LAB.intro + " שרת: socket→bind→listen→accept. לקוח: socket→htons→connect. htons במבחן: סדר בתים של הרשת לפורט.",
+    brief: U5_SOCK_LAB.intro + " שרת: <span dir=\"ltr\">socket→bind→listen→accept</span>. לקוח: <span dir=\"ltr\">socket→htons→connect</span>. htons במבחן: סדר בתים של הרשת לפורט.",
     stage: withCode(
       `<div class="mem-cols">
       <div class="mem-col lab-panel"><p class="lab-panel-k">שרת</p><div data-u5-srv></div></div>

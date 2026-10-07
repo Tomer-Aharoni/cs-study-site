@@ -70,7 +70,7 @@ UNIT5.sections.push(
       </div>
       <p><strong>שכבת התובלה: השוואה בין TCP ל־UDP:</strong></p>
       <ul>
-        <li><strong>TCP (Transmission Control Protocol):</strong> פרוטוקול מכוון־חיבור (Connection-Oriented). החיבור מוקם באמצעות תהליך לחיצת יד משולשת (3-Way Handshake: הודעות SYN, SYN-ACK, ACK). הפרוטוקול מבטיח מסירה מלאה, סדר מדויק, בקרת זרימה (Flow Control) למניעת הצפת המקבל, ובקרת גודש (Congestion Control) למניעת קריסת עורקי הרשת. חבילות שאבדו משודרות שוב אוטומטית.</li>
+        <li><strong>TCP (Transmission Control Protocol):</strong> פרוטוקול מכוון־חיבור (Connection-Oriented). החיבור מוקם באמצעות תהליך לחיצת יד משולשת (3-Way Handshake: הודעות <span dir="ltr">SYN, SYN-ACK, ACK</span>). הפרוטוקול מבטיח מסירה מלאה, סדר מדויק, בקרת זרימה (Flow Control) למניעת הצפת המקבל, ובקרת גודש (Congestion Control) למניעת קריסת עורקי הרשת. חבילות שאבדו משודרות שוב אוטומטית.</li>
         <li><strong>UDP (User Datagram Protocol):</strong> פרוטוקול ללא חיבור (Connectionless). הודעות נשלחות ללא תיאום מוקדם וללא אישורי קבלה (Fire and Forget). הכותרת קצרה מאוד (8 בתים בלבד). אין הבטחה למסירה, לסדר, או למניעת כפילויות, אך השיהוי (Latency) מינימלי והתקורה נמוכה. מתאים להזרמת מדיה חיה, משחקי רשת, ושאילתות DNS קצרות.</li>
       </ul>
       <div class="panel">

@@ -804,7 +804,7 @@ p = Person(); p.name = "Alice"; print(p.greet())</code></pre>
       </div>
       <div class="note-box cheat-sheet">
         <strong>צ'יט שיט סדר שרת TCP:</strong>
-        <p><code>socket()</code> &rarr; <code>bind()</code> &rarr; <code>listen()</code> &rarr; <code>accept()</code> &rarr; <code>recv()/send()</code> &rarr; <code>close()</code>. קשירה ל-<code>127.0.0.1</code> בטוחה מקשירה ל-<code>0.0.0.0</code> (INADDR_ANY).</p>
+        <p><span dir="ltr"><code>socket()</code> &rarr; <code>bind()</code> &rarr; <code>listen()</code> &rarr; <code>accept()</code> &rarr; <code>recv()/send()</code> &rarr; <code>close()</code></span>. קשירה ל-<code>127.0.0.1</code> בטוחה מקשירה ל-<code>0.0.0.0</code> (INADDR_ANY).</p>
       </div>
     `
   },

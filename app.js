@@ -1537,7 +1537,7 @@ app.addEventListener("click", async (e) => {
     const fb = app.querySelector("[data-u5s-fb]");
     if (op === "reset") {
       resetU5Sock();
-      fb.textContent = "הרצף אופס. שרת: socket→bind→listen→accept. לקוח: socket→htons→connect.";
+      fb.textContent = "הרצף אופס. שרת: \u2066socket→bind→listen→accept\u2069. לקוח: \u2066socket→htons→connect\u2069.";
     } else if (op === "srv") {
       if (u5sock.srv < U5_SRV.length) u5sock.srv += 1;
       fb.textContent =

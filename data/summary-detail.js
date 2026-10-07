@@ -227,7 +227,7 @@ window.SUMMARY_DETAIL = {
   "u5-prx": "פרוקסי לגיטימי עדיין גבול אמון: הוא רואה תוכן אם אין TLS עד הסוף.",
   "u5-so": "מספר כמו fd. שלילי = כשל. השוואה ל־0 שגויה: 0 ידית חוקית.",
   "u5-cl": "127.0.0.1 = המכונה הזו.",
-  "u5-sv": "שקע מאזין ≠ שקע השיחה אחרי accept. addrlen לא addlen. בפייתון: bind, listen, accept.",
+  "u5-sv": "שקע מאזין ≠ שקע השיחה אחרי accept. addrlen לא addlen. בפייתון: \u2066bind, listen, accept\u2069.",
   "u5-any": "0.0.0.0 מאזין גם לרשת החיצונית אם יש ממשק.",
   "u5-rd": "send/recv יכולות להיות חלקיות. מגדירים framing, תקרת גודל ו־timeout; recv 0 הוא EOF ב־TCP.",
   "u5-th": "std::thread joinable שנהרס קורא terminate. מצטרפים או מנתקים במפורש לפני שהאובייקט נהרס.",
