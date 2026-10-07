@@ -45,12 +45,14 @@ function printTree() {
     ((lesson && lesson.sections) || []).forEach((section) => {
       children.push({ id: "u" + unit.id + ":s:" + section.id, label: section.title });
     });
-    if ((window.SUMMARY_PROSE || []).some((chapter) => chapter.unit === unit.id)) {
-      children.push({ id: "u" + unit.id + ":summary", label: "סיכום היחידה" });
-    }
     if (quizzesFor(unit.id).length) children.push({ id: "u" + unit.id + ":quiz", label: "תרגילי היחידה" });
     return { id: "u" + unit.id, label: "יחידה " + unit.id + " · " + unit.title, children: children };
   });
+  const summaries = (window.SUMMARY_PROSE || []).map((chapter) => ({
+    id: "u" + chapter.unit + ":summary",
+    label: chapter.title,
+  }));
+  if (summaries.length) units.push({ id: "summaries", label: "סיכומים", children: summaries });
   const exams = (window.EXAM_SIMS || []).map((exam) => ({ id: "exam:" + exam.id, label: exam.title }));
   if (exams.length) units.push({ id: "practice", label: "תרגול ומבחנים", children: exams });
   return units;
@@ -136,6 +138,14 @@ function printSectionHtml(unitId, section, usedQuizzes) {
   return `<section class="print-block"><h3>${esc(section.title)}</h3>${section.html}<div class="print-static">${figures}</div>${quizzes}</section>`;
 }
 
+function printSummaryHtml(chapter) {
+  let html = `<section class="print-block"><h3>${esc(chapter.title)}</h3><p>${esc(chapter.intro || "")}</p>`;
+  (chapter.parts || []).forEach((part) => {
+    html += `<h4>${esc(part.title)}</h4>${part.html}`;
+  });
+  return html + `</section>`;
+}
+
 function printSheetHtml() {
   const selected = printState.selected;
   if (!selected.size) return `<p class="muted">בחרו לפחות אזור אחד.</p>`;
@@ -143,9 +153,10 @@ function printSheetHtml() {
   (COURSE.units || []).forEach((unit) => {
     const lesson = lessonById(unit.id);
     const prefix = "u" + unit.id;
+    const summaryId = prefix + ":summary";
     const any =
       selected.has(prefix) ||
-      [...selected].some((id) => id.indexOf(prefix + ":") === 0);
+      [...selected].some((id) => id.indexOf(prefix + ":") === 0 && id !== summaryId);
     if (!any || !lesson) return;
     html += `<h2>יחידה ${esc(unit.id)} · ${esc(unit.title)}</h2>`;
     if (selected.has(prefix) || selected.has(prefix + ":goals")) {
@@ -156,16 +167,6 @@ function printSheetHtml() {
     (lesson.sections || []).forEach((section) => {
       if (selected.has(prefix) || selected.has(prefix + ":s:" + section.id)) html += printSectionHtml(unit.id, section, usedQuizzes);
     });
-    if (selected.has(prefix) || selected.has(prefix + ":summary")) {
-      const chapter = (window.SUMMARY_PROSE || []).find((item) => item.unit === unit.id);
-      if (chapter) {
-        html += `<section class="print-block"><h3>${esc(chapter.title)}</h3><p>${esc(chapter.intro || "")}</p>`;
-        (chapter.parts || []).forEach((part) => {
-          html += `<h4>${esc(part.title)}</h4>${part.html}`;
-        });
-        html += `</section>`;
-      }
-    }
     if (printState.exercises && (selected.has(prefix) || selected.has(prefix + ":quiz"))) {
       quizzesFor(unit.id).forEach((quiz) => {
         if (usedQuizzes.has(quiz.id)) return;
@@ -175,6 +176,15 @@ function printSheetHtml() {
       });
     }
   });
+  const summaries = (window.SUMMARY_PROSE || []).filter(
+    (chapter) => selected.has("summaries") || selected.has("u" + chapter.unit + ":summary")
+  );
+  if (summaries.length) {
+    html += `<h2>סיכומים</h2>`;
+    summaries.forEach((chapter) => {
+      html += printSummaryHtml(chapter);
+    });
+  }
   (window.EXAM_SIMS || []).forEach((exam) => {
     if (!selected.has("practice") && !selected.has("exam:" + exam.id)) return;
     html += `<h2>${esc(exam.title)}</h2>`;
