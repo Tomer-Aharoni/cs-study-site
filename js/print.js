@@ -53,6 +53,14 @@ function printTree() {
     label: chapter.title,
   }));
   if (summaries.length) units.push({ id: "summaries", label: "סיכומים", children: summaries });
+  const cardsByUnit = {};
+  (window.SUMMARY_CARDS || []).forEach((card) => {
+    cardsByUnit[card.unit] = true;
+  });
+  const cards = (COURSE.units || [])
+    .filter((unit) => cardsByUnit[unit.id])
+    .map((unit) => ({ id: "cards:u" + unit.id, label: "יחידה " + unit.id + " · " + unit.title }));
+  if (cards.length) units.push({ id: "cards", label: "כרטיסיות", children: cards });
   const exams = (window.EXAM_SIMS || []).map((exam) => ({ id: "exam:" + exam.id, label: exam.title }));
   if (exams.length) units.push({ id: "practice", label: "תרגול ומבחנים", children: exams });
   return units;
@@ -146,6 +154,18 @@ function printSummaryHtml(chapter) {
   return html + `</section>`;
 }
 
+function printCardsHtml(unit) {
+  const cards = (window.SUMMARY_CARDS || []).filter((card) => card.unit === unit.id);
+  if (!cards.length) return "";
+  let html = `<section class="print-block"><h3>יחידה ${esc(unit.id)} · ${esc(unit.title)}</h3>`;
+  cards.forEach((card) => {
+    const extra = (window.SUMMARY_DETAIL || {})[card.id];
+    const more = extra ? `<div class="card-detail">${studyRich(extra)}</div>` : "";
+    html += `<article class="print-card study-text"><p class="kind">${esc(card.kind)}</p><h4>${esc(card.title)}</h4>${studyRich(card.body)}${more}</article>`;
+  });
+  return html + `</section>`;
+}
+
 function printSheetHtml() {
   const selected = printState.selected;
   if (!selected.size) return `<p class="muted">בחרו לפחות אזור אחד.</p>`;
@@ -185,6 +205,11 @@ function printSheetHtml() {
       html += printSummaryHtml(chapter);
     });
   }
+  const cardUnits = (COURSE.units || []).filter(
+    (unit) => selected.has("cards") || selected.has("cards:u" + unit.id)
+  );
+  const cardBlocks = cardUnits.map(printCardsHtml).join("");
+  if (cardBlocks) html += `<h2>כרטיסיות</h2>` + cardBlocks;
   (window.EXAM_SIMS || []).forEach((exam) => {
     if (!selected.has("practice") && !selected.has("exam:" + exam.id)) return;
     html += `<h2>${esc(exam.title)}</h2>`;

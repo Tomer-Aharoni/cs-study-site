@@ -4898,13 +4898,26 @@ a.card,
 
   .print-quiz,
   pre,
-  .lab-code-panel {
+  .lab-code-panel,
+  .print-card {
     break-inside: avoid;
     page-break-inside: avoid;
   }
 
   .print-block {
     margin: 0.35rem 0;
+  }
+
+  .print-card {
+    margin: 0.35rem 0 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .print-card h4,
+  .print-card .kind {
+    margin: 0.1rem 0 0.25rem;
+    color: #111 !important;
   }
 
   .lab {
