@@ -6,17 +6,8 @@
   }
 
   const cfg = window.CS_SUPABASE;
-  const enabled = !!(
-    cfg &&
-    typeof cfg.url === "string" &&
-    /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(cfg.url) &&
-    typeof cfg.anonKey === "string" &&
-    cfg.anonKey.length > 20 &&
-    cfg.anonKey !== "YOUR_ANON_KEY" &&
-    window.supabase &&
-    typeof window.supabase.createClient === "function"
-  );
-
+  let enabled = false;
+  let started = false;
   let client = null;
   let session = null;
   let profile = null;
@@ -27,15 +18,17 @@
     resolveReady = resolve;
   });
 
-  if (enabled) {
-    client = window.supabase.createClient(cfg.url, cfg.anonKey, {
-      auth: {
-        flowType: "pkce",
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-      },
-    });
+  function canStart() {
+    return !!(
+      cfg &&
+      typeof cfg.url === "string" &&
+      /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(cfg.url) &&
+      typeof cfg.anonKey === "string" &&
+      cfg.anonKey.length > 20 &&
+      cfg.anonKey !== "YOUR_ANON_KEY" &&
+      window.supabase &&
+      typeof window.supabase.createClient === "function"
+    );
   }
 
   async function loadProfile() {
@@ -83,7 +76,31 @@
     }
   }
 
-  init();
+  function start() {
+    if (started) return ready;
+    started = true;
+    if (!canStart()) {
+      resolveReady();
+      return ready;
+    }
+    try {
+      enabled = true;
+      client = window.supabase.createClient(cfg.url, cfg.anonKey, {
+        auth: {
+          flowType: "pkce",
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+        },
+      });
+      init();
+    } catch (err) {
+      enabled = false;
+      client = null;
+      resolveReady();
+    }
+    return ready;
+  }
 
   function displayName() {
     if (profile && profile.display_name) return profile.display_name;
@@ -139,6 +156,7 @@
       if (!client) return Promise.resolve();
       return client.auth.signOut();
     },
+    start: start,
     onChange: function (fn) {
       listeners.push(fn);
     },

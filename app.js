@@ -309,6 +309,10 @@ function stripHtml(html) {
 let searchCache = null;
 
 function searchIndex() {
+  if (window.__searchStale) {
+    searchCache = null;
+    window.__searchStale = false;
+  }
   if (searchCache) return searchCache;
   const base = `#/course/${COURSE.id}`;
   const items = [];
@@ -837,6 +841,45 @@ function renderUnit(id) {
 
 let railObserver = null;
 
+function resumeSectionOnPage(unitId) {
+  const resume = getProgress().resume;
+  if (!resume || String(resume.unit) !== String(unitId) || !resume.section) return null;
+  if (resume.section === "unit-goals") return null;
+  return document.getElementById(resume.section);
+}
+
+function scrollToStartOr(el) {
+  const apply = () => {
+    if (el && el.isConnected) el.scrollIntoView({ block: "start" });
+    else window.scrollTo(0, 0);
+  };
+  apply();
+  requestAnimationFrame(apply);
+}
+
+function placePageScroll() {
+  if (window.__keepScroll != null) {
+    const y = window.__keepScroll;
+    window.__keepScroll = null;
+    const apply = () => window.scrollTo(0, y);
+    apply();
+    requestAnimationFrame(apply);
+    return;
+  }
+  const r = parseRoute();
+  if (r.area === "learn" && r.unit) {
+    const quiz = r.quizFocus ? document.getElementById("q-" + r.quizFocus) : null;
+    const section = !quiz && r.section ? document.getElementById(r.section) : null;
+    const checkpoint = !quiz && !section ? resumeSectionOnPage(r.unit) : null;
+    scrollToStartOr(quiz || section || checkpoint);
+    return;
+  }
+  if (r.examFocus) {
+    const el = document.getElementById("q-" + r.examFocus);
+    if (el) el.scrollIntoView({ block: "start" });
+  }
+}
+
 function mountPath() {
   const root = app.querySelector("[data-path]");
   if (!root) return;
@@ -882,16 +925,8 @@ function enhance() {
     railObserver = null;
   }
   mountPath();
+  placePageScroll();
   mountRail();
-  const r = parseRoute();
-  if (r.area === "learn" && (r.section || r.quizFocus)) {
-    const el = document.getElementById(r.quizFocus ? "q-" + r.quizFocus : r.section);
-    if (el) el.scrollIntoView({ block: "start" });
-  }
-  if (r.examFocus) {
-    const el = document.getElementById("q-" + r.examFocus);
-    if (el) el.scrollIntoView({ block: "start" });
-  }
   const searchInput = app.querySelector("[data-search-input]");
   if (searchInput) searchInput.focus();
 }
@@ -921,6 +956,13 @@ async function route() {
   }
   document.body.classList.remove("toc-open");
   const r = parseRoute();
+  if (window.CSPageData) {
+    if (!app.textContent.trim() && CSPageData.missing(r)) {
+      app.innerHTML = shell(`<p class="muted">טוען את התוכן…</p>`);
+    }
+    await CSPageData.ensure(r);
+    if (token !== window.__routeToken) return;
+  }
   if (r.print) {
     app.innerHTML = shell(renderPrintPage());
     return;
@@ -2014,9 +2056,44 @@ function mountTopbarScroll() {
   );
 }
 
-async function boot() {
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
+function pageDigest() {
+  const bits = [];
+  bits.push(window.CSAuth && CSAuth.enabled() ? "auth" : "off");
+  bits.push(window.CSAuth && CSAuth.user() ? CSAuth.user().id : "");
+  bits.push(window.CSAuth && CSAuth.isAdmin() ? "admin" : "");
+  const progress = getProgress();
+  bits.push(JSON.stringify(progress.resume || null));
+  bits.push((progress.seen || []).join(","));
+  (COURSE.units || []).forEach((unit) => {
+    const doc = lessonById(unit.id);
+    if (!doc) return;
+    bits.push(doc.title || "");
+    (doc.sections || []).forEach((section) => bits.push(section.id, section.title || "", section.html || ""));
+    bits.push(String(quizzesFor(unit.id).length));
+  });
+  bits.push(String((window.SUMMARY_PROSE || []).length));
+  bits.push(String((window.EXAM_SIMS || []).length));
+  bits.push(String((window.SITE_BANNERS || []).length));
+  return bits.join("\n");
+}
+
+function syncBusy() {
+  const active = document.activeElement;
+  if (active && active.closest && active.closest("textarea, input, select, [contenteditable='true']")) return true;
+  return !!window.__examClock;
+}
+
+async function syncCloud() {
   try {
-    if (window.CSContent) await CSContent.boot();
+    if (window.CSPageData) await CSPageData.loadSupabase();
+  } catch (err) {
+    /* בלי שרת נשארים עם הקבצים המקומיים */
+  }
+  if (window.CSAuth && CSAuth.start) CSAuth.start();
+  try {
+    if (window.CSContent) await CSContent.bootCloud();
   } catch (err) {
     /* נשארים עם הקבצים המצורפים */
   }
@@ -2025,8 +2102,17 @@ async function boot() {
   } catch (err) {
     /* המעקב המקומי נשאר */
   }
+}
+
+async function boot() {
   window.__csBooted = true;
   mountTopbarScroll();
-  route();
+  const syncing = syncCloud();
+  await route();
+  const before = pageDigest();
+  await syncing;
+  if (pageDigest() === before || syncBusy()) return;
+  window.__keepScroll = window.scrollY;
+  await route();
 }
 boot();

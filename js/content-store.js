@@ -193,6 +193,26 @@
     return bundled;
   }
 
+  function absorbBundled() {
+    const fresh = collect();
+    if (!bundled) {
+      bundled = JSON.parse(JSON.stringify(fresh));
+      return;
+    }
+    const seen = new Set(bundled.map((item) => item.id));
+    fresh.forEach((item) => {
+      if (seen.has(item.id)) return;
+      bundled.push(JSON.parse(JSON.stringify(item)));
+    });
+  }
+
+  function prepare() {
+    absorbBundled();
+    if (window.CSBanners) CSBanners.reset();
+    applyPublished();
+    if (loaded.length) applyItems(loaded);
+  }
+
   function applyItems(rows) {
     const course = window.COURSE;
     if (!course || !rows) return;
@@ -482,10 +502,7 @@
     applyItems(safe);
   }
 
-  async function boot() {
-    snapshot();
-    if (window.CSBanners) CSBanners.reset();
-    applyPublished();
+  async function bootCloud() {
     if (!window.CSAuth || !CSAuth.enabled()) return;
     await CSAuth.ready;
     const client = CSAuth.client();
@@ -508,7 +525,12 @@
   }
 
   window.CSContent = {
-    boot: boot,
+    prepare: prepare,
+    bootCloud: bootCloud,
+    boot: async function () {
+      prepare();
+      await bootCloud();
+    },
     danger: danger,
     catalog: catalog,
     bundledItem: function (id) {
