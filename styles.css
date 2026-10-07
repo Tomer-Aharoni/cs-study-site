@@ -4867,17 +4867,84 @@ a.card,
     display: block !important;
   }
 
-  .print-sheet {
-    color: #111;
-    background: #fff;
+  body,
+  .page,
+  .print-sheet,
+  .lab,
+  .lab-panel,
+  .card,
+  .prose,
+  .study-text {
+    color: #111 !important;
+    background: #fff !important;
   }
 
-  .print-block,
+  pre,
+  .code,
+  pre.code,
+  pre.code code,
+  .code code {
+    background: #1c1917 !important;
+    color: #f5f5f4 !important;
+    white-space: pre-wrap !important;
+    overflow: visible !important;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
   .print-quiz,
-  .viz,
-  .lab {
+  pre,
+  .lab-code-panel {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+
+  .print-block {
+    margin: 0.35rem 0;
+  }
+
+  .lab {
+    margin: 0.6rem 0;
+    padding: 0.55rem 0.65rem;
+    box-shadow: none;
+  }
+
+  .lab-kicker,
+  .lab .feedback,
+  .lab-done-row,
+  .mem-col,
+  .mem-cols,
+  .copy-cols,
+  .lab-panel:has(.stack-viz),
+  .lab-panel:has(.wrap-meter),
+  .lab-panel:has(.osi-stack) {
+    display: none !important;
+  }
+
+  .lab-with-code,
+  .layer-stage.has-side,
+  .cia-stage.has-side {
+    display: block !important;
+  }
+
+  .tree-children,
+  .tree-children[hidden] {
+    display: block !important;
+  }
+
+  .tree-toggle {
+    display: block !important;
+    background: none !important;
+    border: 0 !important;
+    padding: 0.15rem 0 !important;
+    color: #111 !important;
+    font: inherit;
+    font-weight: 700;
+    text-align: start;
   }
 }
 /* AI Assistant Styles */

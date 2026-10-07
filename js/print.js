@@ -2,6 +2,7 @@
 
 var printState = {
   selected: new Set(),
+  labs: true,
   exercises: true,
   hints: false,
   solutions: false,
@@ -11,6 +12,7 @@ function loadPrintState() {
   try {
     const raw = JSON.parse(sessionStorage.getItem("cs-print") || "");
     if (raw && Array.isArray(raw.selected)) raw.selected.forEach((id) => printState.selected.add(id));
+    if (raw && typeof raw.labs === "boolean") printState.labs = raw.labs;
     if (raw && typeof raw.exercises === "boolean") printState.exercises = raw.exercises;
     if (raw && typeof raw.hints === "boolean") printState.hints = raw.hints;
     if (raw && typeof raw.solutions === "boolean") printState.solutions = raw.solutions;
@@ -25,6 +27,7 @@ function savePrintState() {
       "cs-print",
       JSON.stringify({
         selected: [...printState.selected],
+        labs: printState.labs,
         exercises: printState.exercises,
         hints: printState.hints,
         solutions: printState.solutions,
@@ -99,17 +102,29 @@ function printQuizHtml(q) {
   return `<div class="print-quiz study-text"><p><strong>תרגול.</strong></p>${studyRich(q.prompt)}${options ? `<ul>${options}</ul>` : ""}${hint}${solution}</div>`;
 }
 
+function embeddedQuizIds(lesson) {
+  const ids = new Set();
+  const attach = window.SECTION_ATTACH || {};
+  ((lesson && lesson.sections) || []).forEach((section) => {
+    const spec = attach[section.id];
+    ((spec && spec.quizzes) || []).forEach((qid) => ids.add(qid));
+  });
+  return ids;
+}
+
 function printSectionHtml(unitId, section, usedQuizzes) {
   const spec = (window.SECTION_ATTACH || {})[section.id] || {};
   let figures = "";
   (spec.viz || []).forEach((key) => {
     figures += window.vizHtml ? window.vizHtml(key) : "";
   });
-  (spec.labs || []).forEach((key) => {
-    figures += labByName(key);
-  });
+  if (printState.labs) {
+    (spec.labs || []).forEach((key) => {
+      figures += labByName(key);
+    });
+  }
   let quizzes = "";
-  if (printState.exercises) {
+  if (printState.labs && printState.exercises) {
     (spec.quizzes || []).forEach((qid) => {
       if (usedQuizzes.has(qid)) return;
       const quiz = findQuiz(qid);
@@ -137,6 +152,7 @@ function printSheetHtml() {
       html += `<section class="print-block"><h3>מה נלמד ביחידה זו</h3><ul>${(lesson.goals || []).map((goal) => `<li>${esc(goal)}</li>`).join("")}</ul></section>`;
     }
     const usedQuizzes = new Set();
+    const embedded = printState.labs ? null : embeddedQuizIds(lesson);
     (lesson.sections || []).forEach((section) => {
       if (selected.has(prefix) || selected.has(prefix + ":s:" + section.id)) html += printSectionHtml(unit.id, section, usedQuizzes);
     });
@@ -153,6 +169,7 @@ function printSheetHtml() {
     if (printState.exercises && (selected.has(prefix) || selected.has(prefix + ":quiz"))) {
       quizzesFor(unit.id).forEach((quiz) => {
         if (usedQuizzes.has(quiz.id)) return;
+        if (embedded && embedded.has(quiz.id)) return;
         usedQuizzes.add(quiz.id);
         html += printQuizHtml(quiz);
       });
@@ -165,9 +182,9 @@ function printSheetHtml() {
       html += printQuizHtml(quiz);
     });
     (exam.partB || []).forEach((quiz) => {
-      html += `<section class="print-block"><h3>${esc(quiz.title || "")}</h3><p>${esc(quiz.prompt || "")}</p>`;
+      html += `<section class="print-block study-text"><h3>${esc(quiz.title || "")}</h3>${studyRich(quiz.prompt || "")}`;
       if (printState.solutions) {
-        html += `<div class="print-extra">${quiz.solution || quiz.proposed || ""}</div>`;
+        html += `<div class="print-extra">${studyRich(quiz.solution || quiz.proposed || "")}</div>`;
       }
       html += `</section>`;
     });
@@ -189,7 +206,8 @@ function renderPrintPage() {
     </div>
     <ul class="print-tree">${printTreeHtml(printTree(), 0)}</ul>
     <fieldset class="print-options">
-      <legend>מה לכלול בתרגילים</legend>
+      <legend>מה לכלול</legend>
+      <label class="check-line"><input type="checkbox" data-print-opt="labs"${checked("labs")}> מעבדות ותרגילים משולבים</label>
       <label class="check-line"><input type="checkbox" data-print-opt="exercises"${checked("exercises")}> תרגילים</label>
       <label class="check-line"><input type="checkbox" data-print-opt="hints"${checked("hints")}> רמזים</label>
       <label class="check-line"><input type="checkbox" data-print-opt="solutions"${checked("solutions")}> פתרונות</label>

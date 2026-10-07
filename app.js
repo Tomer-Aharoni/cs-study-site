@@ -1971,7 +1971,7 @@ app.addEventListener("change", (e) => {
   const opt = e.target.closest("[data-print-opt]");
   if (!opt) return;
   const key = opt.getAttribute("data-print-opt");
-  if (key === "exercises" || key === "hints" || key === "solutions") printState[key] = opt.checked;
+  if (key === "labs" || key === "exercises" || key === "hints" || key === "solutions") printState[key] = opt.checked;
   if (key === "exercises" && !opt.checked) {
     printState.hints = false;
     printState.solutions = false;
