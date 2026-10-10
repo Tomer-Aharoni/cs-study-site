@@ -6,8 +6,9 @@ window.STUDY_GUIDE_NOTES = [
       <div class="note-box exam-tip">
         <strong>1. קריאות פנימיות (Virtual vs Non-Virtual):</strong>
         <p>פונקציה רגילה שנקראת מתוך פונקציה וירטואלית מפורשת לפי סוג המצביע (סטטית), לא לפי סוג האובייקט.</p>
-        <pre class="code" dir="ltr"><code>class Base { public: virtual void f() { g(); } void g() { cout &lt;&lt; "Base"; } };
-class Derived : public Base { public: void g() { cout &lt;&lt; "Derived"; } };
+        <pre class="code" dir="ltr"><code>#include &lt;iostream&gt;
+class Base { public: virtual void f() { g(); } void g() { std::cout &lt;&lt; "Base"; } };
+class Derived : public Base { public: void g() { std::cout &lt;&lt; "Derived"; } };
 // Base* p = new Derived(); p-&gt;f(); // יודפס Base!</code></pre>
       </div>
       <div class="note-box exam-tip">
@@ -15,8 +16,10 @@ class Derived : public Base { public: void g() { cout &lt;&lt; "Derived"; } };
       </div>
       <div class="note-box exam-tip">
         <strong>3. אתחול רפרנס ב-C++:</strong>
-        <pre class="code" dir="ltr"><code>string &amp;meal = food; // תקין
-string &amp;meal = &amp;food; // שגיאה - ניסיון להכניס כתובת לרפרנס</code></pre>
+        <pre class="code" dir="ltr"><code>#include &lt;string&gt;
+std::string food = "Pizza";
+std::string &amp;meal = food; // תקין
+// std::string &amp;meal = &amp;food; // שגיאה - ניסיון להכניס כתובת לרפרנס</code></pre>
       </div>
       <div class="note-box exam-tip">
         <strong>4. שורש כפול בערימה (Two-Stage Heap Overflow):</strong> בתרחישי מבחן של שני אובייקטים עוקבים, גלישה מ-<code>r1-&gt;f_data</code> תדרוס את מצביע הזיכרון <code>r2-&gt;f_data</code> שלאחריו, ותאפשר כתיבה לכל כתובת בזיכרון (Arbitrary Memory Write).
@@ -37,12 +40,15 @@ string &amp;meal = &amp;food; // שגיאה - ניסיון להכניס כתוב
       </div>
       <div class="note-box exam-tip">
         <strong>8. Data Races ב-Python למרות ה-GIL:</strong> ה-GIL רק מונע הרצה מקבילית של Bytecode.
-        <pre class="code" dir="ltr"><code>count += 1 # אינה פעולה אטומית! מחייבת Lock במקביליות למניעת מרוץ נתונים.</code></pre>
+        <pre class="code" dir="ltr"><code>import threading
+lock = threading.Lock()
+with lock:
+    count += 1 # כעת הפעולה בטוחה בסביבה מקבילית ומרוץ הנתונים נמנע.</code></pre>
       </div>
       <div class="note-box exam-tip">
         <strong>9. ייצוג זיכרון (Endianness):</strong> ב-Little-Endian (למשל x86), הערך נשמר הפוך מהבתים הנמוכים.
-        <pre class="code" dir="ltr"><code>// ערך: 0xC00010FF 
-// יישמר בזיכרון כ: FF 10 00 C0</code></pre>
+        <pre class="code" dir="ltr"><code>// מערכת מזהה ערך: 0xC00010FF 
+// הוא יישמר בזיכרון הפיזי כ: FF 10 00 C0</code></pre>
       </div>
       <div class="note-box exam-tip">
         <strong>10. ASLR מול DEP:</strong> 
@@ -59,7 +65,10 @@ string &amp;meal = &amp;food; // שגיאה - ניסיון להכניס כתוב
     content: `
       <div class="note-box cheat-sheet">
         <strong>1. מניעת גלישות חוצץ וגלישות שלמים</strong>
-        <pre class="code" dir="ltr"><code>void safe_alloc_and_copy(const char* in, int num_elements, int element_size) {
+        <pre class="code" dir="ltr"><code>#include &lt;cstring&gt;
+#include &lt;cstdint&gt;
+
+void safe_alloc_and_copy(const char* in, int num_elements, int element_size) {
     if(!in || num_elements &lt;= 0 || element_size &lt;= 0) return;
     
     // הגנה מ-Integer Overflow ע"י חילוק
@@ -75,7 +84,10 @@ string &amp;meal = &amp;food; // שגיאה - ניסיון להכניס כתוב
       </div>
       <div class="note-box cheat-sheet">
         <strong>2. ניהול זיכרון - Rule of Three / Five</strong>
-        <pre class="code" dir="ltr"><code>class SafeArray {
+        <pre class="code" dir="ltr"><code>#include &lt;cstring&gt;
+#include &lt;new&gt;
+
+class SafeArray {
     char* buf; size_t cap;
 public:
     SafeArray(size_t c=100) : cap(c) { buf = new(std::nothrow) char[cap]; }
@@ -101,7 +113,10 @@ public:
       </div>
       <div class="note-box cheat-sheet">
         <strong>3. מניעת SQLi ב-C++ (SQLite3)</strong>
-        <pre class="code" dir="ltr"><code>sqlite3_stmt* stmt = nullptr;
+        <pre class="code" dir="ltr"><code>#include &lt;sqlite3.h&gt;
+#include &lt;string&gt;
+
+sqlite3_stmt* stmt = nullptr;
 // שימוש בשאילתה פרמטרית מכינה
 sqlite3_prepare_v2(db, "SELECT email FROM users WHERE username = ?", -1, &amp;stmt, nullptr);
 // קשירת הפרמטר - SQLITE_TRANSIENT מבטיח שהזיכרון יועתק בבטחה
@@ -112,7 +127,14 @@ sqlite3_finalize(stmt); // חובה כדי למנוע זליגת זיכרון
       </div>
       <div class="note-box cheat-sheet">
         <strong>4. הצפנת AES-GCM מאומתת (Crypto++)</strong>
-        <pre class="code" dir="ltr"><code>AutoSeededRandomPool prng;
+        <pre class="code" dir="ltr"><code>#include &lt;cryptopp/aes.h&gt;
+#include &lt;cryptopp/gcm.h&gt;
+#include &lt;cryptopp/osrng.h&gt;
+#include &lt;cryptopp/filters.h&gt;
+
+using namespace CryptoPP;
+
+AutoSeededRandomPool prng;
 SecByteBlock key(AES::DEFAULT_KEYLENGTH);
 byte iv[AES::BLOCKSIZE];
 prng.GenerateBlock(key, key.size());
@@ -124,7 +146,12 @@ StringSource ss(plain, true, new AuthenticatedEncryptionFilter(e, new StringSink
       </div>
       <div class="note-box cheat-sheet">
         <strong>5. שקע לקוח מאובטח SSL/TLS (Boost.Asio)</strong>
-        <pre class="code" dir="ltr"><code>ssl::context ctx(ssl::context::tlsv12_client); // חובה מגרסה 1.2
+        <pre class="code" dir="ltr"><code>#include &lt;boost/asio.hpp&gt;
+#include &lt;boost/asio/ssl.hpp&gt;
+using boost::asio::ip::tcp;
+namespace ssl = boost::asio::ssl;
+
+ssl::context ctx(ssl::context::tlsv12_client); // חובה מגרסה 1.2
 ctx.set_default_verify_paths();
 ctx.set_verify_mode(ssl::verify_peer); // וידוא תעודה מול שרשרת CA
 
@@ -142,7 +169,9 @@ socket.handshake(ssl::stream_base::client);</code></pre>
     content: `
       <div class="note-box cheat-sheet">
         <strong>1. מניעת SQL Injection (SQLite3)</strong>
-        <pre class="code" dir="ltr"><code># לעולם אין לשרשר מחרוזות! שימוש בשאילתות פרמטריות בלבד
+        <pre class="code" dir="ltr"><code>import sqlite3
+
+# לעולם אין לשרשר מחרוזות! שימוש בשאילתות פרמטריות בלבד
 with sqlite3.connect("users.db") as conn:
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE name = ? AND pass = ?", (usr, pwd))
@@ -181,7 +210,10 @@ def safe_eval(user_input):
       </div>
       <div class="note-box cheat-sheet">
         <strong>4. שרת TCP מאובטח עם עטיפת SSL</strong>
-        <pre class="code" dir="ltr"><code>context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        <pre class="code" dir="ltr"><code>import socket
+import ssl
+
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 # חובה לטעון תעודה ומפתח פרטי בשרת:
 # context.load_cert_chain('cert.pem', 'key.pem')
 
@@ -197,7 +229,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
       </div>
     `
   },
-  // --- יחידה 1: מבוא לתכנות דפנסיבי וביקורת אבטחה ---
+// --- יחידה 1: מבוא לתכנות דפנסיבי וביקורת אבטחה ---
   {
     unit: "1",
     title: "הבחנה מבדלת: באג, חולשת אבטחה (Vulnerability), ניצול (Exploit) ואפחות (Mitigation)",
