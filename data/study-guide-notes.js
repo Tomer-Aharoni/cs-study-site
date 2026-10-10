@@ -1208,5 +1208,146 @@ cursor.executemany("INSERT OR IGNORE INTO Users VALUES (?, ?)", rows)
 conn.commit()</code></pre>
       </div>
     `
+  }  ,
+  {
+    unit: "General",
+    title: "תבניות קוד הגנתי - C++",
+    content: `
+      <div class="note-box cheat-sheet">
+        <strong>1. מניעת גלישות חוצץ (Buffer Overflow)</strong>
+        <pre><code>void safe_copy(const char* in) {
+    char buf[64];
+    if(!in) return;
+    if(strlen(in) >= sizeof(buf)) return; // Bounds check
+    strncpy(buf, in, sizeof(buf)-1);
+    buf[sizeof(buf)-1] = '\0'; // Null-termination
+}</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>2. ניהול זיכרון - Rule of Three</strong>
+        <pre><code>class SafeArray {
+    char* buf; size_t cap;
+public:
+    SafeArray(size_t c=100) : cap(c) { buf = new(std::nothrow) char[cap]; }
+    virtual ~SafeArray() { delete[] buf; } // Virtual destructor!
+    SafeArray(const SafeArray& o) : cap(o.cap) { // Deep copy
+        buf = new(std::nothrow) char[cap];
+        if(buf && o.buf) strncpy(buf, o.buf, cap-1);
+    }
+    SafeArray& operator=(const SafeArray& o) {
+        if(this != &o) { // Self-assignment check
+            delete[] buf;
+            cap = o.cap;
+            buf = new(std::nothrow) char[cap];
+            if(buf && o.buf) strncpy(buf, o.buf, cap-1);
+        }
+        return *this;
+    }
+};</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>3. הצפנת AES-GCM (Crypto++)</strong>
+        <pre><code>AutoSeededRandomPool prng;
+SecByteBlock key(AES::DEFAULT_KEYLENGTH);
+byte iv[AES::BLOCKSIZE];
+prng.GenerateBlock(key, key.size());
+prng.GenerateBlock(iv, sizeof(iv)); // IV חייב להיות אקראי!
+GCM&lt;AES&gt;::Encryption e;
+e.SetKeyWithIV(key, key.size(), iv, sizeof(iv));
+StringSource ss(plain, true, new AuthenticatedEncryptionFilter(e, new StringSink(cipher)));</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>4. שקע לקוח מאובטח SSL/TLS (Boost.Asio)</strong>
+        <pre><code>ssl::context ctx(ssl::context::tlsv12_client);
+ctx.set_default_verify_paths();
+ctx.set_verify_mode(ssl::verify_peer); // אימות תעודה מול CA
+ssl::stream&lt;tcp::socket&gt; socket(io_context, ctx);
+SSL_set_tlsext_host_name(socket.native_handle(), host.c_str()); // SNI
+boost::asio::connect(socket.lowest_layer(), endpoints);
+socket.handshake(ssl::stream_base::client);</code></pre>
+      </div>
+    `
+  },
+  {
+    unit: "General",
+    title: "תבניות קוד הגנתי - Python",
+    content: `
+      <div class="note-box cheat-sheet">
+        <strong>1. מניעת SQL Injection (SQLite3)</strong>
+        <pre><code># שימוש בשאילתות פרמטריות (Prepared Statements)
+with sqlite3.connect("users.db") as conn:
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE name = ? AND pass = ?", (usr, pwd))
+    return cur.fetchone()</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>2. דקורטור לאימות ובקרת גישה</strong>
+        <pre><code>from functools import wraps
+def secure_logger(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        user = args[0] if args else "Unknown"
+        if not isinstance(user, str) or not user.strip(): raise ValueError()
+        with open('sec.log', 'a') as f: f.write(f"Access by {user}\n")
+        try: return func(*args, **kwargs)
+        except: raise ValueError("Error processing")
+    return wrapper</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>3. מניעת הרצת קוד עוין (Eval/Exec)</strong>
+        <pre><code>import ast
+def safe_eval(user_input):
+    try:
+        # מפרסר רק מבני נתונים בטוחים (מילונים, רשימות, מספרים)
+        return ast.literal_eval(user_input)
+    except (SyntaxError, ValueError):
+        return None</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>4. שרת TCP מאובטח עם SSL</strong>
+        <pre><code>context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+# context.load_cert_chain('cert.pem', 'key.pem')
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
+    server.bind((host, port))
+    server.listen(5)
+    while True:
+        conn, addr = server.accept()
+        with context.wrap_socket(conn, server_side=True) as ssock:
+            data = ssock.recv(1024) # קריאה מוגבלת למניעת הצפה
+            if data: ssock.sendall(b"ACK: " + data)</code></pre>
+      </div>
+    `
   }
+  ,
+  {
+    unit: "General",
+    title: "מוקשים מהמבחנים האחרונים (חדש)",
+    content: `
+      <div class="note-box exam-tip">
+        <strong>1. קריאות וירטואליות:</strong> פונקציה רגילה (Non-Virtual) שנקראת מתוך פונקציה וירטואלית, נקבעת לפי סוג המצביע (סטטית), לא לפי סוג האובייקט בפועל.
+      </div>
+      <div class="note-box exam-tip">
+        <strong>2. גודל אובייקט (vptr):</strong> אם יש פונקציה וירטואלית, מתווסף vptr (מצביע נסתר, לרוב 8 בתים). <code>sizeof</code> לא שווה רק לסכום המשתנים!
+      </div>
+      <div class="note-box exam-tip">
+        <strong>3. אתחול רפרנס:</strong> <code>string &meal = food;</code> (תקין). <code>string &meal = &food;</code> (שגיאה).
+      </div>
+      <div class="note-box exam-tip">
+        <strong>4. שורש כפול בערימה (Two-Stage Heap):</strong> גלישה ב-<code>r1->f_data</code> יכולה לדרוס את המצביע <code>r2->f_data</code> שמוקצה מיד אחריו, ולאפשר Arbitrary Memory Write.
+      </div>
+      <div class="note-box exam-tip">
+        <strong>5. ירושה בפייתון (super):</strong> דריסת <code>__init__</code> מבטלת את אתחול האב. חובה לקרוא ל-<code>super().__init__()</code>.
+      </div>
+      <div class="note-box exam-tip">
+        <strong>6. Endianness:</strong> ב-Little-Endian (כמו x86), הערך <code>0xC00010FF</code> נשמר בזיכרון הפוך: <code>FF 10 00 C0</code>. 
+      </div>
+      <div class="note-box exam-tip">
+        <strong>7. פייתון ו-Data Races:</strong> ה-GIL אינו מונע תנאי מרוץ! פקודות כמו <code>+= 1</code> אינן אטומיות.
+      </div>
+      <div class="note-box exam-tip">
+        <strong>8. ASLR מול DEP:</strong> DEP מונע הרצת קוד ב-Stack/Heap. ASLR מגריל כתובות (מונע Return-to-libc שעוקף DEP).
+      </div>
+    `
+  }
+
 ];
