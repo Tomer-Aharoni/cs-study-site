@@ -1,31 +1,55 @@
 window.STUDY_GUIDE_NOTES = [
   {
     unit: "General",
-    title: "מוקשים מהמבחנים האחרונים (חדש)",
+    title: "מוקשים וטריקים מהמבחנים האחרונים",
     content: `
       <div class="note-box exam-tip">
-        <strong>1. קריאות וירטואליות:</strong> פונקציה רגילה (Non-Virtual) שנקראת מתוך פונקציה וירטואלית, נקבעת לפי סוג המצביע (סטטית), לא לפי סוג האובייקט בפועל.
+        <strong>1. קריאות פנימיות (Virtual vs Non-Virtual):</strong>
+        <p>פונקציה רגילה שנקראת מתוך פונקציה וירטואלית מפורשת לפי סוג המצביע (סטטית), לא לפי סוג האובייקט.</p>
+        <pre class="code" dir="ltr"><code>class Base { public: virtual void f() { g(); } void g() { cout &lt;&lt; "Base"; } };
+class Derived : public Base { public: void g() { cout &lt;&lt; "Derived"; } };
+// Base* p = new Derived(); p-&gt;f(); // יודפס Base!</code></pre>
       </div>
       <div class="note-box exam-tip">
-        <strong>2. גודל אובייקט (vptr):</strong> אם יש פונקציה וירטואלית, מתווסף vptr (מצביע נסתר, לרוב 8 בתים). <code>sizeof</code> לא שווה רק לסכום המשתנים!
+        <strong>2. גודל אובייקט (vptr):</strong> אם יש פונקציה וירטואלית, מתווסף vptr (מצביע נסתר, 8 בתים). <code>sizeof</code> גדול מסכום המשתנים.
       </div>
       <div class="note-box exam-tip">
-        <strong>3. אתחול רפרנס:</strong> <code class="code">string &amp;meal = food;</code> (תקין). <code class="code">string &amp;meal = &amp;food;</code> (שגיאה).
+        <strong>3. אתחול רפרנס ב-C++:</strong>
+        <pre class="code" dir="ltr"><code>string &amp;meal = food; // תקין
+string &amp;meal = &amp;food; // שגיאה - ניסיון להכניס כתובת לרפרנס</code></pre>
       </div>
       <div class="note-box exam-tip">
-        <strong>4. שורש כפול בערימה (Two-Stage Heap):</strong> גלישה ב-<code class="code">r1-&gt;f_data</code> יכולה לדרוס את המצביע <code class="code">r2-&gt;f_data</code> שמוקצה מיד אחריו, ולאפשר Arbitrary Memory Write.
+        <strong>4. שורש כפול בערימה (Two-Stage Heap Overflow):</strong> בתרחישי מבחן של שני אובייקטים עוקבים, גלישה מ-<code>r1-&gt;f_data</code> תדרוס את מצביע הזיכרון <code>r2-&gt;f_data</code> שלאחריו, ותאפשר כתיבה לכל כתובת בזיכרון (Arbitrary Memory Write).
       </div>
       <div class="note-box exam-tip">
-        <strong>5. ירושה בפייתון (super):</strong> דריסת <code class="code">__init__</code> מבטלת את אתחול האב. חובה לקרוא ל-<code class="code">super().__init__()</code>.
+        <strong>5. מוד ברירת המחדל בפתיחת קובץ (פייתון):</strong> 
+        <pre class="code" dir="ltr"><code>f = open("file.txt") # פותח לקריאה בלבד ('r')! 
+# f.write("data") יזרוק חריגת io.UnsupportedOperation.</code></pre>
       </div>
       <div class="note-box exam-tip">
-        <strong>6. Endianness:</strong> ב-Little-Endian (כמו x86), הערך <code class="code">0xC00010FF</code> נשמר בזיכרון הפוך: <code class="code">FF 10 00 C0</code>. 
+        <strong>6. דריסת בנאי האב בפייתון:</strong> הגדרת <code>__init__</code> בילד מבטלת אוטומטית את האתחול של האב.
+        <pre class="code" dir="ltr"><code>class Child(Parent):
+    def __init__(self):
+        super().__init__() # חובה לקרוא, אחרת תעופה על AttributeError למשתני האב!</code></pre>
       </div>
       <div class="note-box exam-tip">
-        <strong>7. פייתון ו-Data Races:</strong> ה-GIL אינו מונע תנאי מרוץ! פקודות כמו <code class="code">+= 1</code> אינן אטומיות.
+        <strong>7. פונקציית input בגרסאות פייתון:</strong> ב-Python 2, הפונקציה <code>input()</code> מבצעת eval על הקלט (חור אבטחה חמור!). כדי לקרוא מחרוזת יש להשתמש ב-<code>raw_input()</code>. ב-Python 3 הבעיה תוקנה ו-<code>input()</code> קורא מחרוזת בטוחה.
       </div>
       <div class="note-box exam-tip">
-        <strong>8. ASLR מול DEP:</strong> DEP מונע הרצת קוד ב-Stack/Heap. ASLR מגריל כתובות (מונע Return-to-libc שעוקף DEP).
+        <strong>8. Data Races ב-Python למרות ה-GIL:</strong> ה-GIL רק מונע הרצה מקבילית של Bytecode.
+        <pre class="code" dir="ltr"><code>count += 1 # אינה פעולה אטומית! מחייבת Lock במקביליות למניעת מרוץ נתונים.</code></pre>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>9. ייצוג זיכרון (Endianness):</strong> ב-Little-Endian (למשל x86), הערך נשמר הפוך מהבתים הנמוכים.
+        <pre class="code" dir="ltr"><code>// ערך: 0xC00010FF 
+// יישמר בזיכרון כ: FF 10 00 C0</code></pre>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>10. ASLR מול DEP:</strong> 
+        <ul>
+          <li><strong>DEP:</strong> מונע הרצת קוד מה-Stack/Heap. תוקף יכול לעקוף זאת ע"י קפיצה לקוד קיים (Return-to-libc).</li>
+          <li><strong>ASLR:</strong> מגריל כתובות זיכרון כדי למנוע את המעקף הנ"ל (התוקף לא יודע לאן לקפוץ).</li>
+        </ul>
       </div>
     `
   },
@@ -34,55 +58,79 @@ window.STUDY_GUIDE_NOTES = [
     title: "תבניות קוד הגנתי - C++",
     content: `
       <div class="note-box cheat-sheet">
-        <strong>1. מניעת גלישות חוצץ (Buffer Overflow)</strong>
-        <pre class="code" dir="ltr"><code>void safe_copy(const char* in) {
-    char buf[64];
-    if(!in) return;
-    if(strlen(in) >= sizeof(buf)) return; // Bounds check
-    strncpy(buf, in, sizeof(buf)-1);
-    buf[sizeof(buf)-1] = '\0'; // Null-termination
+        <strong>1. מניעת גלישות חוצץ וגלישות שלמים</strong>
+        <pre class="code" dir="ltr"><code>void safe_alloc_and_copy(const char* in, int num_elements, int element_size) {
+    if(!in || num_elements &lt;= 0 || element_size &lt;= 0) return;
+    
+    // הגנה מ-Integer Overflow ע"י חילוק
+    if ((size_t)num_elements &gt; SIZE_MAX / (size_t)element_size) return; 
+
+    constexpr size_t BUF_SIZE = 64;
+    char buf[BUF_SIZE];
+    
+    if(strlen(in) &gt;= BUF_SIZE) return; // בדיקת גבולות (Buffer Overflow)
+    strncpy(buf, in, BUF_SIZE-1);
+    buf[BUF_SIZE-1] = '\0'; // Null-termination חובה
 }</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>2. ניהול זיכרון - Rule of Three</strong>
+        <strong>2. ניהול זיכרון - Rule of Three / Five</strong>
         <pre class="code" dir="ltr"><code>class SafeArray {
     char* buf; size_t cap;
 public:
     SafeArray(size_t c=100) : cap(c) { buf = new(std::nothrow) char[cap]; }
-    virtual ~SafeArray() { delete[] buf; } // Virtual destructor!
-    SafeArray(const SafeArray& o) : cap(o.cap) { // Deep copy
+    virtual ~SafeArray() { delete[] buf; } // דיסטרקטור וירטואלי חובה!
+    
+    // בנאי העתקה (Deep Copy)
+    SafeArray(const SafeArray&amp; o) : cap(o.cap) {
         buf = new(std::nothrow) char[cap];
-        if(buf && o.buf) strncpy(buf, o.buf, cap-1);
+        if(buf &amp;&amp; o.buf) strncpy(buf, o.buf, cap-1);
     }
-    SafeArray& operator=(const SafeArray& o) {
-        if(this != &o) { // Self-assignment check
+    
+    // אופרטור השמה 
+    SafeArray&amp; operator=(const SafeArray&amp; o) {
+        if(this != &amp;o) { // מניעת השמה עצמית!
             delete[] buf;
             cap = o.cap;
             buf = new(std::nothrow) char[cap];
-            if(buf && o.buf) strncpy(buf, o.buf, cap-1);
+            if(buf &amp;&amp; o.buf) strncpy(buf, o.buf, cap-1);
         }
         return *this;
     }
 };</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>3. הצפנת AES-GCM (Crypto++)</strong>
+        <strong>3. מניעת SQLi ב-C++ (SQLite3)</strong>
+        <pre class="code" dir="ltr"><code>sqlite3_stmt* stmt = nullptr;
+// שימוש בשאילתה פרמטרית מכינה
+sqlite3_prepare_v2(db, "SELECT email FROM users WHERE username = ?", -1, &amp;stmt, nullptr);
+// קשירת הפרמטר - SQLITE_TRANSIENT מבטיח שהזיכרון יועתק בבטחה
+sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+sqlite3_step(stmt);
+sqlite3_finalize(stmt); // חובה כדי למנוע זליגת זיכרון
+</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>4. הצפנת AES-GCM מאומתת (Crypto++)</strong>
         <pre class="code" dir="ltr"><code>AutoSeededRandomPool prng;
 SecByteBlock key(AES::DEFAULT_KEYLENGTH);
 byte iv[AES::BLOCKSIZE];
 prng.GenerateBlock(key, key.size());
-prng.GenerateBlock(iv, sizeof(iv)); // IV חייב להיות אקראי!
+prng.GenerateBlock(iv, sizeof(iv)); // IV חייב להיות חדש ואקראי בכל פעם!
+
 GCM&lt;AES&gt;::Encryption e;
 e.SetKeyWithIV(key, key.size(), iv, sizeof(iv));
 StringSource ss(plain, true, new AuthenticatedEncryptionFilter(e, new StringSink(cipher)));</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>4. שקע לקוח מאובטח SSL/TLS (Boost.Asio)</strong>
-        <pre class="code" dir="ltr"><code>ssl::context ctx(ssl::context::tlsv12_client);
+        <strong>5. שקע לקוח מאובטח SSL/TLS (Boost.Asio)</strong>
+        <pre class="code" dir="ltr"><code>ssl::context ctx(ssl::context::tlsv12_client); // חובה מגרסה 1.2
 ctx.set_default_verify_paths();
-ctx.set_verify_mode(ssl::verify_peer); // אימות תעודה מול CA
+ctx.set_verify_mode(ssl::verify_peer); // וידוא תעודה מול שרשרת CA
+
 ssl::stream&lt;tcp::socket&gt; socket(io_context, ctx);
-SSL_set_tlsext_host_name(socket.native_handle(), host.c_str()); // SNI
+SSL_set_tlsext_host_name(socket.native_handle(), host.c_str()); // מונע שגיאות אימות (SNI)
+
 boost::asio::connect(socket.lowest_layer(), endpoints);
 socket.handshake(ssl::stream_base::client);</code></pre>
       </div>
@@ -94,83 +142,62 @@ socket.handshake(ssl::stream_base::client);</code></pre>
     content: `
       <div class="note-box cheat-sheet">
         <strong>1. מניעת SQL Injection (SQLite3)</strong>
-        <pre class="code" dir="ltr"><code># שימוש בשאילתות פרמטריות (Prepared Statements)
+        <pre class="code" dir="ltr"><code># לעולם אין לשרשר מחרוזות! שימוש בשאילתות פרמטריות בלבד
 with sqlite3.connect("users.db") as conn:
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE name = ? AND pass = ?", (usr, pwd))
     return cur.fetchone()</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>2. דקורטור לאימות ובקרת גישה</strong>
+        <strong>2. דקורטור מאובטח לבקרת גישה ולוגים</strong>
         <pre class="code" dir="ltr"><code>from functools import wraps
+
 def secure_logger(func):
-    @wraps(func)
+    @wraps(func) # חיוני לשמירת שם הפונקציה המקורית
     def wrapper(*args, **kwargs):
         user = args[0] if args else "Unknown"
         if not isinstance(user, str) or not user.strip(): raise ValueError()
-        with open('sec.log', 'a') as f: f.write(f"Access by {user}\n")
-        try: return func(*args, **kwargs)
-        except: raise ValueError("Error processing")
+        
+        with open('sec.log', 'a') as f: 
+            f.write(f"Access by {user}\n")
+            
+        try: 
+            return func(*args, **kwargs)
+        except Exception: 
+            raise ValueError("Error processing") # לא מדליפים שגיאות מערכת לתוקף
     return wrapper</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>3. מניעת הרצת קוד עוין (Eval/Exec)</strong>
+        <strong>3. מניעת הרצת קוד עוין ו-RCE (Eval/Exec)</strong>
         <pre class="code" dir="ltr"><code>import ast
+
 def safe_eval(user_input):
     try:
-        # מפרסר רק מבני נתונים בטוחים (מילונים, רשימות, מספרים)
+        # בטוח לחלוטין. מפרסר רק מבני נתונים (מילונים, רשימות, מספרים)
+        # זורק שגיאה אם מנסים להריץ פונקציה (למשל os.system)
         return ast.literal_eval(user_input)
     except (SyntaxError, ValueError):
         return None</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>4. שרת TCP מאובטח עם SSL</strong>
+        <strong>4. שרת TCP מאובטח עם עטיפת SSL</strong>
         <pre class="code" dir="ltr"><code>context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+# חובה לטעון תעודה ומפתח פרטי בשרת:
 # context.load_cert_chain('cert.pem', 'key.pem')
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
     server.bind((host, port))
     server.listen(5)
     while True:
         conn, addr = server.accept()
         with context.wrap_socket(conn, server_side=True) as ssock:
-            data = ssock.recv(1024) # קריאה מוגבלת למניעת הצפה
+            # קריאה עם באפר מוגבל (1024) למניעת הרעבת זיכרון ו-DoS
+            data = ssock.recv(1024) 
             if data: ssock.sendall(b"ACK: " + data)</code></pre>
       </div>
     `
-  }
-  ,
-  {
-    unit: "General",
-    title: "מוקשים מהמבחנים האחרונים (חדש)",
-    content: `
-      <div class="note-box exam-tip">
-        <strong>1. קריאות וירטואליות:</strong> פונקציה רגילה (Non-Virtual) שנקראת מתוך פונקציה וירטואלית, נקבעת לפי סוג המצביע (סטטית), לא לפי סוג האובייקט בפועל.
-      </div>
-      <div class="note-box exam-tip">
-        <strong>2. גודל אובייקט (vptr):</strong> אם יש פונקציה וירטואלית, מתווסף vptr (מצביע נסתר, לרוב 8 בתים). <code>sizeof</code> לא שווה רק לסכום המשתנים!
-      </div>
-      <div class="note-box exam-tip">
-        <strong>3. אתחול רפרנס:</strong> <code>string &meal = food;</code> (תקין). <code>string &meal = &food;</code> (שגיאה).
-      </div>
-      <div class="note-box exam-tip">
-        <strong>4. שורש כפול בערימה (Two-Stage Heap):</strong> גלישה ב-<code>r1->f_data</code> יכולה לדרוס את המצביע <code>r2->f_data</code> שמוקצה מיד אחריו, ולאפשר Arbitrary Memory Write.
-      </div>
-      <div class="note-box exam-tip">
-        <strong>5. ירושה בפייתון (super):</strong> דריסת <code>__init__</code> מבטלת את אתחול האב. חובה לקרוא ל-<code>super().__init__()</code>.
-      </div>
-      <div class="note-box exam-tip">
-        <strong>6. Endianness:</strong> ב-Little-Endian (כמו x86), הערך <code>0xC00010FF</code> נשמר בזיכרון הפוך: <code>FF 10 00 C0</code>. 
-      </div>
-      <div class="note-box exam-tip">
-        <strong>7. פייתון ו-Data Races:</strong> ה-GIL אינו מונע תנאי מרוץ! פקודות כמו <code>+= 1</code> אינן אטומיות.
-      </div>
-      <div class="note-box exam-tip">
-        <strong>8. ASLR מול DEP:</strong> DEP מונע הרצת קוד ב-Stack/Heap. ASLR מגריל כתובות (מונע Return-to-libc שעוקף DEP).
-      </div>
-    `
   },
-
-// --- יחידה 1: מבוא לתכנות דפנסיבי וביקורת אבטחה ---
+  // --- יחידה 1: מבוא לתכנות דפנסיבי וביקורת אבטחה ---
   {
     unit: "1",
     title: "הבחנה מבדלת: באג, חולשת אבטחה (Vulnerability), ניצול (Exploit) ואפחות (Mitigation)",
