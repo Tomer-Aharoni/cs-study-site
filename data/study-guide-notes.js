@@ -64,7 +64,7 @@ with lock:
     title: "תבניות קוד הגנתי - C++",
     content: `
       <div class="note-box cheat-sheet">
-        <strong>1. מניעת גלישות חוצץ וגלישות שלמים</strong>
+        <strong>1. מניעת גלישות חוצץ וגלישות שלמים (Buffer & Integer Overflow)</strong>
         <pre class="code" dir="ltr"><code>#include &lt;cstring&gt;
 #include &lt;cstdint&gt;
 
@@ -83,7 +83,7 @@ void safe_alloc_and_copy(const char* in, int num_elements, int element_size) {
 }</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>2. ניהול זיכרון - Rule of Three / Five</strong>
+        <strong>2. ניהול זיכרון נכון (Rule of Three / Five)</strong>
         <pre class="code" dir="ltr"><code>#include &lt;cstring&gt;
 #include &lt;new&gt;
 
@@ -112,54 +112,101 @@ public:
 };</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>3. מניעת SQLi ב-C++ (SQLite3)</strong>
+        <strong>3. עבודה מאובטחת מול מסד נתונים (SQLite3 Prepared Statements)</strong>
         <pre class="code" dir="ltr"><code>#include &lt;sqlite3.h&gt;
 #include &lt;string&gt;
+#include &lt;iostream&gt;
 
-sqlite3_stmt* stmt = nullptr;
-// שימוש בשאילתה פרמטרית מכינה
-sqlite3_prepare_v2(db, "SELECT email FROM users WHERE username = ?", -1, &amp;stmt, nullptr);
-// קשירת הפרמטר - SQLITE_TRANSIENT מבטיח שהזיכרון יועתק בבטחה
-sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
-sqlite3_step(stmt);
-sqlite3_finalize(stmt); // חובה כדי למנוע זליגת זיכרון
-</code></pre>
+bool fetchUserRole(const std::string&amp; username, std::string&amp; outRole) {
+    sqlite3* db = nullptr;
+    if (sqlite3_open("production.db", &amp;db) != SQLITE_OK) {
+        std::cerr &lt;&lt; "Failed to open database" &lt;&lt; std::endl;
+        sqlite3_close(db);
+        return false;
+    }
+    
+    sqlite3_stmt* stmt = nullptr;
+    // שימוש בשאילתה פרמטרית מכינה כדי למנוע SQLi
+    if (sqlite3_prepare_v2(db, "SELECT role FROM users WHERE username = ?", -1, &amp;stmt, nullptr) != SQLITE_OK) {
+        sqlite3_close(db);
+        return false;
+    }
+    
+    // קשירת הפרמטר - SQLITE_TRANSIENT מבטיח שהזיכרון יועתק בבטחה ולא ידלוף
+    sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+    
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        outRole = reinterpret_cast&lt;const char*&gt;(sqlite3_column_text(stmt, 0));
+    }
+    
+    sqlite3_finalize(stmt); // חובה כדי למנוע דליפת זיכרון
+    sqlite3_close(db);
+    return true;
+}</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>4. הצפנת AES-GCM מאומתת (Crypto++)</strong>
+        <strong>4. שימוש בטוח בהצפנה (Crypto++ AES-GCM)</strong>
         <pre class="code" dir="ltr"><code>#include &lt;cryptopp/aes.h&gt;
 #include &lt;cryptopp/gcm.h&gt;
 #include &lt;cryptopp/osrng.h&gt;
 #include &lt;cryptopp/filters.h&gt;
+#include &lt;string&gt;
 
 using namespace CryptoPP;
 
-AutoSeededRandomPool prng;
-SecByteBlock key(AES::DEFAULT_KEYLENGTH);
-byte iv[AES::BLOCKSIZE];
-prng.GenerateBlock(key, key.size());
-prng.GenerateBlock(iv, sizeof(iv)); // IV חייב להיות חדש ואקראי בכל פעם!
+std::string encryptAES_GCM(const std::string&amp; plain) {
+    AutoSeededRandomPool prng;
+    SecByteBlock key(AES::DEFAULT_KEYLENGTH);
+    byte iv[AES::BLOCKSIZE];
+    
+    prng.GenerateBlock(key, key.size());
+    prng.GenerateBlock(iv, sizeof(iv)); // IV חייב להיות חדש ואקראי בכל פעם!
 
-GCM&lt;AES&gt;::Encryption e;
-e.SetKeyWithIV(key, key.size(), iv, sizeof(iv));
-StringSource ss(plain, true, new AuthenticatedEncryptionFilter(e, new StringSink(cipher)));</code></pre>
+    std::string cipher;
+    try {
+        GCM&lt;AES&gt;::Encryption e;
+        e.SetKeyWithIV(key, key.size(), iv, sizeof(iv));
+        StringSource ss(plain, true, 
+            new AuthenticatedEncryptionFilter(e, new StringSink(cipher))
+        );
+    } catch(const Exception&amp; ex) {
+        return ""; // טיפול שגיאות הצפנה
+    }
+    return cipher;
+}</code></pre>
       </div>
       <div class="note-box cheat-sheet">
         <strong>5. שקע לקוח מאובטח SSL/TLS (Boost.Asio)</strong>
         <pre class="code" dir="ltr"><code>#include &lt;boost/asio.hpp&gt;
 #include &lt;boost/asio/ssl.hpp&gt;
+#include &lt;iostream&gt;
+
 using boost::asio::ip::tcp;
 namespace ssl = boost::asio::ssl;
 
-ssl::context ctx(ssl::context::tlsv12_client); // חובה מגרסה 1.2
-ctx.set_default_verify_paths();
-ctx.set_verify_mode(ssl::verify_peer); // וידוא תעודה מול שרשרת CA
+bool secureConnect(const std::string&amp; host, const std::string&amp; port) {
+    try {
+        boost::asio::io_context io_context;
+        // דורש לפחות TLS 1.2
+        ssl::context ctx(ssl::context::tlsv12_client);
+        ctx.set_default_verify_paths();
+        ctx.set_verify_mode(ssl::verify_peer); // חובה - מוודא שהתעודה נחתמה ע"י CA אמין!
 
-ssl::stream&lt;tcp::socket&gt; socket(io_context, ctx);
-SSL_set_tlsext_host_name(socket.native_handle(), host.c_str()); // מונע שגיאות אימות (SNI)
+        ssl::stream&lt;tcp::socket&gt; socket(io_context, ctx);
+        // הגדרת SNI (Server Name Indication) חובה בחיבור מודרני
+        SSL_set_tlsext_host_name(socket.native_handle(), host.c_str());
 
-boost::asio::connect(socket.lowest_layer(), endpoints);
-socket.handshake(ssl::stream_base::client);</code></pre>
+        tcp::resolver resolver(io_context);
+        auto endpoints = resolver.resolve(host, port);
+        
+        boost::asio::connect(socket.lowest_layer(), endpoints);
+        socket.handshake(ssl::stream_base::client);
+        return true;
+    } catch (const std::exception&amp; e) {
+        std::cerr &lt;&lt; "Connection failed: " &lt;&lt; e.what() &lt;&lt; "\n";
+        return false;
+    }
+}</code></pre>
       </div>
     `
   },
@@ -171,14 +218,15 @@ socket.handshake(ssl::stream_base::client);</code></pre>
         <strong>1. מניעת SQL Injection (SQLite3)</strong>
         <pre class="code" dir="ltr"><code>import sqlite3
 
-# לעולם אין לשרשר מחרוזות! שימוש בשאילתות פרמטריות בלבד
-with sqlite3.connect("users.db") as conn:
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE name = ? AND pass = ?", (usr, pwd))
-    return cur.fetchone()</code></pre>
+def login(usr, pwd):
+    # לעולם אין לשרשר מחרוזות! שימוש בשאילתות פרמטריות בלבד
+    with sqlite3.connect("users.db") as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE name = ? AND pass = ?", (usr, pwd))
+        return cur.fetchone()</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>2. דקורטור מאובטח לבקרת גישה ולוגים</strong>
+        <strong>2. הגבלת הרשאות ולוגים בעזרת Decorator</strong>
         <pre class="code" dir="ltr"><code>from functools import wraps
 
 def secure_logger(func):
@@ -193,11 +241,12 @@ def secure_logger(func):
         try: 
             return func(*args, **kwargs)
         except Exception: 
-            raise ValueError("Error processing") # לא מדליפים שגיאות מערכת לתוקף
+            # לעולם אל תחזיר שגיאת מערכת מפורטת למשתמש קצה
+            raise ValueError("Error processing") 
     return wrapper</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>3. מניעת הרצת קוד עוין ו-RCE (Eval/Exec)</strong>
+        <strong>3. מניעת הרצת קוד עוין RCE (תחליף ל-Eval/Exec)</strong>
         <pre class="code" dir="ltr"><code>import ast
 
 def safe_eval(user_input):
@@ -213,19 +262,20 @@ def safe_eval(user_input):
         <pre class="code" dir="ltr"><code>import socket
 import ssl
 
-context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-# חובה לטעון תעודה ומפתח פרטי בשרת:
-# context.load_cert_chain('cert.pem', 'key.pem')
+def start_secure_server(host, port):
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    # חובה לטעון תעודה ומפתח פרטי בשרת:
+    # context.load_cert_chain('cert.pem', 'key.pem')
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
-    server.bind((host, port))
-    server.listen(5)
-    while True:
-        conn, addr = server.accept()
-        with context.wrap_socket(conn, server_side=True) as ssock:
-            # קריאה עם באפר מוגבל (1024) למניעת הרעבת זיכרון ו-DoS
-            data = ssock.recv(1024) 
-            if data: ssock.sendall(b"ACK: " + data)</code></pre>
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
+        server.bind((host, port))
+        server.listen(5)
+        while True:
+            conn, addr = server.accept()
+            with context.wrap_socket(conn, server_side=True) as ssock:
+                # קריאה עם באפר מוגבל (1024) למניעת הרעבת זיכרון ו-DoS
+                data = ssock.recv(1024) 
+                if data: ssock.sendall(b"ACK: " + data)</code></pre>
       </div>
     `
   },
