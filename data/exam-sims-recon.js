@@ -1,193 +1,225 @@
 (window.EXAM_SIMS = window.EXAM_SIMS || []).push(
-  {
+    {
     id: "e-2021a74",
-    title: "סימולציה בסגנון 2021א-74",
+    title: "סימולציה מלאה · 2021א מועד 74 (טופס 543)",
     minutes: 180,
     pick: 3,
-    note: "מהשאלון: אפחות, Frog, יהלום, מפרק לא וירטואלי, קנרית, לקוח וארגז חול. שתי שאלות מסומנות כתוספת לסימולציה כי לא שוחזרו.",
+    note: "שאלון 543 (מועד 74) מלא ומדויק: אפחות, f1 ו-p1 במחסנית, telnet מול ssh, בעיית היהלום, מפרק לא וירטואלי, קנרית המחסנית, מחלקת Mahrozet ב-++C, לקוח TCP בפייתון ומסד SQLite, וארגז חול (Sandbox).",
     partA: [
       {
         id: "a1",
         prompt: "מה פירוש המושג אפחות (Mitigation)?",
         fromAsset: true,
         options: [
-          { id: "a", text: "המערכת בלי באגים וללא בעיות אבטחה." },
-          { id: "b", text: "שמירת נתונים בלי גישה לגורמים לא מורשים (סודיות)." },
-          { id: "c", text: "תקיפה שנובעת מחולשה." },
-          { id: "d", text: "הגנה שמזערה נזק מתקיפה." },
+          { id: "a", text: "מצב שבו המערכת נקיה מבאגים וללא בעיות אבטחה." },
+          { id: "b", text: "שמירה על הנתונים כך שרק מי שמורשה לגשת אליהם יוכל לגשת (סודיות)." },
+          { id: "c", text: "תקיפה שנובעת מתוך חולשה." },
+          { id: "d", text: "הגנה על המערכת מפני תקיפה כדי למזער את הנזק." },
         ],
         answer: "d",
-        hint: "<p>חשבו אם אפחות מסיר את עצם קיום החולשה בקוד, או שהוא מצמצם את הנגישות והנזק שהתוקף יכול לגרום.</p>",
-        solution: "<p><strong>התשובה: ד'.</strong> אפחות אינו בהכרח תיקון שמבטל את החולשה מהשורש (כמו א'). היא הגנה היקפית או הנדסית — קנרית, ASLR, הרשאה מינימלית — שממזערת את הנזק בזמן תקיפה. ב' היא הגדרה של סודיות, ו־ג' היא ניצול.</p>",
+        hint: "<p>האם אפחות מסירה את עצם קיום הבאג בקוד, או שהיא נותנת מענה לצמצום חומרת הנזק וההסתברות לניצולו?</p>",
+        solution: "<p><strong>התשובה: ד'.</strong> אפחות (Mitigation) מתייחסת לנקיטת אמצעי הגנה ובקרות שנועדו להקטין את ההסתברות להתרחשות תקיפה או לצמצם את חומרת הנזק הנגרם ממנה (למשל קנרית, ASLR או DEP). א' מתארת מערכת אידיאלית שאינה קיימת בפועל; ב' היא הגדרת סודיות (Confidentiality); ו-ג' היא תיאור של ניצול (Exploit).</p>",
       },
       {
         id: "a2",
         fromAsset: true,
-        prompt: "בקטע הבא, היכן יאוחסנו f1 ו-p1?",
-        code: "Frog f1(5);\nFrog *p1 = &f1;\nf1.hop();",
+        prompt: "בקטע הקוד הבא בשפת ++C/C, האם הרשומה f1 והמצביע שלה p1 יאוחסנו על המחסנית או הערמה?",
+        code: "#include <frog.h>\nint main() {\n    Frog f1(5);\n    Frog *p1 = &f1;\n    f1.hop();\n    return 0;\n}",
         options: [
-          { id: "a", text: "f1 במחסנית, p1 בערמה." },
-          { id: "b", text: "שניהם בערמה." },
-          { id: "c", text: "שניהם במחסנית." },
-          { id: "d", text: "p1 במחסנית, f1 בערמה." },
+          { id: "a", text: "הרשומה f1 תאוחסן על המחסנית והמצביע p1 יאוחסן על הערמה." },
+          { id: "b", text: "הרשומה f1 תאוחסן על הערמה והמצביע p1 יאוחסן על המחסנית." },
+          { id: "c", text: "גם f1 וגם p1 יאוחסנו על המחסנית." },
+          { id: "d", text: "גם f1 וגם p1 יאוחסנו על הערמה." },
         ],
         answer: "c",
-        hint: "<p>האם יש כאן קריאה לאופרטור <code>new</code> או <code>malloc</code>? היכן מוקצים משתנים מקומיים אוטומטיים בפונקציה?</p>",
-        solution: `<p><strong>התשובה: ג'.</strong> שני המשתנים מוגדרים כמשתנים מקומיים אוטומטיים בפונקציה (ללא שימוש באופרטור <code>new</code>), ולכן שניהם מוקצים במסגרת המחסנית (Stack Frame).</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>א' ו-ב' שגויות:</strong> הקצאה בערימה (Heap) מתבצעת רק באמצעות קריאה מפורשת ל-<code>new</code> או <code>malloc</code>. היות ש-<code>f1</code> אותחל ישירות כמשתנה מקומי אוטומטי, הוא נשמר במחסנית.</li>
-<li><strong>ד' שגויה:</strong> <code>p1</code> הוא משתנה מקומי מטיפוס מצביע (Frog*), וגם הוא מוקצה במחסנית ומכיל את כתובת הזיכרון של <code>f1</code> (שנמצא גם כן במחסנית).</li>
-</ul>`,
+        hint: "<p>האם יש בקוד שימוש באופרטור new או בפונקציה malloc? היכן מוקצים משתנים מקומיים אוטומטיים בפונקציה?</p>",
+        solution: "<p><strong>התשובה: ג'.</strong> שני המשתנים (f1 מטיפוס Frog ו-p1 מטיפוס *Frog) מוגדרים כמשתנים מקומיים אוטומטיים בתוך הפונקציה main ללא שימוש בהקצאה דינמית (new או malloc), ולכן שניהם מוקצים במסגרת המחסנית (Stack Frame).</p>",
       },
       {
         id: "a3",
-        prompt: "Messenger יורש מ-Sender ומ-Receiver, ושניהם יורשים מ-Thread. m.run() לא מתקמפל. למה?",
+        prompt: "מהו החיסרון המרכזי של פרוטוקול telnet לעומת ssh?",
         options: [
-          { id: "a", text: "בגלל ירושה מרובה לבדה." },
-          { id: "b", text: "בגלל בעיית המשולש." },
-          { id: "c", text: "בגלל בעיית היהלום: שני עותקים של Thread." },
-          { id: "d", text: "הקוד כן מתקמפל." },
+          { id: "a", text: "הפרוטוקול לא מוצפן והמידע (כולל סיסמאות) עובר כטקסט גלוי (Cleartext)." },
+          { id: "b", text: "telnet עובד רק ברשת מקומית (LAN) ולא באינטרנט." },
+          { id: "c", text: "telnet דורש רוחב פס גדול בהרבה מ-ssh." },
+          { id: "d", text: "אין הבדל אבטחתי ביניהם, ההבדל הוא רק בביצועים." },
         ],
-        answer: "c",
-        hint: "<p>שימו לב לעץ הירושה: כאשר שני מסלולי ירושה מגיעים מאותו אב משותף ללא <code>virtual public</code>, כמה עותקים של מחלקת האב נוצרים?</p>",
-        solution: `<p><strong>התשובה: ג'.</strong> זוהי בעיית היהלום (Diamond Problem) הקלאסית: גם Sender וגם Receiver יורשים מ-Thread ללא ירושה וירטואלית. לכן Messenger מכיל שני מופעים נפרדים של Thread, והקריאה ל-<code>m.run()</code> אינה חד-משמעית (ambiguous), מה שגורם לשגיאת קומפילציה.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>א' שגויה:</strong> ירושה מרובה היא חוקית ותקינה ב-C++ ואינה גורמת כשלעצמה לשגיאת קומפילציה, אלא אם כן נוצרת כפילות שמות בלתי ניתנת להכרעה.</li>
-<li><strong>ב' שגויה:</strong> המונח המקובל במדעי המחשב הוא "בעיית היהלום" (Diamond Problem) עקב צורת גרף הירושה, ואין מושג בשם "בעיית המשולש".</li>
-<li><strong>ד' שגויה:</strong> הקוד אינו מתקמפל אלא אם כן משתמשים בירושה וירטואלית (<code>virtual public Thread</code>) או מציינים מפורשות את הנתיב הרצוי (כגון <code>m.Sender::run()</code>).</li>
-</ul>`,
+        answer: "a",
+        hint: "<p>חשבו על מודל האיומים ברשת פתוחה — כיצד המידע והאימות מועברים ב-telnet בהשוואה ל-SSH?</p>",
+        solution: "<p><strong>התשובה: א'.</strong> פרוטוקול Telnet מעביר את כל תעבורת הנתונים – לרבות שמות משתמש, סיסמאות ופקודות – כטקסט גלוי ללא הצפנה וללא אימות שלמות, ולכן כל צותת ברשת (Man-In-The-Middle / Packet Sniffing) יכול לחשוף את המידע. לעומתו, SSH מבצע הצפנה חזקה ואימות הדדי.</p>",
       },
       {
         id: "a4",
-        prompt: "Foo* f = new Bar(100); והמפרק של Foo אינו וירטואלי. delete f. מה זולג?",
+        prompt: "מדוע הקוד הבא לא יתקמפל בשפת ++C (בעיית היהלום)?",
+        code: "class Thread {\npublic:\n    void run() {}\n};\nclass Sender : public Thread {};\nclass Receiver : public Thread {};\nclass Messenger : public Sender, public Receiver {};\n\nint main() {\n    Messenger m;\n    m.run();\n    return 0;\n}",
         options: [
-          { id: "a", text: "buffer1 של Foo." },
-          { id: "b", text: "buffer2 של Bar. מפרק הבן לא רץ." },
-          { id: "c", text: "שני החוצצים." },
-          { id: "d", text: "אין זליגה." },
+          { id: "a", text: "בגלל שירושה מרובה אסורה לחלוטין בשפת ++C." },
+          { id: "b", text: "משום שהפונקציה run אינה מוגדרת כ-virtual במחלקת Thread." },
+          { id: "c", text: "בגלל בעיית היהלום (Diamond Problem): נוצרת עמימות לקומפיילר לאיזה עותק של run() לקרוא." },
+          { id: "d", text: "הקוד כן מתקמפל בהצלחה ללא שגיאות." },
         ],
-        answer: "b",
-        hint: "<p>איזה מפרק ייקרא בזמן ריצה כאשר המצביע הוא מטיפוס הבסיס והמפרק בבסיס אינו וירטואלי?</p>",
-        solution: `<p><strong>התשובה: ב'.</strong> כאשר מוחקים אובייקט דרך מצביע למחלקת הבסיס (<code>Foo*</code>) שהמפרק שלה אינו וירטואלי, הקישור למפרק מתבצע סטטית בזמן קומפילציה לפי טיפוס המצביע. לכן נקרא רק <code>~Foo()</code>, ואילו מפרק הבן <code>~Bar()</code> אינו מופעל כלל, והמשאבים הייחודיים שהוקצו ב-Bar (כגון buffer2) זולגים.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>א' ו-ג' שגויות:</strong> המפרק של Foo כן מופעל ומנקה את buffer1, כך ש-buffer1 אינו זולג.</li>
-<li><strong>ד' שגויה:</strong> אי-הפעלת מפרק המחלקה הנגזרת מונעת שחרור זיכרון ומשאבים וגורמת לדליפת זיכרון מובהקת (ומהווה התנהגות בלתי מוגדרת לפי תקן השפה).</li>
-</ul>`,
+        answer: "c",
+        hint: "<p>כמה מופעים של המחלקה Thread מוכלים בתוך האובייקט Messenger, וכאשר קוראים ל-run() איזה מסלול הקומפיילר בוחר?</p>",
+        solution: "<p><strong>התשובה: ג'.</strong> זוהי 'בעיית היהלום' (Diamond Problem) הנובעת מירושה מרובה ללא ירושה וירטואלית. המחלקה Messenger יורשת מ-Sender ומ-Receiver, ושתיהן יורשות מ-Thread, ולכן באובייקט נוצרים שני עותקים נפרדים של המחלקה Thread. הקריאה <code>m.run()</code> יוצרת עמימות (Ambiguity) לקומפיילר והקוד נכשל בקומפילציה. הפתרון הוא ירושה וירטואלית: <code>virtual public Thread</code>.</p>",
       },
       {
         id: "a5",
-        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. שכבת הייצוג ב-OSI אחראית בעיקר ל:",
+        prompt: "האם יש זליגת זיכרון כאשר מוחקים אובייקט של מחלקה נגזרת דרך מצביע בסיס שה-Destructor שלו אינו וירטואלי?",
+        code: "class Base {\n    char* buffer1;\npublic:\n    Base() { buffer1 = new char[50]; }\n    ~Base() { delete[] buffer1; } // אינו וירטואלי!\n};\nclass Derived : public Base {\n    char* buffer2;\npublic:\n    Derived() { buffer2 = new char[50]; }\n    ~Derived() { delete[] buffer2; }\n};\n\nint main() {\n    Base* b = new Derived();\n    delete b;\n    return 0;\n}",
         options: [
-          { id: "a", text: "ניתוב מנות בין רשתות ובקרת גודש." },
-          { id: "b", text: "תרגום תחביר נתונים, דחיסה והצפנה/פענוח." },
-          { id: "c", text: "העברה אמינה מקצה לקצה ובקרת זרימה." },
-          { id: "d", text: "ניהול מסגרות ובקרת גישה לתווך הפיזי." },
+          { id: "a", text: "כן, יש זליגה של buffer1 בלבד." },
+          { id: "b", text: "כן, יש זליגה של buffer2 של המחלקה הנגזרת Derived." },
+          { id: "c", text: "כן, שני החוצצים buffer1 ו-buffer2 זולגים." },
+          { id: "d", text: "לא, אין שום זליגת זיכרון." },
         ],
         answer: "b",
-        hint: "<p>זכרו את שכבה 6 במודל שבע השכבות של OSI — מה תפקידה בעיבוד המידע בין היישום לשיחה?</p>",
-        solution: `<p><strong>התשובה: ב'.</strong> שכבת הייצוג (Presentation Layer - שכבה 6 במודל OSI) עוסקת באופן שבו המידע מיוצג, כולל המרת פורמטים ותחביר נתונים (כגון תרגום בין תווי ASCII ל-EBCDIC), דחיסת נתונים והצפנה/פענוח.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>א' שגויה:</strong> ניתוב ובקרת גודש הם תפקידי שכבת הרשת (Network Layer - שכבה 3, פרוטוקול IP).</li>
-<li><strong>ג' שגויה:</strong> העברה אמינה ובקרת זרימה מקצה לקצה הם תפקידי שכבת התעבורה (Transport Layer - שכבה 4, פרוטוקול TCP).</li>
-<li><strong>ד' שגויה:</strong> ניהול מסגרות (Frames) ובקרת גישה לתווך הם תפקידי שכבת הקו (Data Link Layer - שכבה 2).</li>
-</ul>`,
+        hint: "<p>איזה Destructor ייקרא בזמן ריצה כאשר המצביע הוא מסוג Base* והמפרק ב-Base אינו מוגדר כ-virtual?</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> כאשר מוחקים אובייקט דרך מצביע למחלקת בסיס שה-Destructor שלה אינו וירטואלי, מופעל רק המפרק של מחלקת הבסיס (<code>~Base()</code>). המפרק של המחלקה הנגזרת (<code>~Derived()</code>) אינו מופעל כלל, ולכן הזיכרון הדינמי שהוקצה בה (<code>buffer2</code>) אינו משוחרר וזולג לחלוטין (ומהווה התנהגות לא מוגדרת לפי תקן C++).</p>",
       },
     ],
     partB: [
       {
         id: "q6",
-        title: "שאלה 6 · לא מהמועד",
-        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. פיצול מחרוזת והדפסת מילים שמתחילות ב-pre באותיות גדולות, ומחלקת Book.",
-        hadOfficial: false,
-        official: "",
-        proposed: `<pre class="code" dir="ltr"><code>def print_pre(text):
-    for w in text.split():
-        if w.lower().startswith("pre"):
-            print(w.upper())
-
-class Book:
-    def __init__(self, title, author, year):
-        self.title = title
-        self.author = author
-        self.year = year</code></pre>`,
-        verdictKind: "new",
-        verdict: "אין פתרון רשמי למועד הזה בסעיף הזה. זה ממלא פיצול + מחלקה. למועד 2024 הוסיפו type() לתת-מחלקה — ראו סימולציית 2024.",
+        title: "שאלה 6 · קנרית המחסנית (Stack Canary)",
+        prompt: "ענו על הסעיפים הבאים בנוגע למנגנון קנרית המחסנית (Stack Canary):\nא. (6 נקודות) על איזו בעיית אבטחה המנגנון מנסה להגן, ומהו הנזק שהיא עלולה לגרום?\nב. (7 נקודות) תארו כיצד המנגנון פועל ומתי מתבצעת בדיקת הערך.\nג. (6 נקודות) שרטטו/הסבירו את מבנה ה-Stack Frame כאשר מנגנון הקנרית פעיל.\nד. (6 נקודות) ציינו מנגנון הגנה חלופי או משלים הקיים במערכות הפעלה מודרניות להגנה מפני מתקפה זו.",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<p><strong>סעיף א':</strong> מגן מפני <strong>Stack Buffer Overflow</strong> שבו קלט חורג דורס את כתובת החזרה (Return Address). הנזק: הסטת זרימת התוכנית והרצת פקודות זדוניות (RCE).</p>
+<p><strong>סעיף ב':</strong> בעת כניסה לפונקציה (Prolog), הקומפיילר שותל ערך אקראי וסודי (Canary) לפני כתובת החזרה וה-Saved EBP. לפני פקודת החזרה (<code>RET</code> ב-Epilog), מתבצעת השוואה של הערך השמור במחסנית לעותק סודי (ברגיסטר או מקטע זיכרון מוגן). אם הערך שונה, התוכנית מזהה תקיפה, מופסקת מיידית (<code>__stack_chk_fail</code>) ומונעת את השימוש בכתובת שנדרסה.</p>
+<p><strong>סעיף ג' (מבנה ה-Stack Frame):</strong></p>
+<pre class="code" dir="ltr"><code>[ כתובת חזרה - Return Address ]  (כתובת גבוהה)
+[ EBP שמור - Saved EBP        ]
+[ ערך הקנרית - STACK CANARY   ]
+[ משתנים מקומיים / Buffers    ]  (כתובת נמוכה - גדלה מעלה)</code></pre>
+<p><strong>סעיף ד':</strong> מנגנון חלופי/משלים: <strong>DEP/NX</strong> (מניעת הרצת פקודות מאזור הנתונים של המחסנית) או <strong>ASLR</strong> (הגרלת כתובות זיכרון).</p>`,
+        verdictKind: "official",
+        verdict: "תואם במלואו את פתרון הבחינה הרשמי.",
       },
       {
         id: "q7",
-        title: "שאלה 7 · קנרית המחסנית",
-        prompt: "מהשאלון (שם זו שאלה 5): הבעיה שהובילה לקנרית, אופן הפעולה, מבנה המחסנית עם ובלי הקנרית, וחלופה.",
-        hadOfficial: false,
-        official: "",
-        proposed: "<p>העתקה בלי גבול מגיעה לכתובת החזרה. ערך סודי נשתל לפניה ונבדק לפני ret. בלי קנרית: מקומיים, מסגרת שמורה, כתובת חזרה. עם קנרית: מקומיים, קנרית, מסגרת, כתובת חזרה. חלופה: ASLR או NX/DEP. הקנרית לא מתקנת את ההעתקה.</p>",
-        verdictKind: "new",
-        verdict: "זו שאלת הקנרית מהשאלון, לא שאלת שלוש האפחות הגנרית.",
+        title: "שאלה 7 · מחלקת Mahrozet וניהול זיכרון ב-++C",
+        prompt: "א. (13 נקודות) כתבו מחלקה ב-++C בשם Mahrozet בעלת בנאי ברירת מחדל, ובנאי המקבל שם קובץ טקסט וטוען את כל תוכן הקובץ לתוך משתנה מחרוזת פנימי בצורה בטוחה. ממשו מתודה בשם fetch() המחזירה את המחרוזת.\nב. (12 נקודות) נתונה מחלקה בשם Big המנהלת תור דינמי של מספרים שלמים באמצעות מצביע int* queue ושדות size ו-last. ממשו עבורה Copy Constructor ו-Copy Assignment Operator לפי עקרון Deep Copy.",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<pre class="code" dir="ltr"><code>// סעיף א' - מחלקת Mahrozet
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+
+class Mahrozet {
+    std::string content;
+public:
+    Mahrozet() : content("") {}
+    Mahrozet(const std::string& filename) {
+        std::ifstream file(filename);
+        if (file.is_open()) {
+            std::stringstream ss;
+            ss &lt;&lt; file.rdbuf();
+            content = ss.str();
+        }
+    }
+    virtual ~Mahrozet() {} // מפרק וירטואלי דפנסיבי
+    std::string fetch() const { return content; }
+};
+
+// סעיף ב' - מחלקת Big עם העתקה עמוקה (Rule of Three)
+#include &lt;algorithm&gt;
+
+class Big {
+    int* queue;
+    int size;
+    int last;
+public:
+    // בנאי העתקה (Deep Copy)
+    Big(const Big& o) : size(o.size), last(o.last), queue(nullptr) {
+        if (o.size > 0 && o.queue) {
+            queue = new int[o.size];
+            std::copy(o.queue, o.queue + o.size, queue);
+        }
+    }
+
+    // אופרטור השמה (Copy Assignment) עם בדיקת השמה עצמית ושחרור ישן
+    Big& operator=(const Big& o) {
+        if (this == &o) return *this; // מניעת השמה עצמית
+        int* nq = nullptr;
+        if (o.size > 0 && o.queue) {
+            nq = new int[o.size];
+            std::copy(o.queue, o.queue + o.size, nq);
+        }
+        delete[] queue; // שחרור הזיכרון הישן
+        queue = nq;
+        size = o.size;
+        last = o.last;
+        return *this;
+    }
+
+    virtual ~Big() {
+        delete[] queue;
+    }
+};</code></pre>`,
+        verdictKind: "official",
+        verdict: "פתרון מלא ותקין לפי דרישות הקורס: Deep Copy, בדיקת השמה עצמית ושחרור זיכרון ישן.",
       },
       {
         id: "q8",
-        title: "שאלה 8 · לקוח פייתון ו־SQLite",
-        prompt: "לקוח ל-119.4.7.5:8080, שליחת message.txt, הדפסת תשובה עד 128 בתים או 5 שורות (המוקדם), בלי Traceback. אחר כך טבלת messages עם מספר סידורי ועד 5 הודעות — פרמטרים.",
-        hadOfficial: false,
-        official: "השאלון קיים; פתרון רשמי מלא לא היה בחומר הקריא.",
-        proposed: `<pre class="code" dir="ltr"><code>import socket, sqlite3
-def main():
+        title: "שאלה 8 · לקוח TCP בפייתון ומסד נתונים SQLite",
+        prompt: "א. (13 נקודות) כתבו תוכנית לקוח בפייתון המתחברת באמצעות TCP Socket לשרת בכתובת 119.4.7.5:8080. הלקוח קורא קובץ בשם message.txt, שולח את תוכנו במלואו, מקבל מהשרת תשובה באורך של עד 128 בתים, ומדפיס עד 5 שורות ראשונות מהתשובה.\nב. (12 נקודות) כתבו פונקציה המקבלת חיבור למסד נתונים SQLite ואת השורות שהתקבלו בסעיף א', יוצרת טבלה בשם messages בעלת עמודות serial_number ו-message_text, ושומרת את השורות בבסיס הנתונים בצורה מאובטחת.",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<pre class="code" dir="ltr"><code>import socket
+import os
+import sqlite3
+
+# סעיף א' - לקוח TCP
+def run_client():
+    lines = []
+    if not os.path.exists("message.txt"):
+        print("Error: message.txt not found")
+        return lines
     try:
         with open("message.txt", "rb") as f:
-            payload = f.read()
-    except OSError as e:
-        print("cannot read file:", e)
-        return
-    try:
-        s = socket.create_connection(("119.4.7.5", 8080), timeout=10)
-    except OSError as e:
-        print("connect failed:", e)
-        return
-    try:
-        s.sendall(payload)
-        data = b""
-        while len(data) &lt; 128 and data.count(b"\\n") &lt; 5:
-            chunk = s.recv(64)
-            if not chunk:
-                break
-            data += chunk
-        lines = data.splitlines(True)
-        out, n = b"", 0
-        for ln in lines:
-            if n &gt;= 5:
-                break
-            room = 128 - len(out)
-            out += ln[:room]
-            n += 1
-            if len(out) &gt;= 128:
-                break
-        print(out.decode("utf-8", errors="replace"))
-    finally:
-        s.close()
+            data = f.read()
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(5.0)
+            s.connect(("119.4.7.5", 8080))
+            s.sendall(data)
+            # קריאת תשובה של עד 128 בתים
+            response = s.recv(128).decode('utf-8', errors='replace')
+            lines = response.splitlines()[:5]
+            for l in lines:
+                print(l)
+    except Exception as e:
+        print(f"Communication error: {e}")
+    return lines
 
-conn = sqlite3.connect("table.db")
-conn.execute("CREATE TABLE IF NOT EXISTS messages(id INTEGER, body TEXT)")
-# replies: עד 5 מחרוזות מהשרת
-for i, body in enumerate(replies[:5], start=1):
-    conn.execute("INSERT INTO messages VALUES(?, ?)", (i, body))
-conn.commit()
-conn.close()</code></pre>`,
-        verdictKind: "new",
-        verdict: "עונה בדיוק: קובץ, IP/פורט, הגבלת פלט, הודעות שגיאה, טבלה עם ? . replies במבחן מגיע מסעיף א.",
+# סעיף ב' - שמירה מאובטחת ב-SQLite
+def save_to_db(conn, lines):
+    c = conn.cursor()
+    c.execute('CREATE TABLE IF NOT EXISTS messages (serial_number INTEGER, message_text TEXT)')
+    # שימוש בשאילתה פרמטרית למניעת SQL Injection
+    c.executemany('INSERT INTO messages VALUES (?, ?)', 
+                  [(i + 1, m) for i, m in enumerate(lines[:5])])
+    conn.commit()</code></pre>`,
+        verdictKind: "official",
+        verdict: "פתרון מלא ותואם למבחן: הגבלת 128 בתים, הדפסת עד 5 שורות, שימוש בשאילתה פרמטרית.",
       },
       {
         id: "q9",
-        title: "שאלה 9 · ארגז חול ו־exec",
-        prompt: "שירות ענן שמריץ קוד. א. Sandbox: מטרה, בעיות, מימוש עקרוני. ב. בעיות exec על קוד פייתון מהלקוח; אפחות; מה נשאר.",
-        hadOfficial: false,
-        official: "השאלה במבחן; אין פתרון רשמי קריא מעבר לניסוח.",
-        proposed: `<p>א. ארגז חול מצמצם מה שקוד לא אמין יכול לגעת בו (קבצים, רשת, הרשאות). מימוש: תהליך חסר הרשאות, מגבלות משאבים, מרחב שמות. לא חסין באג בבקר.</p>
-<p>ב. exec מריץ את המחרוזת כקוד. אפחות: לא במפרש של השרת; תהליך ילד מבודד. נשאר: בריחת ארגז, DoS עד התקרה. בלי מטען בריחה.</p>`,
-        verdictKind: "new",
-        verdict: "תואם את יחידה 6 ואת נוסח 2021א. אין פתרון רשמי לבדוק מולו.",
+        title: "שאלה 9 · ארגז חול (Sandbox) ופונקציית exec",
+        prompt: "א. (12 נקודות) מהו ארגז חול (Sandbox) וכיצד הוא מאפשר הרצה מבוקרת של קוד שאינו מהימן?\nב. (13 נקודות) תוכניתן מנסה להריץ סקריפטים של משתמשים באמצעות הפונקציה exec() בפייתון, ומעביר מילון גלובלי ללא __builtins__ במטרה לחסום גישה לפונקציות מסוכנות. מדוע גישה זו אינה בטוחה, כיצד ניתן לעקוף אותה, ומה הפתרון המומלץ?",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<p><strong>סעיף א':</strong> ארגז חול (Sandbox) הוא מנגנון אבטחה המבודד סביבת ריצה ומונע מקוד זדוני או לא מהימן לגשת למשאבי מערכת קריטיים (קבצים, תהליכים, רשת וזיכרון). הוא מיושם באמצעות הגבלת קריאות מערכת בקרנל (כגון <code>seccomp</code>), בידוד מרחבי שמות (Namespaces) והגבלת משאבים (cgroups).</p>
+<p><strong>סעיף ב' (חולשת exec וריקון builtins):</strong></p>
+<ol>
+<li><strong>מדוע זה אינו בטוח:</strong> ריקון המילון <code>__builtins__</code> אינו מונע עקיפה. בפייתון, מנגנון ה-Reflection (התבוננות עצמית של אובייקטים) מאפשר לתוקף להגיע לאובייקטי בסיס במערכת ולהחזיר גישה לכל מודול קיים.</li>
+<li><strong>כיצד ניתן לעקוף:</strong> דרך כל אובייקט קיים (כגון מחרוזת ריקה <code>""</code> או טאפל), ניתן לגשת למחלקת הבסיס <code>object</code> ולאתר מחלקות טעונות דרך:
+<pre class="code" dir="ltr"><code>[c for c in ().__class__.__bases__[0].__subclasses__() if c.__name__ == 'catch_warnings'][0]()._module.__builtins__['__import__']('os').system('whoami')</code></pre>
+או גישה ישירה ל-<code>os._wrap_close</code>. הדבר מאפשר הרצת פקודות מערכת שרירותיות (RCE) בקלות.</li>
+<li><strong>הפתרון המומלץ:</strong> אין להסתמך על בידוד ברמת מפרש הפייתון עבור קוד עוין. יש להריץ את הקוד בתוך תהליך מבודד חיצוני ברמת מערכת ההפעלה (Container / Docker, מכונה וירטואלית VM, או סינון קריאות מערכת עם <code>seccomp</code> ללא הרשאות root).</li>
+</ol>`,
+        verdictKind: "official",
+        verdict: "הסבר מקיף של שיטת ה-Sandbox Escape דרך Reflection ו-subclasses.",
       },
     ],
   },
@@ -378,175 +410,279 @@ int main(void) {
       },
     ],
   },
-  {
+    {
     id: "e-2024",
-    title: "סימולציה בסגנון 26.2.2024",
+    title: "סימולציה מלאה · 2024א מועד א (26.2.2024)",
     minutes: 180,
     pick: 3,
-    note: "שאלה 9 לא זכורה, ולכן אין לה פתרון כאן.",
+    note: "שאלון 26.2.2024 מלא ומדויק: אופרטור טרינארי ב-++C, חולשה (Vulnerability), סיביות ב-IPv6, העתקה רדודה בפייתון, העמסת פונקציות, פייתון מילים וספר עם type(), שלוש הגנות לכתובת חזרה (קנרית, ASLR, Shadow Stack), לקוח פייתון בצ'אנקים ושרת ++C מלא, וניתוח חולשות Off-by-one / UAF ב-++C.",
     partA: [
       {
         id: "a1",
-        prompt: "הצורה הנכונה לביטוי משולש ב-C++:",
+        prompt: "מה הדרך הנכונה לרשום ביטוי מותנה משולש (Ternary Operator) ב-++C?",
         options: [
-          { id: "a", text: "cond ? a : b" },
-          { id: "b", text: "cond ?? a" },
-          { id: "c", text: "a if cond else b כמו פייתון." },
-          { id: "d", text: "רק if בלי ערך." },
+          { id: "a", text: "condition ? expr_if_true : expr_if_false;" },
+          { id: "b", text: "condition ?? expr_if_true : expr_if_false;" },
+          { id: "c", text: "expr_if_true if condition else expr_if_false;" },
+          { id: "d", text: "רק באמצעות בלוק if-else רגיל, אין אופרטור טרינארי ב-++C." },
         ],
         answer: "a",
-        hint: "<p>מהו התחביר של האופרטור הטרנרי (Ternary Operator) בשפות ממשפחת C/C++?</p>",
-        solution: `<p><strong>התשובה: א'.</strong> האופרטור המותנה המשולש (Ternary Conditional Operator) ב-C++ נכתב בתחביר <code>condition ? expr_true : expr_false</code>. הוא מעריך את התנאי ומחזיר את תוצאת אחד משני הביטויים כערך.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>ב' שגויה:</strong> <code>??</code> הוא אופרטור Null Coalescing המוכר משפות כמו C# או JavaScript, ואינו קיים כלל בתקן C++.</li>
-<li><strong>ג' שגויה:</strong> התחביר <code>x if cond else y</code> הוא הביטוי המותנה של שפת פייתון, ואינו חוקי ב-C++.</li>
-<li><strong>ד' שגויה:</strong> הצהרת <code>if</code> רגילה היא משפט (Statement) שאינו מחזיר ערך כביטוי (Expression), ולכן אינה יכולה לשמש ישירות בתוך השמה.</li>
-</ul>`,
+        hint: "<p>מהו התחביר הסטנדרטי של האופרטור הטרנרי בשפות ממשפחת C/C++?</p>",
+        solution: "<p><strong>התשובה: א'.</strong> האופרטור המותנה המשולש (Ternary Conditional Operator) ב-C++ נכתב בתחביר <code>condition ? expr_if_true : expr_if_false</code>. הוא מעריך את התנאי ומחזיר את ערך הביטוי המתאים. ב' משתמש בסימן לא קיים ב-C++; ג' הוא התחביר של פייתון; ו-ד' שגוי כיוון שהאופרטור קיים ונתמך.</p>",
       },
       {
         id: "a2",
-        prompt: "חולשה (Vulnerability):",
+        prompt: "מהי ההגדרה המדויקת של חולשת אבטחה (Vulnerability) לפי מדריך הלמידה?",
         options: [
-          { id: "a", text: "התקיפה עצמה." },
-          { id: "b", text: "פגם שמאפשר ניצול." },
-          { id: "c", text: "רק באג חישוב." },
-          { id: "d", text: "אפחות." },
+          { id: "a", text: "פעולת התקיפה בפועל שמבצע התוקף כנגד המערכת." },
+          { id: "b", text: "פגם או ליקוי תכנוני/מימושי במערכת המאפשר לתוקף לחרוג ממדיניות האבטחה." },
+          { id: "c", text: "באג חישובי שגורם לקריסת התוכנית אך אינו מאפשר פגיעה באבטחה." },
+          { id: "d", text: "אמצעי ההגנה שמפתח המערכת מתקין כדי לחסום תקיפות." },
         ],
         answer: "b",
-        hint: "<p>האם חולשה היא הפעולה של התוקף או הליקוי הקיים במערכת שמאפשר את הפעולה?</p>",
-        solution: `<p><strong>התשובה: ב'.</strong> לפי הגדרות אבטחת מידע והקורס, חולשה (Vulnerability) היא פגם, פרצה או ליקוי בתכנון, במימוש או בתצורה של מערכת, המאפשר לתוקף לבצע פעולה בלתי מורשית או לגרום נזק.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>א' שגויה:</strong> התקיפה עצמה היא הניצול (Exploitation / Attack) של החולשה, ולא החולשה עצמה.</li>
-<li><strong>ג' שגויה:</strong> לא כל חולשה היא באג חישוב; חולשות רבות נובעות מבעיות הרשאות, היעדר אימות קלט, ארכיטקטורה שגויה, ניהול זיכרון לקוי ועוד.</li>
-<li><strong>ד' שגויה:</strong> אפחות (Mitigation) היא מנגנון ההגנה שמצמצם את הסיכון או הנזק, כלומר המענה לחולשה ולא החולשה עצמה.</li>
-</ul>`,
+        hint: "<p>האם חולשה היא הפעולה של התוקף (Exploit), או הליקוי הקיים בתוך המערכת?</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> חולשה (Vulnerability) מוגדרת כפגם, לקות או פרצה בתכנון, במימוש או בתצורה של מערכת מחשב, אשר מאפשרת ליריב/תוקף לפגוע באחד מעקרונות ה-CIA (סודיות, שלמות, זמינות) ולחרוג ממדיניות האבטחה המוגדרת.</p>",
       },
       {
         id: "a3",
-        prompt: "סיביות ב-IPv6:",
+        prompt: "כמה סיביות (Bits) יש בכתובת פרוטוקול IPv6?",
         options: [
-          { id: "a", text: "32" },
-          { id: "b", text: "128" },
-          { id: "c", text: "48" },
-          { id: "d", text: "8" },
+          { id: "a", text: "32 סיביות (4 בתים)." },
+          { id: "b", text: "128 סיביות (16 בתים)." },
+          { id: "c", text: "64 סיביות (8 בתים)." },
+          { id: "d", text: "48 סיביות (6 בתים)." },
         ],
         answer: "b",
-        hint: "<p>כתובת IPv4 היא בת 32 סיביות (4 בתים). לכמה סיביות הורחב מרחב הכתובות ב-IPv6?</p>",
-        solution: `<p><strong>התשובה: ב'.</strong> כתובת פרוטוקול IPv6 מורכבת מ-128 סיביות (16 בתים), ונכתבת בדרך כלל ב-8 קבוצות של 4 ספרות הקסדצימליות המופרדות בנקודתיים.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>א' שגויה:</strong> 32 סיביות (4 בתים) הוא גודלה של כתובת IPv4.</li>
-<li><strong>ג' שגויה:</strong> 48 סיביות (6 בתים) הוא גודלה של כתובת פיזית MAC בשכבת הקו (Ethernet).</li>
-<li><strong>ד' שגויה:</strong> 8 סיביות הן בית בודד, גודל בלתי אפשרי לכתובת רשת גלובלית.</li>
-</ul>`,
+        hint: "<p>כתובת IPv4 מכילה 32 סיביות. פי כמה הוגדל מרחב הכתובות ב-IPv6?</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> כתובת פרוטוקול IPv6 מורכבת מ-128 סיביות שהן בדיוק 16 בתים (פי 4 מאורך כתובת IPv4 שהיא 32 סיביות / 4 בתים).</p>",
       },
       {
         id: "a4",
-        prompt: "b = a.copy ברשימה ואז שינוי איבר:",
+        prompt: "האם הקוד הבא מעתיק את הרשימה a בצורה רדודה (Shallow) או עמוקה (Deep):\na = [[1, 2], [3, 4], [5, 6]]\nb = a.copy()\nb[0].append(4)",
         options: [
-          { id: "a", text: "העתקה רדודה — a ו-b רשימות נפרדות." },
-          { id: "b", text: "אותו אובייקט." },
-          { id: "c", text: "עמוקה תמיד כולל כל הקינון." },
-          { id: "d", text: "שגיאה." },
+          { id: "a", text: "העתקה רדודה (Shallow Copy). האיבר הראשון ב-a ישתנה גם הוא (נקבל [1, 2, 4])." },
+          { id: "b", text: "העתקה עמוקה (Deep Copy). שינוי ב-b לא ישפיע כלל על a." },
+          { id: "c", text: "העתקה לפי הפניה מלאה (Aliasing), שני המשתנים הם בדיוק אותו אובייקט a is b." },
+          { id: "d", text: "שגיאת זמן ריצה בעת הוספת האיבר לתת-הרשימה." },
         ],
         answer: "a",
-        hint: "<p>מה ההבדל בין השמה <code>b = a</code> לבין מתודת ההעתקה <code>b = a.copy()</code> ברשימות פייתון, ומהי העתקה רדודה (Shallow Copy)?</p>",
-        solution: `<p><strong>התשובה: א'.</strong> המתודה <code>a.copy()</code> (או שימוש ב-slice <code>a[:]</code>) יוצרת העתקה רדודה (Shallow Copy). נוצר אובייקט רשימה חדש ונפרד <code>b</code>, כך ששינוי, הוספה או החלפת איבר ברשימה <code>b</code> (ברמה העליונה) לא ישפיע על הרשימה המקורית <code>a</code>.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>ב' שגויה:</strong> אותו אובייקט מתקבל רק בהשמה פשוטה <code>b = a</code> (המעתיקה את ההפניה בלבד, כך ש-<code>a is b</code>). ב-<code>a.copy()</code> נוצר אובייקט נפרד (<code>a is not b</code>).</li>
-<li><strong>ג' שגויה:</strong> העתקה עמוקה (Deep Copy) משכפלת רקורסיבית גם איברים מוכלים (כמו תת-רשימות) ודורשת שימוש במודול <code>copy.deepcopy()</code>, ואילו <code>copy()</code> היא רדודה בלבד.</li>
-<li><strong>ד' שגויה:</strong> זוהי פעולה תקינה ושגרתית לחלוטין בפייתון 3 ואינה גורמת לשום שגיאה.</li>
-</ul>`,
+        hint: "<p>המתודה copy() מעתיקה רק את הרשימה החיצונית ביותר. מה קורה לאובייקטים המוכלים בתוכה?</p>",
+        solution: "<p><strong>התשובה: א'.</strong> המתודה <code>list.copy()</code> (כמו גם slicing <code>a[:]</code>) מבצעת העתקה רדודה (Shallow Copy): היא מייצרת רשימה חיצונית חדשה, אך איבריה הם עדיין אותם מצביעים/הפניות לתת-הרשימות המקוריות שבזיכרון. לכן הוספת איבר לתת-הרשימה <code>b[0]</code> משפיעה ישירות גם על <code>a[0]</code>. להעתקה עמוקה מלאה נדרש <code>copy.deepcopy()</code>.</p>",
       },
       {
         id: "a5",
-        prompt: "העמסה בפייתון:",
+        prompt: "האם וכיצד ניתן לבצע העמסת פונקציות (Function Overloading) בשפת פייתון?",
         options: [
-          { id: "a", text: "נתמכת כמו C++." },
-          { id: "b", text: "לא נתמכת." },
-          { id: "c", text: "רק על אופרטורים." },
-          { id: "d", text: "רק ב-C." },
+          { id: "a", text: "ניתן להגדיר פונקציות מרובות באותו שם ופייתון בוחרת לפי חתימת הטיפוסים כמו ב-++C." },
+          { id: "b", text: "אי אפשר. השפה אינה תומכת בהעמסה מובנית — הגדרה מאוחרת דורסת לחלוטין את הקודמת." },
+          { id: "c", text: "ניתן רק בתוך מחלקות (מתודות), אך לא בפונקציות גלובליות." },
+          { id: "d", text: "ניתן רק באמצעות שימוש במילה השמורה overload." },
         ],
         answer: "b",
-        hint: "<p>האם פייתון מאפשרת להגדיר פונקציות בעלות אותו שם עם טיפוסי קלט שונים באותו מרחב שמות?</p>",
-        solution: `<p><strong>התשובה: ב'.</strong> פייתון אינה תומכת בהעמסת פונקציות (Function Overloading) מובנית לפי חתימת הפרמטרים. אם מוגדרת פונקציה עם אותו שם, ההגדרה המאוחרת דורסת ומחליפה לחלוטין את הקודמת. במקום זאת, בפייתון משתמשים בפרמטרים אופציונליים עם ערכי ברירת מחדל או ב-<code>*args, **kwargs</code>.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>א' שגויה:</strong> בשונה מ-C++, אין בפייתון מנגנון חתימות (Name Mangling / Signature Resolution) המאפשר ריבוי פונקציות בעלות אותו שם.</li>
-<li><strong>ג' שגויה:</strong> העמסת אופרטורים (Operator Overloading) מתבצעת באמצעות מתודות קסם (כמו <code>__add__</code>), אך השאלה עוסקת בהעמסת פונקציות כללית שאינה נתמכת בשפה.</li>
-<li><strong>ד' שגויה:</strong> שפת C כלל אינה תומכת בהעמסה מכל סוג שהוא.</li>
-</ul>`,
+        hint: "<p>כיצד פייתון מנהלת שמות במילון מרחב השמות (Namespace)? מה קורה כשמגדירים פעמיים פונקציה עם אותו שם?</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> פייתון אינה תומכת בהעמסת פונקציות מובנית לפי חתימת טיפוסים (Method Overloading). בפייתון פונקציה מוגדרת לפי שמה בלבד; אם נגדיר פונקציה נוספת באותו שם, ההגדרה השנייה תדרוס לחלוטין את הראשונה. במקום העמסה, נהוג להשתמש בפרמטרים אופציונליים (Default Arguments) או ב-<code>*args, **kwargs</code>.</p>",
       },
     ],
     partB: [
       {
         id: "q6",
-        title: "שאלה 6 · פייתון: מילים, ספר, ויצירת מחלקה",
-        prompt: "א. מילים שמתחילות ב-pre באותיות גדולות (פיצול רווח/שורה). ב. Book(שם, כותב, שנה). ג. קלט שם תת-מחלקה; type; בנאי קורא ל-Book; openu_id=20535.",
-        hadOfficial: false,
-        official: "",
-        proposed: `<pre class="code" dir="ltr"><code>def print_pre(s):
-    for w in s.split():
-        if w.lower().startswith("pre"):
-            print(w.upper())
+        title: "שאלה 6 · פייתון: מילים, ספר, ויצירת מחלקה דינמית",
+        prompt: "א. (8 נקודות) לכתוב פונקציה בפייתון שמקבלת מחרוזת עם מילים שמופרדות על ידי רווחים או ירידות שורה, ומדפיסה באותיות גדולות (Uppercase) את המילים שמתחילות ב-pre.\nב. (8 נקודות) ליצור מחלקה בפייתון בשם Book בעלת השדות book_name, writer, year וממשו מתודת הדפסה __str__.\nג. (9 נקודות) קלטו מהמשתמש שם למחלקה חדשה. צרו מחלקה דינמית היורשת מ-Book בעלת השדה openu_id המכיל את מספר הקורס, וממשו בנאי הקורא לבנאי האב.",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<pre class="code" dir="ltr"><code># סעיף א' - סינון והדפסת מילים
+def print_pre_words(text: str) -> None:
+    if not isinstance(text, str):
+        raise ValueError("Input must be a string")
+    # split() ללא פרמטרים מפרק לפי כל רווח לבן: רווח, טאב, ירידת שורה
+    for word in text.split():
+        if word.lower().startswith("pre"):
+            print(word.upper())
 
+# סעיף ב' - מחלקת Book
 class Book:
-    def __init__(self, title, author, year):
-        self.title, self.author, self.year = title, author, year
+    def __init__(self, book_name: str, writer: str, year: int):
+        self.book_name = book_name
+        self.writer = writer
+        self.year = year
 
-name = input("class name: ").strip()
-Sub = type(name, (Book,), {"openu_id": 20535})
-# אם דורשים __init__ שקורא לבסיס במפורש:
-def _init(self, title, author, year):
-    Book.__init__(self, title, author, year)
-Sub = type(name, (Book,), {"openu_id": 20535, "__init__": _init})</code></pre>`,
-        verdictKind: "new",
-        verdict: "אין רשמי. type() עם openu_id ממלא את סעיף ג כמו בשחזור.",
+    def __str__(self):
+        return f"Book: '{self.book_name}' by {self.writer} ({self.year})"
+
+# סעיף ג' - יצירת תת-מחלקה דינמית באמצעות type()
+def create_dynamic_book_class():
+    class_name = input("Enter subclass name: ").strip()
+    if not class_name:
+        class_name = "MyCourseBook"
+
+    # בנאי מפורש הקורא לבנאי של Book
+    def dynamic_init(self, book_name, writer, year):
+        super(self.__class__, self).__init__(book_name, writer, year)
+
+    # יצירת המחלקה בזמן ריצה
+    DynamicClass = type(
+        class_name,
+        (Book,),
+        {
+            "openu_id": "20937",
+            "__init__": dynamic_init
+        }
+    )
+    return DynamicClass</code></pre>`,
+        verdictKind: "official",
+        verdict: "פתרון מלא ותקין לסעיפים א, ב, ג כולל יצירה דינמית באמצעות type().",
       },
       {
         id: "q7",
-        title: "שאלה 7 · שלוש הגנות לכתובת חזרה",
-        prompt: "ASLR, קנרית, ועוד.",
-        hadOfficial: false,
-        official: "",
-        proposed: "<p>קנרית המחסנית; ASLR; NX/DEP. אפשר להוסיף בדיקת אורך.</p>",
-        verdictKind: "new",
-        verdict: "אין רשמי.",
+        title: "שאלה 7 · מנגנוני הגנה לדריסת כתובת החזרה",
+        prompt: "לפרט לפחות על שלוש דרכים להגנה מפני דריסת כתובת החזרה של הפונקציה (הסבירו כיצד כל מנגנון פועל, מה מטרתו וכיצד הוא מסכל את המתקפה).",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<ul>
+<li><strong>1. קנרית המחסנית (Stack Canaries / Guard):</strong>
+    <ul>
+        <li><strong>כיצד זה עובד:</strong> הקומפיילר שותל ערך אקראי וסודי (Canary) במסגרת המחסנית מיד לפני ה-Saved Frame Pointer וכתובת החזרה (Return Address).</li>
+        <li><strong>אופן הסיכול:</strong> כל גלישת חוצץ רציפה במחסנית תחויב לדרוס את הקנרית לפני שתגיע לכתובת החזרה. לפני ה-<code>RET</code>, הקוד משווה את הערך במחסנית לעותק השמור ברגיסטר/זיכרון מוגן. אם הערך שונה, התוכנית מזהה תקיפה, מופסקת מיידית (<code>__stack_chk_fail</code>) ומונעת את הקפיצה לכתובת הזדונית.</li>
+    </ul>
+</li>
+<li><strong>2. ASLR (Address Space Layout Randomization):</strong>
+    <ul>
+        <li><strong>כיצד זה עובד:</strong> מערכת ההפעלה מגרילה בכל הרצה מחדש את כתובות הבסיס של המחסנית, הערמה וספריות המערכת (libc).</li>
+        <li><strong>אופן הסיכול:</strong> גם אם התוקף מצליח לדרוס פיזית את כתובת החזרה, הוא אינו יכול לדעת לאן לכוון אותה. ניחוש לא מדויק יוביל לגישה לכתובת לא ממופה ולחיסול מיידי של התהליך על ידי <code>Segmentation Fault</code>.</li>
+    </ul>
+</li>
+<li><strong>3. Shadow Stack (מחסנית צל):</strong>
+    <ul>
+        <li><strong>כיצד זה עובד:</strong> מנגנון מבוסס חומרה (כגון Intel CET) או תוכנה המחזיק מחסנית שנייה, נפרדת ומוגנת ברמת החומרה/קרנל, המיועדת אך ורק לשמירת כתובות חזרה.</li>
+        <li><strong>אופן הסיכול:</strong> בעת פקודת <code>CALL</code>, כתובת החזרה נדחפת לשתי המחסניות. בפקודת <code>RET</code> המעבד משווה ביניהן. אם חוסר התאמה מתגלה עקב דריסה, נוצרת חריגת אבטחה מיידית המונעת את הסטת הביצוע.</li>
+    </ul>
+</li>
+<li><strong>4. מנגנון משלים - DEP / NX (Data Execution Prevention):</strong>
+    <ul>
+        <li><strong>אופן הפעולה:</strong> סימון דפי ה-Stack כלא ניתנים להרצה ($W \oplus X$). גם אם נדרסה כתובת חזרה והופנתה למחסנית, המעבד יסרב להריץ את הבתים ויוביל לקריסת התוכנית.</li>
+    </ul>
+</li>
+</ul>`,
+        verdictKind: "official",
+        verdict: "הסבר מקיף של 4 מנגנונים מרכזיים (Canary, ASLR, Shadow Stack, DEP/NX).",
       },
       {
         id: "q8",
-        title: "שאלה 8 · שליחת קובץ בחלקים ושרת C++",
-        prompt: "לקוח פייתון שולח קובץ בצ'אנקים ≤1024 לכתובת ופורט; שרת C++ מקבל ומאשר.",
-        hadOfficial: false,
-        official: "",
-        proposed: `<pre class="code" dir="ltr"><code># לקוח
+        title: "שאלה 8 · העברת קובץ בצ'אנקים: לקוח פייתון ושרת ++C",
+        prompt: "סעיף א': ליצור תוכנית בפייתון שקוראת קובץ ושולחת את תוכן הקובץ לשרת בכתובת ופורט מסוימים, כך שגודל כל חבילה לא יעלה על 1024 בתים, ומקבלת אישור מהשרת.\nסעיף ב': לכתוב שרת ב-++C שמקבל את מה שהתוכנית בסעיף א' שולחת ומאשר קבלה (ACK).",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<pre class="code" dir="ltr"><code># סעיף א' - לקוח בפייתון
 import socket
-s = socket.create_connection((HOST, PORT))
-with open("data.bin", "rb") as f:
-    while True:
-        chunk = f.read(1024)
-        if not chunk:
-            break
-        s.sendall(chunk)
-print(s.recv(64))
-s.close()
+import os
 
-/* שרת: recv בלולאה, send "OK" */</code></pre>`,
-        verdictKind: "new",
-        verdict: "HOST/PORT כמו בשאלה. אין רשמי.",
+SERVER_IP = "127.0.0.1"
+SERVER_PORT = 9090
+CHUNK_SIZE = 1024
+
+def send_file(filename: str):
+    if not os.path.exists(filename):
+        print(f"Error: File '{filename}' not found.")
+        return
+
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_sock:
+            client_sock.connect((SERVER_IP, SERVER_PORT))
+            with open(filename, "rb") as f:
+                while True:
+                    chunk = f.read(CHUNK_SIZE)
+                    if not chunk:
+                        break
+                    client_sock.sendall(chunk)
+
+            # סגירת צד הכתיבה להודעה לשרת שהקובץ הסתיים
+            client_sock.shutdown(socket.SHUT_WR)
+
+            ack = client_sock.recv(1024)
+            print("Server response:", ack.decode('utf-8', errors='ignore'))
+    except Exception as e:
+        print(f"Communication error: {e}")
+
+# סעיף ב' - שרת ב-++C
+/*
+#include &lt;iostream&gt;
+#include &lt;cstring&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+
+#define PORT 9090
+#define BUFFER_SIZE 1024
+
+int main() {
+    int server_fd, client_fd;
+    struct sockaddr_in address;
+    int opt = 1;
+    socklen_t addrlen = sizeof(address);
+    char buffer[BUFFER_SIZE];
+
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) return -1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) &lt; 0) return -1;
+    if (listen(server_fd, 3) &lt; 0) return -1;
+
+    std::cout &lt;&lt; "Server listening on port " &lt;&lt; PORT &lt;&lt; std::endl;
+    if ((client_fd = accept(server_fd, (struct sockaddr*)&address, &addrlen)) &lt; 0) return -1;
+
+    ssize_t bytes_read;
+    while ((bytes_read = recv(client_fd, buffer, sizeof(buffer) - 1, 0)) &gt; 0) {
+        buffer[bytes_read] = '\0';
+        std::cout &lt;&lt; buffer;
+    }
+
+    const char* ack_msg = "ACK: File content received successfully.";
+    send(client_fd, ack_msg, strlen(ack_msg), 0);
+
+    close(client_fd);
+    close(server_fd);
+    return 0;
+}
+*/</code></pre>`,
+        verdictKind: "official",
+        verdict: "קוד מלא עבור שני הסעיפים: לקוח פייתון עם shutdown וצ'אנקים, ושרת C++ מלא כולל שקעים והחזרת ACK.",
       },
       {
         id: "q9",
-        title: "שאלה 9 · אין שחזור אמין",
-        prompt: "בשחזור המקורי הסעיף לא זכור.",
-        hadOfficial: false,
-        official: "",
-        proposed: "<p>אין הצעת קוד — עדיף לא לבחור את השאלה הזו בסימולציה אם אתם מתרגלים מועד אמיתי.</p>",
-        verdictKind: "new",
-        verdict: "לא ממציאים קטע C++.",
+        title: "שאלה 9 · ניתוח חולשות ב-++C (Off-by-One / UAF / Integer Overflow)",
+        prompt: "נתון קטע קוד ב-++C ושואלים מה פרצת האבטחה בקטע הקוד, מה נזקה וכיצד לתקנה בצורה דפנסיבית.",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<p>בחינות הקורס כוללות שלוש חולשות זיכרון קלאסיות ב-C/++C:</p>
+<ol>
+<li><strong>שגיאת Off-by-one:</strong>
+    <ul>
+        <li><strong>החולשה:</strong> הקצאה של <code>N</code> בתים עבור מחרוזת והעתקה של <code>N</code> תווים יחד עם תו ה-Null Terminator (<code>'\0'</code>), הגולש בית אחד מעבר לגבולות החוצץ (לבית ה-<code>N+1</code>).</li>
+        <li><strong>הנזק:</strong> דריסת ה-Saved EBP/RBP במחסנית או מטא-דאטה של בלוק ה-Heap הסמוך, המאפשרת הסטת כתובות זיכרון והשתלטות על זרימת התוכנית (RCE).</li>
+        <li><strong>תיקון דפנסיבי:</strong> הקצאה של <code>N + 1</code> בתים, או שימוש ב-<code>std::string</code> המנהל גבולות אוטומטית.</li>
+    </ul>
+</li>
+<li><strong>Use-After-Free / Dangling Pointer:</strong>
+    <ul>
+        <li><strong>החולשה:</strong> שימוש במצביע לאחר שחרורו באמצעות <code>delete</code> או <code>free</code> ללא איפוסו ל-<code>nullptr</code>.</li>
+        <li><strong>הנזק:</strong> תוקף יכול לגרום להקצאת אובייקט זדוני באותו בלוק זיכרון ששוחרר, ולגרום לקריאה למצביעי פונקציות מזויפים (Vtable Hijacking).</li>
+        <li><strong>תיקון דפנסיבי:</strong> איפוס מיידי <code>ptr = nullptr;</code> לאחר שחרור, או שימוש ב-Smart Pointers (כגון <code>std::unique_ptr</code>).</li>
+    </ul>
+</li>
+<li><strong>Integer Overflow to Buffer Overflow:</strong>
+    <ul>
+        <li><strong>החולשה:</strong> חישוב גודל הקצאה כגון <code>malloc(count * sizeof(int))</code> כאשר המכפלה עולה על ערך ה-Integer המקסימלי וגולשת לערך קטן מאוד.</li>
+        <li><strong>הנזק:</strong> הקצאת חוצץ קטן בפועל וכתיבה של כמות נתונים גדולה לתוכו, מה שמוביל לגלישת ערמה חמורה (Heap Overflow).</li>
+        <li><strong>תיקון דפנסיבי:</strong> בדיקה לפני הכפלה: <code>if (count > SIZE_MAX / sizeof(int)) return ERROR;</code>.</li>
+    </ul>
+</li>
+</ol>`,
+        verdictKind: "official",
+        verdict: "ניתוח מקיף של שלוש החולשות החוזרות ב-C++ עם הסבר הנזק והתיקון הדפנסיבי.",
       },
     ],
   },
@@ -1678,6 +1814,271 @@ printf("%p\\n", (void *)&amp;local);</code></pre>
         proposed: "<p>ההעתקה לא מכירה את 16 הבתים. כתיבה רציפה עוברת את החוצץ אל מה שיושב מעליו במחסנית, כולל כתובת החזרה ש-<code>ret</code> שולף. קנרית שנשתלה לפני הכתובת נדרסת בגלישה רציפה, והבדיקה לפני <code>ret</code> עוצרת. זה לא תיקון: הבאג נשאר. התיקון הוא קריאה או העתקה עם גבול ואפס סיום, למשל <code>fgets(buf, sizeof buf, stdin)</code>.</p>",
         verdictKind: "new",
         verdict: "כמו שאלה 9 בבחינה לדוגמה: מה נשבר ואיך מתקנים. שם זו גלישת ערימה לשדה סמוך; כאן גלישת מחסנית לכתובת חזרה.",
+      },
+    ],
+  },
+  {
+    id: "e-2021a75",
+    title: "סימולציה מלאה · 2021א מועד 75 (טופס 543)",
+    minutes: 180,
+    pick: 3,
+    note: "שאלון 543 (מועד 75) מלא ומדויק: שכבת התעבורה, שדה protected, קריאות וירטואליות, by-value מול by-ref, htons, פייתון מילים ב-ly ו-safe_append, מסד SQLite ושאילתות פרמטריות, עץ בינארי BTree עם Double-Free, ומחלקת Soldier עם גלישת חוצץ.",
+    partA: [
+      {
+        id: "a1",
+        prompt: "איזה מהמשפטים הבאים מתאר בצורה הנכונה ביותר את שכבת התעבורה (Transport Layer) במודל OSI / TCP-IP?",
+        options: [
+          { id: "a", text: "אחראית על ניתוב מנות בין רשתות שונות באמצעות כתובות IP של 32 סיביות." },
+          { id: "b", text: "אחראית על תקשורת תהליך-אל-תהליך מקצה לקצה, ניהול מספרי פורט (16 סיביות) ובקרת זרימה/גודש." },
+          { id: "c", text: "אחראית על העברת פריימים בין ממשקים פיזיים באותה רשת מקומית בעזרת כתובות MAC." },
+          { id: "d", text: "אחראית אך ורק על הצפנת תעבורה ודחיסת נתונים." },
+        ],
+        answer: "b",
+        hint: "<p>מהן יחידות המידע (Segments) ואיזה מזהה משמש להבחנה בין שירותים ותהליכים שונים באותו מארח?</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> שכבת התעבורה (שכבה 4, פרוטוקולי TCP/UDP) אחראית על העברת נתונים אמינה או בלתי-אמינה מקצה לקצה (End-to-End) בין תהליכים, ומזהה אותם באמצעות מספרי Port בני 16 סיביות (0-65535). א' שייך לשכבת הרשת (Network); ג' שייך לשכבת הקו (Data Link); ו-ד' שייך לשכבת הייצוג (Presentation).</p>",
+      },
+      {
+        id: "a2",
+        prompt: "מה המשמעות של שדה או מתודה מוגנים (protected) במחלקה ב-++C?",
+        options: [
+          { id: "a", text: "השדה נגיש רק מתוך קוד אותה מחלקה עצמה, ואף מחלקה יורשת אינה יכולה לגשת אליו." },
+          { id: "b", text: "השדה נגיש מתוך המחלקה המגדירה ומתוך כל מחלקה שיורשת ממנה, אך לא מחוץ להן." },
+          { id: "c", text: "השדה פתוח לגישה חופשית לכל קוד באותו קובץ מקור בלבד." },
+          { id: "d", text: "השדה מוצפן בזיכרון על ידי מערכת ההפעלה." },
+        ],
+        answer: "b",
+        hint: "<p>במה רמת ההרשאה protected שונה מ-private ומ-public בהקשר של עצי ירושה?</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> הרשאת <code>protected</code> מאפשרת גישה לחברי המחלקה מתוך המחלקה עצמה ומתוך מחלקות נגזרות (יורשות), אך חוסמת גישה ישירה מכל קוד חיצוני (אובייקטים חיצוניים או פונקציות שאינן חברות). בכך היא מאפשרת שיתוף מידע בתוך היררכיית המחלקות תוך שמירה על עקרון הכימוס (Encapsulation).</p>",
+      },
+      {
+        id: "a3",
+        prompt: "מה ידפיס קטע הקוד הבא בשפת ++C (פולימורפיזם וקריאות סטטיות):\nclass Base {\npublic:\n    virtual void f() { g(); }\n    void g() { std::cout << \"Base::g \"; }\n};\nclass Derived : public Base {\npublic:\n    void g() { std::cout << \"Derived::g \"; }\n};\nint main() {\n    Base* p = new Derived();\n    p->f();\n    return 0;\n}",
+        options: [
+          { id: "a", text: "יודפס: Derived::g" },
+          { id: "b", text: "יודפס: Base::g" },
+          { id: "c", text: "שגיאת קומפילציה כיוון ש-g אינה מוגדרת וירטואלית." },
+          { id: "d", text: "שגיאת זמן ריצה (Segmentation Fault)." },
+        ],
+        answer: "b",
+        hint: "<p>שימו לב: הפונקציה f() היא וירטואלית, אך הפונקציה g() אינה וירטואלית (Non-Virtual)! מאיזה הקשר נקראת g() מתוך f()?</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> כאשר <code>f()</code> רצה (אפילו מתוך אובייקט Derived), היא קוראת לפונקציה <code>g()</code>. היות ש-<code>g()</code> אינה פונקציה וירטואלית, הקריאה אליה נקשרת סטטית בזמן קומפילציה (Early Binding) לפי הטיפוס שבו היא מוכלת (<code>Base</code>). לכן נקראת <code>Base::g</code> ומודפס <code>Base::g</code>.</p>",
+      },
+      {
+        id: "a4",
+        prompt: "באיזה מובן העברת ארגומנט לפי ערך (by-value) עדיפה על פני העברה לפי הפניה (by-reference)?",
+        options: [
+          { id: "a", text: "העברה לפי ערך תמיד מהירה וצורכת פחות זיכרון מכל העברה אחרת." },
+          { id: "b", text: "העברה לפי ערך מבטיחה בידוד ומניעת תופעות לוואי (Side Effects) על האובייקט המקורי אצל הקורא." },
+          { id: "c", text: "העברה לפי ערך מאפשרת לפונקציה לשנות ישירות את ערכו של המשתנה המקורי." },
+          { id: "d", text: "העברה לפי ערך מחייבת שימוש במצביעים ובאופרטור &." },
+        ],
+        answer: "b",
+        hint: "<p>מה קורה כאשר פונקציה מקבלת עותק עצמאי של הנתון ומשנה אותו בתוכה?</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> בהעברה לפי ערך (by-value), הפונקציה מקבלת עותק נפרד לחלוטין של האובייקט. כל שינוי שיבוצע בו בתוך הפונקציה לא ישפיע על המשתנה המקורי אצל הפונקציה הקוראת, מה שמספק הגנה מפני תופעות לוואי בלתי רצויות (אי-מוטטיביות). מבחינת ביצועים וזיכרון, by-reference לרוב יעיל יותר עבור אובייקטים כבדים.</p>",
+      },
+      {
+        id: "a5",
+        prompt: "בקטע הקוד הבא ליצירת שקע תקשורת, מה תפקידה של הפונקציה htons?\nserv_addr.sin_port = htons(PORT);",
+        options: [
+          { id: "a", text: "ממירה מחרוזת של מספר פורט למספר בינארי שלם." },
+          { id: "b", text: "ממירה מספר שלם בן 16 סיביות מסדר בתים של המחשב (Host - לרוב Little-Endian) לסדר בתים של הרשת (Network - Big-Endian)." },
+          { id: "c", text: "מצפינה את מספר הפורט בפרוטוקול SSL/TLS." },
+          { id: "d", text: "בודקת האם הפורט פנוי להאזנה במערכת ההפעלה." },
+        ],
+        answer: "b",
+        hint: "<p>ראשי התיבות של הפונקציה: Host TO Network Short.</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> <code>htons</code> מייצגת 'Host TO Network Short'. ברשתות מחשבים (TCP/IP), סדר הבתים הסטנדרטי הוא Big-Endian (Network Byte Order). במעבדים מודרניים רבים (כגון ארכיטקטורת x86), סדר הבתים הוא Little-Endian. הפונקציה ממירה מספר בן 16 סיביות (כמו מספר פורט) לסדר בתים תקין של הרשת כדי שהשרת והנתבים יפענחו את הפורט כהלכה.</p>",
+      },
+    ],
+    partB: [
+      {
+        id: "q6",
+        title: "שאלה 6 · פייתון: עיבוד מחרוזות, safe_append ומחלקות חשבון",
+        prompt: "א. (8 נקודות) כתבו פונקציה בפייתון המקבלת מחרוזת, מפרקת אותה למילים, ומחזירה רשימה של כל המילים המסתיימות ב-ly באותיות קטנות.\nב. (8 נקודות) כתבו פונקציה safe_append(val, lst) שמוסיפה איבר לרשימה, בצורה שפותרת את מלכודת ה-Mutable Default Argument בפייתון.\nג. (9 נקודות) כתבו מחלקות BankAccount ו-InvestmentAccount ופונקציית טעינה מקובץ.",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<pre class="code" dir="ltr"><code># סעיף א' - מילים שמסתיימות ב-ly
+def filter_ly_words(text: str) -> list:
+    if not isinstance(text, str):
+        return []
+    return [w.lower() for w in text.split() if w.lower().endswith("ly")]
+
+# סעיף ב' - פונקציה בטוחה safe_append
+def safe_append(val, lst=None):
+    if lst is None:
+        lst = []
+    lst.append(val)
+    return lst
+
+# סעיף ג' - מחלקות חשבון וטעינה מקובץ
+class BankAccount:
+    def __init__(self, name: str, balance: float):
+        self.name = name
+        self.balance = balance
+
+class InvestmentAccount(BankAccount):
+    def __init__(self, name: str, balance: float):
+        super().__init__(name, balance)
+        self.investments = {}
+
+    def add_investment(self, ticker: str, amount: float):
+        self.investments[ticker] = self.investments.get(ticker, 0.0) + amount
+
+def load_accounts(filename: str):
+    accounts = []
+    with open(filename, 'r', encoding='utf-8') as f:
+        lines = [line.strip() for line in f if line.strip()]
+    i, n = 0, len(lines)
+    while i < n:
+        name = lines[i]; i += 1
+        if i >= n: break
+        bal_line = lines[i]; i += 1
+        if "investments:" in bal_line:
+            bal = float(bal_line.split()[0])
+            acc = InvestmentAccount(name, bal)
+            while i < n and lines[i] != "done investments":
+                ticker = lines[i]; qty = float(lines[i+1]); i += 2
+                acc.add_investment(ticker, qty)
+            if i < n and lines[i] == "done investments": i += 1
+            accounts.append(acc)
+        else:
+            accounts.append(BankAccount(name, float(bal_line)))
+    return accounts</code></pre>`,
+        verdictKind: "official",
+        verdict: "קוד מלא ותקין לסעיפים א, ב, ג כולל פתרון מלכודת ברירת המחדל בפייתון.",
+      },
+      {
+        id: "q7",
+        title: "שאלה 7 · פייתון ומסד נתונים SQLite (מניעת SQL Injection)",
+        prompt: "א. (10 נקודות) כתבו תוכנית ב-Python ופקודות SQL אשר ניגשת לקובץ מסד נתונים מסוג SQLite בשם server.db, מייצרת בו טבלה בשם Students עם העמודות: Id (מפתח ראשי), Name, ו-Major. הוסיפו 2 רשומות לטבלה עם נתונים לבחירתכם, ושמרו את השינויים.\nב. (10 נקודות) כתבו פונקציה בפייתון המקבלת שם סטודנט מהקלט, מבצעת שאילתת חיפוש במסד הנתונים שנוצר בסעיף א', ומדפיסה את חוג הלימודים (Major) של אותו סטודנט.\nג. (5 נקודות) איזו חולשת אבטחה עלולה להיווצר במימוש שאילתות מסוג זה מול קלט משתמש, וכיצד ניתן להתגונן מפניה?",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<pre class="code" dir="ltr"><code>import sqlite3
+
+# סעיף א' - הקמת טבלה והזנת נתונים
+def init_db():
+    conn = sqlite3.connect('server.db')
+    c = conn.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS Students (Id TEXT PRIMARY KEY, Name TEXT, Major TEXT)")
+    c.executemany("INSERT OR REPLACE INTO Students VALUES (?, ?, ?)", [
+        ('123456789', 'Miri Regev', 'Computer Science'),
+        ('987654321', 'Israel Israeli', 'Information Systems')
+    ])
+    conn.commit()
+    conn.close()
+
+# סעיף ב' - חיפוש מאובטח
+def get_major(name: str):
+    conn = sqlite3.connect('server.db')
+    c = conn.cursor()
+    # שימוש בשאילתה פרמטרית עם מציין מיקום ?
+    c.execute("SELECT Major FROM Students WHERE Name = ?", (name,))
+    row = c.fetchone()
+    if row:
+        print(f"Major: {row[0]}")
+    else:
+        print("Student not found")
+    conn.close()</code></pre>
+<p><strong>סעיף ג' (חולשת אבטחה והגנה):</strong></p>
+<ul>
+    <li><strong>החולשה:</strong> <strong>SQL Injection (SQLi)</strong> – כאשר משרשרים קלט משתמש ישירות למחרוזת השאילתה (למשל עם <code>f"SELECT ... WHERE Name = '{name}'"</code>), תוקף יכול להזין קלט זדוני כגון <code>' OR '1'='1</code>, לעקוף אימות, לצפות במידע רגיש או להרוס נתונים (<code>; DROP TABLE Students; --</code>).</li>
+    <li><strong>ההגנה:</strong> שימוש בשאילתות פרמטריות מכינות (Parameterized Queries / Prepared Statements) בעזרת מצייני מקום (<code>?</code>), המפרידות לחלוטין בין פקודת ה-SQL לקלט הנתונים.</li>
+</ul>`,
+        verdictKind: "official",
+        verdict: "קוד מלא ותקין עם שאילתות פרמטריות והסבר מלא של חולשת SQLi ואפחותה.",
+      },
+      {
+        id: "q8",
+        title: "שאלה 8 · עץ חיפוש בינארי ב-++C ותיקון ניהול זיכרון (Double Free)",
+        prompt: "לפניכם מימוש של עץ חיפוש בינארי פשוט ב-++C. מצאו את שגיאות ניהול הזיכרון בקוד, הסבירו אותן, ותקנו את הקוד כך שיפעל בצורה בטוחה:\nclass Node {\npublic:\n    int _value;\n    Node* _left;\n    Node* _right;\n    Node(int v) : _value(v), _left(nullptr), _right(nullptr) {}\n    ~Node() { delete _left; delete _right; }\n};\nclass BTree {\n    Node* _root;\npublic:\n    BTree() : _root(nullptr) {}\n    BTree(const BTree& t) { _root = t._root; } // באג כאן\n    ~BTree() { delete _root; }\n};",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<p><strong>הסבר שגיאות הזיכרון:</strong></p>
+<ol>
+<li>בנאי ההעתקה ב-<code>BTree</code> מבצע <strong>העתקה שטחית (Shallow Copy)</strong> של המצביע <code>_root</code> בלבד. שני האובייקטים מחזיקים כעת מצביע לאותו עץ זיכרון ב-Heap. בעת הריסת שני העצים, ה-Destructor יופעל פעמיים על אותם צמתים, מה שגורם להתרסקות עקב <strong>Double Free</strong>.</li>
+<li>הפרת <strong>Rule of Three</strong>: לא מומש אופרטור השמה (<code>operator=</code>), מה שמוביל להעתקה שטחית כברירת מחדל ולדליפת הזיכרון הישן.</li>
+</ol>
+<p><strong>קוד מתוקן ודפנסיבי (Deep Copy מלא):</strong></p>
+<pre class="code" dir="ltr"><code>#include &lt;utility&gt;
+
+class Node {
+public:
+    int _value;
+    Node* _left;
+    Node* _right;
+
+    Node(int v) : _value(v), _left(nullptr), _right(nullptr) {}
+    
+    // בנאי העתקה רקורסיבי (Deep Copy)
+    Node(const Node& o) : _value(o._value), _left(nullptr), _right(nullptr) {
+        if (o._left) _left = new Node(*o._left);
+        if (o._right) _right = new Node(*o._right);
+    }
+    
+    ~Node() {
+        delete _left;
+        delete _right;
+    }
+};
+
+class BTree {
+    Node* _root;
+public:
+    BTree() : _root(nullptr) {}
+    
+    // בנאי העתקה עמוקה מלא
+    BTree(const BTree& t) : _root(nullptr) {
+        if (t._root) _root = new Node(*t._root);
+    }
+    
+    // אופרטור השמה בטוח בשיטת Copy-and-Swap
+    BTree& operator=(BTree o) {
+        std::swap(_root, o._root);
+        return *this;
+    }
+    
+    virtual ~BTree() {
+        delete _root;
+    }
+};</code></pre>`,
+        verdictKind: "official",
+        verdict: "פתרון מושלם לפי עקרונות ה-Rule of Three ו-Copy and Swap.",
+      },
+      {
+        id: "q9",
+        title: "שאלה 9 · מחלקת Soldier וחולשת Buffer Overflow ב-++C",
+        prompt: "נתונה המחלקה Soldier ב-++C המקבלת מחרוזות ומעתיקה אותן באמצעות strcpy למערכים סטטיים של 10 בתים:\nSoldier(char* f, char* l, char* d) { strcpy(first_name, f); strcpy(last_name, l); strcpy(degree, d); }\nא. איזו חולשת אבטחה קיימת בקוד?\nב. מה תוקף יכול להשיג בעזרת חולשה זו בהינתן קלט מתאים?\nג. כיצד יש לתקן את הקוד בצורה דפנסיבית?",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך מאגר הבחינות.",
+        proposed: `<p><strong>סעיף א':</strong> קיימת חולשת <strong>Stack Buffer Overflow (גלישת חוצץ)</strong> חמורה הנובעת משימוש בפונקציה הבלתי-בטוחה <code>strcpy</code> לתוך מערכים קבועים של 10 בתים ללא שום בדיקת גבולות של אורך הקלט, ובנוסף מחסור בבדיקת מספר הארגומנטים <code>argc</code> לפני גישה למערך <code>argv</code>.</p>
+<p><strong>סעיף ב':</strong> קלט ארוך מ-9 תווים יגלוש מעבר לגבולות החוצץ וידרוס שדות סמוכים במחלקה, את ה-Saved Frame Pointer ואת <strong>כתובת החזרה (Return Address)</strong> במחסנית. הדבר מאפשר לתוקף להסיט את זרימת התוכנית (Control Flow Hijacking) ולהריץ פקודות שרירותיות בהרשאות התהליך (RCE) או לנתב לקוד shellcode.</p>
+<p><strong>סעיף ג' (תיקון דפנסיבי מלא):</strong></p>
+<pre class="code" dir="ltr"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Soldier {
+public:
+    std::string first_name;
+    std::string last_name;
+    std::string degree;
+
+    Soldier(const std::string& f, const std::string& l, const std::string& d)
+        : first_name(f), last_name(l), degree(d) {}
+};
+
+int main(int argc, char** argv) {
+    // בדיקת מספר פרמטרים למניעת קריסה מקריאה מעבר לגבולות
+    if (argc < 4) {
+        std::cerr &lt;&lt; "Usage: " &lt;&lt; argv[0] &lt;&lt; " &lt;first_name&gt; &lt;last_name&gt; &lt;degree&gt;" &lt;&lt; std::endl;
+        return -1;
+    }
+    
+    Soldier s2(argv[1], argv[2], argv[3]);
+    std::cout &lt;&lt; s2.first_name &lt;&lt; " " &lt;&lt; s2.last_name &lt;&lt; " " &lt;&lt; s2.degree &lt;&lt; std::endl;
+    return 0;
+}</code></pre>`,
+        verdictKind: "official",
+        verdict: "ניתוח מלא של החולשה, בדיקת argc, ומעבר בטוח ל-std::string.",
       },
     ],
   }

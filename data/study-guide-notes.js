@@ -1,67 +1,88 @@
 window.STUDY_GUIDE_NOTES = [
   {
     unit: "General",
-    title: "מוקשים וטריקים מהמבחנים האחרונים",
+    title: "מוקשים וטריקים ממבחני העבר הרשמיים 🧠",
     content: `
       <div class="note-box exam-tip">
         <strong>1. קריאות פנימיות (Virtual vs Non-Virtual):</strong>
-        <p>פונקציה רגילה שנקראת מתוך פונקציה וירטואלית מפורשת לפי סוג המצביע (סטטית), לא לפי סוג האובייקט.</p>
+        <p>פונקציה רגילה שנקראת מתוך פונקציה וירטואלית נקשרת סטטית לפי טיפוס הבסיס (Early Binding), ולא לפי סוג האובייקט בפועל.</p>
         <pre class="code" dir="ltr"><code>#include &lt;iostream&gt;
 class Base { public: virtual void f() { g(); } void g() { std::cout &lt;&lt; "Base"; } };
 class Derived : public Base { public: void g() { std::cout &lt;&lt; "Derived"; } };
-// Base* p = new Derived(); p-&gt;f(); // יודפס Base!</code></pre>
+// בביצוע: Base* p = new Derived(); p-&gt;f(); // יודפס Base!</code></pre>
       </div>
       <div class="note-box exam-tip">
-        <strong>2. גודל אובייקט (vptr):</strong> אם יש פונקציה וירטואלית, מתווסף vptr (מצביע נסתר, 8 בתים). <code>sizeof</code> גדול מסכום המשתנים.
+        <strong>2. שדה מוגן (protected) במחלקה ב-++C:</strong>
+        <p>נגיש מתוך המחלקה המגדירה ומתוך מחלקות שיורשות ממנה, אך חסום לחלוטין לגישה ישירה מחוץ להן.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>3. אתחול רפרנס ב-C++:</strong>
-        <pre class="code" dir="ltr"><code>#include &lt;string&gt;
-std::string food = "Pizza";
-std::string &amp;meal = food; // תקין
-// std::string &amp;meal = &amp;food; // שגיאה - ניסיון להכניס כתובת לרפרנס</code></pre>
+        <strong>3. מפרק לא-וירטואלי (Virtual Destructor):</strong>
+        <p>מחיקת אובייקט נגזר דרך מצביע למחלקת בסיס ללא <code>virtual ~Base()</code> מפעילה רק את מפרק הבסיס, ומשאבי המחלקה הנגזרת (כגון <code>buffer2</code>) זולגים לחלוטין.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>4. שורש כפול בערימה (Two-Stage Heap Overflow):</strong> בתרחישי מבחן של שני אובייקטים עוקבים, גלישה מ-<code>r1-&gt;f_data</code> תדרוס את מצביע הזיכרון <code>r2-&gt;f_data</code> שלאחריו, ותאפשר כתיבה לכל כתובת בזיכרון (Arbitrary Memory Write).
+        <strong>4. גודל אובייקט וטבלת פונקציות וירטואליות (vptr):</strong>
+        <p>קיום פונקציה וירטואלית אחת לפחות מוסיף לאובייקט מצביע נסתר (<code>vptr</code>, 8 בתים בארכיטקטורת 64-bit). חישוב <code>sizeof</code> תמיד גדול מסכום המשתנים הפנימיים.</p>
       </div>
       <div class="note-box exam-tip">
-        <strong>5. מוד ברירת המחדל בפתיחת קובץ (פייתון):</strong> 
+        <strong>5. בעיית היהלום ב-++C (Diamond Problem):</strong>
+        <p>ירושה מרובה משני אבות שיורשים מאותו סב יוצרת עמימות לקומפיילר לאיזה עותק לקרוא (Ambiguity). הפתרון: ירושה וירטואלית <code>virtual public Thread</code>.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>6. שגיאת Off-by-one בהקצאת מחרוזת ב-C/++C:</strong>
+        <p>בהעתקת מחרוזת בת $N$ תווים, חובה להקצות $N + 1$ בתים עבור ה-Null Terminator (<code>'\0'</code>), אחרת בית ה-<code>\0</code> יגלוש וידרוס את ה-Saved Frame Pointer או מטא-דאטת ה-Heap.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>7. סדר פעולות ברשת (Sockets ב-C):</strong>
+        <p>סדר הפקודות בלקוח TCP: קודם <code>socket()</code>, לאחר מכן המרת פורט עם <code>htons()</code> (Host to Network Short - Big Endian), המרת כתובת עם <code>inet_pton()</code>, ורק אז קריאה ל-<code>connect()</code> ששולחת את מנת ה-SYN.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>8. גדלי כתובות רשת:</strong>
+        <p>כתובת IPv4 מורכבת מ-32 סיביות (4 בתים). כתובת IPv6 מורכבת מ-128 סיביות (16 בתים).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>9. Telnet מול SSH:</strong>
+        <p>פרוטוקול Telnet מעביר את כל הנתונים, הסיסמאות והפקודות כטקסט גלוי (Cleartext) ללא הצפנה וללא אימות. SSH מספק הצפנה חזקה ואימות הדדי.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>10. קנרית המחסנית (Stack Canary):</strong>
+        <p>הקומפיילר שותל ערך אקראי וסודי בין המשתנים המקומיים לכתובת החזרה (Saved EIP/RIP). בדיקת הערך מתבצעת ב-Epilog של הפונקציה לפני פקודת ה-<code>RET</code>.<br>
+        <strong>שתי שיטות לעקיפת קנרית:</strong> (1) הדלפת ערך הקנרית באמצעות פגיעות קריאה (כגון Format String <code>%p/%x</code>) ושתילתו מחדש במטען הגלישה. (2) דריסה שלא דרך המחסנית (כגון דריסת מצביע פונקציה מקומי או Vtable).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>11. ארגז חול (Sandbox) ופרצת exec בפייתון:</strong>
+        <p>ריקון <code>__builtins__</code> אינו מונע עקיפה: מנגנון ה-Reflection בפייתון מאפשר דרך <code>.__class__.__bases__[0].__subclasses__()</code> לאתר מחלקות טעונות (כגון <code>os._wrap_close</code>) ולהריץ פקודות מערכת שרירותיות (RCE). ארגז חול אמיתי חייב להתבסס על בידוד ברמת מערכת ההפעלה (seccomp, namespaces, cgroups, Docker, VM).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>12. מלכודת העתקת רשימות בפייתון (Shallow Copy Trap):</strong>
+        <pre class="code" dir="ltr"><code>a = [[1, 2], [3, 4]]
+b = a.copy() # העתקה רדודה (Shallow Copy) בלבד!
+b[0].append(99) # ישנה גם את a[0]! להעתקה עמוקה חובה copy.deepcopy(a)</code></pre>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>13. העמסת פונקציות בפייתון (Function Overloading):</strong>
+        <p>אינה נתמכת בפייתון באופן מובנה. אם נגדיר שתי פונקציות באותו שם, ההגדרה המאוחרת תדרוס לחלוטין את הקודמת. במקום זאת משתמשים בפרמטרים אופציונליים או ב-<code>*args, **kwargs</code>.</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>14. שורש כפול בערימה (Two-Stage Heap Overflow):</strong>
+        <p>כאשר שני אובייקטים מוקצים ברצף ב-Heap, גלישה מ-<code>r1-&gt;f_data</code> תדרוס את מצביע הזיכרון <code>r2-&gt;f_data</code> שלאחריו, ותאפשר כתיבה לכל כתובת בזיכרון (Arbitrary Memory Write).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>15. מוד ברירת המחדל בפתיחת קובץ (פייתון):</strong> 
         <pre class="code" dir="ltr"><code>f = open("file.txt") # פותח לקריאה בלבד ('r')! 
 # f.write("data") יזרוק חריגת io.UnsupportedOperation.</code></pre>
       </div>
       <div class="note-box exam-tip">
-        <strong>6. דריסת בנאי האב בפייתון:</strong> הגדרת <code>__init__</code> בילד מבטלת אוטומטית את האתחול של האב.
-        <pre class="code" dir="ltr"><code>class Child(Parent):
-    def __init__(self):
-        super().__init__() # חובה לקרוא, אחרת תעופה על AttributeError למשתני האב!</code></pre>
-      </div>
-      <div class="note-box exam-tip">
-        <strong>7. פונקציית input בגרסאות פייתון:</strong> ב-Python 2, הפונקציה <code>input()</code> מבצעת eval על הקלט (חור אבטחה חמור!). כדי לקרוא מחרוזת יש להשתמש ב-<code>raw_input()</code>. ב-Python 3 הבעיה תוקנה ו-<code>input()</code> קורא מחרוזת בטוחה.
-      </div>
-      <div class="note-box exam-tip">
-        <strong>8. Data Races ב-Python למרות ה-GIL:</strong> ה-GIL רק מונע הרצה מקבילית של Bytecode.
-        <pre class="code" dir="ltr"><code>import threading
-lock = threading.Lock()
-with lock:
-    count += 1 # כעת הפעולה בטוחה בסביבה מקבילית ומרוץ הנתונים נמנע.</code></pre>
-      </div>
-      <div class="note-box exam-tip">
-        <strong>9. ייצוג זיכרון (Endianness):</strong> ב-Little-Endian (למשל x86), הערך נשמר הפוך מהבתים הנמוכים.
-        <pre class="code" dir="ltr"><code>// מערכת מזהה ערך: 0xC00010FF 
-// הוא יישמר בזיכרון הפיזי כ: FF 10 00 C0</code></pre>
-      </div>
-      <div class="note-box exam-tip">
-        <strong>10. ASLR מול DEP:</strong> 
+        <strong>16. ASLR מול DEP:</strong> 
         <ul>
-          <li><strong>DEP:</strong> מונע הרצת קוד מה-Stack/Heap. תוקף יכול לעקוף זאת ע"י קפיצה לקוד קיים (Return-to-libc).</li>
-          <li><strong>ASLR:</strong> מגריל כתובות זיכרון כדי למנוע את המעקף הנ"ל (התוקף לא יודע לאן לקפוץ).</li>
+          <li><strong>DEP / NX:</strong> מונע הרצת קוד מאזורי נתונים במחסנית או בערימה ($W \oplus X$). תוקף עוקף זאת ע"י קפיצה לקוד קיים (Return-to-libc / ROP).</li>
+          <li><strong>ASLR:</strong> מגריל את כתובות הזיכרון בכל הרצה מחדש, וכך מונע מהתוקף לדעת לאן לקפוץ.</li>
         </ul>
       </div>
     `
   },
   {
     unit: "General",
-    title: "תבניות קוד הגנתי - C++",
+    title: "תבניות קוד הגנתי - C++ 🛡️",
     content: `
       <div class="note-box cheat-sheet">
         <strong>1. מניעת גלישות חוצץ וגלישות שלמים (Buffer & Integer Overflow)</strong>
@@ -71,81 +92,202 @@ with lock:
 void safe_alloc_and_copy(const char* in, int num_elements, int element_size) {
     if(!in || num_elements &lt;= 0 || element_size &lt;= 0) return;
     
-    // הגנה מ-Integer Overflow ע"י חילוק
+    // מניעת Integer Overflow בעזרת חילוק מקדים
     if ((size_t)num_elements &gt; SIZE_MAX / (size_t)element_size) return; 
 
     constexpr size_t BUF_SIZE = 64;
     char buf[BUF_SIZE];
     
-    if(strlen(in) &gt;= BUF_SIZE) return; // בדיקת גבולות (Buffer Overflow)
-    strncpy(buf, in, BUF_SIZE-1);
-    buf[BUF_SIZE-1] = '\0'; // Null-termination חובה
+    if(strlen(in) &gt;= BUF_SIZE) return; // בדיקת גבולות (Bounds check)
+    strncpy(buf, in, BUF_SIZE - 1);
+    buf[BUF_SIZE - 1] = '\0'; // Null-termination מפורש חובה
 }</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>2. ניהול זיכרון נכון (Rule of Three / Five)</strong>
-        <pre class="code" dir="ltr"><code>#include &lt;cstring&gt;
-#include &lt;new&gt;
+        <strong>2. מחלקת מחרוזת בטוחה וטעינת קובץ (שאלת Mahrozet & Rule of Three)</strong>
+        <pre class="code" dir="ltr"><code>#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;algorithm&gt;
 
-class SafeArray {
-    char* buf; size_t cap;
+class Mahrozet {
+    std::string content;
 public:
-    SafeArray(size_t c=100) : cap(c) { buf = new(std::nothrow) char[cap]; }
-    virtual ~SafeArray() { delete[] buf; } // דיסטרקטור וירטואלי חובה!
+    Mahrozet() : content("") {}
     
-    // בנאי העתקה (Deep Copy)
-    SafeArray(const SafeArray&amp; o) : cap(o.cap) {
-        buf = new(std::nothrow) char[cap];
-        if(buf &amp;&amp; o.buf) strncpy(buf, o.buf, cap-1);
+    // בנאי בטוח לטעינת קובץ
+    Mahrozet(const std::string& filename) {
+        std::ifstream file(filename);
+        if (file.is_open()) {
+            std::stringstream ss;
+            ss &lt;&lt; file.rdbuf();
+            content = ss.str();
+        }
     }
     
-    // אופרטור השמה 
-    SafeArray&amp; operator=(const SafeArray&amp; o) {
-        if(this != &amp;o) { // מניעת השמה עצמית!
-            delete[] buf;
-            cap = o.cap;
-            buf = new(std::nothrow) char[cap];
-            if(buf &amp;&amp; o.buf) strncpy(buf, o.buf, cap-1);
+    virtual ~Mahrozet() {} // מפרק וירטואלי חובה!
+    std::string fetch() const { return content; }
+};
+
+// מחלקה המנהלת זיכרון דינמי עם העתקה עמוקה (Deep Copy)
+class SafeBuffer {
+    int* data;
+    size_t size;
+public:
+    SafeBuffer(size_t s = 10) : size(s), data(new int[s]) {}
+    virtual ~SafeBuffer() { delete[] data; }
+    
+    // בנאי העתקה (Deep Copy)
+    SafeBuffer(const SafeBuffer& o) : size(o.size), data(new int[o.size]) {
+        std::copy(o.data, o.data + size, data);
+    }
+    
+    // אופרטור השמה בטוח עם מניעת השמה עצמית ושחרור ישן
+    SafeBuffer& operator=(const SafeBuffer& o) {
+        if (this != &o) {
+            int* new_data = new int[o.size];
+            std::copy(o.data, o.data + o.size, new_data);
+            delete[] data;
+            data = new_data;
+            size = o.size;
         }
         return *this;
     }
 };</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>3. עבודה מאובטחת מול מסד נתונים (SQLite3 Prepared Statements)</strong>
+        <strong>3. עץ בינארי ומבני נתונים רקורסיביים ללא Double Free (שאלת BTree)</strong>
+        <pre class="code" dir="ltr"><code>#include &lt;utility&gt;
+
+class Node {
+public:
+    int _value;
+    Node* _left;
+    Node* _right;
+
+    Node(int v) : _value(v), _left(nullptr), _right(nullptr) {}
+    
+    // בנאי העתקה רקורסיבי עמוק
+    Node(const Node& o) : _value(o._value), _left(nullptr), _right(nullptr) {
+        if (o._left) _left = new Node(*o._left);
+        if (o._right) _right = new Node(*o._right);
+    }
+    
+    ~Node() {
+        delete _left;
+        delete _right;
+    }
+};
+
+class BTree {
+    Node* _root;
+public:
+    BTree() : _root(nullptr) {}
+    BTree(const BTree& t) : _root(nullptr) {
+        if (t._root) _root = new Node(*t._root);
+    }
+    // Copy-and-Swap idiom
+    BTree& operator=(BTree o) {
+        std::swap(_root, o._root);
+        return *this;
+    }
+    virtual ~BTree() { delete _root; }
+};</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>4. תיקון דפנסיבי למחלקת Soldier (מניעת גלישת חוצץ של strcpy)</strong>
+        <pre class="code" dir="ltr"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Soldier {
+public:
+    std::string first_name;
+    std::string last_name;
+    std::string degree;
+
+    Soldier(const std::string& f, const std::string& l, const std::string& d)
+        : first_name(f), last_name(l), degree(d) {}
+};
+
+int main(int argc, char** argv) {
+    // בדיקת מספר ארגומנטים למניעת חריגת אינדקס ב-argv
+    if (argc &lt; 4) {
+        std::cerr &lt;&lt; "Usage: " &lt;&lt; argv[0] &lt;&lt; " &lt;f_name&gt; &lt;l_name&gt; &lt;deg&gt;\n";
+        return -1;
+    }
+    Soldier s2(argv[1], argv[2], argv[3]);
+    std::cout &lt;&lt; s2.first_name &lt;&lt; " " &lt;&lt; s2.last_name &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>5. עבודה מאובטחת מול מסד נתונים (SQLite3 Prepared Statements)</strong>
         <pre class="code" dir="ltr"><code>#include &lt;sqlite3.h&gt;
 #include &lt;string&gt;
 #include &lt;iostream&gt;
 
-bool fetchUserRole(const std::string&amp; username, std::string&amp; outRole) {
+bool fetchUserRole(const std::string& username, std::string& outRole) {
     sqlite3* db = nullptr;
-    if (sqlite3_open("production.db", &amp;db) != SQLITE_OK) {
-        std::cerr &lt;&lt; "Failed to open database" &lt;&lt; std::endl;
+    if (sqlite3_open("production.db", &db) != SQLITE_OK) {
         sqlite3_close(db);
         return false;
     }
     
     sqlite3_stmt* stmt = nullptr;
-    // שימוש בשאילתה פרמטרית מכינה כדי למנוע SQLi
-    if (sqlite3_prepare_v2(db, "SELECT role FROM users WHERE username = ?", -1, &amp;stmt, nullptr) != SQLITE_OK) {
+    // שימוש בשאילתה פרמטרית מכינה כדי למנוע SQL Injection
+    if (sqlite3_prepare_v2(db, "SELECT role FROM users WHERE username = ?", -1, &stmt, nullptr) != SQLITE_OK) {
         sqlite3_close(db);
         return false;
     }
     
-    // קשירת הפרמטר - SQLITE_TRANSIENT מבטיח שהזיכרון יועתק בבטחה ולא ידלוף
+    // קשירת הפרמטר - SQLITE_TRANSIENT מבטיח שכפול הזיכרון בבטחה
     sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
     
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         outRole = reinterpret_cast&lt;const char*&gt;(sqlite3_column_text(stmt, 0));
     }
     
-    sqlite3_finalize(stmt); // חובה כדי למנוע דליפת זיכרון
-    sqlite3_close(db);
+    sqlite3_finalize(stmt); // חובה לשחרר את השאילתה המוכנה
+    sqlite3_close(db);      // סגירת המסד
     return true;
 }</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>4. שימוש בטוח בהצפנה (Crypto++ AES-GCM)</strong>
+        <strong>6. לקוח TCP ב-C/++C (Linux/POSIX Socket Client)</strong>
+        <pre class="code" dir="ltr"><code>#include &lt;iostream&gt;
+#include &lt;cstring&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+bool send_tcp_message(const char* server_ip, int port, const char* message) {
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock &lt; 0) return false;
+
+    struct sockaddr_in serv_addr;
+    std::memset(&serv_addr, 0, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(port); // המרה לסדר בתים של הרשת (Big-Endian)
+
+    if (inet_pton(AF_INET, server_ip, &serv_addr.sin_addr) &lt;= 0) {
+        close(sock); return false;
+    }
+
+    if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) &lt; 0) {
+        close(sock); return false;
+    }
+
+    send(sock, message, strlen(message), 0);
+    char buffer[256];
+    ssize_t valread = recv(sock, buffer, sizeof(buffer) - 1, 0);
+    if (valread &gt; 0) buffer[valread] = '\0';
+    close(sock);
+    return true;
+}</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>7. הצפנת AES-GCM מאומתת (Crypto++)</strong>
         <pre class="code" dir="ltr"><code>#include &lt;cryptopp/aes.h&gt;
 #include &lt;cryptopp/gcm.h&gt;
 #include &lt;cryptopp/osrng.h&gt;
@@ -154,7 +296,7 @@ bool fetchUserRole(const std::string&amp; username, std::string&amp; outRole) {
 
 using namespace CryptoPP;
 
-std::string encryptAES_GCM(const std::string&amp; plain) {
+std::string encryptAES_GCM(const std::string& plain) {
     AutoSeededRandomPool prng;
     SecByteBlock key(AES::DEFAULT_KEYLENGTH);
     byte iv[AES::BLOCKSIZE];
@@ -169,41 +311,36 @@ std::string encryptAES_GCM(const std::string&amp; plain) {
         StringSource ss(plain, true, 
             new AuthenticatedEncryptionFilter(e, new StringSink(cipher))
         );
-    } catch(const Exception&amp; ex) {
-        return ""; // טיפול שגיאות הצפנה
+    } catch(const Exception& ex) {
+        return "";
     }
     return cipher;
 }</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>5. שקע לקוח מאובטח SSL/TLS (Boost.Asio)</strong>
+        <strong>8. שקע לקוח מאובטח SSL/TLS (Boost.Asio)</strong>
         <pre class="code" dir="ltr"><code>#include &lt;boost/asio.hpp&gt;
 #include &lt;boost/asio/ssl.hpp&gt;
-#include &lt;iostream&gt;
 
 using boost::asio::ip::tcp;
 namespace ssl = boost::asio::ssl;
 
-bool secureConnect(const std::string&amp; host, const std::string&amp; port) {
+bool secureConnect(const std::string& host, const std::string& port) {
     try {
         boost::asio::io_context io_context;
-        // דורש לפחות TLS 1.2
-        ssl::context ctx(ssl::context::tlsv12_client);
+        ssl::context ctx(ssl::context::tlsv12_client); // לפחות TLS 1.2
         ctx.set_default_verify_paths();
-        ctx.set_verify_mode(ssl::verify_peer); // חובה - מוודא שהתעודה נחתמה ע"י CA אמין!
+        ctx.set_verify_mode(ssl::verify_peer); // אימות תעודה מול CA
 
         ssl::stream&lt;tcp::socket&gt; socket(io_context, ctx);
-        // הגדרת SNI (Server Name Indication) חובה בחיבור מודרני
-        SSL_set_tlsext_host_name(socket.native_handle(), host.c_str());
+        SSL_set_tlsext_host_name(socket.native_handle(), host.c_str()); // SNI
 
         tcp::resolver resolver(io_context);
         auto endpoints = resolver.resolve(host, port);
-        
         boost::asio::connect(socket.lowest_layer(), endpoints);
         socket.handshake(ssl::stream_base::client);
         return true;
-    } catch (const std::exception&amp; e) {
-        std::cerr &lt;&lt; "Connection failed: " &lt;&lt; e.what() &lt;&lt; "\n";
+    } catch (...) {
         return false;
     }
 }</code></pre>
@@ -212,60 +349,133 @@ bool secureConnect(const std::string&amp; host, const std::string&amp; port) {
   },
   {
     unit: "General",
-    title: "תבניות קוד הגנתי - Python",
+    title: "תבניות קוד הגנתי - Python 🐍",
     content: `
       <div class="note-box cheat-sheet">
-        <strong>1. מניעת SQL Injection (SQLite3)</strong>
+        <strong>1. עיבוד וסינון מילים ממחרוזת (סיומות ly, ght, תחיליות pre, ando)</strong>
+        <pre class="code" dir="ltr"><code>def filter_words(text: str) -> list:
+    if not isinstance(text, str):
+        return []
+    # split() ללא ארגומנט מפרק לפי כל רווח לבן: רווחים, ירידות שורה וטאבים
+    return [w.lower() for w in text.split() if w.lower().endswith("ly")]
+
+def print_pre_words(text: str) -> None:
+    if not isinstance(text, str):
+        raise ValueError("Input must be a string")
+    for word in text.split():
+        if word.lower().startswith("pre"):
+            print(word.upper())</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>2. פונקציה בטוחה להוספה לרשימה (safe_append)</strong>
+        <pre class="code" dir="ltr"><code># מניעת מלכודת הפרמטר הדיפולטיבי המוטטיבי (Mutable Default Argument Trap)
+def safe_append(val, lst=None):
+    if lst is None:
+        lst = []
+    lst.append(val)
+    return lst</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>3. יצירת מחלקה דינמית עם type() וקריאה לבנאי האב</strong>
+        <pre class="code" dir="ltr"><code>class Book:
+    def __init__(self, title, author, year):
+        self.title, self.author, self.year = title, author, year
+
+def create_course_subclass(class_name: str):
+    def dynamic_init(self, title, author, year):
+        super(self.__class__, self).__init__(title, author, year)
+        
+    DynamicClass = type(
+        class_name,
+        (Book,),
+        {
+            "openu_id": "20937",
+            "__init__": dynamic_init
+        }
+    )
+    return DynamicClass</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>4. לקוח TCP שולח קובץ בצ'אנקים (עד 1024 בתים) ומקבל אישור</strong>
+        <pre class="code" dir="ltr"><code>import socket
+import os
+
+def send_file_chunked(filename: str, host: str = "127.0.0.1", port: int = 9090):
+    if not os.path.exists(filename):
+        print(f"File {filename} not found")
+        return
+    
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((host, port))
+        with open(filename, "rb") as f:
+            while True:
+                chunk = f.read(1024)
+                if not chunk:
+                    break
+                s.sendall(chunk)
+        # סגירת צד הכתיבה להודעה לשרת שהקובץ הסתיים
+        s.shutdown(socket.SHUT_WR)
+        ack = s.recv(1024)
+        print("ACK from server:", ack.decode('utf-8', errors='ignore'))</code></pre>
+      </div>
+      <div class="note-box cheat-sheet">
+        <strong>5. מניעת SQL Injection (SQLite3 Prepared Statements)</strong>
         <pre class="code" dir="ltr"><code>import sqlite3
 
 def login(usr, pwd):
-    # לעולם אין לשרשר מחרוזות! שימוש בשאילתות פרמטריות בלבד
+    # לעולם אין לשרשר מחרוזות! שימוש בשאילתות פרמטריות בלבד עם ?
     with sqlite3.connect("users.db") as conn:
         cur = conn.cursor()
-        cur.execute("SELECT * FROM users WHERE name = ? AND pass = ?", (usr, pwd))
-        return cur.fetchone()</code></pre>
+        cur.execute("SELECT role FROM users WHERE name = ? AND pass = ?", (usr, pwd))
+        return cur.fetchone()
+
+def save_messages(conn, lines):
+    c = conn.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS messages (id INTEGER, text TEXT)")
+    c.executemany("INSERT INTO messages VALUES (?, ?)", [(i, msg) for i, msg in enumerate(lines)])
+    conn.commit()</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>2. הגבלת הרשאות ולוגים בעזרת Decorator</strong>
+        <strong>6. דקורטור מאובטח לבקרת גישה ולוגים</strong>
         <pre class="code" dir="ltr"><code>from functools import wraps
 
 def secure_logger(func):
-    @wraps(func) # חיוני לשמירת שם הפונקציה המקורית
+    @wraps(func) # חיוני לשמירת מטא-דאטת הפונקציה המקורית
     def wrapper(*args, **kwargs):
         user = args[0] if args else "Unknown"
-        if not isinstance(user, str) or not user.strip(): raise ValueError()
+        if not isinstance(user, str) or not user.strip():
+            raise ValueError("Invalid user credential")
         
-        with open('sec.log', 'a') as f: 
-            f.write(f"Access by {user}\n")
+        with open('sec.log', 'a', encoding='utf-8') as f:
+            f.write(f"Access granted to {user}\n")
             
-        try: 
+        try:
             return func(*args, **kwargs)
-        except Exception: 
-            # לעולם אל תחזיר שגיאת מערכת מפורטת למשתמש קצה
-            raise ValueError("Error processing") 
+        except Exception:
+            # מיסוך שגיאות: לעולם אין לחשוף שגיאות פנימיות ו-Traceback למשתמש
+            raise ValueError("Error processing request")
     return wrapper</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>3. מניעת הרצת קוד עוין RCE (תחליף ל-Eval/Exec)</strong>
+        <strong>7. מניעת הרצת קוד עוין ו-RCE (תחליף ל-Eval/Exec)</strong>
         <pre class="code" dir="ltr"><code>import ast
 
 def safe_eval(user_input):
     try:
-        # בטוח לחלוטין. מפרסר רק מבני נתונים (מילונים, רשימות, מספרים)
-        # זורק שגיאה אם מנסים להריץ פונקציה (למשל os.system)
+        # בטוח לחלוטין: מפרסר רק מבני נתונים (מילונים, רשימות, מספרים, מחרוזות)
+        # זורק שגיאה אם מנסים להריץ פונקציה (כמו os.system)
         return ast.literal_eval(user_input)
     except (SyntaxError, ValueError):
         return None</code></pre>
       </div>
       <div class="note-box cheat-sheet">
-        <strong>4. שרת TCP מאובטח עם עטיפת SSL</strong>
+        <strong>8. שרת TCP מאובטח עם עטיפת SSL</strong>
         <pre class="code" dir="ltr"><code>import socket
 import ssl
 
 def start_secure_server(host, port):
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    # חובה לטעון תעודה ומפתח פרטי בשרת:
-    # context.load_cert_chain('cert.pem', 'key.pem')
+    # context.load_cert_chain('cert.pem', 'key.pem') # טעינת תעודה ומפתח
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
         server.bind((host, port))
@@ -273,9 +483,9 @@ def start_secure_server(host, port):
         while True:
             conn, addr = server.accept()
             with context.wrap_socket(conn, server_side=True) as ssock:
-                # קריאה עם באפר מוגבל (1024) למניעת הרעבת זיכרון ו-DoS
-                data = ssock.recv(1024) 
-                if data: ssock.sendall(b"ACK: " + data)</code></pre>
+                data = ssock.recv(1024) # קריאה מוגבלת למניעת הרעבת זיכרון
+                if data:
+                    ssock.sendall(b"ACK: " + data)</code></pre>
       </div>
     `
   },

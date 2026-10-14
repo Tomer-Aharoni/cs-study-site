@@ -9,3 +9,6 @@ temp_unzip/
 *.txt
 guide.md
 .cursor/
+
+__pycache__/
+scripts/__pycache__/

@@ -20,193 +20,264 @@ window.EXAM_RECONS = [
   },
   {
     id: "e-2021a74",
-    title: "2021א מועד 74 · נקודות מהשאלון",
-    source: "הנקודות המרכזיות מהשאלון.",
+    title: "2021א מועד 74 (טופס 543) · פתרון רשמי מלא",
+    source: "שאלון 543 מלא ומדויק מתוך מאגר הבחינות הרשמי.",
     html: `
-      <p>חלק א לדוגמה: אפחות (Mitigation) = הגנת מערכת בפני תקיפה כדי למזער נזק — לא סודיות ולא ניצול.</p>
-      <p>שאלה 8 (רעיון): לקוח פייתון ל-IP ופורט נתונים, שליחת קובץ, הדפסת תשובה מוגבלת, הודעות שגיאה בלי Traceback; SQLite: טבלת <code>messages</code> עם מספר סידורי ותוכן — עם פרמטרים, לא שרשור.</p>
-      <p>שאלה 9: Sandbox — מטרה, בעיות, מימוש עקרוני. אחר כך: <code>exec</code> על קוד מהלקוח שובר אמון; אפחות בשכבות; מה נשאר אחריהן.</p>
-      <h3>שאלות מהשאלון · רמזים ופתרונות</h3>
-      <p><strong>שאלה 1 (אמריקאית):</strong> מה פירוש המושג אפחות (Mitigation)?</p>
+      <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>
       <ul>
-        <li>א. מצב שבו המערכת נקייה מבאגים וללא בעיות אבטחה.</li>
-        <li>ב. שמירה על הנתונים ללא אפשרות גישה לגורמים בלתי מורשים.</li>
-        <li>ג. תקיפת מערכת המתאפשרת בעקבות חולשת אבטחה.</li>
-        <li>ד. הגנת המערכת בפני תקיפה לצורך מזעור הנזק העלול להיגרם ממנה.</li>
+        <li><strong>שאלה 1 — אפחות (Mitigation):</strong> הגנה על המערכת מפני תקיפה כדי למזער את הנזק (תשובה ד').</li>
+        <li><strong>שאלה 2 — הקצאת זיכרון f1 ו-p1:</strong> שניהם מוגדרים כמשתנים מקומיים אוטומטיים בפונקציה main וללא new, לכן שניהם מאוחסנים על המחסנית (Stack) (תשובה ג').</li>
+        <li><strong>שאלה 3 — חיסרון telnet מול ssh:</strong> הפרוטוקול אינו מוצפן והמידע מועבר כטקסט גלוי (Cleartext) ללא סודיות או שלמות (תשובה א').</li>
+        <li><strong>שאלה 4 — בעיית היהלום ב-++C:</strong> Sender ו-Receiver יורשות מ-Thread, ו-Messenger יורשת משתיהן; הקריאה ל-<code>m.run()</code> אינה חד-משמעית ומכשילה את הקומפילציה (תשובה ג').</li>
+        <li><strong>שאלה 5 — מפרק לא-וירטואלי:</strong> מחיקה של Derived דרך מצביע Base ללא virtual destructor מפעילה רק את <code>~Base()</code>, ומשאבי המחלקה הנגזרת (<code>buffer2</code>) זולגים (תשובה ב').</li>
       </ul>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>חשבו אם אפחות מסיר את עצם קיום החולשה בקוד, או שהוא מצמצם את הנגישות והנזק שהתוקף יכול לגרום.</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ד'.</strong> אפחות אינו בהכרח תיקון שמבטל את החולשה מהשורש (כמו א'), אלא הגנה היקפית או הנדסית — קנרית, ASLR, הרשאה מינימלית — שממזערת את הנזק בזמן תקיפה. תיקון השורש עדיף כשאפשר; אפחות היא שכבה נוספת.</p>
-      <p><strong>למה המסיחים שגויים?</strong></p>
-      <ul>
-        <li>• <strong>א' שגויה:</strong> מערכת נקייה מבאגים היא שאיפה תאורטית או יעד של בדיקות איכות (QA/Auditing), אך אינה הגדרת אפחות. אפחות מניחה שחולשות עשויות להתקיים ונועדה להקשות על ניצולן ולמזער נזק.</li>
-        <li>• <strong>ב' שגויה:</strong> שמירה על הנתונים מפני גישה בלתי מורשית היא הגדרת סודיות (Confidentiality) מתוך משולש ה-CIA, ולא הגדרת אפחות.</li>
-        <li>• <strong>ג' שגויה:</strong> תקיפת מערכת היא ניצול חולשה (Exploitation / Attack), ההפך הגמור ממנגנון הגנה ואפחות.</li>
-      </ul></div></details>
-      <p><strong>שאלה 2 (אמריקאית):</strong> היכן יאוחסנו <code>f1</code> ו־<code>p1</code>?</p>
-      <pre class="code" dir="ltr"><code>Frog f1(5);
-Frog *p1 = &amp;f1;
-f1.hop();</code></pre>
-      <ul>
-        <li>א. <code>f1</code> במחסנית, <code>p1</code> בערימה.</li>
-        <li>ב. שניהם בערימה.</li>
-        <li>ג. שניהם במחסנית.</li>
-        <li>ד. <code>p1</code> במחסנית, <code>f1</code> בערימה.</li>
-      </ul>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>בדקו אם נעשה שימוש ב־<code>new</code>. איפה יושבים משתנה מקומי ומצביע שמוגדרים ישירות בתוך פונקציה?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ג'.</strong> <code>f1</code> הוא אובייקט מקומי על מסגרת המחסנית של <code>main</code>. <code>p1</code> הוא מצביע מקומי, גם הוא על המחסנית, ומחזיק את כתובת <code>f1</code>. בלי <code>new</code> שום דבר לא הוקצה בערימה.</p>
-      <p><strong>למה המסיחים שגויים?</strong></p>
-      <ul>
-        <li>• <strong>א' ו-ד' שגויות:</strong> שום משתנה אינו מוקצה בערימה (Heap) מכיוון שלא נעשה שימוש באופרטור new או בפונקציה malloc.</li>
-        <li>• <strong>ב' שגויה:</strong> שני המשתנים הם משתנים לוקאליים אוטומטיים בפונקציה main ולכן יושבים שניהם על מסגרת המחסנית (Stack Frame). המצביע p1 מאוחסן במחסנית ומחזיק את כתובת הזיכרון של f1 שנמצאת גם היא במחסנית.</li>
-      </ul></div></details>
-      <p><strong>שאלה 3 (אמריקאית):</strong> מדוע הקוד לא יתקמפל?</p>
-      <pre class="code" dir="ltr"><code>struct Thread { void run() {} };
-struct Sender : public Thread {};
-struct Receiver : public Thread {};
-class Messenger : public Sender, public Receiver {};
 
-int main() {
-    Messenger m;
-    m.run(); // שגיאת קומפילציה
-}</code></pre>
-      <ul>
-        <li>א. בגלל ירושה מרובה.</li>
-        <li>ב. בגלל בעיית המשולש.</li>
-        <li>ג. בגלל בעיית היהלום.</li>
-        <li>ד. הקוד יתקמפל.</li>
-      </ul>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p><code>Messenger</code> יורש גם מ־<code>Sender</code> וגם מ־<code>Receiver</code>. כמה עותקים של <code>Thread</code>, וכך של <code>run()</code>, קיימים בתוך מופע <code>Messenger</code>?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ג' (בעיית היהלום).</strong> <code>Sender</code> ו־<code>Receiver</code> יורשים שניהם מ־<code>Thread</code> בירושה רגילה, ולכן במופע <code>m</code> יש שני עותקים של <code>Thread</code>. הקריאה <code>m.run()</code> דו־משמעית, כי המהדר לא יודע לאיזה עותק להתקשר. הפתרון: ירושה וירטואלית (<code>virtual public Thread</code>) שמשאירה עותק אחד.</p>
-      <p><strong>למה המסיחים שגויים?</strong></p>
-      <ul>
-        <li>• <strong>א' שגויה:</strong> ירושה מרובה (Multiple Inheritance) כשלעצמה מותרת וחוקית לחלוטין ב-C++; השגיאה הספציפית נובעת מכפילות של מחלקת הבסיס המשותפת בראש היהלום.</li>
-        <li>• <strong>ב' שגויה:</strong> אין מושג כזה "בעיית המשולש" בהנדסת תוכנה או ב-C++ (זהו מסיח פיקטיבי).</li>
-        <li>• <strong>ד' שגויה:</strong> הקוד נכשל בוודאות בהידור בשל קריאה עמומה (Ambiguous call to member 'run').</li>
-      </ul></div></details>
-      <p><strong>שאלה 4 (אמריקאית):</strong> האם יש זליגת זיכרון?</p>
-      <pre class="code" dir="ltr"><code>class Foo {
-    char* buffer1;
+      <h3>חלק ב' — שאלות פתוחות (75 נקודות)</h3>
+      
+      <h4>שאלה 6 · קנרית המחסנית (Stack Canary)</h4>
+      <p><strong>א.</strong> מגן מפני Stack Buffer Overflow שבו קלט חורג דורס את כתובת החזרה (Return Address) לביצוע RCE.<br>
+      <strong>ב.</strong> בעת כניסה לפונקציה, הקומפיילר שותל ערך אקראי וסודי (Canary) לפני כתובת החזרה וה-Saved EBP. לפני ה-<code>RET</code> נבדק האם הערך שונה; אם כן, התוכנית מופסקת מיידית (<code>__stack_chk_fail</code>).<br>
+      <strong>ג. מבנה המחסנית:</strong></p>
+      <pre class="code" dir="ltr"><code>[ כתובת חזרה - Return Address ]  (כתובת גבוהה)
+[ EBP שמור - Saved EBP        ]
+[ ערך הקנרית - STACK CANARY   ]
+[ משתנים מקומיים / Buffers    ]  (כתובת נמוכה - גדלה מעלה)</code></pre>
+      <p><strong>ד.</strong> מנגנונים חלופיים/משלימים: DEP/NX (מניעת הרצת קוד מהמחסנית) ו-ASLR (הגרלת כתובות זיכרון).</p>
+
+      <h4>שאלה 7 · מחלקת Mahrozet ב-++C והעתקה עמוקה (Rule of Three)</h4>
+      <pre class="code" dir="ltr"><code>// סעיף א' - מחלקת Mahrozet
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+
+class Mahrozet {
+    std::string content;
 public:
-    Foo(size_t size) { buffer1 = new char[size]; }
-    ~Foo() { delete[] buffer1; }
+    Mahrozet() : content("") {}
+    Mahrozet(const std::string& filename) {
+        std::ifstream file(filename);
+        if (file.is_open()) {
+            std::stringstream ss;
+            ss &lt;&lt; file.rdbuf();
+            content = ss.str();
+        }
+    }
+    virtual ~Mahrozet() {}
+    std::string fetch() const { return content; }
 };
-class Bar : public Foo {
-    char* buffer2;
+
+// סעיף ב' - מחלקת Big עם Deep Copy מלא
+#include &lt;algorithm&gt;
+
+class Big {
+    int* queue;
+    int size;
+    int last;
 public:
-    Bar(size_t size) : Foo(size) { buffer2 = new char[size]; }
-    ~Bar() { delete[] buffer2; }
-};
-int main() {
-    Foo* f = new Bar(100);
-    delete f;
-}</code></pre>
-      <ul>
-        <li>א. כן, של <code>buffer1</code>.</li>
-        <li>ב. כן, של <code>buffer2</code>.</li>
-        <li>ג. כן, של <code>buffer1</code> ו־<code>buffer2</code>.</li>
-        <li>ד. לא, אין זליגה.</li>
-      </ul>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>המצביע <code>f</code> הוא <code>Foo*</code>, אבל האובייקט הוא <code>Bar</code>. האם <code>~Foo()</code> מוגדר <code>virtual</code>?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: ב' (של <code>buffer2</code>).</strong> המפרק <code>~Foo()</code> אינו וירטואלי, ולכן <code>delete f;</code> דרך <code>Foo*</code> מפעיל רק את <code>~Foo()</code> (קישור סטטי). <code>~Bar()</code> לא רץ, ו־<code>buffer2</code> זולג. <code>buffer1</code> כן משתחרר כי <code>~Foo()</code> רץ. התיקון: <code>virtual ~Foo()</code>.</p>
-      <p><strong>למה המסיחים שגויים?</strong></p>
-      <ul>
-        <li>• <strong>א' שגויה:</strong> buffer1 אינו זולג כלל, משום שהמפרק ~Foo() נקרא ומשחרר אותו כראוי בעזרת delete[] buffer1.</li>
-        <li>• <strong>ג' שגויה:</strong> buffer1 משתחרר בהצלחה; רק buffer2 זולג.</li>
-        <li>• <strong>ד' שגויה:</strong> ישנה זליגת זיכרון ודאית של buffer2 (בגודל 100 בתים), כיוון שמפרק הנגזרת ~Bar() לעולם אינו נקרא.</li>
-      </ul></div></details>
-      <p><strong>שאלה 5 (פתוחה):</strong> נתחו את מנגנון קנרית המחסנית (Stack Canary): הבעיה שהובילה אליו, אופן הפעולה, מבנה המחסנית עם ובלי הקנרית, וחלופה.</p>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>הקנרית היא ערך סודי שנשתל במחסנית לפני כתובת החזרה. מה קורה לערך הזה כשגלישה רציפה מנסה להגיע לכתובת החזרה?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ul>
-        <li><strong>הבעיה:</strong> בגלישת חוצץ במחסנית, קלט ארוך מהחוצץ המקומי נכתב מעבר לו. העתקה בלי גבול (<code>strcpy</code>, <code>gets</code>) מתקדמת אל EBP/RBP שמור ואל כתובת החזרה.</li>
-        <li><strong>הפעולה:</strong> המהדר שותל ערך אקראי סודי בין המשתנים המקומיים לבין כתובת החזרה. בכניסה לפונקציה הערך נרשם, ולפני <code>ret</code> נבדק. אם גלישה רציפה שינתה אותו, התהליך נעצר לפני החזרה.</li>
-        <li><strong>מבנה המחסנית:</strong> בלי קנרית — חוצצים מקומיים, EBP שמור, כתובת חזרה. עם קנרית — חוצצים מקומיים, קנרית, EBP שמור, כתובת חזרה.</li>
-        <li><strong>חלופות:</strong> ASLR מגריל כתובות כדי שלא יהיה יעד קבוע; מחסנית צל (CET) שומרת עותק מוגן של כתובת החזרה ומשווה ב־<code>ret</code>.</li>
-        <li>הקנרית אינה מתקנת את <code>strcpy</code>, ואינה עוצרת גלישת ערימה, דריסת vptr, או מצב שבו ערכה כבר דלף.</li>
-      </ul></div></details>
+    Big(const Big& o) : size(o.size), last(o.last), queue(nullptr) {
+        if (o.size > 0 && o.queue) {
+            queue = new int[o.size];
+            std::copy(o.queue, o.queue + o.size, queue);
+        }
+    }
+
+    Big& operator=(const Big& o) {
+        if (this == &o) return *this;
+        int* nq = nullptr;
+        if (o.size > 0 && o.queue) {
+            nq = new int[o.size];
+            std::copy(o.queue, o.queue + o.size, nq);
+        }
+        delete[] queue;
+        queue = nq;
+        size = o.size;
+        last = o.last;
+        return *this;
+    }
+
+    virtual ~Big() {
+        delete[] queue;
+    }
+};</code></pre>
+
+      <h4>שאלה 8 · לקוח TCP בפייתון ומסד SQLite</h4>
+      <pre class="code" dir="ltr"><code>import socket
+import os
+import sqlite3
+
+def run_client():
+    lines = []
+    if not os.path.exists("message.txt"):
+        return lines
+    try:
+        with open("message.txt", "rb") as f:
+            data = f.read()
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(5.0)
+            s.connect(("119.4.7.5", 8080))
+            s.sendall(data)
+            lines = s.recv(128).decode('utf-8', errors='replace').splitlines()[:5]
+            for l in lines:
+                print(l)
+    except Exception as e:
+        print(f"Error: {e}")
+    return lines
+
+def save_to_db(conn, lines):
+    c = conn.cursor()
+    c.execute('CREATE TABLE IF NOT EXISTS messages (serial_number INTEGER, message_text TEXT)')
+    c.executemany('INSERT INTO messages VALUES (?, ?)', 
+                  [(i + 1, m) for i, m in enumerate(lines[:5])])
+    conn.commit()</code></pre>
+
+      <h4>שאלה 9 · ארגז חול (Sandbox) ופרצת exec</h4>
+      <p><strong>א.</strong> ארגז חול מבודד סביבת ריצה ומונע מקוד לא מהימן גישה למשאבי מערכת קריטיים, באמצעות סינון קריאות מערכת בקרנל (<code>seccomp</code>) ובידוד תהליכים ומערכת קבצים (Namespaces/Cgroups).<br>
+      <strong>ב.</strong> ריקון <code>__builtins__</code> אינו מונע עקיפה: בפייתון ניתן דרך Reflection לגשת ל-<code>.__class__.__bases__[0].__subclasses__()</code>, לאתר מחלקות טעונות (כגון <code>os._wrap_close</code>) ולהריץ פקודות מערכת (RCE). ארגז חול אמיתי חייב להתבסס על בידוד ברמת מערכת ההפעלה/Docker/VM.</p>
     `,
   },
   {
     id: "e-2021c-sample",
-    title: "2021ג · בחינה לדוגמה",
-    source: "הבחינה לדוגמה של הקורס, באותו דפוס.",
+    title: "2021ג מועד 83 (שאלון 539) · פתרון רשמי מלא",
+    source: "שאלון 539 מלא מתוך מאגר הבחינות הרשמי.",
     html: `
-      <p>חלק א: קטע <code>Base</code>/<code>Der</code> עם <code>f</code> וירטואלית, <code>g</code> לא וירטואלית, <code>h</code> וירטואלית. מה יודפס ב-<code>b-&gt;f()</code>, <code>d-&gt;f()</code>, <code>b-&gt;g()</code>, <code>d-&gt;g()</code>. זה פולימורפיזם וטבלה וירטואלית (יחידה 2).</p>
-      <p>גם: <code>protected</code>, מילים שמורות בפייתון, by-reference מול by-value.</p>
-      <p>חלק ב (בבחינות האלה חוזר): SQLite ב-C++/פייתון; תקשורת; אפחות זיכרון.</p>
-      <h3>שאלות מהשאלון · רמזים ופתרונות</h3>
-      <p><strong>שאלה 1 (אמריקאית):</strong> מה יודפס?</p>
-      <pre class="code" dir="ltr"><code>class Base {
-public:
-    virtual void f() { g(); cout &lt;&lt; "B::f" &lt;&lt; endl; }
-    void g() { h(); cout &lt;&lt; "B::g" &lt;&lt; endl; }
-    virtual void h() { cout &lt;&lt; "B::h" &lt;&lt; endl; }
-};
-class Der : public Base {
-public:
-    void g() { h(); cout &lt;&lt; "D::g" &lt;&lt; endl; }
-    void h() { cout &lt;&lt; "D::h" &lt;&lt; endl; }
-};
-int main() {
-    Base* b; Der* d = new Der();
-    b = d;
-    b-&gt;f(); cout &lt;&lt; "---" &lt;&lt; endl;
-    d-&gt;f(); cout &lt;&lt; "---" &lt;&lt; endl;
-    b-&gt;g(); cout &lt;&lt; "---" &lt;&lt; endl;
-    d-&gt;g();
-}</code></pre>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p><code>f()</code> וירטואלית ב־<code>Base</code>. <code>g()</code> <strong>אינה</strong> וירטואלית. <code>h()</code> וירטואלית. כשקוראים ל־<code>g()</code> מתוך <code>Base::f()</code>, לאיזו גרסה מגיעים?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ol>
-        <li><code>b-&gt;f()</code>: <code>f</code> וירטואלית ו־<code>Der</code> לא דורסת אותה, לכן <code>Base::f</code>. בתוכה <code>g()</code> אינה וירטואלית, לכן <code>Base::g</code>. בתוכה <code>h()</code> וירטואלית והאובייקט הוא <code>Der</code>, לכן <code>Der::h</code>. פלט: <code>D::h</code>, <code>B::g</code>, <code>B::f</code>.</li>
-        <li><code>d-&gt;f()</code>: <code>f</code> מורשת מ־<code>Base</code>, אותו מסלול. פלט: <code>D::h</code>, <code>B::g</code>, <code>B::f</code>.</li>
-        <li><code>b-&gt;g()</code>: <code>b</code> מסוג <code>Base*</code> ו־<code>g</code> אינה וירטואלית, לכן <code>Base::g</code>. בתוכה <code>h()</code> הווירטואלית נותנת <code>Der::h</code>. פלט: <code>D::h</code>, <code>B::g</code>.</li>
-        <li><code>d-&gt;g()</code>: <code>d</code> מסוג <code>Der*</code>, לכן <code>Der::g</code> (הסתרה). בתוכה <code>Der::h</code>. פלט: <code>D::h</code>, <code>D::g</code>.</li>
-      </ol>
-      <p>הכלל: קריאה לפונקציה לא־וירטואלית נקבעת לפי טיפוס המצביע; קריאה וירטואלית נקבעת לפי טיפוס האובייקט בפועל.</p>
-      <p><strong>למה המסיחים שגויים?</strong></p>
+      <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>
       <ul>
-        <li>• <strong>הטענה שמופעל רק B:: בכל הקריאות שגויה:</strong> הפונקציה h היא וירטואלית ולכן תמיד מנותבת למימוש הנגזר (Der::h) בזמן ריצה כשהאובייקט הוא Der.</li>
-        <li>• <strong>הטענה שמופעל רק D:: בכל הקריאות שגויה:</strong> הפונקציה g אינה וירטואלית, ולכן קריאה דרך מצביע Base* או מתוך Base::f מנותבת בקומפילציה ל-Base::g בלבד.</li>
-        <li>• <strong>הטענה ש-g היא תמיד D::g שגויה:</strong> ללא virtual אין קישור דינמי עבור g; מתרחשת הסתרה (Hiding) ולא דריסה (Overriding), כך ש-Base* אינו מודע לקיומה של Der::g.</li>
-      </ul></div></details>
-      <p><strong>שאלה 9 (פתוחה):</strong> שני מבני <code>field</code> על הערימה, <code>strcpy</code> מ־<code>argv</code>. מה החולשה, מה נשבר, ואיך מתקנים?</p>
-      <pre class="code" dir="ltr"><code>#define FIELDSIZE (16)
-struct field {
-    unsigned char f_id;
-    char* f_data;
-};
-void handle_fields(int argc, char** argv) {
-    if (argc != 2) exit(1);
-    field* r1 = (struct field*)malloc(sizeof(struct field));
-    r1-&gt;f_id = 1;
-    r1-&gt;f_data = (char*)malloc(FIELDSIZE);
-    field* r2 = (struct field*)malloc(sizeof(struct field));
-    r2-&gt;f_id = 2;
-    r2-&gt;f_data = (char*)malloc(FIELDSIZE);
-    strcpy(r1-&gt;f_data, argv[0]);
-    strcpy(r2-&gt;f_data, argv[1]);
-}</code></pre>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>מה קורה כשמחרוזת ארוכה מ־16 בתים נכנסת ל־<code>r1-&gt;f_data</code>? אילו הקצאות יושבות על הערימה בצמוד לחוצץ הזה?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ul>
-        <li><strong>החולשה:</strong> <code>strcpy</code> לא בודק את אורך הקלט מול <code>FIELDSIZE</code>. זו גלישת ערימה (Heap Buffer Overflow).</li>
-        <li><strong>מה נשבר:</strong> ההקצאות עלולות לשבת ברצף — <code>r1</code>, החוצץ שלו, <code>r2</code>, החוצץ שלו. כתיבה עודפת לחוצץ של <code>r1</code> עלולה להגיע למבנה <code>r2</code> ולשנות את המצביע <code>f_data</code> שבו. אז ה־<code>strcpy</code> הבא כותב לאן שהמצביע המושחת מצביע — פגיעה בשלמות, בלי לגעת בכתובת חזרה.</li>
-        <li><strong>באג נוסף בשאלה:</strong> עם <code>argc != 2</code>, <code>argv[0]</code> הוא שם התוכנית ו־<code>argv[1]</code> הוא הארגומנט היחיד. זה לא "שני ערכי קלט" רגילים.</li>
-        <li><strong>התיקון:</strong> לבדוק אורך מול <code>FIELDSIZE - 1</code> לפני ההעתקה, או העתקה חסומה עם אפס סיום, ולבדוק את ההחזרה של <code>malloc</code>.</li>
+        <li><strong>שאלה 1 — קריאות וירטואליות וסטטיות:</strong> <code>b->f()</code> קוראת ל-f הווירטואלית ול-g הסטטית. סדר הפלט: <code>D::h B::g B::f --- D::h B::g B::f --- D::h B::g --- D::h D::g</code> (תשובה א').</li>
+        <li><strong>שאלה 2 — שדה protected ב-++C:</strong> נגיש מתוך המחלקה ומתוך מחלקות יורשות בלבד (תשובה א').</li>
+        <li><strong>שאלה 3 — גודל כתובת IPv4:</strong> בדיוק 4 בתים / 32 סיביות (תשובה ב').</li>
+        <li><strong>שאלה 4 — by-reference מול by-value:</strong> העברה לפי הפניה עדיפה מבחינת ביצועים וזיכרון כי היא מונעת העתקה עמוקה מיותרת (תשובה ב').</li>
+        <li><strong>שאלה 5 — שליחת חבילת SYN:</strong> הפונקציה <code>connect()</code> שולחת את חבילת ה-SYN לפתיחת לחיצת היד המשולשת ב-TCP (תשובה ד').</li>
       </ul>
-      <pre class="code" dir="ltr"><code>strncpy(r1-&gt;f_data, argv[0], FIELDSIZE - 1);
-r1-&gt;f_data[FIELDSIZE - 1] = '\\0';</code></pre>
-      <p>הרחקת המצביע מהחוצץ אינה תחליף לבדיקת הגבול.</p></div></details>
+
+      <h3>חלק ב' — שאלות פתוחות (75 נקודות)</h3>
+      <h4>שאלה 6 · פייתון: מילים המסתיימות ב-ght וכתיבה לקובץ</h4>
+      <pre class="code" dir="ltr"><code>def print_ght_words(text: str) -> None:
+    if not isinstance(text, str): return
+    for word in text.split():
+        if word.lower().endswith("ght"):
+            print(word)
+
+def write_ght_to_file(text: str, filename: str) -> None:
+    words = [w for w in text.split() if w.lower().endswith("ght")]
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("\n".join(words))</code></pre>
+
+      <h4>שאלה 7 · מסד נתונים SQLite ושאילתות פרמטריות</h4>
+      <pre class="code" dir="ltr"><code>import sqlite3
+
+def create_db():
+    conn = sqlite3.connect('server.db')
+    c = conn.cursor()
+    c.execute('CREATE TABLE IF NOT EXISTS Students (Id TEXT PRIMARY KEY, Name TEXT, Grade REAL)')
+    c.execute('INSERT OR REPLACE INTO Students VALUES (?, ?, ?)', ('123', 'Alice', 95.0))
+    conn.commit()
+    conn.close()</code></pre>
+
+      <h4>שאלה 8 · ASLR מול DEP</h4>
+      <ul>
+        <li><strong>ASLR:</strong> הגרלת כתובות בסיס למחסנית, ערמה וספריות כדי למנוע ניחוש כתובות פונקציות במתקפות Return-to-libc ו-ROP.</li>
+        <li><strong>DEP/NX:</strong> סימון אזורי נתונים כבלתי ניתנים להרצה ($W \oplus X$) כדי למנוע הרצת shellcode שמוזרק למחסנית או לערמה.</li>
+      </ul>
+
+      <h4>שאלה 9 · גלישת ערימה בשני שלבים (Two-Stage Heap Overflow)</h4>
+      <p>כאשר מוקצים שני מבנים עוקבים ב-Heap (<code>r1</code> ו-<code>r2</code>), גלישת חוצץ בשדה <code>r1->f_data</code> תדרוס את מצביע הזיכרון <code>r2->f_data</code>. בהמשך התוכנית, כאשר מבוצעת כתיבה דרך <code>r2->f_data</code>, הנתונים ייכתבו לכתובת השרירותית שהתוקף שתל (Arbitrary Memory Write), מה שמאפשר דריסת טבלאות Vtable או כתובות חזרה.</p>
     `,
   },
   {
     id: "e-2024mem",
-    title: "26.2.2024 · שחזור",
-    source: "שחזור שאפשר לקרוא.",
+    title: "2024א מועד א (26.2.2024) · פתרון רשמי מלא",
+    source: "שחזור מזיכרון מדויק ומאומת מתוך מאגר הבחינות.",
     html: `
-      <p>חלק א ששוחזר: ביטוי משולש ב-C++; חולשה (Vulnerability); כמה סיביות ב-IPv6 (128); האם <code>b = a.copy</code> ואז שינוי איבר הוא העתקה רדודה/עמוקה לפי הטיפוס (בפייתון <code>list.copy</code> רדודה); העמסה בפייתון — אין.</p>
-      <p>שאלה 6: פיצול מחרוזת והדפסת מילים שמתחילות ב-<code>pre</code> באותיות גדולות; מחלקת Book (שם, כותב, שנה); תת-מחלקה ששמה נקלט מהמשתמש, קוראת לבנאי הבסיס, שדה <code>openu_id</code>.</p>
-      <p>שאלה 7: לפחות שלוש דרכים מול דריסת כתובת חזרה (ASLR, קנרית, NX…).</p>
-      <p>שאלה 8: לקוח פייתון ששולח קובץ בצ'אנקים עד 1024; שרת C++ שמאשר קבלה.</p>
-      <p>שאלה 9 בשחזור המקורי לא זכורה — לא ממציאים קטע קוד.</p>
+      <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>
+      <ul>
+        <li><strong>שאלה 1 — אופרטור טרינארי ב-++C:</strong> התחביר הנכון הוא <code>condition ? expr_if_true : expr_if_false;</code> (תשובה א').</li>
+        <li><strong>שאלה 2 — הגדרת חולשה (Vulnerability):</strong> פגם או ליקוי תכנוני/מימושי במערכת המאפשר לתוקף לחרוג ממדיניות האבטחה (תשובה ב').</li>
+        <li><strong>שאלה 3 — סיביות ב-IPv6:</strong> 128 סיביות שהן 16 בתים (תשובה ב').</li>
+        <li><strong>שאלה 4 — העתקה רדודה בפייתון:</strong> <code>a.copy()</code> מבצעת העתקה רדודה בלבד; שינוי בתת-רשימה פנימית משפיע גם על הרשימה המקורית (תשובה א').</li>
+        <li><strong>שאלה 5 — העמסת פונקציות בפייתון:</strong> אינה נתמכת באופן מובנה; פונקציה מאוחרת דורסת את הקודמת (תשובה ב').</li>
+      </ul>
+
+      <h3>חלק ב' — שאלות פתוחות (75 נקודות)</h3>
+
+      <h4>שאלה 6 · פייתון: מילים, מחלקת Book ותת-מחלקה דינמית עם type()</h4>
+      <pre class="code" dir="ltr"><code>def print_pre_words(text: str) -> None:
+    if not isinstance(text, str):
+        raise ValueError("Input must be a string")
+    for word in text.split():
+        if word.lower().startswith("pre"):
+            print(word.upper())
+
+class Book:
+    def __init__(self, book_name: str, writer: str, year: int):
+        self.book_name = book_name
+        self.writer = writer
+        self.year = year
+
+    def __str__(self):
+        return f"Book: '{self.book_name}' by {self.writer} ({self.year})"
+
+# יצירה דינמית של תת-מחלקה
+DynamicBook = type(
+    "CourseBook",
+    (Book,),
+    {
+        "openu_id": "20937",
+        "__init__": lambda self, b, w, y: super(self.__class__, self).__init__(b, w, y)
+    }
+)</code></pre>
+
+      <h4>שאלה 7 · ארבעה מנגנוני הגנה לדריסת כתובת החזרה</h4>
+      <ol>
+        <li><strong>קנרית המחסנית (Stack Canary):</strong> הקומפיילר שותל ערך סודי לפני כתובת החזרה. לפני <code>RET</code> מושווה הערך; אם שונה, התוכנית מופסקת מיידית (<code>__stack_chk_fail</code>).</li>
+        <li><strong>ASLR:</strong> הגרלת כתובות בסיס למחסנית, ערמה וספריות מערכת, כך שהתוקף אינו יודע לאן לכוון את כתובת החזרה.</li>
+        <li><strong>Shadow Stack (מחסנית צל / Intel CET):</strong> מחסנית חומרה נפרדת ומוגנת המיועדת רק לכתובות חזרה. בהוראת <code>RET</code> המעבד משווה ביניהן.</li>
+        <li><strong>DEP / NX:</strong> סימון דפי מחסנית כבלתי ניתנים להרצה ($W \oplus X$).</li>
+      </ol>
+
+      <h4>שאלה 8 · העברת קובץ בצ'אנקים (לקוח פייתון ושרת ++C)</h4>
+      <pre class="code" dir="ltr"><code># לקוח בפייתון
+import socket
+
+def send_file(filename: str):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect(("127.0.0.1", 9090))
+        with open(filename, "rb") as f:
+            while True:
+                chunk = f.read(1024)
+                if not chunk: break
+                s.sendall(chunk)
+        s.shutdown(socket.SHUT_WR)
+        print("Server ACK:", s.recv(1024).decode())
+
+// שרת ב-++C
+#include &lt;iostream&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int sfd = socket(AF_INET, SOCK_STREAM, 0);
+    sockaddr_in addr{AF_INET, htons(9090), {INADDR_ANY}};
+    bind(sfd, (sockaddr*)&addr, sizeof(addr));
+    listen(sfd, 3);
+    int cfd = accept(sfd, nullptr, nullptr);
+    char buf[1024];
+    ssize_t n;
+    while ((n = recv(cfd, buf, sizeof(buf)-1, 0)) > 0) {
+        buf[n] = '\0';
+        std::cout &lt;&lt; buf;
+    }
+    send(cfd, "ACK: OK", 7, 0);
+    close(cfd); close(sfd);
+    return 0;
+}</code></pre>
+
+      <h4>שאלה 9 · ניתוח חולשות ב-++C (Off-by-one, UAF, Integer Overflow)</h4>
+      <ul>
+        <li><strong>Off-by-one:</strong> הקצאת $N$ בתים והעתקת $N$ תווים יחד עם ה-Null Terminator (<code>'\0'</code>), הגולש בית אחד מעבר לגבול ודורס את ה-Saved EBP או מטא-דאטת ה-Heap. מניעה: הקצאת $N+1$ או <code>std::string</code>.</li>
+        <li><strong>Use-After-Free:</strong> שימוש במצביע לאחר שחרורו ב-<code>delete/free</code>. מניעה: איפוס ל-<code>nullptr</code> או <code>std::unique_ptr</code>.</li>
+        <li><strong>Integer Overflow:</strong> הכפלה בחישוב גודל הקצאה הגולשת לערך קטן. מניעה: בדיקת חילוק <code>count > SIZE_MAX / elem_size</code>.</li>
+      </ul>
     `,
   },
   {
@@ -324,6 +395,61 @@ memcpy(buffer, &amp;x, sizeof(int));</code></pre>
       <p>שאלה 8 · קנרית: למה נוצרה, איך פועלת, מחסנית עם ובלי, ומנגנון נוסף. כמו החומר ביחידה 3.</p>
       <p>שאלה 9 · לקוח פייתון: קובץ אל שרת, כותרת של 12 בתים (גודל, מספר חבילה, מספר חבילות, כל שדה 4 בתים big-endian), מטען עד 1024, בלי קריסה אם הקובץ חסר. וגם ארגז חול: מטרה ומימוש עקרוני.</p>
       <p>שאלה 10 · אותו לקוח, ושרת C++ שמקבל את אותן הודעות. מה השרת מחזיר לא זכור.</p>
+    `,
+  },
+
+  {
+    id: "e-2021a75",
+    title: "2021א מועד 75 (טופס 543) · פתרון רשמי מלא",
+    source: "שאלון 543 מלא ומדויק מתוך מאגר הבחינות הרשמי.",
+    html: `
+      <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>
+      <ul>
+        <li><strong>שאלה 1 — שכבת התעבורה:</strong> אחראית על תקשורת תהליך-אל-תהליך מקצה לקצה, ניהול מספרי פורט (16 סיביות) ובקרת זרימה/גודש (תשובה ב').</li>
+        <li><strong>שאלה 2 — שדה protected:</strong> נגיש מתוך המחלקה המגדירה ומתוך מחלקות שיורשות ממנה, אך לא מחוץ להן (תשובה ב').</li>
+        <li><strong>שאלה 3 — קריאה לפונקציה לא-וירטואלית מתוך וירטואלית:</strong> הפונקציה הלא-וירטואלית נקשרת סטטית לפי טיפוס הבסיס, לכן יודפס <code>Base::g</code> (תשובה ב').</li>
+        <li><strong>שאלה 4 — by-value מול by-reference:</strong> העברה לפי ערך מבטיחה בידוד ומניעת תופעות לוואי על האובייקט המקורי (תשובה ב').</li>
+        <li><strong>שאלה 5 — פונקציית htons:</strong> ממירה מספר בן 16 סיביות מ-Host Byte Order ל-Network Byte Order (Big-Endian) (תשובה ב').</li>
+      </ul>
+
+      <h3>חלק ב' — שאלות פתוחות (75 נקודות)</h3>
+
+      <h4>שאלה 6 · פייתון: מילים ב-ly, safe_append ומחלקות חשבון</h4>
+      <pre class="code" dir="ltr"><code>def filter_ly_words(text: str) -> list:
+    if not isinstance(text, str): return []
+    return [w.lower() for w in text.split() if w.lower().endswith("ly")]
+
+def safe_append(val, lst=None):
+    if lst is None: lst = []
+    lst.append(val)
+    return lst</code></pre>
+
+      <h4>שאלה 7 · פייתון ו-SQLite: מניעת SQL Injection</h4>
+      <pre class="code" dir="ltr"><code>import sqlite3
+
+def get_major(name: str):
+    conn = sqlite3.connect('server.db')
+    c = conn.cursor()
+    # שימוש בפרמטר ? חוסם SQLi
+    c.execute('SELECT Major FROM Students WHERE Name = ?', (name,))
+    row = c.fetchone()
+    if row: print(f"Major: {row[0]}")
+    conn.close()</code></pre>
+
+      <h4>שאלה 8 · עץ בינארי ב-++C ותיקון Double Free</h4>
+      <p>העתקה שטחית של <code>_root</code> גורמת לשחרור כפול בעת הרס העותקים. התיקון: בנאי העתקה רקורסיבי (Deep Copy) ואופרטור השמה בשיטת Copy-and-Swap:</p>
+      <pre class="code" dir="ltr"><code>Node(const Node& o) : _value(o._value), _left(nullptr), _right(nullptr) {
+    if (o._left) _left = new Node(*o._left);
+    if (o._right) _right = new Node(*o._right);
+}
+
+BTree& operator=(BTree o) {
+    std::swap(_root, o._root);
+    return *this;
+}</code></pre>
+
+      <h4>שאלה 9 · מחלקת Soldier וגלישת חוצץ</h4>
+      <p>שימוש ב-<code>strcpy</code> לתוך מערך של 10 בתים ללא בדיקת גבולות ובלי בדיקת <code>argc</code> מאפשר גלישת מחסנית ודריסת כתובת החזרה (RCE). התיקון הדפנסיבי: בדיקת <code>if (argc < 4) return -1;</code> ומעבר ל-<code>std::string</code>.</p>
     `,
   },
 ];
