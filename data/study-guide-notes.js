@@ -72,10 +72,25 @@ b[0].append(99) # ישנה גם את a[0]! להעתקה עמוקה חובה copy
 # f.write("data") יזרוק חריגת io.UnsupportedOperation.</code></pre>
       </div>
       <div class="note-box exam-tip">
-        <strong>16. ASLR מול DEP:</strong> 
+        <strong>16. ASLR מול DEP ומתקפת ROP:</strong> 
         <ul>
-          <li><strong>DEP / NX:</strong> מונע הרצת קוד מאזורי נתונים במחסנית או בערימה ($W \oplus X$). תוקף עוקף זאת ע"י קפיצה לקוד קיים (Return-to-libc / ROP).</li>
-          <li><strong>ASLR:</strong> מגריל את כתובות הזיכרון בכל הרצה מחדש, וכך מונע מהתוקף לדעת לאן לקפוץ.</li>
+          <li><strong>DEP / NX:</strong> מונע הרצת קוד מאזורי נתונים במחסנית או בערימה ($W \oplus X$). תוקף עוקף זאת ע"י קפיצה לקוד קיים (Return-to-libc / ROP Gadgets).</li>
+          <li><strong>ASLR:</strong> מגריל את כתובות הזיכרון בכל הרצה מחדש, ובכך משבש את שרשראות ה-ROP שמסתמכות על כתובות Gadgets קבועות.</li>
+        </ul>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>17. צימוד (Coupling) מול לכידות (Cohesion):</strong>
+        <ul>
+          <li><strong>צימוד (Coupling):</strong> מודד את רמת התלות והקשר ההדדי בין מחלקות או מודולים <em>שונים</em> במערכת. המטרה בהנדסה מאובטחת היא <strong>צימוד רופף (Loose Coupling)</strong> כדי ששינוי ברכיב אחד לא ישבור רכיב אחר.</li>
+          <li><strong>לכידות (Cohesion):</strong> מודדת את מידת המיקוד של משתנים ושיטות בתוך <em>אותו מודול או אותה מחלקה</em> (High Cohesion - עקרון האחריות היחידה).</li>
+        </ul>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>18. סדר בתים ברשת - htons מול htonl:</strong>
+        <p>ברשתות (TCP/IP) סדר הבתים הוא תמיד <strong>Big-Endian</strong>. במעבדי x86 הסדר הוא Little-Endian. לכן בהעברת מספרים שלמים ב-Header של חבילה:</p>
+        <ul>
+          <li>מספר בן 16 סיביות (כגון Port): מומר עם <code>htons(port)</code> (Host to Network Short).</li>
+          <li>מספר בן 32 סיביות (כגון גודל קובץ, מזהה, מספר חבילה עוקב מטיפוס int): מומר עם <code>htonl(val)</code> (Host to Network Long).</li>
         </ul>
       </div>
     `

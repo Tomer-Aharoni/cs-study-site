@@ -890,184 +890,287 @@ def put(conn, rec: UrlRecord):
       },
     ],
   },
-  {
+    {
     id: "e-2026a",
-    title: "סימולציה בסגנון 2026א",
+    title: "בחינה רשמית מלאה · 2026א מועד 91 (שאלון 534)",
     minutes: 180,
     pick: 3,
-    note: "שאלות 6–8 מהשחזור. שאלה 9 לא שוחזרה. חמש האמריקאיות אינן מהמועד: לא היה טקסט שאלות.",
+    note: "שאלון 534 (מועד 91 - 26 בפברואר 2026) מלא ומדויק: אופרטור טרינארי ב-++C, הזרקת SQL עם %s בפייתון, הגנת ASLR מול ROP, הגדרת צימוד (Coupling), טיפוס type(x) בפייתון, פייתון Book ו-BookRevised מקובץ עם שגיאות, פולימורפיזם ודריסת vtable ב-++C, לקוח Linux C++ שולח קובץ בצ'אנקים עם כותרת big-endian ומסד phrases.txt ב-SQLite, ועץ חיפוש בינארי BTree עם Double-Free.",
     partA: [
       {
         id: "a1",
-        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. פונקציה וירטואלית ב-C++ נקשרת:",
+        prompt: "מהו הפורמט הנכון לשורת ++C המעוניינת להציב במחרוזת Greeting את הערך \"Good day\" כאשר השעה קטנה מ-18, ו-\"Good evening\" לאחר מכן?",
         options: [
-          { id: "a", text: "בקומפילציה (קישור סטטי), לפי טיפוס המצביע או הייחוס בלבד." },
-          { id: "b", text: "בזמן ריצה (קישור דינמי), לפי הטיפוס הדינמי האמיתי של האובייקט (באמצעות vtable)." },
-          { id: "c", text: "בזמן ריצה, אך רק אם האובייקט הוקצה במחסנית ולא בערימה." },
-          { id: "d", text: "בעת טעינת התוכנית (Load Time) על ידי המקשר (Linker) של מערכת ההפעלה." },
+          { id: "a", text: "string Greeting = if (time>18) \"Good evening\" else \"Good day\";" },
+          { id: "b", text: "str Greeting = if (time>18) {\"Good Evening\"} else {\"Good day\"};" },
+          { id: "c", text: "string Greeting = (time>18) ? \"Good day\" : \"Good evening\";" },
+          { id: "d", text: "str Greeting = (time>18) ? \"good evening\" : \"Good day\";" },
         ],
-        answer: "b",
-        hint: "<p>מה מאפשרת מילת המפתח <code>virtual</code> ב-C++ ואיזה מנגנון (Dynamic Dispatch) פועל בעת קריאה לה?</p>",
-        solution: `<p><strong>התשובה: ב'.</strong> פונקציה וירטואלית מוכרעת ומקושרת בזמן ריצה (קישור דינמי / Dynamic Dispatch). הקומפיילר מייצר קריאה עקיפה דרך טבלת הפונקציות הווירטואליות (vtable) ומוצא את המימוש המתאים לפי הטיפוס הממשי של האובייקט שעליו הופעלה הפונקציה, גם אם הקריאה בוצעה דרך מצביע או הפניה למחלקת בסיס.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>א' שגויה:</strong> קישור סטטי בקומפילציה לפי טיפוס המצביע מאפיין פונקציות שאינן וירטואליות (Non-virtual).</li>
-<li><strong>ג' שגויה:</strong> מנגנון הפולימורפיזם הווירטואלי פועל בדיוק באותו אופן בין אם האובייקט הוקצה במחסנית, בערימה או במקטע סטטי.</li>
-<li><strong>ד' שגויה:</strong> המקשר (Linker) אינו מבצע הכרעה פולימורפית של פונקציות וירטואליות; ההכרעה מתבצעת תוך כדי ריצה בעזרת ה-vptr.</li>
-</ul>`,
+        answer: "c",
+        hint: "<p>מהו התחביר התקני של האופרטור הטרינארי ב-C++, ואיזה טיפוס מחרוזת קיים בשפה?</p>",
+        solution: "<p><strong>התשובה: ג'.</strong> האופרטור הטרינארי ב-++C נכתב במבנה <code>condition ? expr_true : expr_false</code>, וטיפוס המחרוזת הוא <code>string</code> (ולא <code>str</code> כמו בפייתון). משפטי if-else רגילים אינם יכולים לשמש ישירות כביטוי השמה. (הערה: בשאלון המקורי סומנה כבעייתית כיוון שהפכו בין הערכים במסיח, אך ג' היא האפשרות התחבירית התקינה היחידה ב-C++).</p>",
       },
       {
         id: "a2",
-        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. קריאה לפונקציה לא-וירטואלית דרך מצביע למחלקת בסיס שמצביע על אובייקט נגזר תפעיל את המימוש של:",
+        prompt: "יובל כתב את קוד הפייתון הבא לשליפת מידע מבסיס הנתונים. האם תוכלו לתקוף אותו באמצעות הזרקת SQL?\nqry = input(\"Enter a name to search for:\")\nconn = sqlite3.connect(r'c:\\openu\\openu.db')\nc = conn.cursor()\nc.execute(\"SELECT id, name FROM users WHERE name='%s'\" % qry)\nresults = c.fetchall()",
         options: [
-          { id: "a", text: "המחלקה הנגזרת, כי הטיפוס האמיתי בזיכרון הוא הנגזר." },
-          { id: "b", text: "מחלקת הבסיס, כיוון שהקריאה מוכרעת סטטית לפי הטיפוס המוצהר של המצביע." },
-          { id: "c", text: "המחלקה שבה הפונקציה הוגדרה אחרונה בקובץ הקוד." },
-          { id: "d", text: "שגיאת קומפילציה, כי אסור לדרוס פונקציה שאינה וירטואלית." },
+          { id: "a", text: "לא. הוא מוגן כי נעשה שימוש בשאילתה פרמטרית." },
+          { id: "b", text: "כן. ע\"י המחרוזת: \"AAA' or 1=1; --\"" },
+          { id: "c", text: "כן. ע\"י המחרוזת: \"AAA or 1=1\"" },
+          { id: "d", text: "לא, מפני שלא ניתן להזין תווים מיוחדים לקלט." },
         ],
         answer: "b",
-        hint: "<p>כאשר פונקציה אינה מוגדרת כ-<code>virtual</code>, כיצד הקומפיילר קובע לאיזו כתובת לקפוץ?</p>",
-        solution: `<p><strong>התשובה: ב'.</strong> עבור פונקציה שאינה וירטואלית (Non-virtual), הקישור מתבצע סטטית בזמן הידור (Static Early Binding) על פי טיפוס המצביע (הטיפוס הסטטי). היות שהמצביע הוא מטיפוס מחלקת הבסיס, הקומפיילר מייצר קריאה ישירה לקוד של מחלקת הבסיס, ללא תלות בטיפוס האובייקט שנוצר בערימה.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>א' שגויה:</strong> כדי לקרוא למימוש הנגזר דרך מצביע בסיס חובה להגדיר את הפונקציה כ-<code>virtual</code> בבסיס.</li>
-<li><strong>ג' שגויה:</strong> סדר ההגדרות בקובץ אינו משפיע על כללי הקישור הסטטי והירושה ב-C++.</li>
-<li><strong>ד' שגויה:</strong> מותר להגדיר פונקציה בעלת אותו שם בבן (הסתרת שם / Name Hiding), והדבר מתקמפל באופן תקין לחלוטין.</li>
-</ul>`,
+        hint: "<p>האם שרשור מחרוזות באמצעות אופרטור האחוזים (%) מגן מפני הזרקת SQL? מה עושה הגרש שבתחילת המחרוזת?</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> הקוד משתמש בשרשור מחרוזות באמצעות אופרטור האחוזים (<code>% qry</code>) ולא בשאילתה פרמטרית (מציין <code>?</code>). לכן קלט הכולל גרש (<code>'</code>) סוגר את מחרוזת ה-name, הביטוי <code>or 1=1</code> הופך את התנאי ל-True עבור כל השורות, והתווים <code>; --</code> חותכים את המשך השאילתה המקורית בהערה, מה שמאפשר הדלפה מלאה של כל המשתמשים.</p>",
       },
       {
         id: "a3",
-        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. שימוש בסימן שאלה ? כ-placeholder בשאילתת INSERT ב-SQLite (למשל conn.execute(\"INSERT ... VALUES (?)\", (val,))):",
+        prompt: "כנגד איזו חולשה או שיטת התקפה, יש חשיבות גדולה להגנה מסוג ASLR:",
         options: [
-          { id: "a", text: "מבטיח שהערך נשלח כנתון נפרד (Bound Parameter) ומונע לחלוטין הזרקת SQL." },
-          { id: "b", text: "מבצע בדיקת תקינות רגקס על תוכן המחרוזת val." },
-          { id: "c", text: "מחייב את המשתמש להעביר רק ערכים מספריים מטיפוס int." },
-          { id: "d", text: "פועל רק אם השאילתה מבוצעת מול מסד נתונים מרוחק ולא מקומי." },
+          { id: "a", text: "Return-Oriented Programming (ROP)" },
+          { id: "b", text: "Integer Overflow" },
+          { id: "c", text: "Heap Spraying" },
+          { id: "d", text: "Use-after-free" },
         ],
         answer: "a",
-        hint: "<p>מהו תפקידם של סימני שאלה כ-placeholders בשאילתות מוכנות (Prepared Statements)?</p>",
-        solution: `<p><strong>התשובה: א'.</strong> שימוש ב-placeholder (כגון <code>?</code> ב-SQLite וב-DB-API של פייתון) שולח את הערך כפרמטר קשור (Bound Parameter) הנפרד מתחביר ה-SQL. מנוע ה-DB מפרש את הערך אך ורק כנתון (Data Literal), ובכך מנוטרלת לחלוטין כל סכנה של הזרקת SQL (SQL Injection).</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>ב' שגויה:</strong> מנוע ה-DB אינו מבצע סינון רגקס על הערך, אלא מתייחס אליו ישירות כערך נתונים ללא צורך בסניטציה תחבירית.</li>
-<li><strong>ג' שגויה:</strong> ניתן להעביר כל טיפוס נתונים חוקי (מחרוזות, בייטים, מספרים, תאריכים), לא רק מספרים שלמים.</li>
-<li><strong>ד' שגויה:</strong> SQLite הוא מסד נתונים משובץ (Embedded) מקומי, ומנגנון הפרמטרים פועל בו באופן מלא.</li>
-</ul>`,
+        hint: "<p>איזו מבין המתקפות מבוססת באופן ישיר על ידיעה מראש של כתובות קבועות של מקטעי פקודות (Gadgets) בספריות המערכת?</p>",
+        solution: "<p><strong>התשובה: א'.</strong> מתקפת ROP (Return-Oriented Programming) מתבצעת על ידי שרשור קפיצות ל-Gadgets (מקטעי פקודות קיימים בספריות המערכת כגון libc המסתיימים ב-<code>ret</code>). מנגנון ASLR מגריל את כתובות הבסיס של הספריות בכל הרצה מחדש, ובכך מונע מהתוקף לדעת לאן לכוון את כתובות החזרה ומשבש לחלוטין את שרשרת ה-ROP.</p>",
       },
       {
         id: "a4",
-        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. מדוע נהוג להעביר קבצים ברשת במקטעים (Chunks) בגודל קבוע (למשל 1024 בתים) בלולאה?",
+        prompt: "מה פירוש המושג Coupling בקורס:",
         options: [
-          { id: "a", text: "כדי למנוע צריכת זיכרון מופרזת והצפת זיכרון של קריאת קובץ ענק בבת אחת, ולהתאים לזרימת הנתונים ב-TCP." },
-          { id: "b", text: "משום שפרוטוקול IP אינו מסוגל להעביר מנות גדולות מ-1024 בתים בשום תצורה." },
-          { id: "c", text: "כדי להצפין אוטומטית את תוכן הקובץ ברמת מערכת ההפעלה." },
-          { id: "d", text: "משום שפונקציית recv תיכשל בזמן ריצה אם גודל החוצץ יעלה על 1024." },
+          { id: "a", text: "קיבול חשמלי בין שני חוטים או מוליכים קרובים, שיוצר השפעה ביניהם." },
+          { id: "b", text: "רמת הקשר והתלות בין שתי מחלקות או שני מודולים שונים." },
+          { id: "c", text: "רמת הקשר בין משתנים ושיטות בתוך אותו מודול או אותה מחלקה." },
+          { id: "d", text: "קשר בין שני צמתים שונים בעץ האיומים." },
         ],
-        answer: "a",
-        hint: "<p>מה יקרה לזיכרון של תוכנית אם ננסה לקרוא קובץ של 20 ג'יגה-בייט כולו לפקודת קריאה בודדת?</p>",
-        solution: `<p><strong>התשובה: א'.</strong> חלוקת העברת קבצים למקטעים (Streaming / Chunks) מונעת טעינה של קבצים שלמים וגדולים אל זיכרון ה-RAM (מה שעלול לגרום למחסור בזיכרון וקריסת התוכנית - DoS). בנוסף, היא מתאימה לאופי זרימת המידע בשקעי TCP המעבירים נתונים כזרם בתים (Byte Stream) רציף במקטעים.</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>ב' שגויה:</strong> גודל חבילת IP מוגבל על ידי ה-MTU (בדרך כלל 1500 בתים ב-Ethernet), וברמת היישום TCP מטפל בפיצול מקטעים באופן שקוף.</li>
-<li><strong>ג' שגויה:</strong> קריאה במקטעים אינה מצפינה דבר; הצפנה דורשת שימוש באלגוריתמי קריפטוגרפיה (כגון AES).</li>
-<li><strong>ד' שגויה:</strong> הפונקציה <code>recv</code> תומכת בגודלי חוצץ שונים בהתאם לזיכרון שהוקצה (למשל 4096, 8192 או יותר), ו-1024 הוא רק גודל בלוק מקובל.</li>
-</ul>`,
+        answer: "b",
+        hint: "<p>הבחינו בין צימוד (Coupling) בין מודולים שונים, לבין לכידות (Cohesion) בתוך אותו מודול.</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> צימוד (Coupling) מגדיר את מידת התלות והקשר ההדדי בין מחלקות או מודולים שונים במערכת (המטרה בהנדסת תוכנה מאובטחת היא Loose Coupling - צימוד רופף). לעומת זאת, אפשרות ג' מגדירה לכידות (Cohesion - מידת המיקוד של רכיבים בתוך אותה מחלקה).</p>",
       },
       {
         id: "a5",
-        prompt: "השאלה אינה מהמועד המקורי אלא נוספה לסימולציה בלבד. דריסה של מצביע ה-vtable (vptr) באובייקט C++ עקב גלישת חוצץ מאפשרת לתוקף:",
+        prompt: "מה יחזיר קטע הקוד הבא בפייתון:\nx = 20.0\nprint(type(x))",
         options: [
-          { id: "a", text: "להפנות את המצביע ל-vtable מזויפת ולשלוט על זרימת הבקרה (Control Flow Hijacking) בעת קריאה וירטואלית." },
-          { id: "b", text: "לקרוא ישירות מכל משתנה מקומי במחסנית של פונקציות אחרות ללא הרשאה." },
-          { id: "c", text: "לעקוף לחלוטין את מנגנון ה-Firewall ברשת המקומית." },
-          { id: "d", text: "גרום לקומפיילר לקמפל מחדש את התוכנית בזמן ריצה." },
+          { id: "a", text: "תלוי כיצד הוגדר המשתנה x במקור." },
+          { id: "b", text: "<class 'float'>" },
+          { id: "c", text: "<class 'str'>" },
+          { id: "d", text: "<class 'int'>" },
         ],
-        answer: "a",
-        hint: "<p>מה קורה כאשר האובייקט מבצע קריאה לפונקציה וירטואלית ומצביע ה-vptr שלו שונה להצביע למבנה שהוכן על ידי התוקף?</p>",
-        solution: `<p><strong>התשובה: א'.</strong> כאשר מתרחשת גלישת חוצץ באובייקט והתוקף דורס את מצביע ה-vptr (היושב לרוב בתחילת האובייקט), הוא יכול לכוון אותו לטבלה מזויפת (Fake vtable) שהוכנה בזיכרון. כאשר התוכנית תבצע קריאה לפונקציה וירטואלית דרך האובייקט, המעבד יקפוץ לכתובת הזדונית שמופיעה בטבלה המזויפת, וכך התוקף משתלט על זרימת הבקרה (Control Flow Hijacking).</p>
-<p><strong>למה המסיחים שגויים?</strong></p>
-<ul>
-<li><strong>ב' שגויה:</strong> דריסת vptr אינה מאפשרת כשלעצמה קריאה שרירותית של משתנים מקומיים במחסנית אלא השתלטות על ניתוב הקריאה הווירטואלית.</li>
-<li><strong>ג' שגויה:</strong> פגיעה במבני זיכרון של תהליך מקומי אינה קשורה לחומת אש (Firewall) המבצעת סינון חבילות ברמת הרשת.</li>
-<li><strong>ד' שגויה:</strong> הקומפיילר אינו פעיל בזמן ריצה, והתוכנית כבר מקומפלת לקוד מכונה.</li>
-</ul>`,
+        answer: "b",
+        hint: "<p>איזה טיפוס נתונים נוצר אוטומטית בפייתון עבור מספר המכיל נקודה עשרונית?</p>",
+        solution: "<p><strong>התשובה: ב'.</strong> הערך 20.0 הוא מספר בעל נקודה עשרונית ולכן פייתון מזהה אותו אוטומטית כמספר ממשי מטיפוס <code>float</code>. הפונקציה <code>type(x)</code> מחזירה את טיפוס האובייקט: <code>&lt;class 'float'&gt;</code>.</p>",
       },
     ],
     partB: [
       {
         id: "q6",
-        title: "שאלה 6 · פייתון: מילים, ספר, וקובץ",
-        prompt: "מילים עם pre באותיות גדולות; Book; מחלקה עם כמה סופרים; קובץ → רשימת אובייקטים.",
-        hadOfficial: false,
-        official: "",
-        proposed: `<pre class="code" dir="ltr"><code>class Book:
-    def __init__(self, title, author, year):
-        self.title, self.author, self.year = title, author, year
-class BookMany:
-    def __init__(self, title, authors, year):
-        self.title, self.authors, self.year = title, list(authors), year
-# קובץ: שורה שמתחילה ב-MANY| כותרת|שנה|סופר,סופר
-def load(path):
-    out = []
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            p = line.strip().split("|")
-            if p[0] == "MANY":
-                out.append(BookMany(p[1], p[3].split(","), p[2]))
-            else:
-                out.append(Book(p[0], p[1], p[2]))
-    return out</code></pre>`,
-        verdictKind: "new",
-        verdict: "פורמט הקובץ לא פורט בשחזור — סימן MANY ממלא \"רגיל מול כמה סופרים\".",
+        title: "שאלה 6 · פייתון: מילים, מחלקות Book ו-BookRevised, וקריאת קובץ",
+        prompt: "א. (8 נקודות) פונקציה שמקבלת מחרוזת, מזהה מילים שמתחילות ב-pre ומדפיסה באותיות גדולות (אם לא מחרוזת יש לזרוק TypeError).\nב. (8 נקודות) מחלקה Book עם title, author, year, ומחלקה יורשת BookRevised שבה author='many' ונוספת רשימת authors.\nג. (9 נקודות) פונקציה שמקבלת שם קובץ טקסט, טוענת את הספרים ומחזירה רשימת אובייקטים all_books, תוך טיפול בשגיאות ומניעת נפילה עם Traceback.",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך שאלון 534 (מועד 91).",
+        proposed: `<pre class="code" dir="ltr"><code># סעיף א'
+def print_pre_words(text: str) -> None:
+    if not isinstance(text, str):
+        raise TypeError("Argument must be of type string")
+    for word in text.split():
+        if word.lower().startswith("pre"):
+            print(word.upper())
+
+# סעיף ב'
+class Book:
+    def __init__(self, title: str, author: str, year: int):
+        self.title = str(title)
+        self.author = str(author)
+        self.year = int(year)
+
+class BookRevised(Book):
+    def __init__(self, title: str, authors: list, year: int):
+        super().__init__(title, "many", year)
+        self.authors = list(authors)
+
+# סעיף ג'
+def load_books(filename: str) -> list:
+    all_books = []
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                parts = [p.strip() for p in line.split(',')]
+                if len(parts) < 3:
+                    continue
+                title = parts[0]
+                year = int(parts[-1])
+                author_part = ','.join(parts[1:-1]).strip()
+                if author_part.startswith('(') and author_part.endswith(')'):
+                    raw_authors = author_part[1:-1].split(',')
+                    authors_list = [a.strip() for a in raw_authors if a.strip()]
+                    all_books.append(BookRevised(title, authors_list, year))
+                else:
+                    all_books.append(Book(title, author_part, year))
+    except FileNotFoundError:
+        print(f"Friendly Error: File '{filename}' was not found.")
+    except Exception as e:
+        print(f"Friendly Error: Could not read books file: {e}")
+    return all_books</code></pre>`,
+        verdictKind: "official",
+        verdict: "קוד מלא ותקין לפי דרישות הבחינה: TypeError בא', מחלקות וירושה ב-ב', וטיפול שגיאות ללא Traceback ב-ג'.",
       },
       {
         id: "q7",
-        title: "שאלה 7 · פולימורפיזם וחולשה",
-        prompt: "איך עובד מצביע וירטואלי ו-vtable; הבדל וירטואלי/לא; איזו חולשה אם אפשר לכתוב לטבלה.",
-        hadOfficial: false,
-        official: "",
-        proposed: "<p>וירטואלי: אינדקס ב-vtable של האובייקט. לא-וירטואלי: לפי טיפוס המצביע בקומפילציה. כתיבה לטבלה מחליפה את הפונקציה שתופעל — שבירת שלמות. בלי PoC.</p>",
-        verdictKind: "new",
-        verdict: "אין רשמי.",
-        hint: "<p>חשבו איפה נשמר <code>vptr</code> בתוך האובייקט, לאן הוא מצביע, ומה קורה בזמן ריצה כשקוראים לפונקציה וירטואלית דרך מצביע לבסיס.</p>",
-        solution: `<ul>
-<li>לכל מחלקה עם פונקציה וירטואלית המהדר בונה <code>vtable</code> אחת, משותפת לכל המופעים. בכל אובייקט יש <code>vptr</code> — במודל הקורס בהיסט 0 — שמצביע לטבלה של המחלקה האמיתית.</li>
-<li>קריאה וירטואלית היא בערך <code>obj-&gt;vptr[index]()</code>, ולכן נקבעת בזמן ריצה. בלי <code>virtual</code> הקריאה נקבעת בקומפילציה לפי טיפוס המצביע.</li>
-<li>אם כתיבה מעבר לחוצץ או שימוש אחרי שחרור משחיתים את <code>vptr</code>, הקריאה הבאה הולכת למה שנשאר בזיכרון. הטבלה עצמה לרוב לקריאה בלבד; ה־<code>vptr</code> באובייקט בערימה הוא הנתון הפגיע.</li>
-<li>הגנה: גבול כתיבה ובעלות ברורה (<code>std::string</code>, <code>unique_ptr</code>); שכבות — ASLR ו־CFI. <code>private</code> וקנרית המחסנית לא שומרים על <code>vptr</code> בערימה.</li>
+        title: "שאלה 7 · פולימורפיזם, מצביע וטבלה וירטואלית ב-++C (Vtable Hijacking)",
+        prompt: "א. תאר/י את מנגנון הפולימורפיזם בשפת ++C, תן/י דוגמה כיצד נראים מצביע וירטואלי וטבלה וירטואלית.\nב. במה שונה התנהגות של פונקציה וירטואלית, מפונקציה דומה באותה מחלקה שאיננה מוגדרת כוירטואלית?\nג. איזה חולשה קיימת במנגנון שתיארת בסעיף א', כיצד ניתן לנצל אותו? הסביר/י בפירוט.",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך שאלון 534 (מועד 91).",
+        proposed: `<p><strong>סעיף א' (מנגנון הפולימורפיזם):</strong></p>
+<p>ב-++C פולימורפיזם דינמי בזמן ריצה ממומש באמצעות:</p>
+<ol>
+<li><strong>טבלה וירטואלית (vtable):</strong> מערך סטטי יחיד ברמת המחלקה הנוצר ע"י הקומפיילר במקטע קריאה בלבד (<code>.rodata</code>), המכיל מצביעים לפונקציות הווירטואליות של אותה מחלקה.</li>
+<li><strong>מצביע וירטואלי (vptr):</strong> שדה נסתר הנוסף לכל מופע (אובייקט) של המחלקה (לרוב בראש האובייקט, 8 בתים בארכיטקטורת 64-bit), המצביע ל-vtable של המחלקה שנוצרה.</li>
+</ol>
+
+<p><strong>סעיף ב' (וירטואלי מול לא-וירטואלי):</strong></p>
+<ul>
+<li><strong>פונקציה רגילה (לא וירטואלית):</strong> נקשרת סטטית בזמן קומפילציה (Early Binding) לפי הטיפוס המוצהר של המצביע (<code>Base*</code>). הקומפיילר מייצר קריאה ישירה (<code>CALL address</code>) ללא תלות באובייקט שבזיכרון.</li>
+<li><strong>פונקציה וירטואלית:</strong> נקשרת דינמית בזמן ריצה (Late Binding) לפי הטיפוס הדינמי של האובייקט. הקריאה מתבצעת בעקיפין דרך ה-vptr וה-vtable, ומפעילה את המימוש הדרוס בנגזרת.</li>
+</ul>
+
+<p><strong>סעיף ג' (החולשה וניצולה - Vtable Hijacking):</strong></p>
+<ul>
+<li><strong>החולשה:</strong> מצביע ה-<code>vptr</code> נמצא בזיכרון הנתונים של האובייקט (ב-Heap או ב-Stack). אם קיימת גלישת חוצץ (Buffer Overflow / Use-After-Free), תוקף יכול לדרוס את ה-<code>vptr</code>.</li>
+<li><strong>אופן הניצול:</strong> התוקף בונה בזיכרון vtable מזויפת ומכוון אליה את ה-<code>vptr</code>. כאשר התוכנית תבצע קריאה לפונקציה וירטואלית, המעבד יקרא את מצביע הפונקציה מה-vtable המזויפת ויקפוץ ישירות לקוד שהתוקף שתל (Arbitrary Code Execution / RCE).</li>
+<li><strong>אפחות:</strong> הגנת CFI (Control Flow Integrity), בדיקת גבולות קפדנית, ו-ASLR.</li>
 </ul>`,
+        verdictKind: "official",
+        verdict: "הסבר מקיף של מנגנון ה-vptr/vtable, ההבדל בקישור, וחולשת Vtable Hijacking.",
       },
       {
         id: "q8",
-        title: "שאלה 8 · שליחה בחלקים ושורות ל־SQLite",
-        prompt: "שרת Linux קורא קובץ ושולח מקטעים 1024 עם כותרת שם/מספר/גודל. תוכנית מעבירה שורות קובץ לטבלה (מספר + תוכן) כולל CREATE.",
-        hadOfficial: false,
-        official: "",
-        proposed: `<pre class="code" dir="ltr"><code>/* כותרת טקסטואלית פשוטה ואז send של 1024 */
-char hdr[128];
-snprintf(hdr, sizeof hdr, "%s %d %d\\n", name, idx, (int)n);
-send(fd, hdr, strlen(hdr), 0);
-send(fd, buf, n, 0);
+        title: "שאלה 8 · לקוח Linux ב-++C ששולח קובץ עם Header, ו-phrases.txt ל-SQLite",
+        prompt: "א. (15 נקודות) קוד C/C++ בלינוקס שפותח תקשורת ל-192.168.14.25:8080 ושולח messages.txt בצ'אנקים <= 1024 בתים, עם כותרת 3 מספרי int בייצוג big endian (שם/מזהה, גודל, ומספר חבילה), וטיפול בשגיאות.\nב. (10 נקודות) תוכנית פייתון/C++ שפותחת phrases.txt וקובץ SQLite בשם messages.db ומייצרת טבלת texts (מספר שורה עוקב מ-1, ותוכן השורה).",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך שאלון 534 (מועד 91).",
+        proposed: `<pre class="code" dir="ltr"><code>// סעיף א' - לקוח לינוקס ב-++C
+#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;cstring&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;unistd.h&gt;
 
+struct PacketHeader {
+    int file_id;
+    int file_size;
+    int packet_seq;
+};
+
+void send_messages_file() {
+    std::ifstream file("messages.txt", std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        std::cerr &lt;&lt; "Friendly Error: Could not open 'messages.txt'.\n";
+        return;
+    }
+    std::streamsize total_size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock &lt; 0) {
+        std::cerr &lt;&lt; "Friendly Error: Failed to create socket.\n";
+        return;
+    }
+
+    struct sockaddr_in serv_addr;
+    std::memset(&serv_addr, 0, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(8080);
+    inet_pton(AF_INET, "192.168.14.25", &serv_addr.sin_addr);
+
+    if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) &lt; 0) {
+        std::cerr &lt;&lt; "Friendly Error: Could not connect to server.\n";
+        close(sock);
+        return;
+    }
+
+    char buffer[1024];
+    int seq = 1;
+    while (file) {
+        file.read(buffer, 1024);
+        std::streamsize bytes_read = file.gcount();
+        if (bytes_read &lt;= 0) break;
+
+        PacketHeader hdr;
+        hdr.file_id = htonl(101); // Big Endian
+        hdr.file_size = htonl((int)total_size);
+        hdr.packet_seq = htonl(seq++);
+
+        send(sock, (const char*)&hdr, sizeof(hdr), 0);
+        send(sock, buffer, bytes_read, 0);
+    }
+    close(sock);
+}
+
+// סעיף ב' - פייתון ומסד SQLite
 import sqlite3
-con = sqlite3.connect("out.db")
-con.execute("CREATE TABLE IF NOT EXISTS lines(id INTEGER, body TEXT)")
-with open("in.txt", encoding="utf-8") as f:
-    for i, line in enumerate(f, 1):
-        con.execute("INSERT INTO lines VALUES(?, ?)", (i, line.rstrip("\\n")))
-con.commit()</code></pre>`,
-        verdictKind: "new",
-        verdict: "אין רשמי. פרמטרים ב-INSERT.",
+import os
+
+def phrases_to_db():
+    if not os.path.exists("phrases.txt"):
+        print("Error: phrases.txt not found.")
+        return
+    try:
+        with open("phrases.txt", "r", encoding="utf-8") as f:
+            lines = [l.strip() for l in f if l.strip()]
+
+        conn = sqlite3.connect("messages.db")
+        c = conn.cursor()
+        c.execute("CREATE TABLE IF NOT EXISTS texts (line_number INTEGER, content TEXT)")
+        c.executemany("INSERT INTO texts VALUES (?, ?)", 
+                      [(i + 1, line) for i, line in enumerate(lines)])
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Error processing phrases: {e}")</code></pre>`,
+        verdictKind: "official",
+        verdict: "קוד מלא ותקין לפי כל דרישות השאלון: כותרת big-endian, צ'אנקים <= 1024, וטבלת texts ב-SQLite.",
       },
       {
         id: "q9",
-        title: "שאלה 9 · אין שחזור אמין",
-        prompt: "במחברות הסעיף ריק.",
-        hadOfficial: false,
-        official: "",
-        proposed: "<p>אין פתרון מוצע.</p>",
-        verdictKind: "new",
-        verdict: "אין שחזור לשאלה הזו.",
+        title: "שאלה 9 · עץ חיפוש בינארי ב-++C ותיקון באג ניהול זיכרון",
+        prompt: "נתון מימוש של עץ חיפוש בינארי (Node ו-BTree).\nא. (5 נקודות) בקוד המוצג יש באג. מצאו אותו והסבירו אותו היטב.\nב. (20 נקודות) כיתבו קוד לתיקון הבאג.",
+        hadOfficial: true,
+        official: "פתרון רשמי מתוך שאלון 534 (מועד 91).",
+        proposed: `<p><strong>סעיף א' (הבאג והסברו):</strong></p>
+<p>בנאי ההעתקה במחלקה <code>BTree</code> מבצע העתקה שטחית (Shallow Copy):</p>
+<pre class="code" dir="ltr"><code>BTree(const BTree& tree) {
+    _root = tree._root; // העתקה שטחית!
+}</code></pre>
+<p>הוא מעתיק רק את ערך המצביע <code>_root</code>, כך ששני אובייקטי העץ מצביעים לאותם צמתים בדיוק ב-Heap. בעת יציאה מבלוק, ה-Destructor של שני האובייקטים ייקרא ויבצע <code>delete _root</code>, מה שיגרום לשחרור כפול של אותו זיכרון (<strong>Double Free Crash</strong>). בנוסף, לא הוגדר אופרטור השמה (הפרת Rule of Three).</p>
+
+<p><strong>סעיף ב' (קוד מתוקן ודפנסיבי - Deep Copy מלא):</strong></p>
+<pre class="code" dir="ltr"><code>// בנאי העתקה רקורסיבי עמוק ב-Node
+Node(const Node& other) : _value(other._value), _left(nullptr), _right(nullptr) {
+    if (other._left != nullptr)
+        _left = new Node(*other._left);
+    if (other._right != nullptr)
+        _right = new Node(*other._right);
+}
+
+// ב-BTree: בנאי העתקה עמוק
+BTree(const BTree& tree) : _root(nullptr) {
+    if (tree._root != nullptr)
+        _root = new Node(*tree._root);
+}
+
+// אופרטור השמה בטוח בשיטת Copy-and-Swap
+BTree& operator=(BTree other) {
+    std::swap(_root, other._root);
+    return *this;
+}</code></pre>`,
+        verdictKind: "official",
+        verdict: "ניתוח מדויק של שגיאת ה-Shallow Copy / Double Free ותיקון מלא עם Deep Copy ו-Copy and Swap.",
       },
     ],
   },

@@ -343,33 +343,66 @@ memcpy(buffer, &amp;x, sizeof(int));</code></pre>
   },
   {
     id: "e-2026a",
-    title: "2026א מועד 91 · שחזור",
-    source: "שחזור לפי מחברות. לחלק א אין טקסט שאלות. שאלה 9 לא שוחזרה.",
+    title: "2026א מועד 91 (שאלון 534) · פתרון רשמי מלא",
+    source: "שאלון 534 מקורי ומלא (26 בפברואר 2026).",
     html: `
-      <p>חלק א: מפתח שחזור (לא רשמי) — שאלה 1 סומנה כבעייתית אצל הבוחנים; 2ב 3א 4ב 5ב.</p>
-      <p>שאלה 6 · פייתון: מילים שמתחילות ב-<code>pre</code> באותיות גדולות; מחלקת Book (שם, סופר, שנה) ומחלקה עם כמה סופרים; קריאת קובץ לרשימת אובייקטים לפי הסוג.</p>
-      <p>שאלה 7 · C++: פולימורפיזם, מצביע וירטואלי ו-vtable; הבדל וירטואלי / לא וירטואלי; איזו חולשה נפתחת כשיש כתיבה לזיכרון של הטבלה (רעיון — בלי PoC).</p>
-      <p>שאלה 8 · שרת Linux ב-C/C++ שקורא קובץ ושולח צ'אנקים 1024 עם כותרת (שם, מספר, גודל); תוכנית שמעבירה שורות קובץ ל-SQLite (מספר סידורי + תוכן) עם <code>CREATE</code> ופרמטרים.</p>
-      <p>שאלה 9 לא שוחזרה. אין גרסה מתוקנת מהסריקה.</p>
-      <h3>שאלה 7 · רמזים ופתרונות</h3>
-      <p><strong>שאלה 7 (פתוחה):</strong> הסבירו איך עובד מנגנון הפונקציות הווירטואליות ב־C++, עם <code>vptr</code> ו־<code>vtable</code>. אחר כך: איזו חולשה נפתחת כשכותבים לזיכרון של הטבלה או של המצביע אליה?</p>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>חשבו איפה נשמר <code>vptr</code> בתוך האובייקט, לאן הוא מצביע, ומה קורה בזמן ריצה כשקוראים לפונקציה וירטואלית דרך מצביע לבסיס.</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>חלק 1 · המנגנון.</strong></p>
+      <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>
       <ul>
-        <li>לכל מחלקה עם לפחות פונקציה וירטואלית אחת, המהדר בונה טבלה וירטואלית (<code>vtable</code>) אחת: רשימת כתובות של המימושים. הטבלה משותפת לכל המופעים של המחלקה.</li>
-        <li>בכל אובייקט נשמר מצביע נסתר, <code>vptr</code>. במודל הקורס הוא יושב בתחילת האובייקט (היסט 0), ומצביע לטבלה של המחלקה האמיתית של האובייקט.</li>
-        <li>הבנאי מציב את <code>vptr</code>. לכן גם דרך <code>Base*</code> לאובייקט <code>Der</code>, ה־<code>vptr</code> מצביע לטבלה של <code>Der</code>.</li>
-        <li>קריאה וירטואלית מתורגמת בערך ל־<code>obj-&gt;vptr[index]()</code>: קוראים את המצביע, ניגשים לכניסה, וקופצים. זה קישור בזמן ריצה.</li>
-        <li>בלי <code>virtual</code> הקריאה נקבעת בקומפילציה לפי טיפוס המצביע, ולכן <code>Base*</code> יגיע תמיד ל־<code>Base</code>.</li>
+        <li><strong>שאלה 1 — אופרטור טרינארי ב-++C:</strong> התחביר הנכון הוא <code>string Greeting = (time>18) ? ...</code> (תשובה ג'). (משפטי if-else רגילים או טיפוס <code>str</code> אינם חוקיים ב-C++).</li>
+        <li><strong>שאלה 2 — תקיפת הזרקת SQL:</strong> שרשור מחרוזת באמצעות <code>'%s' % qry</code> אינו שאילתה פרמטרית, ולכן ניתן לתקוף בעזרת <code>AAA' or 1=1; --</code> שסוגר את הגרש, מחזיר True לכל השורות ומבטל את יתר השאילתה (תשובה ב').</li>
+        <li><strong>שאלה 3 — הגנה מפני ROP:</strong> מנגנון <strong>ASLR</strong> חיוני כנגד מתקפות Return-Oriented Programming (ROP) כיוון שהוא מגריל את כתובות הבסיס של מקטעי הקוד והספריות בכל הרצה (תשובה א').</li>
+        <li><strong>שאלה 4 — הגדרת Coupling (צימוד):</strong> רמת הקשר והתלות ההדדית בין שתי מחלקות או שני מודולים שונים (תשובה ב').</li>
+        <li><strong>שאלה 5 — טיפוס משתנה 20.0 בפייתון:</strong> <code>x = 20.0</code> מכיל נקודה עשרונית ולכן <code>type(x)</code> מחזיר <code>&lt;class 'float'&gt;</code> (תשובה ב').</li>
       </ul>
-      <p><strong>חלק 2 · מה נשבר כשכותבים לשם.</strong></p>
-      <ul>
-        <li>יעד הקריאה הווירטואלית נקרא מהזיכרון בזמן ריצה. אם כתיבה מעבר לחוצץ, שימוש אחרי שחרור, או גלישה בערימה משחיתים את <code>vptr</code> של אובייקט (או מצביע פונקציה בשדה), הקריאה הבאה הולכת למה שנשאר בזיכרון ולא למימוש שתוכנן. זו פגיעה בשלמות זרימת הבקרה.</li>
-        <li>הטבלה עצמה לרוב יושבת בזיכרון לקריאה בלבד. ה־<code>vptr</code> בתוך אובייקט בערימה הוא נתון רגיל שאפשר להשחית — לכן הוא היעד הנפוץ.</li>
-        <li><code>private</code> אינו מגן: הרשאות הגישה נאכפות בקומפילציה על שמות, לא על כתיבה גולמית לזיכרון. קנרית המחסנית בודקת את המסגרת לפני <code>ret</code>, ואינה שומרת על <code>vptr</code> בערימה.</li>
-      </ul>
-      <p><strong>איך מתגוננים:</strong> תיקון שורש — לא לכתוב מעבר לגודל (<code>std::string</code>, בדיקת אורך) ובעלות ברורה על זיכרון (<code>unique_ptr</code>). שכבות — ASLR מקשה על כתובות קבועות, ושלמות זרימת בקרה (CFI) בודקת שיעד הקפיצה העקיפה הוא אחד היעדים שתוכננו.</p>
-      <p class="muted">הסעיף במקור מבקש קוד שמחליף כניסה בטבלה בפונקציה אחרת. באתר מתארים מה נשבר ואיך מתגוננים, בלי קוד כזה.</p></div></details>
+
+      <h3>חלק ב' — שאלות פתוחות (75 נקודות)</h3>
+
+      <h4>שאלה 6 · פייתון: מילים ב-pre, מחלקות ספר וקריאת קובץ</h4>
+      <pre class="code" dir="ltr"><code>def print_pre_words(text: str) -> None:
+    if not isinstance(text, str):
+        raise TypeError("Argument must be of type string")
+    for word in text.split():
+        if word.lower().startswith("pre"):
+            print(word.upper())
+
+class Book:
+    def __init__(self, title: str, author: str, year: int):
+        self.title, self.author, self.year = str(title), str(author), int(year)
+
+class BookRevised(Book):
+    def __init__(self, title: str, authors: list, year: int):
+        super().__init__(title, "many", year)
+        self.authors = list(authors)
+
+def load_books(filename: str) -> list:
+    all_books = []
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            for line in f:
+                parts = [p.strip() for p in line.split(',') if p.strip()]
+                if len(parts) >= 3:
+                    title, year = parts[0], int(parts[-1])
+                    auth = ','.join(parts[1:-1]).strip()
+                    if auth.startswith('(') and auth.endswith(')'):
+                        all_books.append(BookRevised(title, [a.strip() for a in auth[1:-1].split(',')], year))
+                    else:
+                        all_books.append(Book(title, auth, year))
+    except Exception as e:
+        print(f"Friendly Error: {e}")
+    return all_books</code></pre>
+
+      <h4>שאלה 7 · פולימורפיזם, vptr/vtable וחולשת Vtable Hijacking ב-++C</h4>
+      <p><strong>א.</strong> פולימורפיזם ממומש ע"י טבלת פונקציות וירטואליות סטטית (<code>vtable</code>) במקטע הקריאה בלבד (.rodata), ומצביע נסתר (<code>vptr</code>) הנוסף לכל אובייקט ומפנה ל-vtable של מחלקתו.<br>
+      <strong>ב.</strong> פונקציה לא-וירטואלית נקשרת סטטית בקומפילציה לפי טיפוס המצביע (Early Binding). פונקציה וירטואלית נקשרת דינמית בזמן ריצה בעקיפין דרך ה-vptr וה-vtable.<br>
+      <strong>ג. חולשה (Vtable Hijacking):</strong> ה-<code>vptr</code> נמצא בזיכרון האובייקט (Heap/Stack). גלישת חוצץ מאפשרת לדרוס את ה-<code>vptr</code> ולהפנותו ל-vtable מזויפת בזיכרון, כך שקריאה וירטואלית תקפוץ ישירות לקוד זדוני (RCE). הגנה: CFI ו-ASLR.</p>
+
+      <h4>שאלה 8 · לקוח תקשורת לינוקס ו-SQLite</h4>
+      <p><strong>א.</strong> לקוח C++ הפותח שקע ל-<code>192.168.14.25:8080</code>, קורא את <code>messages.txt</code>, מצרף כותרת של 3 מספרי int ב-Big Endian (<code>htonl</code>) עבור מזהה קובץ, גודל ומספר חבילה, ושולח בצ'אנקים $\le 1024$ בתים.<br>
+      <strong>ב.</strong> תוכנית פייתון הקוראת את <code>phrases.txt</code> ומכניסה בצורה מאובטחת לטבלת <code>texts (line_number, content)</code> במסד <code>messages.db</code> באמצעות <code>executemany</code> ושאילתה פרמטרית (<code>?</code>).</p>
+
+      <h4>שאלה 9 · עץ חיפוש בינארי ב-++C ותיקון Double Free</h4>
+      <p><strong>הבאג:</strong> בנאי ההעתקה ב-<code>BTree</code> מבצע העתקה שטחית (<code>_root = tree._root;</code>). שני האובייקטים מחזיקים מצביעים לאותם צמתים, ובעת הריסתם נקרא <code>delete</code> כפול שגורם להתרסקות <strong>Double Free</strong>.<br>
+      <strong>התיקון:</strong> מימוש בנאי העתקה רקורסיבי עמוק ב-<code>Node</code> (המשכפל את <code>_left</code> ו-<code>_right</code> בעזרת <code>new Node</code>), בנאי העתקה עמוק ב-<code>BTree</code>, ואופרטור השמה בטוח בשיטת Copy-and-Swap.</p>
     `,
   },
   {
