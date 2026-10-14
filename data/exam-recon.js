@@ -342,8 +342,234 @@ memcpy(buffer, &amp;x, sizeof(int));</code></pre>
     `,
   },
   {
+    id: "e-2026a1",
+    title: "2026א מועד א1 (19 בפברואר 2026) · שחזור מלא",
+    source: "שחזור מלא ומדויק לפי מחברות בחינה ודוחות סריקה רשמיים (ציון 94).",
+    html: `
+      <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>
+      <ul>
+        <li><strong>שאלה 1 — בנאי העתקה ברירת-מחדל ב-++C (תשובה ב'):</strong> כאשר מחלקה מקצה זיכרון דינמי ב-Heap ולא מוגדר בה בנאי העתקה מפורש, ברירת המחדל היא העתקה שטחית (Memberwise / Shallow Copy). שני האובייקטים מצביעים לאותו זיכרון, מה שמוביל להשחתת נתונים ולשחרור כפול (Double Free) בעת ההריסה.</li>
+        <li><strong>שאלה 2 — מניעת הרצת קוד במחסנית (תשובה ב'):</strong> מנגנון <strong>DEP / NX (Data Execution Prevention)</strong> מסמן את דפי ה-Stack כלא ניתנים להרצה (Non-Executable), ובכך מונע מ-Shellcode שהוזרק למחסנית לרוץ.</li>
+        <li><strong>שאלה 3 — העמסת פונקציות בפייתון (תשובה ג'):</strong> פייתון אינה תומכת בהעמסת פונקציות סטטית (Function Overloading). אם מוגדרות מספר פונקציות בעלות אותו שם, ההגדרה האחרונה דורסת לחלוטין את כל ההגדרות שקדמו לה.</li>
+        <li><strong>שאלה 4 — מטרת מנגנון ASLR (תשובה ב'):</strong> רנדומיזציה של כתובות הבסיס (Stack, Heap, ספריות משותפות וקוד PIE) בכל הפעלה מחדש, במטרה למנוע מתוקף לנחש כתובות קבועות בזיכרון לצורך הזרקת קוד או תקיפת ROP.</li>
+        <li><strong>שאלה 5 — סדר בתים ברשת ומספרים בינאריים (תשובה ג'):</strong> בפרוטוקול TCP חובה להשתמש ב-<code>htons</code> ו-<code>htonl</code> כדי להמיר מסדר בתים של המחשב (Host Byte Order - לרוב Little Endian) לסדר בתים תקני של הרשת (Network Byte Order - תמיד Big Endian).</li>
+      </ul>
+
+      <h3>חלק ב' — שאלות פתוחות (75 נקודות)</h3>
+
+      <h4>שאלה 6 · פייתון: עיבוד מחרוזות, קבצים ותכנות דינמי (type)</h4>
+      <p><strong>סעיף א (8 נקודות):</strong> פונקציה דפנסיבית <code>wordp</code> לבדיקת טיפוס מחרוזת, פיצול לפי פסיק, סינון מילים שמתחילות ב-<code>im</code> והחזרה באות ראשונה גדולה והשאר קטנות.</p>
+      <details class="fold"><summary>💡 רמז לסעיף א</summary><div class="fold-body"><p>השתמשו ב-<code>isinstance(text, str)</code> ובמתודה <code>w.capitalize()</code>.</p></div></details>
+      <details class="fold"><summary>פתרון מפורט — סעיף א</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>def wordp(text: str) -> list[str]:
+    # 1. בדיקת טיפוס דפנסיבית
+    if not isinstance(text, str):
+        raise TypeError("Input must be a string")
+    
+    # 2. פיצול לפי פסיק
+    raw_words = text.split(',')
+    
+    # 3+4. סינון מילים ב-im ושינוי לאות ראשונה גדולה
+    result = []
+    for raw in raw_words:
+        w = raw.strip()
+        if w.lower().startswith('im'):
+            result.append(w.capitalize())
+            
+    # 5. החזרת הרשימה
+    return result</code></pre>
+      </div></details>
+
+      <p><strong>סעיף ב (9 נקודות):</strong> פונקציה <code>fix_file</code> לקריאת <code>Setup.csv</code>, עיבוד כל שורה באמצעות <code>wordp</code>, כתיבה ל-<code>Setup-revised.txt</code> וטיפול מלא בשגיאות.</p>
+      <details class="fold"><summary>פתרון מפורט — סעיף ב</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>def fix_file():
+    in_file = "Setup.csv"
+    out_file = "Setup-revised.txt"
+    try:
+        with open(in_file, "r", encoding="utf-8") as fin:
+            with open(out_file, "w", encoding="utf-8") as fout:
+                for line in fin:
+                    cleaned = line.strip()
+                    if not cleaned:
+                        continue
+                    processed = wordp(cleaned)
+                    fout.write(",".join(processed) + "\n")
+        print("File processed successfully.")
+    except FileNotFoundError:
+        print(f"Error: Could not find input file '{in_file}'.")
+    except PermissionError:
+        print(f"Error: Access denied while reading '{in_file}' or writing '{out_file}'.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")</code></pre>
+      </div></details>
+
+      <p><strong>סעיף ג (8 נקודות):</strong> מטא-פרוגרמינג — יצירת מחלקה דינמית היורשת מ-<code>Book</code> באמצעות <code>type()</code> עם שדה מחלקה <code>MainChar</code>.</p>
+      <details class="fold"><summary>פתרון מפורט — סעיף ג</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>class Book:
+    def __init__(self, title: str, author: str, year: int):
+        self.title = title
+        self.author = author
+        self.year = year
+
+# קליטה מהמשתמש
+new_cls_name = input("Class name: ").strip() or "DetectiveBook"
+series = input("Series name: ").strip() or "Sherlock"
+main_char = input("Main character: ").strip() or "Sherlock Holmes"
+
+# יצירה דינמית באמצעות type(name, bases, dict)
+DynamicBook = type(
+    new_cls_name,
+    (Book,),
+    {
+        "MainChar": main_char,
+        "series": series
+    }
+)
+
+# יצירת מופע של המחלקה הדינמית
+book_instance = DynamicBook(title="Study in Scarlet", author="Conan Doyle", year=1887)
+print(f"Instantiated {type(book_instance).__name__} with MainChar: {book_instance.MainChar}")</code></pre>
+      </div></details>
+
+      <h4>שאלה 7 · אבטחת זיכרון ומערכות הפעלה: מנגנון ASLR</h4>
+      <p><strong>סעיף א (8 נקודות):</strong> הסבר מהות ASLR, הבעיה האבטחתית שהוא מונע (ניבוי כתובות מחסנית, Heap וספריות לצורך הזרקת קוד / ROP), וכיצד הוא פועל (הגרלת היסט בסיס בכל טעינת תהליך ע"י ה-Loader).</p>
+      <p><strong>סעיף ב (9 נקודות):</strong> תוכנית C/C++ לבדיקה האם ASLR פעיל במערכת ההפעלה.</p>
+      <details class="fold"><summary>פתרון מפורט — סעיף ב</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    // בדיקה ישירה דרך ממשק מערכת ההפעלה Linux
+    FILE* f = fopen("/proc/sys/kernel/randomize_va_space", "r");
+    if (f) {
+        int aslr = -1;
+        if (fscanf(f, "%d", &aslr) == 1) {
+            if (aslr == 0) printf("ASLR is Disabled (0)\n");
+            else if (aslr == 1) printf("ASLR is Conservative/Partial (1)\n");
+            else if (aslr == 2) printf("ASLR is Full (2)\n");
+        }
+        fclose(f);
+    } else {
+        // גישה היוריסטית: הדפסת כתובת משתנה מחסנית
+        int stack_var = 1;
+        printf("Stack address: %p\n", (void*)&stack_var);
+        printf("(In ASLR, this address changes between different runs)\n");
+    }
+    return 0;
+}</code></pre>
+      </div></details>
+
+      <p><strong>סעיף ג (8 נקודות):</strong> הגנות נוספות (DEP/NX, Stack Canaries) ושיטות עקיפת ASLR (דליפת כתובת Memory Leak, מודולים ללא PIE, ו-Brute-Force במערכות 32-ביט).</p>
+
+      <h4>שאלה 8 · ++C: מניפולציות זיכרון ו-Vtables (חטיפת פונקציה וירטואלית)</h4>
+      <p><strong>סעיף א (8 נקודות):</strong> הסבר מנגנון <code>vptr</code> ו-<code>vtable</code>. שני האובייקטים <code>obj</code> ו-<code>obj2</code> נוצרו מאותו טיפוס <code>Derived</code> ולכן חולקים את אותה ה-vtable בדיוק!</p>
+      <p><strong>סעיף ב (9 נקודות):</strong> כתיבת קוד הדורס את הטבלה ומפנה את הכניסה הראשונה ל-<code>hacked_function</code>.</p>
+      <details class="fold"><summary>פתרון מפורט — סעיף ב</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>// דרך 1: החלפת מצביע ה-vtable באובייקט למערך מצביעים מזויף (Fake Vtable)
+uintptr_t fake_vtable[1];
+fake_vtable[0] = (uintptr_t)hacked_function;
+*(uintptr_t**)obj = fake_vtable;
+
+// דרך 2: דריסה ישירה של חריץ 0 ב-vtable (אם מותרת כתיבה לזיכרון)
+// uintptr_t* vtable = *(uintptr_t**)obj;
+// vtable[0] = (uintptr_t)hacked_function;</code></pre>
+      </div></details>
+      <p><strong>סעיף ג (8 נקודות):</strong> הרצת <code>obj->show()</code> תקרא ל-<code>hacked_function</code> ותדפיס <code>Hacked Function!</code> במקום הפונקציה המקורית. אם שונתה הטבלה המשותפת עצמה, גם <code>obj2->show()</code> יושפע!</p>
+
+      <h4>שאלה 9 · פייתון ומסדי נתונים: שרת Proxy ומטמון SQLite</h4>
+      <p><strong>סעיף א (13 נקודות):</strong> שרת TCP על פורט 8080, בדיקת תקינות אורך URL עד 2048 תווים, בדיקה בטבלת <code>url_cache</code>, החזרת קובץ שמור או שמירת תוכן חדש עם <code>UrlRecord</code> (dataclass).</p>
+      <p><strong>סעיף ב (12 נקודות):</strong> ניהול גודל מטמון (מעל 10 רשומות) — שליפת הרשומה הישנה ביותר לפי שדה זמן, מחיקת הקובץ מהדיסק עם <code>os.remove</code> ומחיקה מאובטחת מהמסד עם שאילתה פרמטרית.</p>
+      <details class="fold"><summary>פתרון מלא — שאלה 9</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>import socket
+import sqlite3
+import os
+import time
+import hashlib
+from dataclasses import dataclass
+
+@dataclass
+class UrlRecord:
+    url: str
+    filename: str
+    last_accessed: float
+
+def init_db(db_name="proxy_cache.db"):
+    with sqlite3.connect(db_name) as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS url_cache (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                url TEXT UNIQUE NOT NULL,
+                filename TEXT NOT NULL,
+                last_accessed REAL NOT NULL
+            )
+        """)
+        conn.commit()
+
+def evict_oldest_cache(conn: sqlite3.Connection, max_records=10):
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM url_cache")
+    count = cursor.fetchone()[0]
+    if count > max_records:
+        cursor.execute("SELECT id, filename FROM url_cache ORDER BY last_accessed ASC LIMIT 1")
+        oldest = cursor.fetchone()
+        if oldest:
+            rec_id, filename = oldest
+            if os.path.exists(filename):
+                try:
+                    os.remove(filename)
+                except OSError:
+                    pass
+            # שאילתה פרמטרית מוגנת מ-SQL Injection
+            cursor.execute("DELETE FROM url_cache WHERE id = ?", (rec_id,))
+            conn.commit()
+
+def run_proxy():
+    init_db()
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind(("0.0.0.0", 8080))
+    server.listen(5)
+    print("Proxy server running on port 8080...")
+
+    while True:
+        client, addr = server.accept()
+        with client:
+            data = client.recv(4096)
+            if not data or len(data) > 2048:
+                client.sendall(b"HTTP/1.1 400 Bad Request: Invalid or too large URL\r\n\r\n")
+                continue
+            
+            url = data.decode("utf-8", errors="replace").strip()
+            with sqlite3.connect("proxy_cache.db") as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT filename FROM url_cache WHERE url = ?", (url,))
+                row = cursor.fetchone()
+
+                if row and os.path.exists(row[0]):
+                    with open(row[0], "r", encoding="utf-8") as f:
+                        client.sendall(f.read().encode("utf-8"))
+                    cursor.execute("UPDATE url_cache SET last_accessed = ? WHERE url = ?", (time.time(), url))
+                    conn.commit()
+                else:
+                    content = f"Fetched content for {url} at {time.ctime()}"
+                    fname = f"cache_{hashlib.md5(url.encode()).hexdigest()}.txt"
+                    with open(fname, "w", encoding="utf-8") as f:
+                        f.write(content)
+                    
+                    rec = UrlRecord(url=url, filename=fname, last_accessed=time.time())
+                    cursor.execute(
+                        "INSERT OR REPLACE INTO url_cache (url, filename, last_accessed) VALUES (?, ?, ?)",
+                        (rec.url, rec.filename, rec.last_accessed)
+                    )
+                    conn.commit()
+                    evict_oldest_cache(conn, max_records=10)
+                    client.sendall(content.encode("utf-8"))</code></pre>
+      </div></details>
+    `,
+  },
+  {
     id: "e-2026a",
-    title: "2026א מועד 91 (שאלון 534) · פתרון רשמי מלא",
+    title: "2026א מועד א2 (מועד 91, שאלון 534) · בחינה מקורית מלאה",
     source: "שאלון 534 מקורי ומלא (26 בפברואר 2026).",
     html: `
       <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>

@@ -93,6 +93,23 @@ b[0].append(99) # ישנה גם את a[0]! להעתקה עמוקה חובה copy
           <li>מספר בן 32 סיביות (כגון גודל קובץ, מזהה, מספר חבילה עוקב מטיפוס int): מומר עם <code>htonl(val)</code> (Host to Network Long).</li>
         </ul>
       </div>
+      <div class="note-box exam-tip">
+        <strong>19. בדיקת מנגנון ASLR ורמות אבטחה ב-Linux:</strong>
+        <p>ניתן לבדוק ישירות בקוד C/++C את קובץ הגרעין <code>/proc/sys/kernel/randomize_va_space</code>:</p>
+        <ul>
+          <li><code>0</code>: מנוטרל (Disabled) — כל הכתובות קבועות וצפויות.</li>
+          <li><code>1</code>: שמרני/חלקי (Conservative) — רנדומיזציה של ה-Stack, VDSO וספריות משותפות (mmap). מקטע ה-Data וה-Heap (באמצעות <code>brk</code>) נשארים צמודים לקוד.</li>
+          <li><code>2</code>: מלא (Full ASLR) — כולל גם רנדומיזציה מלאה של ה-Heap.</li>
+        </ul>
+        <p><strong>שיטות עקיפת ASLR:</strong> דליפת זיכרון (Memory Leak / Format String <code>%p</code>) המאפשרת לחשב את כתובת הבסיס ע"י החסרת היסט קבוע, או ניצול רכיבים שקומפלו ללא PIE (Position Independent Executable).</p>
+      </div>
+      <div class="note-box exam-tip">
+        <strong>20. מטא-פרוגרמינג ויצירת מחלקות דינמיות בפייתון:</strong>
+        <p>הפונקציה <code>type</code> משמשת ליצירת מחלקות בזמן ריצה בתחביר: <code>type(name, bases_tuple, attributes_dict)</code>. שימושי בירושה דינמית ובבניית מודלים מותאמים אישית מקלט משתמש.</p>
+        <pre class="code" dir="ltr"><code># יצירת תת-מחלקה דינמית שיורשת מ-Book ומכילה שדה מחלקה MainChar
+DynamicBook = type("DetectiveBook", (Book,), {"MainChar": "Sherlock Holmes"})</code></pre>
+      </div>
+
     `
   },
   {
@@ -502,6 +519,53 @@ def start_secure_server(host, port):
                 if data:
                     ssock.sendall(b"ACK: " + data)</code></pre>
       </div>
+      <div class="note-box cheat-sheet">
+        <strong>9. שרת Proxy ומטמון SQLite עם הגבלת קלט ופינוי LRU</strong>
+        <pre class="code" dir="ltr"><code>import socket
+import sqlite3
+import os
+import time
+from dataclasses import dataclass
+
+@dataclass
+class UrlRecord:
+    url: str
+    filename: str
+    last_accessed: float
+
+def evict_oldest_cache(conn: sqlite3.Connection, max_records=10):
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM url_cache")
+    if cursor.fetchone()[0] > max_records:
+        cursor.execute("SELECT id, filename FROM url_cache ORDER BY last_accessed ASC LIMIT 1")
+        row = cursor.fetchone()
+        if row:
+            rec_id, filename = row
+            if os.path.exists(filename):
+                try: os.remove(filename)
+                except OSError: pass
+            cursor.execute("DELETE FROM url_cache WHERE id = ?", (rec_id,))
+            conn.commit()
+
+def run_proxy_server(host="0.0.0.0", port=8080):
+    with sqlite3.connect("cache.db") as conn:
+        conn.execute("CREATE TABLE IF NOT EXISTS url_cache (id INTEGER PRIMARY KEY, url TEXT UNIQUE, filename TEXT, last_accessed REAL)")
+    
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((host, port))
+    server.listen(5)
+    while True:
+        client, _ = server.accept()
+        with client:
+            data = client.recv(4096)
+            if not data or len(data) > 2048:
+                client.sendall(b"HTTP/1.1 400 Bad Request: URL exceeds 2048 limit\\r\\n\\r\\n")
+                continue
+            url = data.decode("utf-8", errors="replace").strip()
+            # חיפוש במטמון ועדכון גישה, או שליפה מבחוץ ושמירה לדיסק
+</code></pre>
+      </div>
+
     `
   },
 // --- יחידה 1: מבוא לתכנות דפנסיבי וביקורת אבטחה ---

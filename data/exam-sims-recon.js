@@ -891,8 +891,229 @@ def put(conn, rec: UrlRecord):
     ],
   },
     {
+    id: "e-2026a1",
+    title: "סימולציה מלאה · 2026א מועד א1 (19.2.2026)",
+    minutes: 180,
+    pick: 3,
+    note: "מועד א1 של סמסטר 2026א (19 בפברואר 2026). חלק א כולל את מפתח התשובות שנבדק מדוחות הסריקה הרשמיים. חלק ב כולל פייתון עיבוד מילים ומטא-פרוגרמינג עם type(), מנגנון ASLR ובדיקתו ב-C/C++, מניפולציית Vtable ב-++C והפנייה לפונקציה פרוצה, ושרת Proxy עם מטמון SQLite ופינוי LRU.",
+    partA: [
+      {
+        id: "a1",
+        prompt: "בהינתן מחלקה ב-++C המקצה זיכרון דינמי ב-Heap, מה מתרחש כאשר לא מוגדר בה בנאי העתקה מפורש ומבוצעת העתקה של אובייקט?",
+        options: [
+          { id: "a", text: "התוכנית לא תעבור הידור (Compilation Error) כיוון ש-C++ אוסרת העתקה של מחלקות עם מצביעים." },
+          { id: "b", text: "המהדר מייצר בנאי העתקה דיפולטי המבצע העתקה שטחית (Memberwise / Shallow Copy), מה שגורם לשני האובייקטים להצביע לאותו מקטע זיכרון ועלול להוביל לשחרור כפול (Double Free)." },
+          { id: "c", text: "המהדר מייצר אוטומטית עותק עמוק (Deep Copy) עבור כל המצביעים באובייקט." },
+          { id: "d", text: "האובייקט המועתק מקבל מצביעי nullptr עבור כל השדות מטיפוס מצביע." },
+        ],
+        answer: "b",
+        hint: "<p>מהי ברירת המחדל של C++ כשלא מגדירים בנאי העתקה, ומה קורה למצביעים (Rule of Three)?</p>",
+        explanation: "<p>ברירת המחדל ב-C++ היא העתקה שטחית (Shallow Copy / Memberwise assignment). שני המופעים מחזיקים באותו מצביע, ובעת הריסתם (Destruction) יופעל <code>delete</code> פעמיים על אותה כתובת זיכרון, מה שמוביל ל-Double Free Crash.</p>",
+      },
+      {
+        id: "a2",
+        prompt: "איזה ממנגנוני ההגנה הבאים נועד למנוע הרצת קוד זדוני שהוזרק למחסנית (Stack), על ידי סימון מקטע המחסנית כלא ניתן להרצה?",
+        options: [
+          { id: "a", text: "ASLR (Address Space Layout Randomization)" },
+          { id: "b", text: "DEP / NX (Data Execution Prevention / No-Execute bit)" },
+          { id: "c", text: "Stack Canaries (-fstack-protector)" },
+          { id: "d", text: "CFI (Control Flow Integrity)" },
+        ],
+        answer: "b",
+        hint: "<p>איזה מנגנון ברמת החומרה/מערכת ההפעלה אוכף את הכלל W^X (Write XOR Execute)?</p>",
+        explanation: "<p>מנגנון <strong>DEP / NX</strong> מסמן דפי זיכרון של נתונים (Stack ו-Heap) כבלתי ניתנים להרצה. אם המעבד מנסה לטעון פקודות לביצוע מתוך המחסנית, נזרק מיד חריג חומרה והתוכנית מופסקת.</p>",
+      },
+      {
+        id: "a3",
+        prompt: "כיצד שפת פייתון מטפלת בהעמסת פונקציות (Function Overloading) בעלות אותו שם אך בעלות חתימת ארגומנטים שונה בתוך אותה מחלקה?",
+        options: [
+          { id: "a", text: "פייתון בוחרת את הפונקציה המתאימה בזמן ריצה לפי כמות וסוג הארגומנטים שהועברו בפועל." },
+          { id: "b", text: "המהדר זורק שגיאת SyntaxError על הגדרה כפולה של פונקציה באותו Scope." },
+          { id: "c", text: "פייתון אינה תומכת בהעמסה סטטית; ההגדרה האחרונה של הפונקציה דורסת לחלוטין את ההגדרות שקדמו לה." },
+          { id: "d", text: "הפונקציות ממוזגות אוטומטית לפונקציה אחת בעלת ארגומנטים אופציונליים (*args)." },
+        ],
+        answer: "c",
+        hint: "<p>זכרו שפייתון היא שפה דינמית שבה שם של פונקציה הוא משתנה המצביע לאובייקט פונקציה במילון המחלקה (<code>__dict__</code>).</p>",
+        explanation: "<p>בפייתון הגדרת פונקציה היא הצבת אובייקט callable לשם במילון. הגדרה שנייה של פונקציה באותו שם פשוט דורסת את ההצבה הקודמת, ולכן אין תמיכה מובנית בהעמסת פונקציות (Overloading) לפי טיפוסי ארגומנטים.</p>",
+      },
+      {
+        id: "a4",
+        prompt: "מהי המטרה המרכזית של מנגנון ASLR (Address Space Layout Randomization)?",
+        options: [
+          { id: "a", text: "להצפין את כל הנתונים הנשמרים במחסנית וב-Heap באמצעות מפתח אקראי." },
+          { id: "b", text: "להגריל את כתובות הבסיס של מקטעי הזיכרון (Stack, Heap, ספריות משותפות וקוד) בכל הרצה מחדש, כדי להקשות על ניבוי כתובות." },
+          { id: "c", text: "למנוע מחיקה בשוגג של קבצים בדיסק על ידי יצירת שמות קבצים אקראיים." },
+          { id: "d", text: "לזהות דריסת זיכרון במחסנית באמצעות בדיקת ערך Canary סודי לפני יציאה מפונקציה." },
+        ],
+        answer: "b",
+        hint: "<p>שימו לב למילים Layout Randomization — מה מוגרל ומתי?</p>",
+        explanation: "<p>מנגנון <strong>ASLR</strong> מגריל את כתובות הבסיס של אזורי הזיכרון בעת טעינת התהליך, כך שתוקף שמבצע גלישת חוצץ לא יוכל לדעת מראש לאיזו כתובת לכוון את מצביע הפקודות (EIP/RIP).</p>",
+      },
+      {
+        id: "a5",
+        prompt: "בפרוטוקול TCP, מדוע נדרש שימוש בפונקציות המרת סדר בתים כגון htons ו-htonl לפני שליחת מספרים בינאריים ברשת?",
+        options: [
+          { id: "a", text: "כדי להצפין את המספרים הבינאריים באמצעות אלגוריתם ערבול בסיסי." },
+          { id: "b", text: "כדי לדחוס את המספרים ולחסוך רוחב פס בתקשורת הנתונים." },
+          { id: "c", text: "כדי להמיר מסדר בתים של המחשב המקומי (Host Byte Order, לרוב Little Endian) לסדר בתים סטנדרטי של הרשת (Network Byte Order, שהוא Big Endian)." },
+          { id: "d", text: "כדי לוודא שהמספרים אינם שליליים ולמנוע Integer Underflow." },
+        ],
+        answer: "c",
+        hint: "<p>מה מסמלות האותיות h, to, n, s/l בפונקציות אלו?</p>",
+        explanation: "<p>פונקציות <code>htons</code> (Host to Network Short) ו-<code>htonl</code> (Host to Network Long) מבטיחות שארכיטקטורות שונות (כגון x86 Little Endian) ישדרו מספרים ברשת בסדר מוסכם וסטנדרטי של Big Endian (Most Significant Byte ראשון).</p>",
+      },
+    ],
+    partB: [
+      {
+        id: "q6",
+        prompt: `
+          <p><strong>שאלה 6 · פייתון: עיבוד נתונים ותכנות מונחה עצמים דינמי (25 נקודות)</strong></p>
+          <p><strong>סעיף א (8 נקודות):</strong> כתבו פונקציה בשם <code>wordp</code> המקבלת מחרוזת (<code>str</code>). הפונקציה תוודא שהקלט מחרוזת (ותזרוק <code>TypeError</code> אם לא), תפצל לפי פסיק, תסנן רק מילים המתחילות ברצף <code>im</code>, תשנה את האות הראשונה לגדולה והשאר לקטנות, ותחזיר רשימה.</p>
+          <p><strong>סעיף ב (9 נקודות):</strong> כתבו פונקציה <code>fix_file</code> הפותחת את <code>Setup.csv</code>, מעבירה כל שורה ל-<code>wordp</code>, כותבת את התוצאה ל-<code>Setup-revised.txt</code>, ומטפלת בשגיאות קובץ מבלי לקרוס.</p>
+          <p><strong>סעיף ג (8 נקודות):</strong> כתבו קטע קוד המדגים יצירת מחלקה דינמית עם <code>type()</code>: הגדירו מחלקה <code>Book</code> עם <code>title, author, year</code>, קלטו מהמשתמש שם למחלקה חדשה ושם דמות ראשית <code>MainChar</code>, וצרו תת-מחלקה דינמית המכילה את <code>MainChar</code> כמשתנה מחלקה.</p>
+        `,
+        rubric: "<p>בדיקת קלט עם isinstance, טיפול בשגיאות קובץ עם בלוק try/except/finally, ותחביר מדויק של type(name, bases, dict).</p>",
+        sampleSolution: `
+<pre class="code" dir="ltr"><code># סעיף א
+def wordp(text: str) -> list[str]:
+    if not isinstance(text, str):
+        raise TypeError("Input must be a string")
+    return [w.strip().capitalize() for w in text.split(',') if w.strip().lower().startswith('im')]
+
+# סעיף ב
+def fix_file():
+    in_name = "Setup.csv"
+    out_name = "Setup-revised.txt"
+    try:
+        with open(in_name, "r", encoding="utf-8") as fin, open(out_name, "w", encoding="utf-8") as fout:
+            for line in fin:
+                s = line.strip()
+                if s:
+                    words = wordp(s)
+                    fout.write(",".join(words) + "\\n")
+    except FileNotFoundError:
+        print(f"Error: {in_name} not found.")
+    except Exception as e:
+        print(f"Error processing files: {e}")
+
+# סעיף ג
+class Book:
+    def __init__(self, title: str, author: str, year: int):
+        self.title = title
+        self.author = author
+        self.year = year
+
+cls_name = input("Class name: ").strip() or "DetectiveBook"
+main_char = input("Main character: ").strip() or "Sherlock"
+DynamicBook = type(cls_name, (Book,), {"MainChar": main_char})
+b = DynamicBook(title="Study in Scarlet", author="Doyle", year=1887)
+</code></pre>
+        `,
+      },
+      {
+        id: "q7",
+        prompt: `
+          <p><strong>שאלה 7 · אבטחת זיכרון ומערכות הפעלה: מנגנון ASLR (25 נקודות)</strong></p>
+          <p><strong>סעיף א (8 נקודות):</strong> הסבירו מהו מנגנון ASLR, על איזו בעיה אבטחתית הוא מנסה להגן, וכיצד הוא עושה זאת.</p>
+          <p><strong>סעיף ב (9 נקודות):</strong> כתבו תוכנית קצרה בשפת C או ++C המדגימה כיצד ניתן לבדוק האם מנגנון ה-ASLR פעיל במערכת ההפעלה עליה התוכנית רצה.</p>
+          <p><strong>סעיף ג (8 נקודות):</strong> ציינו מנגנון הגנה נוסף (מלבד ASLR) המשמש להגנה מפני התקפות זיכרון, או הסבירו חולשה / דרך לעקוף את מנגנון ה-ASLR.</p>
+        `,
+        rubric: "<p>הסבר על הגרלת כתובות בסיס, בדיקת /proc/sys/kernel/randomize_va_space או שינוי כתובת משתנה מחסנית, והסבר על דליפת זיכרון (Memory Leak) / בינארי ללא PIE.</p>",
+        sampleSolution: `
+<pre class="code" dir="ltr"><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// סעיף ב: בדיקת ASLR
+int main() {
+    FILE* f = fopen("/proc/sys/kernel/randomize_va_space", "r");
+    if (f) {
+        int val = 0;
+        if (fscanf(f, "%d", &val) == 1) {
+            printf("ASLR level: %d (%s)\\n", val,
+                   val == 0 ? "Disabled" : (val == 1 ? "Conservative" : "Full ASLR"));
+        }
+        fclose(f);
+    } else {
+        int v = 0;
+        printf("Stack var address: %p\\n", (void*)&v);
+    }
+    return 0;
+}
+</code></pre>
+        `,
+      },
+      {
+        id: "q8",
+        prompt: `
+          <p><strong>שאלה 8 · ++C: מניפולציות זיכרון ו-Vtables (25 נקודות)</strong></p>
+          <p>נתונות שתי מחלקות <code>Base</code> ו-<code>Derived</code> עם פונקציה וירטואלית <code>show()</code>, פונקציה חופשית <code>hacked_function()</code> ושני אובייקטים:</p>
+<pre class="code" dir="ltr"><code>class Base {
+public:
+    virtual void show() { cout &lt;&lt; "Original Function" &lt;&lt; endl; }
+};
+class Derived : public Base {};
+void hacked_function() { cout &lt;&lt; "Hacked Function!" &lt;&lt; endl; }
+int main() {
+    Base* obj = new Derived();
+    Derived* obj2 = new Derived();
+    return 0;
+}
+</code></pre>
+          <p><strong>סעיף א (8 נקודות):</strong> הסבירו כיצד פועל מנגנון הפונקציות הווירטואליות והשוו בין שני האובייקטים.</p>
+          <p><strong>סעיף ב (9 נקודות):</strong> כתבו קוד המשנה את הטבלה של <code>obj</code> כך שהכניסה הראשונה תצביע ל-<code>hacked_function</code>.</p>
+          <p><strong>סעיף ג (8 נקודות):</strong> מה יקרה בפועל לאחר הרצת <code>obj->show();</code>?</p>
+        `,
+        rubric: "<p>הסבר על vptr בראש האובייקט המצביע ל-vtable של המחלקה, בניית טבלה חלופית והצבתה ב-vptr, והסבר שייקרא hacked_function.</p>",
+        sampleSolution: `
+<pre class="code" dir="ltr"><code>// סעיף ב: חטיפת ה-Vtable
+uintptr_t fake_vtable[1];
+fake_vtable[0] = (uintptr_t)hacked_function;
+*(uintptr_t**)obj = fake_vtable;
+
+// סעיף ג:
+obj->show(); // מדפיס: Hacked Function!
+</code></pre>
+        `,
+      },
+      {
+        id: "q9",
+        prompt: `
+          <p><strong>שאלה 9 · פייתון: תקשורת ומסדי נתונים — שרת Proxy ומטמון SQLite (25 נקודות)</strong></p>
+          <p><strong>סעיף א (13 נקודות):</strong> ממשו שרת Proxy המאזין בפורט 8080. השרת יוודא שבקשת ה-URL אינה עולה על 2048 תווים, יבדוק האם ה-URL קיים בטבלת <code>url_cache</code> במסד SQLite, ואם כן ישלח את תוכן הקובץ השמור; אם לא, יביא את התוכן, ישמור לקובץ חדש, יעדכן את המסד עם <code>dataclass</code> בשם <code>UrlRecord</code> וישלח ללקוח.</p>
+          <p><strong>סעיף ב (12 נקודות):</strong> ממשו פונקציה לניהול גודל המטמון. כאשר מספר הרשומות עולה על 10, יש למצוא את הרשומה הישנה ביותר באמצעות שאילתת SQL, למחוק אותה מהמסד, למחוק את הקובץ המתאים בדיסק עם <code>os.remove</code> ולהקפיד על מניעת הזרקת SQL.</p>
+        `,
+        rubric: "<p>אימות גודל קלט עד 2048 תווים, שימוש ב-dataclass, שאילתות פרמטריות מוגנות, ומחיקה בטוחה של קבצים מדיסק.</p>",
+        sampleSolution: `
+<pre class="code" dir="ltr"><code>import socket, sqlite3, os, time, hashlib
+from dataclasses import dataclass
+
+@dataclass
+class UrlRecord:
+    url: str
+    filename: str
+    last_accessed: float
+
+def evict_oldest_cache(conn, max_records=10):
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM url_cache")
+    if c.fetchone()[0] > max_records:
+        c.execute("SELECT id, filename FROM url_cache ORDER BY last_accessed ASC LIMIT 1")
+        row = c.fetchone()
+        if row:
+            rec_id, fname = row
+            if os.path.exists(fname):
+                try: os.remove(fname)
+                except OSError: pass
+            c.execute("DELETE FROM url_cache WHERE id = ?", (rec_id,))
+            conn.commit()
+</code></pre>
+        `,
+      },
+    ],
+  },
+  {
     id: "e-2026a",
-    title: "בחינה רשמית מלאה · 2026א מועד 91 (שאלון 534)",
+    title: "בחינה מקורית מלאה · 2026א מועד א2 (מועד 91, שאלון 534)",
     minutes: 180,
     pick: 3,
     note: "שאלון 534 (מועד 91 - 26 בפברואר 2026) מלא ומדויק: אופרטור טרינארי ב-++C, הזרקת SQL עם %s בפייתון, הגנת ASLR מול ROP, הגדרת צימוד (Coupling), טיפוס type(x) בפייתון, פייתון Book ו-BookRevised מקובץ עם שגיאות, פולימורפיזם ודריסת vtable ב-++C, לקוח Linux C++ שולח קובץ בצ'אנקים עם כותרת big-endian ומסד phrases.txt ב-SQLite, ועץ חיפוש בינארי BTree עם Double-Free.",
