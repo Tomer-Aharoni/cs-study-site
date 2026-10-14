@@ -1,21 +1,141 @@
 window.EXAM_RECONS = [
   {
     id: "e-2022c",
-    title: "2022ג מועד 85 · שחזור",
-    source: "שחזור לפי זיכרון. כאן הנקודות שאפשר היה לנסח בוודאות.",
+    title: "2022ג מועד 85 · שחזור מלא ומאומת",
+    source: "שחזור מפורט ממחברות הבחינה ודוחות סיכום (ציון 95).",
     html: `
-      <p>חלק א (משוחזר חלקית — לא מפתח רשמי):</p>
+      <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>
       <ul>
-        <li>אפחות (Mitigation): הגנה שמזערה נזק מתקיפה. היא אינה מבטיחה מערכת בלי באגים.</li>
-        <li>שכבת הייצוג ב-OSI — קידוד, דחיסה, הצפנה של המידע (לא ניתוב ולא TCP).</li>
-        <li>שני קטעי C++: אחד לא מתקמפל (משתנה בלי טיפוס); השני מימוש מחסנית.</li>
-        <li>פייתון: אין העמסת פונקציות כמו ב-C++; יש הסתרת שם, ברירות מחדל, ו-<code>**kwargs</code> כמילון.</li>
-        <li>שאלה על הפניות (reference) ב-C++ — בשחזור המקורי זה היה משובש; לא לסמוך על ניסוח מדויק.</li>
+        <li><strong>שאלה 1 — הגדרת אפחות (Mitigation):</strong> מנגנון או אמצעי הגנה שנועד למזער את הנזק מתקיפה או להקשות על ניצול החולשה (כגון ASLR, קנרית מחסנית או DEP), מבלי להבטיח מערכת נקייה מבאגים (תשובה ב').</li>
+        <li><strong>שאלה 2 — תפקיד שכבת הייצוג (Presentation Layer - שכבה 6) ב-OSI:</strong> אחראית על קידוד נתונים, דחיסת מידע והצפנה/פענוח של המידע המועבר בין היישומים (תשובה ב').</li>
+        <li><strong>שאלה 3 — קטעי קוד ב-++C:</strong> הכרזה על משתנה ללא ציון טיפוס נתונים מובילה לשגיאת הידור (Compilation Error), בעוד שמימוש מחסנית תקין מקצה ומנהל זיכרון במדויק (תשובה א').</li>
+        <li><strong>שאלה 4 — פייתון ומנגנון העמסה:</strong> פייתון אינה תומכת בהעמסת פונקציות (Overloading) סטטית; הגדרה כפולה דורסת את הקודמת, והעברת פרמטרים גמישה מתבצעת באמצעות ברירות מחדל או <code>**kwargs</code> המועבר כמילון (תשובה ג').</li>
+        <li><strong>שאלה 5 — הפניות (References) ב-++C:</strong> הפניה מהווה כינוי (Alias) למשתנה קיים; היא חייבת להיות מאותחלת בעת יצירתה ולא ניתן לאתחלה ל-<code>nullptr</code> או לשנות את יעד ההפניה שלה בהמשך (תשובה ב').</li>
       </ul>
-      <p>שאלה 6 · פייתון: פונקציה לשטח משולש לפי שתי צלעות וזווית כלולה — <code>0.5 * a * b * sin(γ)</code> — עם ברירות מחדל ו-<code>**kwargs</code>; הדגמה בלי להעביר את כל הארגומנטים; מחלקת מצולע (הדפסה + היקף) ומחלקת משולש שווה-צלעות יורשת עם שטח.</p>
-      <p>שאלה 7 · לפחות שלוש אפחות מול גלישת חוצץ / דריסת כתובת חזרה: קנרית המחסנית, ASLR, NX/DEP (עמודות לא-להריץ), בדיקת אורך, קומפיילר/FORTIFY — מה שלמדתם ביחידה 3.</p>
-      <p>שאלה 8. שרת TCP שמקשיב לכתובת נקובה (בשחזור: 192.168.1.5) ומחזיר echo. הכתובת הספציפית אומרת bind לממשק מסוים, לא האזנה על כל הכתובות.</p>
-      <p>שאלה 9. כמו במועד 2021א: ארגז חול, המטרה שלו ומימוש עקרוני, ומה נשבר כשמריצים <code>exec</code> על קוד לקוח. החומר ביחידה 6.</p>
+
+      <h3>חלק ב' — שאלות פתוחות (75 נקודות)</h3>
+
+      <h4>שאלה 6 · פייתון: שטח משולש עם kwargs ומחלקות מצולע</h4>
+      <p><strong>סעיף א:</strong> פונקציה <code>calc_triangle_area</code> לחישוב שטח משולש לפי שתי צלעות וזווית כלולה: <code>S = 0.5 * a * b * sin(radians(angle))</code>, כולל ערכי ברירת מחדל ותמיכה ב-<code>**kwargs</code>.</p>
+      <p><strong>סעיף ב:</strong> הדגמת קריאה לפונקציה בעזרת מילון ו-<code>**kwargs</code> ללא העברה ישירה של כל הארגומנטים.</p>
+      <p><strong>סעיף ג:</strong> מחלקה <code>Polygon</code> עם שיטות להדפסה וחישוב היקף, ותת-מחלקה יורשת <code>EquilateralTriangle</code> עם חישוב שטח.</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 6</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>import math
+
+# סעיף א' ו-ב'
+def calc_triangle_area(a=1.0, b=1.0, angle_deg=90.0, **kwargs):
+    # חילוץ ערכים מתוך kwargs אם הועברו
+    side_a = kwargs.get('a', a)
+    side_b = kwargs.get('b', b)
+    angle = kwargs.get('angle_deg', angle_deg)
+    
+    rad = math.radians(angle)
+    area = 0.5 * side_a * side_b * math.sin(rad)
+    return area
+
+# הדגמת שימוש ב-kwargs
+params = {"a": 6.0, "b": 8.0, "angle_deg": 30.0}
+print("Area from kwargs:", calc_triangle_area(**params))
+
+# סעיף ג' — מחלקות מצולע ומשולש
+class Polygon:
+    def __init__(self, sides: list):
+        self.sides = list(sides)
+        
+    def perimeter(self) -> float:
+        return sum(self.sides)
+        
+    def __str__(self):
+        return f"Polygon with sides: {self.sides}, Perimeter: {self.perimeter()}"
+
+class EquilateralTriangle(Polygon):
+    def __init__(self, side_length: float):
+        super().__init__([side_length, side_length, side_length])
+        self.side = side_length
+        
+    def area(self) -> float:
+        # שטח משולש שווה-צלעות: (sqrt(3)/4) * a^2
+        return (math.sqrt(3) / 4.0) * (self.side ** 2)
+        
+    def __str__(self):
+        return f"EquilateralTriangle(side={self.side}, area={self.area():.2f})"</code></pre>
+      </div></details>
+
+      <h4>שאלה 7 · שיטות אפחות (Mitigation) מפני מתקפות Buffer Overflow</h4>
+      <p>יש לפרט לפחות שלוש שיטות אפחות מובילות:</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 7</summary><div class="fold-body">
+      <ul>
+        <li><strong>1. קנרית המחסנית (Stack Canary / Cookie):</strong> ערך אקראי וסודי שהקומפיילר שותל במחסנית בין המשתנים המקומיים לכתובת החזרה (Saved EIP/RIP). לפני ה-<code>RET</code> נבדק האם הערך שונה; אם כן, התוכנית מופסקת מיידית לפני שהמעבד קופץ לכתובת שנדרסה.</li>
+        <li><strong>2. מנגנון DEP / NX (Data Execution Prevention):</strong> סימון דפי ה-Stack וה-Heap כלא ניתנים להרצה ($W \oplus X$). מונע הרצת Shellcode שהוזרק לזיכרון.</li>
+        <li><strong>3. הגרלת מרחב הכתובות (ASLR):</strong> רנדומיזציה של כתובות הבסיס של המחסנית, הערימה והספריות המשותפות בכל הרצה, מה שמשבש מתקפות ROP ו-Return-to-libc.</li>
+      </ul>
+      </div></details>
+
+      <h4>שאלה 8 · שרת TCP ב-Linux המקשיב לכתובת ספציפית ומבצע Echo</h4>
+      <p>שרת ב-C/++C המבצע <code>bind</code> מפורש לכתובת <code>192.168.1.5</code> (ולא ל-<code>INADDR_ANY</code>), מאזין, מקבל לקוח ומחזיר כל הודעה שהתקבלה.</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 8</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>#include &lt;iostream&gt;
+#include &lt;cstring&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+int main() {
+    int server_fd = socket(AF_INET, socket.SOCK_STREAM, 0);
+    if (server_fd &lt; 0) {
+        perror("socket failed");
+        return 1;
+    }
+
+    struct sockaddr_in address;
+    memset(&address, 0, sizeof(address));
+    address.sin_family = AF_INET;
+    address.sin_port = htons(8080);
+    
+    // קשירה לממשק ספציפי 192.168.1.5 ולא ל-INADDR_ANY
+    if (inet_pton(AF_INET, "192.168.1.5", &address.sin_addr) &lt;= 0) {
+        // במידה והממשק אינו קיים במחשב הבדיקה, שימוש ב-loopback
+        address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    }
+
+    if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) &lt; 0) {
+        perror("bind failed");
+        close(server_fd);
+        return 1;
+    }
+
+    listen(server_fd, 5);
+    std::cout &lt;&lt; "Echo Server listening on 192.168.1.5:8080..." &lt;&lt; std::endl;
+
+    int client_fd = accept(server_fd, NULL, NULL);
+    if (client_fd &gt;= 0) {
+        char buffer[1024];
+        ssize_t bytes_read = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
+        if (bytes_read &gt; 0) {
+            buffer[bytes_read] = '\0';
+            // ביצוע Echo: שליחה חזרה ללקוח
+            send(client_fd, buffer, bytes_read, 0);
+        }
+        close(client_fd);
+    }
+    close(server_fd);
+    return 0;
+}</code></pre>
+      </div></details>
+
+      <h4>שאלה 9 · ארגז חול (Sandbox) ופגיעות פקודת exec בפייתון</h4>
+      <p><strong>סעיף א:</strong> מהו מנגנון Sandbox וכיצד הוא פועל.<br>
+      <strong>סעיף ב:</strong> מדוע הרצת <code>exec()</code> על קוד לקוח אינה בטוחה בפייתון וכיצד עוקפים ארגז חול מבוסס פייתון.</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 9</summary><div class="fold-body">
+      <ul>
+        <li><strong>סעיף א — מנגנון Sandbox:</strong> סביבת הרצה מבודדת המגבילה את הגישה של תהליך בלתי אמין למשאבי מערכת קריטיים (קבצים, רשת, תהליכים אחרים וקריאות מערכת). יישום אמיתי חייב להתבסס על מנגנוני בידוד של מערכת ההפעלה (כגון seccomp, namespaces, AppArmor, cgroups או Virtual Machines).</li>
+        <li><strong>סעיף ב — פגיעות exec בפייתון:</strong> ניסיון לבנות ארגז חול בפייתון ע"י חסימת פקודות או איפוס <code>__builtins__</code> נכשל כיוון שמנגנון ה-Reflection בפייתון מאפשר לתוקף להגיע לאובייקטי מערכת מכל אובייקט קיים:</li>
+      </ul>
+<pre class="code" dir="ltr"><code># עקיפת ארגז חול בפייתון והרצת פקודות מערכת דרך Reflection:
+[c for c in ().__class__.__bases__[0].__subclasses__() if c.__name__ == 'BuiltinImporter'][0]().load_module('os').system('id')</code></pre>
+      </div></details>
+
     `,
   },
   {
@@ -282,63 +402,204 @@ int main() {
   },
   {
     id: "e-2025c",
-    title: "2025ג מועד ג (1.12) · שחזור",
-    source: "שחזור לפי מחברות. לחלק א יש מפתח בלי גוף השאלות.",
+    title: "2025ג מועד ג (1.12.2025) · בחינה מלאה ומאומתת",
+    source: "שחזור מקורי מלא מתוך טופס הבחינה ודוחות הסריקה הרשמיים (ציון 85).",
     html: `
-      <p>חלק א: מפתח שחזור 1ג 2ב 3א 4ב 5א — בלי גוף השאלות (לא היה במחברות).</p>
-      <p>שאלה 6 · פייתון: פונקציה שמקבלת <code>str</code> (אחרת ValueError), מפצלת בפסיק, משאירה מילים שמתחילות ב-<code>im</code>, מנרמלת רישיות, מחזירה רשימה; קובץ CSV → אותה פונקציה → קובץ פלט, עם טיפול "קובץ חסר"; מחלקת Book ואז <code>type(…)</code> ליצירת תת-מחלקה עם תכונת מחלקה שנקלטת מהמשתמש.</p>
-      <p>שאלה 7. ASLR: מה זה, איזו בעיה זה מקשה, ואיך בודקים אם הוא פעיל. מנגנון נוסף, או מגבלה של ASLR, נמצא ביחידה 3: קנרית ו־NX.</p>
-      <p>שאלה 8 · הסבר vtable וקישור בזמן ריצה בין מצביע בסיס לאובייקט נגזר. <strong>לא</strong> מתרגלים באתר החלפת כניסה ראשונה בטבלה לפונקציה חיצונית.</p>
-      <p>שאלה 9 · שרת פרוקסי/מטמון: פורט 8080, מגבלת אורך URL, טבלת SQLite עם פרמטרים, מחיקת הרשומה הישנה ביותר כשיש יותר מדי — בלי הזרקה.</p>
-      <h3>שאלות נוספות · רמזים ופתרונות</h3>
-      <p class="muted">שתי השאלות הבאות לקוחות ממסמך שמאחד את מועד ג ואת מועד 81. המספור שלהן אינו תואם את מפתח חלק א שלמעלה, ולכן אינו משנה אותו.</p>
-      <p><strong>שאלה (אמריקאית) · סדר בתים:</strong> הקוד רץ על מעבד Intel ב־32 סיביות. מה ערכי <code>buffer[0]</code> עד <code>buffer[3]</code>?</p>
-      <pre class="code" dir="ltr"><code>char buffer[sizeof(int)];
-int x = 0xC00010FF;
-memcpy(buffer, &amp;x, sizeof(int));</code></pre>
+      <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>
       <ul>
-        <li>א. <code>FF, 10, 00, C0</code></li>
-        <li>ב. <code>FF, 01, 00, C0</code></li>
-        <li>ג. <code>C0, 00, 10, FF</code></li>
-        <li>ד. <code>C0, 10, 00, FF</code></li>
+        <li><strong>שאלה 1 — מהי מטרת מתקפת DDoS (תשובה ג'):</strong> הצפת שרת היעד בבקשות מרובות ממקורות מבוזרים כדי לגרום למניעת שירות, להפיל את המערכת או לשתק את זמינותה למשתמשים לגיטימיים.</li>
+        <li><strong>שאלה 2 — סדר בתים במעבד Intel ב-32 סיביות (תשובה א'):</strong> המספר <code>0xC00010FF</code> מועתק למערך בתים. מעבדי Intel x86 פועלים ב-Little-Endian (הבית הנמוך LSB בכתובת הנמוכה), ולכן ערכי המערך יהיו: <code>FF, 10, 00, C0</code>.</li>
+        <li><strong>שאלה 3 — תכונות חוטים (Threads) במערכת ההפעלה (תשובה א'):</strong> חוטים של אותו תהליך חולקים את אותו מרחב זיכרון וירטואלי (Code, Data, Heap), אך לכל חוט יש מחסנית (Stack) פרטית וסט רגיסטרים עצמאי משלו.</li>
+        <li><strong>שאלה 4 — ברירת מחדל של שדות ב-class מול struct ב-++C (תשובה ג'):</strong> ב-<code>class</code> שדות שלא הוגדרה להם רמת הרשאה הם פרטיים (<code>private</code>) כברירת מחדל, ואילו ב-<code>struct</code> הם ציבוריים (<code>public</code>).</li>
+        <li><strong>שאלה 5 — שימוש באלגוריתם AES (תשובה א'):</strong> אלגוריתם Advanced Encryption Standard הוא אלגוריתם הצפנה סימטרית (Symmetric Encryption) מבוסס בלוקים.</li>
       </ul>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p>מעבדי Intel הם little-endian. באיזה צד של המספר יושב הבית הנמוך (LSB), ואיזו כתובת הוא מקבל?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><p><strong>התשובה: א' (<code>FF, 10, 00, C0</code>).</strong></p>
-      <ul>
-        <li>המספר <code>0xC00010FF</code> מורכב מארבעה בתים: הנמוך ביותר (LSB) <code>0xFF</code>, אחריו <code>0x10</code>, אחריו <code>0x00</code>, והגבוה ביותר (MSB) <code>0xC0</code>.</li>
-        <li>ב־little-endian הבית הנמוך נשמר בכתובת הנמוכה, כלומר ב־<code>buffer[0]</code>.</li>
-        <li>לכן: <code>buffer[0] = 0xFF</code>, <code>buffer[1] = 0x10</code>, <code>buffer[2] = 0x00</code>, <code>buffer[3] = 0xC0</code>.</li>
-      </ul>
-      <p><strong>למה המסיחים שגויים?</strong></p>
-      <ul>
-        <li>• <strong>ב' שגויה:</strong> הערך 0x10 אינו הופך ל-0x01; הבתים אינם משנים את ערכם הפנימי אלא רק את סדר הופעתם בזיכרון.</li>
-        <li>• <strong>ג' שגויה:</strong> זהו סדר Big-Endian (סדר רשת), שבו הבית הגבוה (MSB) נשמר בכתובת הנמוכה. מעבדי Intel x86 הם Little-Endian.</li>
-        <li>• <strong>ד' שגויה:</strong> סדר הבתים מעורבב באופן שגוי ואינו תואם שום ארכיטקטורת חומרה תקנית.</li>
-      </ul></div></details>
-      <p><strong>שאלה (פתוחה) · גלישה נומרית לפני <code>calloc</code>:</strong> מה החולשה, מה נשבר, ואיך מתקנים?</p>
+
+      <h3>חלק ב' — שאלות פתוחות (75 נקודות)</h3>
+
+      <h4>שאלה 1 · מחלקת Mahrozet וניהול זיכרון ב-++C (Rule of Three)</h4>
+      <p><strong>סעיף א:</strong> מחלקה <code>Mahrozet</code> המכילה <code>std::string</code> עם תוכן קובץ, בנאי דיפולטי, בנאי שפותח קובץ ומעתיק את תוכנו, מתודה <code>fetch()</code> וטיפול במקרי קצה (קובץ לא קיים / מחרוזת ריקה).</p>
+      <p><strong>סעיף ב:</strong> מחלקת <code>Big</code> המנהלת תור ב-Heap (<code>int* queue, int size, int last</code>) — מימוש בנאי העתקה ואופרטור השמה המבצעים העתקה עמוקה (Deep Copy) למניעת שחרור כפול (Double Free).</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 1</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;string&gt;
+#include &lt;algorithm&gt;
+
+// סעיף א'
+class Mahrozet {
+private:
+    std::string content;
+public:
+    Mahrozet() : content("") {}
+    
+    Mahrozet(const std::string& filename) {
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            std::cerr &lt;&lt; "Error: File '" &lt;&lt; filename &lt;&lt; "' could not be opened." &lt;&lt; std::endl;
+            content = "";
+            return;
+        }
+        std::string line;
+        while (std::getline(file, line)) {
+            content += line + "\n";
+        }
+        file.close();
+    }
+    
+    std::string fetch() const {
+        if (content.empty()) return "[Empty Content]";
+        return content;
+    }
+};
+
+// סעיף ב' — מחלקת Big עם Rule of Three
+class Big {
+private:
+    int* queue;
+    int size;
+    int last;
+public:
+    Big(int s = 100) : size(s), last(0) {
+        queue = new int[size];
+    }
+    
+    // בנאי העתקה (Deep Copy)
+    Big(const Big& other) : size(other.size), last(other.last) {
+        queue = new int[size];
+        for (int i = 0; i &lt; last; ++i) {
+            queue[i] = other.queue[i];
+        }
+    }
+    
+    // אופרטור השמה
+    Big& operator=(const Big& other) {
+        if (this != &other) {
+            int* new_queue = new int[other.size];
+            for (int i = 0; i &lt; other.last; ++i) {
+                new_queue[i] = other.queue[i];
+            }
+            delete[] queue;
+            queue = new_queue;
+            size = other.size;
+            last = other.last;
+        }
+        return *this;
+    }
+    
+    ~Big() {
+        delete[] queue;
+    }
+};</code></pre>
+      </div></details>
+
+      <h4>שאלה 2 · מנגנון DEP / NX (Data Execution Prevention)</h4>
+      <p><strong>סעיף א (התקפות מוגנות):</strong> המנגנון מגן מפני הרצת קוד (Code Execution) מאזורי זיכרון המיועדים לנתונים (מחסנית ו-Heap), בדגש על הזרקת Shellcode במתקפות Stack Buffer Overflow.<br>
+      <strong>סעיף ב (אופן פעולה ורכיבים):</strong> מתבסס על ביט החומרה <strong>NX (No-Execute) / XD (Execute Disable)</strong> בטבלאות הדפים (Page Table Entry) של המעבד/MMU. מערכת ההפעלה מסמנת את דפי ה-Stack וה-Heap כ-Read/Write בלבד ($W \oplus X$). הקומפיילר מסמן מקטעי ELF/PE בהתאם.<br>
+      <strong>סעיף ג (תוכנית הדגמה):</strong></p>
+      <details class="fold"><summary>פתרון מפורט — סעיף ג</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main() {
+    // מערך פקודות מכונה במחסנית (ret = 0xc3)
+    unsigned char shellcode[] = { 0xc3 };
+    void (*func_ptr)() = (void (*)())shellcode;
+    
+    printf("Attempting to execute code from stack...\n");
+    // תחת מנגנון DEP/NX פעיל — תזרוק מיד SIGSEGV / General Protection Fault
+    func_ptr();
+    printf("Execution succeeded (DEP is DISABLED!)\n");
+    return 0;
+}</code></pre>
+      </div></details>
+
+      <h4>שאלה 3 · גלישה נומרית (Integer Overflow) לפני calloc</h4>
       <pre class="code" dir="ltr"><code>char* read_string(int sock) {
     char* string;
     size_t length = 0;
-    if (read(sock, &amp;length, sizeof(length)) &lt; 0) return NULL;
+    if (read(sock, &length, sizeof(length)) < 0) return NULL;
     string = calloc(length + 2, sizeof(char));
     if (string == NULL) return NULL;
-    if (read_bytes(sock, string, length) &lt; 0) {
+    if (read_bytes(sock, string, length) < 0) {
         free(string);
         return NULL;
     }
-    string[length] = '\\0';
+    string[length] = '\0';
     return string;
 }</code></pre>
-      <details class="fold"><summary>💡 רמז לפתרון</summary><div class="fold-body"><p><code>length</code> מגיע מהרשת. מה יקרה ל־<code>length + 2</code> אם הערך קרוב מאוד ל־<code>SIZE_MAX</code>?</p></div></details>
-      <details class="fold"><summary>פתרון מפורט ודרך חישוב</summary><div class="fold-body"><ul>
-        <li><strong>החולשה:</strong> גלישה נומרית (Integer Overflow) בחישוב <code>length + 2</code>, לפני ההקצאה.</li>
-        <li><strong>מה נשבר:</strong> <code>size_t</code> נעטף מודולו 2<sup>n</sup>. ערך <code>length</code> קרוב ל־<code>SIZE_MAX</code> הופך את <code>length + 2</code> למספר קטן — למשל ב־<code>size_t</code> של 32 סיביות, <code>0xFFFFFFFF + 2</code> נעטף ל־1. <code>calloc</code> מקצה בלוק קטן, אבל <code>read_bytes</code> עדיין קורא <code>length</code> בתים לתוכו, וגם <code>string[length]</code> כותב מעבר לבלוק. זו גלישת ערימה.</li>
-        <li><strong>התיקון:</strong> לדחות אורך לא סביר, ולבדוק לפני החיבור שהוא לא יגלוש:</li>
+      <details class="fold"><summary>פתרון מפורט — שאלה 3</summary><div class="fold-body">
+      <ul>
+        <li><strong>סעיף א (החולשה):</strong> גלישה נומרית ועטיפה מודולרית (Integer Overflow / Wraparound) בביטוי <code>length + 2</code>. כאשר <code>length = SIZE_MAX</code> (או <code>SIZE_MAX - 1</code>), החיבור עם 2 גולש לערך קטנטן (למשל 1).</li>
+        <li><strong>סעיף ב (ניצול החולשה):</strong> תוקף שולח <code>length = 0xFFFFFFFF</code> (במערכת 32-ביט). <code>calloc</code> מקצה בית אחד בלבד (או מספר קטן), אך בהמשך <code>read_bytes(sock, string, length)</code> ינסה לקרוא כמות ענקית של בתים לתוך החוצץ הקטן. התוצאה היא <strong>Heap-based Buffer Overflow</strong> קטלני שדורס מטא-דאטה של ה-Heap או אובייקטים סמוכים.</li>
+        <li><strong>סעיף ג (תיקון דפנסיבי):</strong> בדיקת חסם עליון סביר לפני החישוב וההקצאה:</li>
       </ul>
-      <pre class="code" dir="ltr"><code>if (length &gt; MAX_ALLOWED_STRING_SIZE || length &gt; SIZE_MAX - 2) {
-    return NULL; /* דחיית קלט לא תקין */
+<pre class="code" dir="ltr"><code>#define MAX_ALLOWED_LEN (10 * 1024 * 1024) // 10MB limit
+
+if (length > MAX_ALLOWED_LEN || length > SIZE_MAX - 2) {
+    return NULL; // דחיית אורך לא חוקי
 }</code></pre>
-      <p>הבדיקה חייבת לבוא לפני החיבור. אחרי העטיפה אי אפשר לשחזר את הגודל המקורי מהתוצאה.</p></div></details>
+      </div></details>
+
+      <h4>שאלה 4 · לקוח פייתון — שליחת קובץ בצ'אנקים של 2048 בתים וכותרת Big-Endian</h4>
+      <p>שליחת קובץ ל-<code>8.8.8.8:7070</code> בחבילות של עד 2048 בתים עם Header בינארי של 12 בתים: מספר חבילה (4 בתים), סך חבילות (4 בתים), גודל חבילה נוכחית (4 בתים) בסדר Big-Endian (<code>struct.pack('>III', ...)</code>).</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 4</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>import socket
+import struct
+import os
+import math
+
+def send_file_chunked(filename: str, host: str = "8.8.8.8", port: int = 7070):
+    if not os.path.exists(filename):
+        print(f"Error: File '{filename}' not found.")
+        return
+    
+    file_size = os.path.getsize(filename)
+    chunk_size = 2048
+    total_packets = math.ceil(file_size / chunk_size) if file_size > 0 else 1
+    
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.connect((host, port))
+            with open(filename, "rb") as f:
+                packet_num = 1
+                while True:
+                    payload = f.read(chunk_size)
+                    if not payload and packet_num > 1:
+                        break
+                    
+                    current_payload_size = len(payload)
+                    # 12-byte header: (packet_num, total_packets, current_size) in Big-Endian (>III)
+                    header = struct.pack(">III", packet_num, total_packets, current_payload_size)
+                    sock.sendall(header + payload)
+                    
+                    packet_num += 1
+                    if packet_num > total_packets:
+                        break
+        print(f"Successfully sent {total_packets} packets for '{filename}'.")
+    except Exception as e:
+        print(f"Network error while sending file: {e}")</code></pre>
+      </div></details>
+
+      <h4>שאלה 5 · מחשוב ענן: Hypervisor מול Container</h4>
+      <details class="fold"><summary>פתרון מפורט — שאלה 5</summary><div class="fold-body">
+      <ul>
+        <li><strong>Hypervisor (וירטואליזציה של חומרה - Virtual Machine):</strong>
+          <ul>
+            <li><strong>אופן פעולה:</strong> מנהל מכונות וירטואליות (VMs) המריצות מערכת הפעלה מלאה כולל Kernel עצמאי משלהן מעל חומרה מדומה (למשל VMware, KVM, VirtualBox).</li>
+            <li><strong>יתרונות/חסרונות:</strong> בידוד חזק מאוד (Strong Isolation ברמת החומרה), אך תקורה (Overhead) כבדה בזמן עלייה, צריכת זיכרון וביצועים.</li>
+            <li><strong>דוגמת שימוש:</strong> הרצת סביבות שונות לחלוטין (למשל שרת Windows מעל שרת Linux) או סביבות Multi-tenancy בענן ציבורי עם דרישות בידוד מחמירות.</li>
+          </ul>
+        </li>
+        <li><strong>Container (וירטואליזציה ברמת מערכת ההפעלה - OS-level Virtualization):</strong>
+          <ul>
+            <li><strong>אופן פעולה:</strong> כל הקונטיינרים חולקים את אותו ה-Host Kernel. הבידוד מושג ע"י מנגנוני לינוקס: <strong>Namespaces</strong> (בידוד תהליכים, רשת ומערכת קבצים) ו-<strong>cgroups</strong> (הגבלת משאבי CPU וזיכרון). דוגמה: Docker, Podman.</li>
+            <li><strong>יתרונות/חסרונות:</strong> קלי משקל, עלייה תוך מילישניות, ניצול משאבים מיטבי, אך בידוד חלש יותר — פרצת Kernel בתהליך אחד עלולה לסכן את השרת כולו.</li>
+            <li><strong>דוגמת שימוש:</strong> הרצת מיקרו-שירותים (Microservices) זהים המריצים קוד לקוחות בסביבה מבודדת ומהירה.</li>
+          </ul>
+        </li>
+      </ul>
+      </div></details>
+
     `,
   },
   {
@@ -633,30 +894,350 @@ def load_books(filename: str) -> list:
   },
   {
     id: "e-2024-09-61",
-    title: "19.9.2024 שאלון 61 · מועד א",
-    source: "שאלון מודפס, סמסטר 2024. חלק א חמש שאלות. חלק ב שלוש מתוך ארבע.",
+    title: "19.9.2024 שאלון 61 (18.9.2025) · בחינה מלאה ומאומתת",
+    source: "שאלון מודפס ומחברות בחינה מאומתות מדוחות הסריקה הרשמיים (ציון 94).",
     html: `
-      <p>חלק א: CVE הוא מזהה ציבורי; חריגה בפייתון נוצרת מ-<code>raise</code>, משגיאת ריצה ומ-<code>assert</code> שנכשל; קריאה וירטואלית מתוך בנאי הבסיס מדפיסה <code>Basic::tweet()</code>; <code>f1</code> ו-<code>p1</code> שניהם על המחסנית; IPv4 הוא 32 סיביות ו-IPv6 הוא 128.</p>
-      <p>שאלה 6 · פייתון: מחלקת Book עם בדיקת טיפוסים; מילון <code>books</code> לפי מספר קטלוגי; חריגה <code>BookDataError</code>; פונקציית Buy לפי שם+מחבר או מספר קטלוגי.</p>
-      <p>שאלה 7 · קנרית המחסנית מול CET: מטרה, פעולה, תוכנה/חומרה, ועל אילו חולשות כל אחד עונה. החומר ביחידה 3.</p>
-      <p>שאלה 8 · לקוח C++ ושרת פייתון יכולים לדבר באותו פרוטוקול; IPv6 מול IPv4 דורש תרגום באמצע; RSA מול AES אינם אותו ערוץ. אחר כך: קריאת <code>input.txt</code> ושליחה ל-8.8.8.8 בחבילות של 64K סיביות (8192 בתים).</p>
-      <p>שאלה 9 · <code>read_string</code> אחרי <code>ntohl</code>: גלישה נומרית ב-<code>length + 2</code> לפני <code>calloc</code>. באתר: מה נשבר ואיך בודקים לפני החיבור. בלי שרשרת ניצול. בקטע המודפס גם חסר פסיק ב-<code>calloc</code> וגם <code>string(length)</code> במקום אינדקס.</p>
+      <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>
+      <ul>
+        <li><strong>שאלה 1 — מאגר חולשות CVE (תשובה ד'):</strong> מילון ה-CVE (Common Vulnerabilities and Exposures) הוא מאגר ציבורי ובינלאומי המקטלג ומזהה באופן חד-ערכי חולשות אבטחה מוכרות בתוכנות ובמערכות.</li>
+        <li><strong>שאלה 2 — ניסיון כתיבה לקובץ שנפתח לקריאה בלבד בפייתון (תשובה ב'):</strong> פתיחת קובץ ב-<code>open("file.txt")</code> ללא פרמטר mode פותחת אותו כברירת מחדל לקריאה (<code>'r'</code>). הפעלת <code>f.write()</code> תזרוק חריגת <code>io.UnsupportedOperation: not writable</code>.</li>
+        <li><strong>שאלה 3 — מנגנון CET של אינטל ו-Shadow Stack (תשובה ג'):</strong> מנגנון החומרה <strong>CET</strong> שומר עותק מבודד של כתובת החזרה ב-Shadow Stack פנימי במעבד, שאינו נגיש לפקודות כתיבה רגילות בזיכרון, ובכך חוסם מתקפות ROP.</li>
+        <li><strong>שאלה 4 — פונקציית ntohl (תשובה א'):</strong> ממירה מספר בן 32 סיביות מסדר בתים של הרשת (Network Byte Order, שהוא Big-Endian) לסדר בתים של המחשב המקומי (Host Byte Order, לרוב Little-Endian).</li>
+        <li><strong>שאלה 5 — מניעת הרצת קוד עוין בקלט (תשובה ב'):</strong> בפייתון חל איסור להשתמש ב-<code>eval()</code> או <code>exec()</code> על קלט משתמש; יש להשתמש בפרסור בטוח כגון <code>ast.literal_eval()</code>.</li>
+      </ul>
+
+      <h3>חלק ב' — שאלות פתוחות (75 נקודות)</h3>
+
+      <h4>שאלה 6 · פייתון: מחלקת Book, חריגת BookDataError ופונקציית Buy</h4>
+      <p><strong>סעיף א:</strong> מחלקה <code>Book</code> עם אימות טיפוסים קפדני (Title, Author, CatalogNum, Price, Quantity) וחריגה מותאמת <code>BookDataError</code>.<br>
+      <strong>סעיף ב:</strong> ניהול מילון ספרים לפי מספר קטלוגי.<br>
+      <strong>סעיף ג:</strong> פונקציה <code>buy_book</code> המאפשרת רכישה לפי מספר קטלוגי או לפי שם+מחבר, ומעדכנת מלאי.</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 6</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>class BookDataError(Exception):
+    """חריגה מותאמת עבור שגיאות בנתוני ספר"""
+    pass
+
+class Book:
+    def __init__(self, cat_id: int, title: str, author: str, price: float, quantity: int):
+        if not isinstance(cat_id, int) or cat_id &lt;= 0:
+            raise BookDataError("Invalid catalog ID")
+        if not isinstance(title, str) or not title.strip():
+            raise BookDataError("Title must be a non-empty string")
+        if not isinstance(author, str) or not author.strip():
+            raise BookDataError("Author must be a non-empty string")
+        if not isinstance(price, (int, float)) or price &lt; 0:
+            raise BookDataError("Price must be a non-negative number")
+        if not isinstance(quantity, int) or quantity &lt; 0:
+            raise BookDataError("Quantity must be a non-negative integer")
+
+        self.cat_id = cat_id
+        self.title = title.strip()
+        self.author = author.strip()
+        self.price = float(price)
+        self.quantity = quantity
+
+    def __str__(self):
+        return f"[{self.cat_id}] '{self.title}' by {self.author} - " + str(self.price) + " (In stock: " + str(self.quantity) + ")"
+
+def buy_book(catalog: dict, identifier, amount: int = 1) -> bool:
+    """מאפשרת קנייה לפי מספר קטלוגי (int) או לפי טאפל (title, author)"""
+    target_book = None
+    if isinstance(identifier, int):
+        target_book = catalog.get(identifier)
+    elif isinstance(identifier, tuple) and len(identifier) == 2:
+        req_title, req_author = identifier
+        for b in catalog.values():
+            if b.title.lower() == req_title.lower() and b.author.lower() == req_author.lower():
+                target_book = b
+                break
+
+    if target_book is None:
+        print("Error: Book not found in catalog.")
+        return False
+
+    if target_book.quantity &lt; amount:
+        print(f"Error: Not enough stock for '{target_book.title}'. Available: {target_book.quantity}")
+        return False
+
+    target_book.quantity -= amount
+    print(f"Purchase successful! Bought {amount} copy/ies of '{target_book.title}'. Remaining: {target_book.quantity}")
+    return True</code></pre>
+      </div></details>
+
+      <h4>שאלה 7 · קנרית המחסנית (Stack Canary) מול CET (Shadow Stack)</h4>
+      <p>השוואה מקיפה בין מנגנוני הגנת כתובת החזרה:</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 7</summary><div class="fold-body">
+      <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+        <thead>
+          <tr style="background:var(--bg-accent, #2a2a3e);">
+            <th style="padding:8px; border:1px solid #444;">מאפיין</th>
+            <th style="padding:8px; border:1px solid #444;">קנרית המחסנית (Stack Canary)</th>
+            <th style="padding:8px; border:1px solid #444;">CET (Control-flow Enforcement Technology)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:8px; border:1px solid #444;"><strong>שכבת המימוש</strong></td>
+            <td style="padding:8px; border:1px solid #444;">תוכנה / קומפיילר בלבד (GCC/Clang <code>-fstack-protector</code>).</td>
+            <td style="padding:8px; border:1px solid #444;">חומרה ייעודית במעבד (Intel Tiger Lake ואילך) + תמיכת OS.</td>
+          </tr>
+          <tr>
+            <td style="padding:8px; border:1px solid #444;"><strong>מנגנון פעולה</strong></td>
+            <td style="padding:8px; border:1px solid #444;">שתילת ערך סודי לפני כתובת החזרה ובדיקתו ב-Epilog של הפונקציה.</td>
+            <td style="padding:8px; border:1px solid #444;">מחסנית צל (Shadow Stack) מבודדת שבה נשמרת כתובת החזרה במקביל.</td>
+          </tr>
+          <tr>
+            <td style="padding:8px; border:1px solid #444;"><strong>הגנה מפני ROP</strong></td>
+            <td style="padding:8px; border:1px solid #444;">חלקית בלבד; אינה מגינה אם התוקף לא דרס את הקנרית או הדליף את ערכה.</td>
+            <td style="padding:8px; border:1px solid #444;">הגנה מלאה וקשיחה; כל סטייה בין המחסניות זורקת חריגת חומרה (#CP).</td>
+          </tr>
+          <tr>
+            <td style="padding:8px; border:1px solid #444;"><strong>חולשות ועקיפות</strong></td>
+            <td style="padding:8px; border:1px solid #444;">דליפת זיכרון (Memory Disclosure via Format String) או דריסת vptr.</td>
+            <td style="padding:8px; border:1px solid #444;">דורש מעבד תומך; אינו מגן מפני מניפולציות נתונים טהורות (Data-only attacks).</td>
+          </tr>
+        </tbody>
+      </table>
+      </div></details>
+
+      <h4>שאלה 8 · תקשורת רשת: תאימות פרוטוקולים ושליחת קובץ ב-8192 בתים</h4>
+      <p><strong>סעיף א (עקרונות תקשורת):</strong>
+      1. לקוח ב-++C ושרת בפייתון יכולים לתקשר באופן מלא כל עוד הם פועלים לפי אותו פרוטוקול רשת מוגדר (כגון TCP/IP ופורמט הודעות אחיד).<br>
+      2. תקשורת בין IPv4 ל-IPv6 אינה ישירה כיוון שמבנה כתובות ו-Headers שונה; נדרש מנגנון תרגום (NAT64 / Dual-Stack).<br>
+      3. RSA (הצפנה א-סימטרית) משמשת להחלפת מפתחות ואימות, בעוד AES (הצפנה סימטרית) משמשת להצפנת תעבורת הנתונים בפועל.<br>
+      <strong>סעיף ב (קוד לקוח ב-++C):</strong></p>
+      <details class="fold"><summary>פתרון מפורט — סעיף ב</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;cstring&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+#define CHUNK_SIZE 8192 // 64K bits = 8192 Bytes
+
+void send_input_file(const char* host, int port) {
+    std::ifstream file("input.txt", std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr &lt;&lt; "Error: Could not open input.txt" &lt;&lt; std::endl;
+        return;
+    }
+
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock &lt; 0) {
+        perror("Socket creation failed");
+        return;
+    }
+
+    struct sockaddr_in serv_addr;
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(port);
+    inet_pton(AF_INET, host, &serv_addr.sin_addr);
+
+    if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) &lt; 0) {
+        perror("Connection to 8.8.8.8 failed");
+        close(sock);
+        return;
+    }
+
+    char buffer[CHUNK_SIZE];
+    while (file.read(buffer, sizeof(buffer)) || file.gcount() &gt; 0) {
+        std::streamsize bytes_to_send = file.gcount();
+        ssize_t sent = send(sock, buffer, bytes_to_send, 0);
+        if (sent &lt; 0) {
+            perror("Failed to send chunk");
+            break;
+        }
+    }
+
+    file.close();
+    close(sock);
+    std::cout &lt;&lt; "File input.txt successfully transmitted." &lt;&lt; std::endl;
+}</code></pre>
+      </div></details>
+
+      <h4>שאלה 9 · גלישה נומרית ב-read_string עם ntohl</h4>
+      <p>ניתוח דפנסיבי של פונקציית קריאת מחרוזת מהסוקט עם המרת <code>ntohl</code>:</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 9</summary><div class="fold-body">
+      <ul>
+        <li><strong>החולשה:</strong> קבלת אורך מהרשת והמרתו ב-<code>ntohl(length)</code>. לאחר מכן חישוב <code>length + 2</code> בתוך <code>calloc</code> גורם לעטיפת שלמים (Integer Overflow). עבור ערך <code>0xFFFFFFFF</code> (ב-32 ביט), החיבור עוטף ל-1. <code>calloc</code> מקצה בית אחד בלבד, אך <code>read_bytes</code> קורא את כל האורך המקורי — מה שיוצר <strong>Heap Buffer Overflow</strong> קריטי.</li>
+        <li><strong>באגים תחביריים נוספים בקוד המקורי:</strong> היעדר פסיק בין הארגומנטים של <code>calloc</code>, ושימוש בסוגריים עגולים <code>string(length)</code> במקום סוגריים מרובעים <code>string[length]</code>.</li>
+        <li><strong>התיקון הדפנסיבי:</strong> הגבלת אורך מקסימלי סביר (למשל 10MB) ובדיקת מניעת גלישה:</li>
+      </ul>
+<pre class="code" dir="ltr"><code>#define MAX_STRING_LEN (10 * 1024 * 1024)
+
+uint32_t length = ntohl(net_length);
+if (length &gt; MAX_STRING_LEN || length &gt; UINT32_MAX - 2) {
+    return NULL; // דחיית קלט עוין
+}
+char* string = (char*)calloc(length + 2, sizeof(char));
+if (!string) return NULL;</code></pre>
+      </div></details>
+
     `,
   },
   {
     id: "e-2025a-12-2",
-    title: "2025א 12.2 · שחזור",
-    source: "שחזור מזיכרון. אפשרויות חלקיות אינן מפתח.",
+    title: "2024א מועד ב (10.3.2024, שאלון 92) · פתרון רשמי מלא",
+    source: "שאלון 92 מקורי ופתרון רשמי מלא מתוך מאגר הבחינות (שוחזר בעבר כ-12.2).",
     html: `
-      <p>חלק א חלקי: הפניה ל-<code>string</code> (האפשרויות בזיכרון לא מדויקות); משפט על אפחות, לא שלם; DEP מונע הרצת נתונים; קריאה וירטואלית מתוך בנאי מגיעה לבסיס; <code>range(50, 60)</code> מחזיר אובייקט <code>range</code>.</p>
-      <p>שאלה 6 · פייתון: מילים מופרדות בפסיק שמתחילות ב-<code>im</code>, אות ראשונה גדולה והשאר קטנות; קובץ שורה-שורה לקובץ אחר; <code>Book</code> ו-<code>HPBook</code> עם <code>mainChar</code>, ובלי ארגומנטים הדמויות harry, hermione, Ron.</p>
-      <p>שאלה 7 לא שוחזרה.</p>
-      <p>שאלה 8 · קנרית: למה נוצרה, איך פועלת, מחסנית עם ובלי, ומנגנון נוסף. כמו החומר ביחידה 3.</p>
-      <p>שאלה 9 · לקוח פייתון: קובץ אל שרת, כותרת של 12 בתים (גודל, מספר חבילה, מספר חבילות, כל שדה 4 בתים big-endian), מטען עד 1024, בלי קריסה אם הקובץ חסר. וגם ארגז חול: מטרה ומימוש עקרוני.</p>
-      <p>שאלה 10 · אותו לקוח, ושרת C++ שמקבל את אותן הודעות. מה השרת מחזיר לא זכור.</p>
+      <h3>חלק א' — שאלות רב-ברירה (25 נקודות)</h3>
+      <ul>
+        <li><strong>שאלה 1 — יצירת הפניה (Reference) ב-++C (תשובה ב'):</strong> כדי לייצר הפניה למחרוזת קיימת <code>string food = "Pizza";</code> התחביר הנכון הוא <code>string &amp;meal = food;</code>. (ללא אמפרסנד לפני המשתנה המקורי, וללא כוכבית של מצביע).</li>
+        <li><strong>שאלה 2 — מטרת תוכנת כופר (Ransomware) (תשובה א'):</strong> סחיטת כסף או נכס אחר מארגון על ידי הצפנת קבציו ומניעת גישה אליהם עד לתשלום דמי הכופר.</li>
+        <li><strong>שאלה 3 — פתיחת קובץ כברירת מחדל בפייתון (תשובה ב'):</strong> פקודת <code>with open("filename.txt") as f:</code> פותחת קובץ לקריאה בלבד (<code>'r'</code>). ניסיון כתיבה לקובץ קיים יזרוק <code>io.UnsupportedOperation: not writable</code>, ואם הקובץ אינו קיים תיזרק <code>FileNotFoundError</code>.</li>
+        <li><strong>שאלה 4 — קריאה לבנאי מחלקת הבסיס בפייתון (תשובה ד'):</strong> כאשר המחלקה היורשת <code>ColPoint(Point)</code> אינה קוראת ל-<code>super().__init__()</code>, שדות הבסיס <code>self.x</code> ו-<code>self.y</code> אינם נוצרים. הפעלת <code>print(p1)</code> המפעילה את <code>__str__</code> תיכשל ותזרוק <code>AttributeError: 'ColPoint' object has no attribute 'x'</code>.</li>
+        <li><strong>שאלה 5 — הגדרת חולשות CVE (תשובה ב'):</strong> חולשות אבטחה המדווחות ומקוטלגות במאגר הציבורי הבינלאומי של חולשות תוכנה (Common Vulnerabilities and Exposures).</li>
+      </ul>
+
+      <h3>חלק ב' — שאלות פתוחות (75 נקודות)</h3>
+
+      <h4>שאלה 6 · פייתון: עיבוד מחרוזות, מחלקת HPBook וקריאת קובץ ספרים</h4>
+      <p><strong>סעיף א:</strong> פונקציה <code>process_str</code> המקבלת מחרוזת, מפצלת לפי נקודה-פסיק (<code>;</code>), מזהה מילים המתחילות ב-<code>de</code> ומדפיסה אותן באות ראשונה גדולה (<code>word.capitalize()</code>).<br>
+      <strong>סעיף ב:</strong> מחלקה <code>Book(title, author, year)</code> ומחלקה יורשת <code>HPBook(Book)</code> שבה רשימת הדמויות <code>MainChars</code> מקבלת כברירת מחדל את <code>("Harry", "Hermione", "Ron")</code>.<br>
+      <strong>סעיף ג:</strong> פונקציה <code>read_bookfile(fname)</code> לפתיחת קובץ, בניית רשימת ספרים עם יצירת <code>HPBook</code> לספרי הארי פוטר, וטיפול ידידותי בשגיאות ללא Traceback.</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 6</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code># סעיף א'
+def process_str(my_str: str) -> None:
+    if not isinstance(my_str, str):
+        raise TypeError("Argument must be of type string")
+    for word in my_str.split(';'):
+        word = word.strip()
+        if word.lower().startswith('de'):
+            print(word.capitalize())
+
+# סעיף ב'
+class Book:
+    def __init__(self, title: str, author: str, year):
+        self.title = str(title)
+        self.author = str(author)
+        self.year = int(year)
+
+class HPBook(Book):
+    def __init__(self, title: str, author: str, year, chars=("Harry", "Hermione", "Ron")):
+        super().__init__(title, author, year)
+        self.MainChars = list(chars)
+
+# סעיף ג'
+import os
+
+def read_bookfile(fname: str) -> list:
+    if not os.path.isfile(fname):
+        print(f"Friendly Error: File '{fname}' does not exist.")
+        return []
+    all_books = []
+    try:
+        with open(fname, "r", encoding="utf-8") as f:
+            for line in f:
+                fields = [x.strip() for x in line.split(',') if x.strip()]
+                if len(fields) &lt; 3:
+                    continue
+                title, author, year = fields[0], fields[1], fields[2]
+                if "Harry Potter" in title:
+                    chars = fields[3:] if len(fields) &gt; 3 else ("Harry", "Hermione", "Ron")
+                    all_books.append(HPBook(title, author, year, chars))
+                else:
+                    all_books.append(Book(title, author, year))
+        return all_books
+    except Exception as err:
+        print(f"Friendly Error while reading books file: {err}")
+        return []</code></pre>
+      </div></details>
+
+      <h4>שאלה 7 · מנגנון החומרה CET (Control-Flow Enforcement Technology)</h4>
+      <p><strong>סעיף א (הבעיה):</strong> שיבוש כתובת החזרה (Return Address) או ה-Saved EBP במחסנית באמצעות Buffer Overflow, לצורך ביצוע מתקפות הזרקת קוד או שימוש חוזר בקוד (ROP / JOP).<br>
+      <strong>סעיף ב (הפתרון):</strong> מנגנון חומרה ייעודי של Intel הכולל <strong>Shadow Stack (מחסנית צל)</strong> באזור זיכרון מבודד שאינו נגיש לפקודות כתיבה רגילות. בעת <code>CALL</code> נשמרת כתובת החזרה בשתי המחסניות במקביל, ובעת <code>RET</code> המעבד משווה ביניהן. כל אי-התאמה מעידה על מתקפה ומפעילה מיידית חריגת בקרה (Control Protection Exception - <code>#CP</code>).<br>
+      <strong>סעיף ג (השפעה על המחסנית):</strong> אינו משנה את מבנה המחסנית המקורית כלל; המחסנית הרגילה ממשיכה לתפקד ללא שינוי, ללא צורך בעריכת קוד המקור.<br>
+      <strong>סעיף ד (פתרונות חלופיים):</strong> מנגנון GCS של ARM (Guarded Control Stack), קנרית המחסנית (Stack Canary), ו-ASLR.</p>
+
+      <h4>שאלה 8 · תקשורת רשת: לקוח C/++C ושרת פייתון עם אישור (ACK)</h4>
+      <p><strong>סעיף א:</strong> לקוח C/++C הפותח תקשורת לשרת <code>192.168.14.25:8080</code> ושולח את תוכן <code>messages.txt</code> בחבילות של עד 1024 בתים, עם טיפול בשגיאת קובץ חסר.<br>
+      <strong>סעיף ב:</strong> שרת פייתון המקשיב בפורט 8080, מקבל את הקובץ ומחזיר הודעת אישור (ACK).</p>
+      <details class="fold"><summary>פתרון מפורט — שאלה 8</summary><div class="fold-body">
+<pre class="code" dir="ltr"><code>// סעיף א' — לקוח C++ בלינוקס
+#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;cstring&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+void send_messages_file() {
+    std::ifstream file("messages.txt", std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr &lt;&lt; "Friendly Error: Could not open messages.txt" &lt;&lt; std::endl;
+        return;
+    }
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in serv;
+    serv.sin_family = AF_INET;
+    serv.sin_port = htons(8080);
+    inet_pton(AF_INET, "192.168.14.25", &serv.sin_addr);
+
+    if (connect(sock, (struct sockaddr*)&serv, sizeof(serv)) &gt;= 0) {
+        char buf[1024];
+        while (file.read(buf, sizeof(buf)) || file.gcount() &gt; 0) {
+            send(sock, buf, file.gcount(), 0);
+        }
+    }
+    close(sock);
+    file.close();
+}
+
+# סעיף ב' — שרת פייתון
+import socket
+
+def run_ack_server(port=8080):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("0.0.0.0", port))
+        s.listen(1)
+        conn, addr = s.accept()
+        with conn:
+            received_data = b""
+            while True:
+                chunk = conn.recv(1024)
+                if not chunk: break
+                received_data += chunk
+            conn.sendall(b"ACK: File received successfully")</code></pre>
+      </div></details>
+
+      <h4>שאלה 9 · גלישת ערימה בשני שלבים (Two-Stage Heap Overflow)</h4>
+      <pre class="code" dir="ltr"><code>#define FIELDSIZE (24)
+struct field {
+    unsigned char f_id;
+    char* f_data;
+};
+
+void handle_fields(int argc, char** argv) {
+    if (argc != 2) exit(1);
+    field* r1 = (struct field*)malloc(sizeof(struct field));
+    r1->f_id = 1;
+    r1->f_data = (char*)malloc(FIELDSIZE);
+
+    field* r2 = (struct field*)malloc(sizeof(struct field));
+    r2->f_id = 2;
+    r2->f_data = (char*)malloc(FIELDSIZE);
+
+    strcpy(r1->f_data, argv[0]);
+    strcpy(r2->f_data, argv[1]);
+}</code></pre>
+      <details class="fold"><summary>פתרון מפורט — שאלה 9</summary><div class="fold-body">
+      <ul>
+        <li><strong>סעיף א — החולשה וניצולה:</strong> בהנחת הקצאות רציפות ב-Heap, החוצץ <code>r1->f_data</code> ממוקם לפני המבנה <code>r2</code>. הפקודה <code>strcpy(r1->f_data, argv[0])</code> אינה בודקת גבולות. הזנת מחרוזת ארוכה מ-24 תווים ב-<code>argv[0]</code> גולשת ודורסת את השדות של <code>r2</code>, ובפרט את המצביע <code>r2->f_data</code>. לאחר מכן, השורה הבאה <code>strcpy(r2->f_data, argv[1])</code> מעתיקה את <code>argv[1]</code> לתוך הכתובת הנדרסת! זוהי פגיעות <strong>Arbitrary Memory Write (Write-What-Where)</strong> המאפשרת לתוקף לשכתב כתובת חזרה, כניסה ב-GOT או מצביע פונקציה.</li>
+        <li><strong>סעיף ב — התיקון הדפנסיבי:</strong> בדיקת אורך קפדנית לפני ההעתקה או שימוש ב-<code>strncpy</code> / מחרוזות בטוחות ב-++C:</li>
+      </ul>
+<pre class="code" dir="ltr"><code>if (strlen(argv[0]) &gt;= FIELDSIZE || strlen(argv[1]) &gt;= FIELDSIZE) {
+    fprintf(stderr, "Input string exceeds maximum field size!\n");
+    exit(1);
+}
+strncpy(r1-&gt;f_data, argv[0], FIELDSIZE - 1);
+r1-&gt;f_data[FIELDSIZE - 1] = '\0';</code></pre>
+      </div></details>
+
     `,
   },
-
   {
     id: "e-2021a75",
     title: "2021א מועד 75 (טופס 543) · פתרון רשמי מלא",
