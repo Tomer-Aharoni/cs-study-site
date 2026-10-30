@@ -1,25 +1,12 @@
 const app = document.getElementById("app");
 
 function lessonById(id) {
-  if (id === "1") return window.UNIT1;
-  if (id === "2") return window.UNIT2;
-  if (id === "3") return window.UNIT3;
-  if (id === "4") return window.UNIT4;
-  if (id === "5") return window.UNIT5;
-  if (id === "6") return window.UNIT6;
-  if (id === "7") return window.UNIT7;
-  return null;
+  return window["UNIT" + id] || null;
 }
 
 function quizzesFor(id) {
-  if (id === "1") return UNIT1_QUIZZES;
-  if (id === "2") return UNIT2_QUIZZES;
-  if (id === "3") return window.UNIT3_QUIZZES || [];
-  if (id === "4") return window.UNIT4_QUIZZES || [];
-  if (id === "5") return window.UNIT5_QUIZZES || [];
-  if (id === "6") return window.UNIT6_QUIZZES || [];
-  if (id === "7") return window.UNIT7_QUIZZES || [];
-  return [];
+  const list = window["UNIT" + id + "_QUIZZES"];
+  return Array.isArray(list) ? list : [];
 }
 
 function findQuiz(qid) {
@@ -101,6 +88,61 @@ function esc(s) {
   );
 }
 
+function progressStorageKey() {
+  return window.csStorageKey ? csStorageKey("cs-study-progress") : "cs-study-progress";
+}
+
+function unitsPhrase() {
+  const n = (window.COURSE && COURSE.units && COURSE.units.length) || 0;
+  const words = [
+    "",
+    "יחידה אחת",
+    "שתי יחידות",
+    "שלוש יחידות",
+    "ארבע יחידות",
+    "חמש יחידות",
+    "שש יחידות",
+    "שבע יחידות",
+    "שמונה יחידות",
+    "תשע יחידות",
+    "עשר יחידות",
+  ];
+  if (words[n]) return words[n];
+  return n + " יחידות";
+}
+
+function courseEyebrow() {
+  const tags =
+    COURSE.languages && COURSE.languages.length ? COURSE.languages : COURSE.tags && COURSE.tags.length ? COURSE.tags : [];
+  if (!tags.length) return esc(COURSE.code);
+  return esc(COURSE.code) + " · " + tags.map((tag) => esc(tag)).join(" · ");
+}
+
+function courseHas(key) {
+  if (!window.COURSE_DATA) return true;
+  const value = COURSE_DATA[key];
+  if (Array.isArray(value)) return value.length > 0;
+  return !!value;
+}
+
+function areaSwitcher() {
+  const areas =
+    window.COURSE_DATA && Array.isArray(COURSE_DATA.areas) && COURSE_DATA.areas.length
+      ? COURSE_DATA.areas
+      : [
+          { id: "20937", href: "index.html", label: "20937 · תכנות מערכות דפנסיבי" },
+          { id: "20425", href: "prob.html", label: "20425 · הסתברות וסטטיסטיקה" },
+        ];
+  const current = (window.COURSE && COURSE.id) || "";
+  const links = areas
+    .map((area) => {
+      const on = area.id === current;
+      return `<a class="area-switch${on ? " is-current" : ""}" href="${esc(area.href || "#")}"${on ? ' aria-current="page"' : ""}>${esc(area.label || area.id)}</a>`;
+    })
+    .join("");
+  return `<nav class="area-switcher" aria-label="מעבר בין קורסים">${links}</nav>`;
+}
+
 function aiBubble() {
   return `<abbr class="ai-bubble" title="נוצר באמצעות AI, לא נשלף מקבצי המקור">AI</abbr>`;
 }
@@ -172,13 +214,14 @@ function quizContentId(qid) {
 
 function editLink(id, label) {
   if (!id || !window.CSAuth || !CSAuth.isAdmin()) return "";
-  const href = "#/admin/item/" + encodeURIComponent(id);
+  const stored = window.csStoredId ? csStoredId(id) : id;
+  const href = "#/admin/item/" + encodeURIComponent(stored);
   return `<a class="edit-link" href="${href}" aria-label="${esc(label ? "עריכת " + label : "עריכת התוכן")}" title="עריכה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></a>`;
 }
 
 function getProgress() {
   try {
-    const raw = JSON.parse(localStorage.getItem("cs-study-progress") || "");
+    const raw = JSON.parse(localStorage.getItem(progressStorageKey()) || "");
     if (!raw || typeof raw !== "object") throw new Error("empty");
     return {
       seen: Array.isArray(raw.seen) ? raw.seen : [],
@@ -192,7 +235,7 @@ function getProgress() {
 
 function setProgress(p) {
   try {
-    localStorage.setItem("cs-study-progress", JSON.stringify(p));
+    localStorage.setItem(progressStorageKey(), JSON.stringify(p));
   } catch (err) {
     /* private mode */
   }
@@ -258,14 +301,16 @@ function shuffle(list) {
 
 function loadRound() {
   try {
-    return JSON.parse(sessionStorage.getItem("cs-practice-round") || "");
+    const key = window.csStorageKey ? csStorageKey("cs-practice-round") : "cs-practice-round";
+    return JSON.parse(sessionStorage.getItem(key) || "");
   } catch (err) {
     return null;
   }
 }
 
 function saveRound(round) {
-  sessionStorage.setItem("cs-practice-round", JSON.stringify(round));
+  const key = window.csStorageKey ? csStorageKey("cs-practice-round") : "cs-practice-round";
+  sessionStorage.setItem(key, JSON.stringify(round));
 }
 
 function startRound(unit, count) {
@@ -500,6 +545,7 @@ function shell(body, opts) {
     return `
       ${banners}
       <div class="stage-tools">
+        ${areaSwitcher()}
         ${themeButton(false)}
         ${accountControls()}
       </div>
@@ -530,11 +576,12 @@ function shell(body, opts) {
                   ${navLink(base + "/summary", "סיכום", base + "/summary")}
                   ${navLink(base + "/practice", "תרגול", base + "/practice")}
                   ${navLink(base + "/search", "חיפוש", base + "/search")}
-                  ${navLink(base + "/guide-notes", "הערות למדריך", base + "/guide-notes")}
-                  ${navLink("#/print", "הדפסה", "#/print")}
+                  ${courseHas("guide") ? navLink(base + "/guide-notes", "הערות למדריך", base + "/guide-notes") : ""}
+                  ${typeof renderPrintPage === "function" ? navLink("#/print", "הדפסה", "#/print") : ""}
                 </nav>`
               : ""
           }
+          ${areaSwitcher()}
           ${accountControls()}
           ${themeButton(false)}
         </div>
@@ -574,25 +621,32 @@ function renderStage() {
     `
     <section class="stage">
       <div class="hero rise">
-        <p class="eyebrow">${COURSE.code} · ${COURSE.languages.join(" · ")}</p>
+        <p class="eyebrow">${courseEyebrow()}</p>
         <button type="button" class="hero-pill" data-why-toggle aria-expanded="false">על האתר</button>
         <h1>${esc(COURSE.name)} ${editLink("course", COURSE.name)}</h1>
-        <p class="hero-lead">${esc(COURSE.blurb)} שבע יחידות לפי הסדר. כל אחת נפתחת להסבר, להמחשה ולמעבדה.</p>
+        <p class="hero-lead">${esc(COURSE.blurb)} ${unitsPhrase()} לפי הסדר. כל אחת נפתחת להסבר, להמחשה ולמעבדה.</p>
       </div>
       <div class="why" data-why>
         <div class="why-inner">
-          <div class="why-card">
+          ${
+            !window.COURSE || COURSE.id === "20937"
+              ? `<div class="why-card">
             <h2>למה ללמוד כאן</h2>
             <p>הקורס מחבר תכנות מערכות לתכנות דפנסיבי, והבחינה נשענת על הבחנות מדויקות: באג מול חולשה, אפחות מול תיקון שורש, ומה כל שפה דורשת מהזיכרון ומהקלט. במדריך זה רצף ארוך. כאן כל יחידה נפתחת להסבר, להמחשה ולמעבדה ליד הנושא, ואחר כך אפשר לעבור לסיכום או לתרגול בלי לאבד את המפה.</p>
-          </div>
+          </div>`
+              : `<div class="why-card">
+            <h2>למה ללמוד כאן</h2>
+            <p>${esc(COURSE.why || COURSE.blurb)}</p>
+          </div>`
+          }
         </div>
       </div>
       ${banner}
       <div class="stage-portals rise rise-2">
         <a class="portal portal-practice" href="${base}/practice">
           <span class="portal-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/></svg></span>
-          <span class="portal-kicker">לפני הבחינה</span>
-          <strong>תרגול<br>מבחנים</strong>
+          <span class="portal-kicker">${courseHas("exams") ? "לפני הבחינה" : "בדיקת הבנה"}</span>
+          <strong>${courseHas("exams") ? "תרגול<br>מבחנים" : "תרגול<br>שאלות"}</strong>
         </a>
         <a class="portal portal-summary" href="${base}/summary">
           <span class="portal-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
@@ -600,11 +654,15 @@ function renderStage() {
           <strong>מעבר<br>לסיכום</strong>
         </a>
 
-        <a class="portal portal-guide-notes" href="${base}/guide-notes" style="--portal: #0284c7;">
+        ${
+          courseHas("guide")
+            ? `<a class="portal portal-guide-notes" href="${base}/guide-notes" style="--portal: #0284c7;">
           <span class="portal-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
           <span class="portal-kicker">למדריך הלמידה</span>
           <strong>הערות<br>למדריך</strong>
-        </a>
+        </a>`
+            : ""
+        }
 
       </div>
       <nav class="course-path" data-path aria-label="יחידות הקורס">
@@ -615,7 +673,7 @@ function renderStage() {
         <input id="stage-q" name="q" type="search" placeholder="חיפוש מושג, יחידה או כרטיסייה" autocomplete="off" />
         <button class="primary" type="submit">חיפוש</button>
       </form>
-      <p class="stage-print"><a class="print-entry" href="#/print">בחירת טווחים להדפסה</a></p>
+      ${typeof renderPrintPage === "function" ? `<p class="stage-print"><a class="print-entry" href="#/print">בחירת טווחים להדפסה</a></p>` : ""}
     </section>
   `,
     { stage: true }
@@ -646,7 +704,7 @@ function renderLearnList() {
   return shell(`
     <p class="back-row"><a class="back" href="${base}">לקורס</a></p>
     <h1>היחידות</h1>
-    <p class="muted">שבע יחידות לפי הסדר. ${ready} יחידות פתוחות: הסבר, המחשה ומעבדה.</p>
+    <p class="muted">${unitsPhrase()} לפי הסדר. ${ready} יחידות פתוחות: הסבר, המחשה ומעבדה.</p>
     <div class="path">${items}</div>
   `);
 }
@@ -693,16 +751,31 @@ function treeHtml(node) {
 
 function unitParts(unitId, sections) {
   const defined = (window.UNIT_PARTS && UNIT_PARTS[unitId]) || [];
-  const known = new Set();
-  defined.forEach((part) => part.sections.forEach((id) => known.add(id)));
-  const extra = (sections || []).map((section) => section.id).filter((id) => !known.has(id));
-  const parts = defined.map((part) => ({
-    id: part.id,
-    title: part.title,
-    sections: part.sections.filter((id) => (sections || []).some((section) => section.id === id)),
-  }));
+  const ids = (sections || []).map((section) => section.id);
+  const claimed = new Set();
+  defined.forEach((part) => {
+    (part.sections || []).forEach((id) => {
+      if (ids.indexOf(id) !== -1) claimed.add(id);
+    });
+  });
+  const parts = defined.map((part) => {
+    const listed = part.sections || [];
+    if (!listed.length) {
+      const rest = ids.filter((id) => !claimed.has(id));
+      rest.forEach((id) => claimed.add(id));
+      return { id: part.id, title: part.title, sections: rest };
+    }
+    return {
+      id: part.id,
+      title: part.title,
+      sections: listed.filter((id) => ids.indexOf(id) !== -1),
+    };
+  });
+  const extra = ids.filter((id) => !claimed.has(id));
   if (extra.length) parts.push({ id: "x", title: "עוד", sections: extra });
-  return parts.filter((part) => part.sections.length);
+  const ready = parts.filter((part) => part.sections.length);
+  if (!ready.length && ids.length) return [{ id: "a", title: "כל היחידה", sections: ids.slice() }];
+  return ready;
 }
 
 function partById(unitId, partId, sections) {
@@ -919,6 +992,33 @@ function mountRail() {
   });
 }
 
+function renderMath(root) {
+  if (!root || typeof window.renderMathInElement !== "function") return;
+  try {
+    window.renderMathInElement(root, {
+      delimiters: [
+        { left: "\\[", right: "\\]", display: true },
+        { left: "\\(", right: "\\)", display: false },
+      ],
+      throwOnError: false,
+    });
+  } catch (err) {
+    /* נוסחה שבורה לא עוצרת את העמוד */
+  }
+}
+
+function runEnhancers(root) {
+  const list = window.CS_ENHANCERS || [];
+  for (let i = 0; i < list.length; i += 1) {
+    if (typeof list[i] !== "function") continue;
+    try {
+      list[i](root);
+    } catch (err) {
+      /* מעבדה אחת לא מפילה את השאר */
+    }
+  }
+}
+
 function enhance() {
   if (railObserver) {
     railObserver.disconnect();
@@ -929,6 +1029,21 @@ function enhance() {
   mountRail();
   const searchInput = app.querySelector("[data-search-input]");
   if (searchInput) searchInput.focus();
+  const root = document.getElementById("app");
+  renderMath(root);
+  runEnhancers(root);
+  renderMath(root);
+}
+
+function bindKatex() {
+  if (window.__katexBound) return;
+  window.__katexBound = true;
+  const paint = () => renderMath(document.getElementById("app"));
+  if (typeof window.renderMathInElement === "function") paint();
+  document.querySelectorAll('script[src*="auto-render"]').forEach((el) => {
+    el.addEventListener("load", paint);
+  });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
 }
 
 
@@ -939,7 +1054,7 @@ function renderSearch() {
     <h1>חיפוש</h1>
     <form class="stage-search search-page" data-search-form>
       <label class="sr" for="search-q">חיפוש</label>
-      <input id="search-q" data-search-input name="q" type="search" value="${esc(q)}" placeholder="למשל אפחות, שאילתה פרמטרית, ASLR" autocomplete="off" />
+      <input id="search-q" data-search-input name="q" type="search" value="${esc(q)}" placeholder="${!window.COURSE || COURSE.id === "20937" ? "למשל אפחות, שאילתה פרמטרית, ASLR" : "למשל הסתברות מותנית, תוחלת, בייס"}" autocomplete="off" />
       <button class="primary" type="submit">חיפוש</button>
     </form>
     <div data-search-results>${searchResultsHtml(q)}</div>
@@ -989,10 +1104,12 @@ async function route() {
     app.innerHTML = renderUnit(r.unit);
     vizState.plates = 3;
     vizState.wrap = 30;
-    if (r.unit === "2") resetMemLab();
-    if (r.unit === "3") resetUnit3Labs();
-    if (r.unit === "4") resetUnit4Labs();
-    if (r.unit === "5") resetUnit5Labs();
+    if ((window.COURSE && COURSE.id) === "20937") {
+      if (r.unit === "2" && typeof resetMemLab === "function") resetMemLab();
+      if (r.unit === "3" && typeof resetUnit3Labs === "function") resetUnit3Labs();
+      if (r.unit === "4" && typeof resetUnit4Labs === "function") resetUnit4Labs();
+      if (r.unit === "5" && typeof resetUnit5Labs === "function") resetUnit5Labs();
+    }
   } else if (r.area === "summary" && r.summaryFlip) {
     syncFlip(r);
     app.innerHTML = renderFlip();
@@ -2057,6 +2174,7 @@ function mountTopbarScroll() {
 }
 
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+bindKatex();
 
 function pageDigest() {
   const bits = [];

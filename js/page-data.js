@@ -79,7 +79,34 @@
   const EXAMS = ["data/exam-recon.js?v=37", "data/exam-sims.js?v=36", "data/exam-sims-recon.js?v=39"].concat(BANKS);
   const SUMMARY = ["data/summary-prose.js?v=34", "data/summary-detail.js?v=31"];
   const GUIDE = "data/study-guide-notes.js?v=2";
+  const LEGACY_IDS = ["1", "2", "3", "4", "5", "6", "7"];
   const SUPABASE = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js";
+
+  function manifest() {
+    if (window.COURSE_DATA) return window.COURSE_DATA;
+    return {
+      units: UNITS,
+      viz: VIZ,
+      banks: BANKS,
+      exams: EXAMS,
+      summary: SUMMARY,
+      guide: GUIDE,
+    };
+  }
+
+  function unitSpec(id) {
+    const units = manifest().units || {};
+    return units[id] || null;
+  }
+
+  function activeIds() {
+    if (!window.COURSE_DATA) return LEGACY_IDS.slice();
+    return ((window.COURSE && COURSE.units) || []).map((unit) => String(unit.id));
+  }
+
+  function listed(value) {
+    return Array.isArray(value) ? value.filter(Boolean) : [];
+  }
 
   function inject(src) {
     return new Promise((resolve, reject) => {
@@ -96,14 +123,16 @@
   }
 
   function loadOne(src, keys) {
+    if (!src) return Promise.resolve();
     if (inflight.has(src)) return inflight.get(src);
+    const keep = (keys || []).filter(Boolean);
     const job = (async function () {
       const saved = {};
-      (keys || []).forEach((key) => {
+      keep.forEach((key) => {
         saved[key] = (window[key] || []).slice();
       });
       await inject(src);
-      (keys || []).forEach((key) => {
+      keep.forEach((key) => {
         const now = window[key] || [];
         const ids = new Set(now.map((item) => item && item.id).filter(Boolean));
         saved[key].forEach((item) => {
@@ -122,12 +151,22 @@
     return job;
   }
 
+  async function loadOptional(src, keys) {
+    try {
+      await loadOne(src, keys);
+    } catch (err) {
+      if (!window.COURSE_DATA) throw err;
+    }
+  }
+
   async function loadUnit(id) {
-    const unit = UNITS[id];
+    const unit = unitSpec(id);
     if (!unit) return;
-    await loadOne(unit.main);
-    for (let i = 0; i < unit.rest.length; i += 1) await loadOne(unit.rest[i]);
-    await loadOne(unit.interact, [unit.quizzes, "SUMMARY_CARDS"]);
+    if (unit.main) await loadOptional(unit.main);
+    const rest = unit.rest || [];
+    for (let i = 0; i < rest.length; i += 1) await loadOptional(rest[i]);
+    if (!unit.interact) return;
+    await loadOptional(unit.interact, [unit.quizzes, "SUMMARY_CARDS"]);
   }
 
   async function loadUnits(ids) {
@@ -135,30 +174,60 @@
   }
 
   async function loadList(urls) {
-    for (let i = 0; i < urls.length; i += 1) await loadOne(urls[i]);
+    for (let i = 0; i < urls.length; i += 1) await loadOptional(urls[i]);
   }
 
   function stepsFor(route) {
-    const ids = ["1", "2", "3", "4", "5", "6", "7"];
+    const data = manifest();
+    const ids = activeIds();
+    const banks = listed(data.banks);
+    const exams = listed(data.exams);
+    const summary = listed(data.summary);
     if (!route) return [];
-    if (route.area === "learn" && route.unit && UNITS[route.unit]) {
-      return [{ unit: route.unit }, { src: VIZ }, { list: BANKS }];
+    if (route.area === "learn" && route.unit && unitSpec(route.unit)) {
+      const steps = [{ unit: route.unit }];
+      if (data.viz) steps.push({ src: data.viz });
+      if (banks.length) steps.push({ list: banks });
+      return steps;
     }
-    if (route.area === "guide-notes") return [{ src: GUIDE }];
-    if (route.area === "summary") return [{ units: ids }, { list: SUMMARY }];
-    if (route.area === "practice") return [{ units: ids }, { src: VIZ }, { list: EXAMS }];
+    if (route.area === "guide-notes") return data.guide ? [{ src: data.guide }] : [];
+    if (route.area === "summary") {
+      const steps = [{ units: ids }];
+      if (summary.length) steps.push({ list: summary });
+      return steps;
+    }
+    if (route.area === "practice") {
+      const steps = [{ units: ids }];
+      if (data.viz) steps.push({ src: data.viz });
+      if (exams.length) steps.push({ list: exams });
+      return steps;
+    }
     if (route.area === "search" || route.print || route.admin) {
-      return [{ units: ids }, { src: VIZ }, { list: SUMMARY }, { list: EXAMS }, { src: GUIDE }];
+      const steps = [{ units: ids }];
+      if (data.viz) steps.push({ src: data.viz });
+      if (summary.length) steps.push({ list: summary });
+      if (exams.length) steps.push({ list: exams });
+      if (data.guide) steps.push({ src: data.guide });
+      return steps;
     }
     return [];
   }
 
   function missing(route) {
-    return stepsFor(route).length > 0 && stepsFor(route).some((step) => {
-      if (step.unit) return !inflight.has(UNITS[step.unit].interact);
-      if (step.units) return step.units.some((id) => !inflight.has(UNITS[id].interact));
-      if (step.list) return step.list.some((src) => !inflight.has(src));
-      return !inflight.has(step.src);
+    const steps = stepsFor(route);
+    return steps.length > 0 && steps.some((step) => {
+      if (step.unit) {
+        const spec = unitSpec(step.unit);
+        return !!(spec && spec.interact && !inflight.has(spec.interact));
+      }
+      if (step.units) {
+        return step.units.some((id) => {
+          const spec = unitSpec(id);
+          return !!(spec && spec.interact && !inflight.has(spec.interact));
+        });
+      }
+      if (step.list) return step.list.some((src) => src && !inflight.has(src));
+      return !!(step.src && !inflight.has(step.src));
     });
   }
 
@@ -170,7 +239,7 @@
         if (step.unit) await loadUnit(step.unit);
         else if (step.units) await loadUnits(step.units);
         else if (step.list) await loadList(step.list);
-        else await loadOne(step.src);
+        else if (step.src) await loadOne(step.src);
       } catch (err) {
         /* עמוד חלקי עדיף על מסך ריק */
       }

@@ -3,12 +3,16 @@
 var summaryUnit = "all";
 var summaryKind = "all";
 
+function cardsPlacementKey() {
+  return window.csStorageKey ? csStorageKey("cs-summary-cards") : "cs-summary-cards";
+}
+
 function cardsPlacement() {
-  return localStorage.getItem("cs-summary-cards") === "page" ? "page" : "after";
+  return localStorage.getItem(cardsPlacementKey()) === "page" ? "page" : "after";
 }
 
 function setCardsPlacement(value) {
-  localStorage.setItem("cs-summary-cards", value);
+  localStorage.setItem(cardsPlacementKey(), value);
 }
 
 function cardArticle(c) {
@@ -17,8 +21,18 @@ function cardArticle(c) {
   return `<article class="card card-rich"><p class="kind">${esc(c.kind)}</p><div class="box-head"><h2><bdi>${esc(c.title)}</bdi></h2>${editLink("card:" + c.id, c.title)}</div><div class="study-text">${studyRich(c.body)}</div>${more}</article>`;
 }
 
+function summaryCards() {
+  return window.SUMMARY_CARDS || [];
+}
+
+function summaryUnitIds() {
+  const units = (window.COURSE && COURSE.units) || [];
+  if (units.length) return units.map((unit) => unit.id);
+  return ["1", "2", "3", "4", "5", "6", "7"];
+}
+
 function cardsForUnit(unitId) {
-  return SUMMARY_CARDS.filter((c) => {
+  return summaryCards().filter((c) => {
     const unitOk = !unitId || c.unit === unitId;
     const kindOk = summaryKind === "all" || c.kind === summaryKind;
     return unitOk && kindOk;
@@ -36,7 +50,7 @@ function cardsBlock(unitId, heading) {
 }
 
 function summaryCardsHtml() {
-  const units = [...new Set(SUMMARY_CARDS.map((c) => c.unit))];
+  const units = [...new Set(summaryCards().map((c) => c.unit))];
   const filtered = summaryUnit === "all" ? units : units.filter((u) => u === summaryUnit);
   return filtered.map((u) => cardsBlock(u)).join("");
 }
@@ -58,7 +72,7 @@ function kindFiltersHtml() {
 }
 
 function unitFiltersHtml() {
-  return ["all", "1", "2", "3", "4", "5", "6", "7"]
+  return ["all"].concat(summaryUnitIds())
     .map((u) => {
       const label = u === "all" ? "כל היחידות" : "יחידה " + u;
       const active = summaryUnit === u ? " active" : "";
@@ -68,7 +82,7 @@ function unitFiltersHtml() {
 }
 
 function proseChapter(ch) {
-  const parts = ch.parts
+  const parts = (ch.parts || [])
     .map((p) => {
       const markId = "summary:" + ch.unit + ":" + p.id;
       const on = window.CSProgress && CSProgress.hasBookmark(markId);
@@ -95,7 +109,7 @@ function summaryTocHtml(r) {
   const place = cardsPlacement();
   const chapters = (window.SUMMARY_PROSE || [])
     .map((ch) => {
-      const kids = ch.parts
+      const kids = (ch.parts || [])
         .map((p) => `<li><a href="${base}/u/${ch.unit}/${p.id}">${esc(p.title)}</a></li>`)
         .join("");
       return `<li>
@@ -211,7 +225,7 @@ function renderFlip() {
   const deck = flipDeck();
   if (deck.length && flipState.index >= deck.length) flipState.index = 0;
   const card = deck[flipState.index];
-  const units = ["all", "1", "2", "3", "4", "5", "6", "7"]
+  const units = ["all"].concat(summaryUnitIds())
     .map((u) => {
       const label = u === "all" ? "כל היחידות" : "יחידה " + u;
       const on = flipState.unit === u ? " active" : "";

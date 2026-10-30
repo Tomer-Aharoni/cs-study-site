@@ -17,7 +17,7 @@ function drillHubHtml() {
       : `<p class="muted">תשובה שגויה, כאן או בתוך יחידה, נשמרת לחזרה.</p>`;
   return `<section class="drill-setup-card">
     <h2>סבב שאלות</h2>
-    <p class="muted">שאלות מהיחידות ומחוברת ההכנה, כולל שאלות פתוחות. ${total} שאלות. אחרי בחירה רואים מיד אם זה נכון. בשאלה פתוחה מציגים פתרון.</p>
+    <p class="muted">${(window.PREP_BANK || []).length ? "שאלות מהיחידות ומחוברת ההכנה, כולל שאלות פתוחות." : "שאלות מהיחידות, כולל שאלות פתוחות."} ${total} שאלות. אחרי בחירה רואים מיד אם זה נכון. בשאלה פתוחה מציגים פתרון.</p>
     <form class="drill-setup" data-drill-setup>
       <label>יחידה
         <select name="unit">
@@ -143,16 +143,20 @@ function examById(id) {
   return (window.EXAM_SIMS || []).find((e) => e.id === id) || null;
 }
 
+function examRunKey() {
+  return window.csStorageKey ? csStorageKey("cs-exam-run") : "cs-exam-run";
+}
+
 function loadExamRun() {
   try {
-    return JSON.parse(sessionStorage.getItem("cs-exam-run") || "");
+    return JSON.parse(sessionStorage.getItem(examRunKey()) || "");
   } catch (err) {
     return null;
   }
 }
 
 function saveExamRun(run) {
-  sessionStorage.setItem("cs-exam-run", JSON.stringify(run));
+  sessionStorage.setItem(examRunKey(), JSON.stringify(run));
 }
 
 function startExam(id) {
@@ -420,7 +424,9 @@ function renderExam(exam, review) {
 }
 
 function examHubHtml() {
-  const cards = (window.EXAM_SIMS || [])
+  const sims = window.EXAM_SIMS || [];
+  if (!sims.length) return "";
+  const cards = sims
     .map(
       (e) => `<div class="editable-wrap"><a class="card exam-card" href="#/course/${COURSE.id}/practice/exam/${e.id}">
         <p class="meta">${e.minutes} דק׳ · בחרו ${e.pick} פתוחות</p>
@@ -450,19 +456,22 @@ function renderPractice() {
     }
     return renderExam(exam, r.examReview);
   }
-  const exams = (window.EXAM_RECONS || [])
-    .map(
-      (e) => `<article class="section" id="${e.id}">
+  const examArea = typeof courseHas === "function" ? courseHas("exams") : (window.EXAM_SIMS || []).length || (window.EXAM_RECONS || []).length;
+  const exams = examArea
+    ? (window.EXAM_RECONS || [])
+        .map(
+          (e) => `<article class="section" id="${e.id}">
         <h2>${e.title}</h2>
         <p class="muted">${e.source}</p>
         ${e.html}
       </article>`
-    )
-    .join("");
+        )
+        .join("")
+    : "";
   return shell(`
     <p><a href="#/course/${COURSE.id}">← חזרה לקורס</a></p>
-    <h1>תרגול למבחנים</h1>
-    ${examHubHtml()}
+    <h1>${examArea ? "תרגול למבחנים" : "תרגול"}</h1>
+    ${examArea ? examHubHtml() : ""}
     ${drillHubHtml()}
     ${exams}
   `);

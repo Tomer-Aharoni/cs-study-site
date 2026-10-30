@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f7fb" />
+    <title>20425 · הסתברות ומבוא לסטטיסטיקה למדעי המחשב</title>
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("cs-theme");
+          var theme =
+            saved === "dark" || saved === "light"
+              ? saved
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute("content", theme === "dark" ? "#0b1220" : "#f4f7fb");
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css" />
+    <link rel="stylesheet" href="styles.css?v=59" />
+    <link rel="stylesheet" href="prob.css?v=1" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="data/20425/course.js?v=2"></script>
+    <script src="data/20425/unit-parts.js?v=2"></script>
+    <script src="data/20425/published-content.js?v=1"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js?v=40"></script>
+    <script src="js/banners.js?v=1"></script>
+    <script src="js/content-store.js?v=39"></script>
+    <script src="js/progress-sync.js?v=32"></script>
+    <script src="js/admin.js?v=44"></script>
+    <script src="js/prose.js?v=1"></script>
+    <script src="js/labs.js?v=2"></script>
+    <script src="js/summary.js?v=4"></script>
+    <script src="js/practice.js?v=5"></script>
+    <script src="js/print.js?v=6"></script>
+    <script src="js/page-data.js?v=4"></script>
+    <script src="js/prob-labs.js?v=1"></script>
+    <script src="app.js?v=62"></script>
+    <script src="js/ai.js?v=1"></script>
+  </body>
+</html>

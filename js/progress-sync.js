@@ -1,6 +1,49 @@
 (function () {
-  const ANON_KEY = "cs-study-progress-anon";
-  const APPLIED = "cs-progress-cloud-applied";
+  function courseMark() {
+    const id = window.COURSE && COURSE.id;
+    return id && id !== "20937" ? id : "";
+  }
+
+  function storageKey(base) {
+    const mark = courseMark();
+    return mark ? base + ":" + mark : base;
+  }
+
+  function itemPrefix() {
+    const mark = courseMark();
+    return mark ? mark + ":" : "";
+  }
+
+  function toItem(id) {
+    const prefix = itemPrefix();
+    const text = String(id || "");
+    if (!prefix || text.indexOf(prefix) === 0) return text;
+    return prefix + text;
+  }
+
+  function fromItem(id) {
+    const prefix = itemPrefix();
+    const text = String(id || "");
+    if (prefix && text.indexOf(prefix) === 0) return text.slice(prefix.length);
+    return text;
+  }
+
+  function ownsItem(id) {
+    const text = String(id || "");
+    const foreign = /^[0-9]{5}:/.test(text);
+    if (!courseMark()) return !foreign;
+    return text.indexOf(itemPrefix()) === 0;
+  }
+
+  function nestKey() {
+    return courseMark() ? "c" + courseMark() : "";
+  }
+
+  window.csStorageKey = storageKey;
+
+  const ANON_KEY = storageKey("cs-study-progress-anon");
+  const APPLIED = storageKey("cs-progress-cloud-applied");
+  const PROGRESS_KEY = storageKey("cs-study-progress");
   let userId = null;
   let hydrating = false;
   let practice = [];
@@ -9,9 +52,12 @@
   let bootGen = 0;
   let stateTimer = null;
   let lastSyncError = "";
+  let cloudSeen = [];
+  let cloudResume = null;
+  let stateLoaded = false;
 
   try {
-    labNames = JSON.parse(localStorage.getItem("cs-lab-names") || "{}") || {};
+    labNames = JSON.parse(localStorage.getItem(storageKey("cs-lab-names")) || "{}") || {};
   } catch (err) {
     labNames = {};
   }
@@ -39,7 +85,7 @@
 
   function readLocal() {
     try {
-      const raw = JSON.parse(localStorage.getItem("cs-study-progress") || "");
+      const raw = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "");
       if (!raw || typeof raw !== "object") throw new Error("empty");
       return {
         seen: Array.isArray(raw.seen) ? raw.seen : [],
@@ -53,7 +99,7 @@
 
   function writeLocal(progress) {
     try {
-      localStorage.setItem("cs-study-progress", JSON.stringify(progress));
+      localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
     } catch (err) {
       /* מצב פרטי */
     }
@@ -65,13 +111,67 @@
 
   function cloudHas(row) {
     if (!row) return false;
-    return (row.seen && row.seen.length) || row.resume;
+    const key = nestKey();
+    if (key) {
+      const bundle = row.resume && row.resume[key];
+      return !!(bundle && ((bundle.seen && bundle.seen.length) || (bundle.resume && bundle.resume.unit)));
+    }
+    return !!((row.seen && row.seen.length) || (row.resume && row.resume.unit));
+  }
+
+  function resumeForLocal(row) {
+    const resume = row && row.resume;
+    if (!resume || typeof resume !== "object") return resume || null;
+    const nested = Object.keys(resume).some((key) => /^c[0-9]{5}$/.test(key));
+    if (!nested) return resume;
+    if (!resume.unit) return null;
+    return { unit: resume.unit, section: resume.section, title: resume.title };
+  }
+
+  function bundleOf(row) {
+    const key = nestKey();
+    if (!key || !row || !row.resume || typeof row.resume !== "object") return null;
+    return row.resume[key] || null;
+  }
+
+  function scopedState(progress) {
+    const key = nestKey();
+    const prior = cloudResume && typeof cloudResume === "object" ? cloudResume : null;
+    if (key) {
+      const next = {};
+      if (prior) {
+        Object.keys(prior).forEach((field) => {
+          next[field] = prior[field];
+        });
+      }
+      next[key] = {
+        seen: Array.isArray(progress.seen) ? progress.seen.slice() : [],
+        resume: progress.resume || null,
+      };
+      return { seen: (cloudSeen || []).slice(), resume: next };
+    }
+    const next = {};
+    if (progress.resume && progress.resume.unit) {
+      next.unit = progress.resume.unit;
+      next.section = progress.resume.section;
+      next.title = progress.resume.title;
+    }
+    if (prior) {
+      Object.keys(prior).forEach((field) => {
+        if (field === "unit" || field === "section" || field === "title") return;
+        next[field] = prior[field];
+      });
+    }
+    const hasOwn = !!(progress.resume && progress.resume.unit);
+    const hasNest = Object.keys(next).some((field) => field !== "unit" && field !== "section" && field !== "title");
+    if (!hasOwn && !hasNest) return { seen: progress.seen || [], resume: null };
+    return { seen: progress.seen || [], resume: next };
   }
 
   function strugglingIds() {
     return practice
       .filter((row) => row.kind === "quiz" && row.outcome === "struggling")
-      .map((row) => row.item_id);
+      .map((row) => fromItem(row.item_id));
   }
 
   function rememberPractice(row) {
@@ -80,15 +180,42 @@
     else practice.push(row);
   }
 
+  let pushTail = Promise.resolve();
+
   async function pushState(progress) {
+    const run = pushTail.then(() => sendState(progress));
+    pushTail = run.then(
+      () => {},
+      () => {}
+    );
+    return run;
+  }
+
+  async function sendState(progress) {
     const client = window.CSAuth && CSAuth.client();
-    if (!client || !userId) return;
-    const { error } = await client.from("learner_state").upsert({
-      user_id: userId,
-      seen: progress.seen || [],
-      resume: progress.resume,
+    const uid = userId;
+    if (!client || !uid) return;
+    const { data, error } = await client.from("learner_state").select("seen,resume").eq("user_id", uid).maybeSingle();
+    if (uid !== userId) return;
+    if (error) {
+      lastSyncError = "ההתקדמות לא נשמרה בשרת.";
+      return;
+    }
+    cloudSeen = data && data.seen ? data.seen.slice() : [];
+    cloudResume = data && data.resume && typeof data.resume === "object" ? data.resume : null;
+    stateLoaded = true;
+    const payload = scopedState(progress);
+    const { error: writeError } = await client.from("learner_state").upsert({
+      user_id: uid,
+      seen: payload.seen,
+      resume: payload.resume,
     });
-    lastSyncError = error ? "ההתקדמות לא נשמרה בשרת." : "";
+    if (uid !== userId) return;
+    lastSyncError = writeError ? "ההתקדמות לא נשמרה בשרת." : "";
+    if (!writeError) {
+      cloudSeen = (payload.seen || []).slice();
+      cloudResume = payload.resume && typeof payload.resume === "object" ? payload.resume : null;
+    }
   }
 
   async function upsertPractice(rows) {
@@ -119,16 +246,16 @@
 
   function noteQuiz(qid, correct) {
     if (!userId || !qid) return;
-    upsertPractice([{ item_id: qid, kind: "quiz", outcome: correct ? "correct" : "struggling" }]);
+    upsertPractice([{ item_id: toItem(qid), kind: "quiz", outcome: correct ? "correct" : "struggling" }]);
   }
 
   function noteExam(exam, run) {
     if (!userId || !exam || !run) return;
-    const rows = [{ item_id: "exam:" + exam.id, kind: "exam", outcome: "completed" }];
+    const rows = [{ item_id: toItem("exam:" + exam.id), kind: "exam", outcome: "completed" }];
     (exam.partA || []).forEach((quiz) => {
       const picked = (run.answers || {})[quiz.id];
       rows.push({
-        item_id: "examq:" + exam.id + ":" + quiz.id,
+        item_id: toItem("examq:" + exam.id + ":" + quiz.id),
         kind: "exam",
         outcome: picked && picked === quiz.answer ? "correct" : "struggling",
       });
@@ -140,7 +267,7 @@
     if (!id || !title) return;
     labNames[id] = title;
     try {
-      localStorage.setItem("cs-lab-names", JSON.stringify(labNames));
+      localStorage.setItem(storageKey("cs-lab-names"), JSON.stringify(labNames));
     } catch (err) {
       /* מצב פרטי */
     }
@@ -149,31 +276,32 @@
   function noteLab(id) {
     if (!id) return { ok: false, reason: "id" };
     if (!userId) return { ok: false, reason: "auth" };
-    upsertPractice([{ item_id: id, kind: "lab", outcome: "completed" }]);
+    upsertPractice([{ item_id: toItem(id), kind: "lab", outcome: "completed" }]);
     return { ok: true };
   }
 
   function hasLab(id) {
-    return practice.some((row) => row.kind === "lab" && row.item_id === id && row.outcome === "completed");
+    return practice.some((row) => row.kind === "lab" && row.item_id === toItem(id) && row.outcome === "completed");
   }
 
   function hasBookmark(partId) {
-    return bookmarks.indexOf(partId) !== -1;
+    return bookmarks.indexOf(toItem(partId)) !== -1;
   }
 
   async function toggleBookmark(partId) {
     const client = window.CSAuth && CSAuth.client();
     if (!client || !userId) return { ok: false, reason: "auth" };
+    const stored = toItem(partId);
     const on = hasBookmark(partId);
     if (on) {
-      const { error } = await client.from("bookmarks").delete().eq("user_id", userId).eq("part_id", partId);
+      const { error } = await client.from("bookmarks").delete().eq("user_id", userId).eq("part_id", stored);
       if (error) return { ok: false, reason: "save" };
-      bookmarks = bookmarks.filter((id) => id !== partId);
+      bookmarks = bookmarks.filter((id) => id !== stored);
       return { ok: true, on: false };
     }
-    const { error } = await client.from("bookmarks").insert({ user_id: userId, part_id: partId });
+    const { error } = await client.from("bookmarks").insert({ user_id: userId, part_id: stored });
     if (error) return { ok: false, reason: "save" };
-    bookmarks.push(partId);
+    bookmarks.push(stored);
     return { ok: true, on: true };
   }
 
@@ -212,17 +340,21 @@
         lastSyncError = "המעקב מהשרת לא נטען. מוצג מה שנשמר במכשיר.";
         return;
       }
-      practice = pracRes.data || [];
-      bookmarks = (markRes.data || []).map((row) => row.part_id);
-      const local = readLocal();
-      const seeded = localStorage.getItem("cs-cloud-seeded:" + userId) === "1";
       const cloud = stateRes.data;
+      practice = (pracRes.data || []).filter((row) => ownsItem(row.item_id));
+      bookmarks = (markRes.data || []).map((row) => row.part_id).filter((id) => ownsItem(id));
+      cloudSeen = cloud && cloud.seen ? cloud.seen.slice() : [];
+      cloudResume = cloud && cloud.resume && typeof cloud.resume === "object" ? cloud.resume : null;
+      stateLoaded = true;
+      const local = readLocal();
+      const seededKey = storageKey("cs-cloud-seeded:" + userId);
+      const seeded = localStorage.getItem(seededKey) === "1";
       if (!cloudHas(cloud) && !practice.length && localHas(local) && !seeded && !sessionStorage.getItem(APPLIED)) {
         await pushState(local);
         if (local.wrong.length) {
-          await upsertPractice(local.wrong.map((qid) => ({ item_id: qid, kind: "quiz", outcome: "struggling" })));
+          await upsertPractice(local.wrong.map((qid) => ({ item_id: toItem(qid), kind: "quiz", outcome: "struggling" })));
         }
-        if (!lastSyncError) localStorage.setItem("cs-cloud-seeded:" + userId, "1");
+        if (!lastSyncError) localStorage.setItem(seededKey, "1");
       } else if (cloudHas(cloud) || practice.length) {
         if (!sessionStorage.getItem(APPLIED)) {
           try {
@@ -231,13 +363,14 @@
             /* מצב פרטי */
           }
         }
+        const bundle = bundleOf(cloud);
         writeLocal({
-          seen: (cloud && cloud.seen) || [],
+          seen: bundle ? bundle.seen || [] : (cloud && cloud.seen) || [],
           wrong: strugglingIds(),
-          resume: (cloud && cloud.resume) || null,
+          resume: bundle ? bundle.resume || null : resumeForLocal(cloud),
         });
         sessionStorage.setItem(APPLIED, userId);
-        localStorage.setItem("cs-cloud-seeded:" + userId, "1");
+        localStorage.setItem(seededKey, "1");
       }
       lastSyncError = "";
     } finally {
@@ -252,6 +385,7 @@
   }
 
   function quizLabel(id) {
+    id = fromItem(id);
     if (typeof findQuiz === "function") {
       const quiz = findQuiz(id);
       if (quiz) return quiz.prompt;
@@ -260,6 +394,7 @@
   }
 
   function examLabel(id) {
+    id = fromItem(id);
     const examId = id.slice("exam:".length);
     if (typeof examById === "function") {
       const exam = examById(examId);
@@ -269,6 +404,7 @@
   }
 
   function examQuestionLabel(id) {
+    id = fromItem(id);
     const parts = id.split(":");
     const examId = parts[1] || "";
     const qid = parts.slice(2).join(":");
@@ -281,6 +417,7 @@
   }
 
   function bookmarkLink(partId) {
+    partId = fromItem(partId);
     const course = window.COURSE && COURSE.id;
     const bits = partId.split(":");
     if (bits[0] !== "summary" || !course) return "#/me";
@@ -288,6 +425,7 @@
   }
 
   function bookmarkLabel(partId) {
+    partId = fromItem(partId);
     const bits = partId.split(":");
     const unit = bits[1];
     const pid = bits.slice(2).join(":");
@@ -361,15 +499,22 @@
             : listHtml(localWrong.map((id) => `<li>${esc(quizLabel(id))}</li>`), "אין טעויות שמורות במכשיר.")
         }
       </section>
-      <section class="section">
+      ${
+        !window.COURSE_DATA || (Array.isArray(COURSE_DATA.exams) && COURSE_DATA.exams.length) || exams.length || examHard.length
+          ? `<section class="section">
         <h2>סימולציות מבחן</h2>
         ${listHtml(exams.map((row) => `<li>${esc(examLabel(row.item_id))}</li>`), "עדיין לא נסגרה סימולציה בחשבון.")}
         ${examHard.length ? `<h3>שאלות מבחן לחזרה</h3>${listHtml(examHard.map((row) => `<li>${esc(examQuestionLabel(row.item_id))}</li>`), "")}` : ""}
-      </section>
+      </section>`
+          : ""
+      }
       <section class="section">
         <h2>מעבדות שהושלמו</h2>
         ${listHtml(
-          labs.map((row) => `<li>${esc(labNames[row.item_id] || LAB_NAMES[row.item_id] || row.item_id)}</li>`),
+          labs.map((row) => {
+            const id = fromItem(row.item_id);
+            return `<li>${esc(labNames[id] || LAB_NAMES[id] || id)}</li>`;
+          }),
           "עדיין לא סומנה מעבדה כהושלמה."
         )}
       </section>

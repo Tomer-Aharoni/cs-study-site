@@ -93,6 +93,8 @@ def clean(rows):
             fail("נמצאה שורה שאינה אובייקט.")
         kind = row.get("kind")
         item_id = row.get("id")
+        if isinstance(item_id, str) and re.match(r"^[0-9]{5}/", item_id):
+            continue
         if kind not in KINDS or not isinstance(item_id, str) or not 1 <= len(item_id) <= 200:
             fail("נמצא פריט מסוג לא מוכר.")
         title = row.get("title")

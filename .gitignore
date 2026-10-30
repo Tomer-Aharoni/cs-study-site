@@ -1,6 +1,10 @@
 ﻿_extract/
 _extract_run.py
 
+# Course sources: copyrighted and large. Only the index is tracked.
+sources/20425/*
+!sources/20425/INDEX.md
+
 # Ignore large audio files
 irena_lectures_mp3/
 *.pdf.txt

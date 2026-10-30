@@ -1,0 +1,505 @@
+/* מעבדות 20425. בלוק KaTeX של התשתית נשאר בסוף הקובץ. */
+
+.prob-lab,
+.prob-lab * {
+  box-sizing: border-box;
+}
+
+.prob-lab {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  padding: 1rem 1.05rem 1.1rem;
+  margin: 1rem 0;
+  min-width: 0;
+}
+
+.prob-lab [hidden] {
+  display: none !important;
+}
+
+.prob-lab-title {
+  margin: 0 0 0.3rem;
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.prob-lab-lead,
+.prob-def {
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.prob-def {
+  margin-bottom: 0.65rem;
+}
+
+.prob-controls,
+.prob-params {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12.5rem), 1fr));
+  gap: 0.75rem 1rem;
+}
+
+.prob-params,
+.prob-span,
+.prob-actions,
+.prob-stat-wide {
+  grid-column: 1 / -1;
+}
+
+.prob-field {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.prob-field-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.prob-field-label {
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.prob-lab output {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  border-radius: 8px;
+  padding: 0.1rem 0.45rem;
+  min-width: 2.8rem;
+  text-align: center;
+}
+
+.prob-lab select {
+  width: 100%;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  cursor: pointer;
+}
+
+.prob-lab select:hover {
+  border-color: var(--accent);
+}
+
+.prob-lab select:active {
+  border-color: var(--accent-ink);
+}
+
+.prob-lab input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  max-width: 100%;
+  height: 1.6rem;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.prob-lab input[type="range"]:focus {
+  outline: none;
+}
+
+.prob-lab input[type="range"]::-webkit-slider-runnable-track {
+  height: 0.35rem;
+  background: var(--line);
+  border-radius: 999px;
+}
+
+.prob-lab input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: -0.375rem;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--card);
+  box-shadow: var(--shadow-sm);
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+
+.prob-lab input[type="range"]:hover::-webkit-slider-thumb {
+  background: var(--accent-ink);
+}
+
+.prob-lab input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+.prob-lab input[type="range"]::-moz-range-track {
+  height: 0.35rem;
+  background: var(--line);
+  border: none;
+  border-radius: 999px;
+}
+
+.prob-lab input[type="range"]::-moz-range-thumb {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.prob-lab input[type="range"]:hover::-moz-range-thumb {
+  background: var(--accent-ink);
+}
+
+.prob-lab input[type="range"]:active::-moz-range-thumb {
+  transform: scale(1.12);
+}
+
+.prob-btn,
+.prob-toggle {
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+.prob-actions .prob-btn,
+.prob-actions .prob-toggle {
+  width: 100%;
+}
+
+.prob-btn {
+  background: var(--accent);
+  color: var(--bg);
+  border: 1px solid var(--accent);
+}
+
+.prob-btn:hover {
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+  color: var(--bg);
+}
+
+.prob-btn:active,
+.prob-toggle:active {
+  transform: translateY(1px);
+}
+
+.prob-toggle {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  text-align: right;
+}
+
+.prob-toggle:hover {
+  border-color: var(--accent);
+}
+
+.prob-toggle[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.prob-lab select:focus-visible,
+.prob-lab input:focus-visible,
+.prob-lab button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.prob-chart {
+  background: var(--lab);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.prob-svg {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+}
+
+.prob-bayes {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.prob-tick {
+  fill: var(--muted);
+  font-size: 12px;
+  font-family: Heebo, "Segoe UI", Arial, sans-serif;
+}
+
+.prob-mu {
+  fill: var(--accent-ink);
+  font-size: 13px;
+  font-family: Heebo, "Segoe UI", Arial, sans-serif;
+}
+
+.prob-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.prob-axis {
+  stroke: var(--muted);
+  stroke-width: 1.25;
+}
+
+.prob-bar {
+  fill: var(--accent);
+  opacity: 0.38;
+}
+
+.prob-bar-on {
+  opacity: 1;
+}
+
+.prob-mark {
+  stroke: var(--bad);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+
+.prob-shade {
+  fill: var(--accent);
+  opacity: 0.28;
+}
+
+.prob-curve {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.25;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.prob-mean {
+  stroke: var(--accent-ink);
+  stroke-width: 1.25;
+  stroke-dasharray: 4 3;
+}
+
+.prob-hist {
+  fill: var(--accent);
+  opacity: 0.82;
+}
+
+.prob-pmf {
+  fill: var(--ok);
+  opacity: 0.88;
+}
+
+.prob-cell.tp { fill: var(--ok); }
+.prob-cell.fn { fill: var(--bad); }
+.prob-cell.tn { fill: var(--code-inline); }
+.prob-fp-bg { fill: var(--accent); }
+.prob-fp-line { stroke: var(--card); stroke-width: 1.25; }
+
+.prob-note {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.prob-note:empty {
+  display: none;
+}
+
+.prob-readout {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12.5rem), 1fr));
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.prob-stat {
+  background: var(--lab);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  min-width: 0;
+}
+
+.prob-k {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.prob-math,
+.prob-num {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  overflow-x: auto;
+}
+
+.prob-num {
+  display: block;
+  font-size: 1.02rem;
+}
+
+.prob-sub {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.prob-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.9rem;
+  list-style: none;
+  margin: 0.55rem 0 0;
+  padding: 0;
+}
+
+.prob-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.prob-swatch {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+
+.prob-swatch.tp { background: var(--ok); }
+.prob-swatch.fn { background: var(--bad); }
+.prob-swatch.fp {
+  background: repeating-linear-gradient(-45deg, var(--accent) 0 3px, var(--card) 3px 5px);
+}
+.prob-swatch.tn { background: var(--code-inline); }
+
+.prob-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (min-width: 720px) {
+  .prob-actions .prob-btn,
+  .prob-actions .prob-toggle {
+    width: auto;
+  }
+}
+
+@media (max-width: 420px) {
+  .prob-lab {
+    padding: 0.75rem;
+  }
+
+  .prob-readout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prob-lab button,
+  .prob-lab select,
+  .prob-lab input[type="range"]::-webkit-slider-thumb,
+  .prob-lab input[type="range"]::-moz-range-thumb {
+    transition: none;
+  }
+
+  .prob-lab button:active,
+  .prob-lab input[type="range"]:active::-webkit-slider-thumb,
+  .prob-lab input[type="range"]:active::-moz-range-thumb {
+    transform: none;
+  }
+}
+
+.prob-table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+}
+
+.prob-table th,
+.prob-table td {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.prob-table thead th {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+.prob-table tbody th {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.prob-table td {
+  background: var(--card);
+  font-weight: 500;
+}
+
+.prob-table .katex {
+  font-size: 1em;
+}
+
+/* === katex-rtl (infrastructure) === */
+.katex {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.katex-display {
+  direction: ltr;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+}
+/* === /katex-rtl === */

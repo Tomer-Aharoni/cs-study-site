@@ -1,0 +1,55 @@
+window.UNIT_PARTS = {
+  "1": [
+    { id: "a", title: "ספירה ותמורות", sections: ["p1-counting", "p1-permutations", "p1-sampling"] },
+    { id: "b", title: "צירופים ובינום", sections: ["p1-combinations", "p1-binomial-id", "p1-binomial-thm"] },
+    { id: "c", title: "מולטינום וחלוקה", sections: ["p1-multinomial", "p1-stars-bars"] },
+    { id: "d", title: "בחירת מודל ומוקשים", sections: ["p1-model-choice", "p1-pitfalls", "p1-cs"] },
+  ],
+  "2": [
+    { id: "a", title: "מרחב ומאורעות", sections: ["p2-space", "p2-sets", "p2-demorgan"] },
+    { id: "b", title: "אקסיומות ותכונות", sections: ["p2-axioms", "p2-derived", "p2-inclusion"] },
+    { id: "c", title: "מרחב שווה־הסתברות", sections: ["p2-symmetric", "p2-birthday", "p2-matching"] },
+    { id: "d", title: "רציפות ופירוש", sections: ["p2-continuity", "p2-belief"] },
+  ],
+  "3": [
+    { id: "a", title: "מותנית ונוסחת הכפל", sections: ["p3-conditional", "p3-reduced", "p3-chain"] },
+    { id: "b", title: "שלמה, בייס ויחס סיכויים", sections: ["p3-total", "p3-bayes", "p3-odds"] },
+    { id: "c", title: "אי־תלות", sections: ["p3-indep2", "p3-indep-n", "p3-pairwise"] },
+    { id: "d", title: "חזרות ומידת הסתברות", sections: ["p3-trials", "p3-points", "p3-cond-measure"] },
+  ],
+  "4": [
+    { id: "a", title: "משתנה מקרי והתפלגות", sections: ["p4-rv", "p4-pmf", "p4-cdf"] },
+    { id: "b", title: "תוחלת ושונות", sections: ["p4-expect", "p4-lotus", "p4-var"] },
+    { id: "c", title: "אחיד בדיד, ברנולי, בינומית ופואסון", sections: ["p4-dunif", "p4-bernoulli", "p4-binomial", "p4-poisson"] },
+    { id: "d", title: "גיאומטרית, היפרגיאומטרית וסכומים", sections: ["p4-geometric", "p4-negbin", "p4-hyper", "p4-sums", "p4-which"] },
+  ],
+  "5": [
+    { id: "a", title: "צפיפות, התפלגות ותוחלת", sections: ["p5-density", "p5-cdf", "p5-expect", "p5-lotus", "p5-tail"] },
+    { id: "b", title: "אחידה ונורמלית", sections: ["p5-uniform", "p5-normal", "p5-binom-normal"] },
+    { id: "c", title: "מעריכית, סיכון וגמא", sections: ["p5-exp", "p5-hazard", "p5-gamma"] },
+    { id: "d", title: "פונקציה של משתנה מקרי", sections: ["p5-transform"] },
+  ],
+  "6": [
+    { id: "a", title: "התפלגות משותפת ושולית", sections: ["p6-joint-cdf", "p6-joint-pmf", "p6-joint-pdf", "p6-marginal"] },
+    { id: "b", title: "אי־תלות והתפלגות מולטינומית", sections: ["p6-independence", "p6-multinomial"] },
+    { id: "c", title: "סכומים", sections: ["p6-conv-discrete", "p6-conv-continuous", "p6-named-sums"] },
+    { id: "d", title: "התניה, סדר והרחבות", sections: ["p6-conditional", "p6-order", "p6-jacobian"] },
+  ],
+  "7": [
+    { id: "a", title: "תוחלת ומשתני אינדיקטור", sections: ["p7-eg", "p7-linearity", "p7-indicators", "p7-product"] },
+    { id: "b", title: "שונות משותפת ומתאם", sections: ["p7-covariance", "p7-var-sum", "p7-correlation", "p7-uncorrelated"] },
+    { id: "c", title: "התניה", sections: ["p7-cond-exp", "p7-total-exp", "p7-cond-var"] },
+    { id: "d", title: "פונקציה יוצרת מומנטים", sections: ["p7-mgf", "p7-mgf-id"] },
+  ],
+  "8": [
+    { id: "a", title: "אי־שוויונות", sections: ["p8-why", "p8-markov", "p8-chebyshev"] },
+    { id: "b", title: "החוק החלש", sections: ["p8-converge", "p8-wlln"] },
+    { id: "c", title: "משפט הגבול המרכזי", sections: ["p8-clt", "p8-clt-approx"] },
+  ],
+  "9": [
+    { id: "a", title: "מדגם ואומד", sections: ["p9-sample", "p9-statistic", "p9-point"] },
+    { id: "b", title: "MSE ונראות מקסימלית", sections: ["p9-mse", "p9-mle"] },
+    { id: "c", title: "רווח סמך", sections: ["p9-ci-mean"] },
+    { id: "d", title: "מבחנים ויחס נראות", sections: ["p9-test", "p9-lr"] },
+  ],
+};

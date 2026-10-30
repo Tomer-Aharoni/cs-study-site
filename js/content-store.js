@@ -3,6 +3,40 @@
   let loaded = [];
   let cloudIds = new Set();
 
+  function contentCourse() {
+    return (window.COURSE && COURSE.id) || "20937";
+  }
+
+  function isForeignId(id) {
+    return /^[0-9]{5}\//.test(String(id || ""));
+  }
+
+  function storedId(id) {
+    if (!id || String(id).indexOf("banner:") === 0) return id;
+    const course = contentCourse();
+    if (course === "20937") return id;
+    const prefix = course + "/";
+    if (String(id).indexOf(prefix) === 0) return id;
+    return prefix + id;
+  }
+
+  function forThisCourse(row) {
+    if (!row || typeof row.id !== "string") return false;
+    if (row.kind === "banner" || row.id.indexOf("banner:") === 0) return true;
+    const course = contentCourse();
+    if (course === "20937") return !isForeignId(row.id);
+    return row.id.indexOf(course + "/") === 0;
+  }
+
+  function localRow(row) {
+    if (!forThisCourse(row)) return null;
+    const course = contentCourse();
+    if (course === "20937" || row.kind === "banner" || row.id.indexOf("banner:") === 0) return row;
+    const prefix = course + "/";
+    if (row.id.indexOf(prefix) !== 0) return null;
+    return Object.assign({}, row, { id: row.id.slice(prefix.length) });
+  }
+
   function danger(text) {
     const blob = String(text || "");
     return (
@@ -36,7 +70,7 @@
     const course = window.COURSE;
     if (!course) return items;
     items.push({
-      id: "course",
+      id: storedId("course"),
       kind: "course",
       unit_id: null,
       sort: 0,
@@ -51,7 +85,7 @@
     (course.units || []).forEach((unit, index) => {
       const doc = lesson(unit.id);
       items.push({
-        id: "unit:" + unit.id,
+        id: storedId("unit:" + unit.id),
         kind: "unit_meta",
         unit_id: unit.id,
         sort: index,
@@ -66,7 +100,7 @@
       });
       ((doc && doc.sections) || []).forEach((section, si) => {
         items.push({
-          id: "section:" + unit.id + ":" + section.id,
+          id: storedId("section:" + unit.id + ":" + section.id),
           kind: "section",
           unit_id: unit.id,
           sort: si,
@@ -78,7 +112,7 @@
     });
     (window.SUMMARY_PROSE || []).forEach((chapter, ci) => {
       items.push({
-        id: "summary:" + chapter.unit,
+        id: storedId("summary:" + chapter.unit),
         kind: "summary_unit",
         unit_id: chapter.unit,
         sort: ci,
@@ -88,7 +122,7 @@
       });
       (chapter.parts || []).forEach((part, pi) => {
         items.push({
-          id: "summary:" + chapter.unit + ":" + part.id,
+          id: storedId("summary:" + chapter.unit + ":" + part.id),
           kind: "summary_part",
           unit_id: chapter.unit,
           sort: pi,
@@ -100,7 +134,7 @@
     });
     (window.SUMMARY_CARDS || []).forEach((card, i) => {
       items.push({
-        id: "card:" + card.id,
+        id: storedId("card:" + card.id),
         kind: "card",
         unit_id: card.unit,
         sort: i,
@@ -116,7 +150,7 @@
     (course.units || []).forEach((unit) => {
       quizList(unit.id).forEach((quiz, i) => {
         items.push({
-          id: "quiz:" + unit.id + ":" + quiz.id,
+          id: storedId("quiz:" + unit.id + ":" + quiz.id),
           kind: "quiz",
           unit_id: unit.id,
           sort: i,
@@ -134,7 +168,7 @@
     });
     (window.EXAM_SIMS || []).forEach((exam, ei) => {
       items.push({
-        id: "exam:" + exam.id,
+        id: storedId("exam:" + exam.id),
         kind: "exam_meta",
         unit_id: null,
         sort: ei,
@@ -148,7 +182,7 @@
       });
       (exam.partA || []).forEach((quiz, i) => {
         items.push({
-          id: "exam:" + exam.id + ":a:" + quiz.id,
+          id: storedId("exam:" + exam.id + ":a:" + quiz.id),
           kind: "exam_question",
           unit_id: null,
           sort: i,
@@ -166,7 +200,7 @@
       });
       (exam.partB || []).forEach((quiz, i) => {
         items.push({
-          id: "exam:" + exam.id + ":b:" + quiz.id,
+          id: storedId("exam:" + exam.id + ":b:" + quiz.id),
           kind: "exam_question",
           unit_id: null,
           sort: 100 + i,
@@ -216,6 +250,7 @@
   function applyItems(rows) {
     const course = window.COURSE;
     if (!course || !rows) return;
+    rows = rows.map(localRow).filter(Boolean);
     rows.forEach((row) => {
       const body = row.body || {};
       if (row.kind === "banner") {
@@ -494,7 +529,15 @@
   function applyPublished() {
     const rows = window.PUBLISHED_CONTENT;
     if (!Array.isArray(rows) || !rows.length) return;
-    const safe = rows.filter((row) => {
+    const course = contentCourse();
+    const scoped = rows.map((row) => {
+      if (!row || typeof row !== "object" || course === "20937") return row;
+      if (row.kind === "banner" || (typeof row.id === "string" && row.id.indexOf("banner:") === 0)) return row;
+      if (typeof row.id === "string" && row.id.indexOf(course + "/") === 0) return row;
+      if (typeof row.id !== "string") return row;
+      return Object.assign({}, row, { id: course + "/" + row.id });
+    });
+    const safe = scoped.filter((row) => {
       if (!row || typeof row.id !== "string" || typeof row.kind !== "string") return false;
       const blob = (row.title || "") + " " + (row.html || "") + " " + JSON.stringify(row.body || {});
       return !danger(blob);
@@ -520,9 +563,14 @@
   function catalog() {
     const map = new Map();
     snapshot().forEach((item) => map.set(item.id, item));
-    loaded.forEach((item) => map.set(item.id, item));
+    loaded.forEach((item) => {
+      if (!forThisCourse(item)) return;
+      map.set(item.id, item);
+    });
     return Array.from(map.values());
   }
+
+  window.csStoredId = storedId;
 
   window.CSContent = {
     prepare: prepare,

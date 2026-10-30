@@ -4813,6 +4813,7 @@ a.card,
 }
 
 @media print {
+  .area-switcher,
   .tool-dock,
   .topbar,
   .stage-tools,
@@ -5280,5 +5281,63 @@ a.card,
     top: auto;
     bottom: 1rem;
     transform: none;
+  }
+}
+
+.area-switcher {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  padding: 0.15rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+}
+
+.area-switch {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-decoration: none;
+  padding: 0.28rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.area-switch:hover {
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+}
+
+.area-switch:focus-visible {
+  color: var(--accent-ink);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.area-switch:active {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+.area-switch.is-current {
+  color: var(--ink);
+  background: var(--accent-soft);
+  border-color: var(--line);
+}
+
+.stage-tools .area-switcher {
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: 16px;
+  max-width: 14rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .area-switch {
+    transition: none;
   }
 }

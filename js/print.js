@@ -10,7 +10,8 @@ var printState = {
 
 function loadPrintState() {
   try {
-    const raw = JSON.parse(sessionStorage.getItem("cs-print") || "");
+    const key = window.csStorageKey ? csStorageKey("cs-print") : "cs-print";
+    const raw = JSON.parse(sessionStorage.getItem(key) || "");
     if (raw && Array.isArray(raw.selected)) raw.selected.forEach((id) => printState.selected.add(id));
     if (raw && typeof raw.labs === "boolean") printState.labs = raw.labs;
     if (raw && typeof raw.exercises === "boolean") printState.exercises = raw.exercises;
@@ -23,8 +24,9 @@ function loadPrintState() {
 
 function savePrintState() {
   try {
+    const key = window.csStorageKey ? csStorageKey("cs-print") : "cs-print";
     sessionStorage.setItem(
-      "cs-print",
+      key,
       JSON.stringify({
         selected: [...printState.selected],
         labs: printState.labs,
