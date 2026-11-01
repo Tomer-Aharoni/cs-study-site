@@ -577,7 +577,7 @@
     box.querySelector("[data-admin-body]").innerHTML = `<div class="admin-split">
       <div>
         <p class="admin-actions"><button type="button" class="primary" data-admin-import>ייבוא מהקבצים המצורפים</button></p>
-        <p class="muted">שמירה כאן נשארת בשרת. כדי לכתוב אותה לקובץ בפרויקט הריצו במחשב הזה, בתיקיית האתר, <code dir="ltr">py scripts/publish-content.py --write</code>. הפקודה לא פתוחה מהרשת, והיא כותבת רק את <code dir="ltr">data/published-content.js</code>.</p>
+        <p class="muted">שמירה כאן נשארת בשרת. כדי לכתוב אותה לקובץ בפרויקט הריצו במחשב הזה, בתיקיית האתר, <code dir="ltr">py scripts/publish-content.py --write</code>. הפקודה לא פתוחה מהרשת, והיא כותבת רק את <code dir="ltr">data/20937/published-content.js</code>.</p>
         <div class="admin-filters">
           <label>סוג<select data-admin-kind>${KINDS.map(([id, label]) => `<option value="${id}"${filterKind === id ? " selected" : ""}>${label}</option>`).join("")}</select></label>
           <label>יחידה<select data-admin-unit>${units.map((id) => `<option value="${id}"${filterUnit === id ? " selected" : ""}>${id === "all" ? "הכל" : "יחידה " + id}</option>`).join("")}</select></label>

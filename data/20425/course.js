@@ -82,12 +82,12 @@ window.SUMMARY_DETAIL = window.SUMMARY_DETAIL || {};
   for (let n = 1; n <= 9; n += 1) {
     const id = String(n);
     units[id] = {
-      main: "data/20425/unit" + n + ".js?v=1",
+      main: "data/20425/units/unit" + n + ".js?v=1",
       rest: [],
-      interact: "data/20425/unit" + n + "-interact.js?v=1",
+      interact: "data/20425/units/unit" + n + "-interact.js?v=1",
       quizzes: "UNIT" + n + "_QUIZZES",
     };
-    summary.push("data/20425/unit" + n + "-summary.js?v=1");
+    summary.push("data/20425/summary/unit" + n + "-summary.js?v=1");
   }
   window.COURSE_DATA = {
     units: units,

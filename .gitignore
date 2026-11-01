@@ -1,15 +1,18 @@
-﻿_extract/
-_extract_run.py
+﻿# Old dump folders. Kept ignored so a re-run does not land files in git.
+_extract/
+temp_unzip/
+irena_lectures_mp3/
 
-# Course sources: copyrighted and large. Only the index is tracked.
+# Course sources: copyrighted and large.
+# Tracked: each course INDEX, sources/README.md, and 20937/notes/notebookllm.
 sources/20425/*
 !sources/20425/INDEX.md
+sources/20937/*
+!sources/20937/INDEX.md
+!sources/20937/notes/
 
-# Ignore large audio files
-irena_lectures_mp3/
 *.pdf.txt
 *.py
-temp_unzip/
 *.txt
 guide.md
 .cursor/

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Build collapsible homework HTML into data/*-hw.js from lecturer extracts."""
+"""Build collapsible homework HTML into data/20937/units/*-hw.js from lecturer extracts."""
 from pathlib import Path
 
-OUT = Path(r"C:\Users\tomer\source\cs-study-site\data")
-LEC = Path(r"C:\Users\tomer\source\cs-study-site\_extract\lecturer")
+OUT = Path(r"C:\Users\tomer\source\cs-study-site\data\20937\units")
+LEC = Path(r"C:\Users\tomer\source\cs-study-site\sources\20937\text\lecturer")
 
 
 def esc(s: str) -> str:

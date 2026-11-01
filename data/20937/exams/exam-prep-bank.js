@@ -1,4 +1,4 @@
-/* שאלות מתוך notebookLLM_review/שאלות לדפנסיבי.pdf
+/* שאלות מתוך sources/20937/notes/notebookllm/שאלות לדפנסיבי.pdf
    מנוסחות מחדש לתרגול. בלי מטען ובלי שרשרת ניצול. */
 
 (window.UNIT1_QUIZZES = window.UNIT1_QUIZZES || []).push(

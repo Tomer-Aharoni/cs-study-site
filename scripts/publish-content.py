@@ -3,8 +3,8 @@
 Runs only on the machine where you start it. It does not listen on the network
 and does not accept a service-role key.
 
-Each published item replaces the matching object in its original data/*.js file.
-Banners have no source object, so they remain in data/published-content.js.
+Each published item replaces the matching object in its original data/20937 file.
+Banners have no source object, so they remain in data/20937/published-content.js.
 """
 
 import json
@@ -16,8 +16,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG = ROOT / "js" / "config.js"
-TARGET = (ROOT / "data" / "published-content.js").resolve()
-DATA = (ROOT / "data").resolve()
+DATA = (ROOT / "data" / "20937").resolve()
+UNITS = DATA / "units"
+EXAMS = DATA / "exams"
+SUMMARY = DATA / "summary"
+TARGET = (DATA / "published-content.js").resolve()
 UNIT_IDS = tuple(str(number) for number in range(1, 8))
 UNIT_KINDS = {"unit_meta", "section", "quiz"}
 KINDS = {
@@ -401,12 +404,17 @@ def render_value(old_raw, value, indent):
     fail("סוג ערך לא נתמך להטמעה בקובץ המקורי.")
 
 
+def inside(path):
+    resolved = path.resolve()
+    if not resolved.is_relative_to(DATA):
+        fail("יעד הכתיבה מחוץ לתיקיית data/20937.")
+    return resolved
+
+
 def existing_files(paths):
     found = []
     for path in paths:
-        resolved = path.resolve()
-        if resolved.parent != DATA:
-            fail("יעד הכתיבה מחוץ לתיקיית data.")
+        resolved = inside(path)
         if resolved.is_file():
             found.append(resolved)
     return found
@@ -448,11 +456,11 @@ def replace_props(texts, paths, predicate, label, updates):
 
 
 def unit_content_files(unit_id):
-    return existing_files([DATA / ("unit%s.js" % unit_id), *sorted(DATA.glob("unit%s-part-*.js" % unit_id))])
+    return existing_files([UNITS / ("unit%s.js" % unit_id), *sorted(UNITS.glob("unit%s-part-*.js" % unit_id))])
 
 
 def quiz_files(unit_id):
-    return existing_files([*sorted(DATA.glob("unit%s*.js" % unit_id)), DATA / "exam-prep-bank.js"])
+    return existing_files([*sorted(UNITS.glob("unit%s*.js" % unit_id)), EXAMS / "exam-prep-bank.js"])
 
 
 def string_list(value, label):
@@ -497,7 +505,7 @@ def embed_row(texts, row):
             lesson_updates.append(("title", row["title"]))
         if isinstance(body.get("goals"), list):
             lesson_updates.append(("goals", string_list(body["goals"], row["id"])))
-        changed = replace_props(texts, [DATA / ("unit%s.js" % unit_id)], lesson_obj, row["id"], lesson_updates) or changed
+        changed = replace_props(texts, [UNITS / ("unit%s.js" % unit_id)], lesson_obj, row["id"], lesson_updates) or changed
         course_updates = []
         if row["title"]:
             course_updates.append(("title", row["title"]))
@@ -546,7 +554,7 @@ def embed_row(texts, row):
             updates.append(("title", row["title"]))
         if isinstance(body.get("intro"), str):
             updates.append(("intro", body["intro"]))
-        return replace_props(texts, [DATA / "summary-prose.js"], chapter_obj, row["id"], updates)
+        return replace_props(texts, [SUMMARY / "summary-prose.js"], chapter_obj, row["id"], updates)
     if kind == "summary_part":
         prefix = "summary:%s:" % row["unit_id"]
         part_id = row["id"][len(prefix) :]
@@ -557,7 +565,7 @@ def embed_row(texts, row):
         updates = [("html", row["html"] or "")]
         if row["title"]:
             updates.insert(0, ("title", row["title"]))
-        return replace_props(texts, [DATA / "summary-prose.js"], part_obj, row["id"], updates)
+        return replace_props(texts, [SUMMARY / "summary-prose.js"], part_obj, row["id"], updates)
     if kind == "card":
         card_id = row["id"][len("card:") :]
 
@@ -573,9 +581,9 @@ def embed_row(texts, row):
             updates.append(("kind", body["cardKind"]))
         if isinstance(body.get("body"), str):
             updates.append(("body", body["body"]))
-        changed = replace_props(texts, sorted(DATA.glob("unit*-interact.js")), card_obj, row["id"], updates)
+        changed = replace_props(texts, sorted(UNITS.glob("unit*-interact.js")), card_obj, row["id"], updates)
         if isinstance(body.get("detail"), str):
-            detail_path = (DATA / "summary-detail.js").resolve()
+            detail_path = (SUMMARY / "summary-detail.js").resolve()
 
             def detail_obj(text, obj):
                 return card_id in obj["props"]
@@ -597,7 +605,7 @@ def embed_row(texts, row):
             updates.append(("pick", int(body["pick"])))
         if isinstance(body.get("note"), str):
             updates.append(("note", body["note"]))
-        return replace_props(texts, [DATA / "exam-sims.js", DATA / "exam-sims-recon.js"], exam_obj, row["id"], updates)
+        return replace_props(texts, [EXAMS / "exam-sims.js", EXAMS / "exam-sims-recon.js"], exam_obj, row["id"], updates)
     if kind == "exam_question":
         exam_id = body.get("examId")
         qid = body.get("qid")
@@ -630,7 +638,7 @@ def embed_row(texts, row):
             updates.append(("proposed", row["html"] or ""))
         return replace_props(
             texts,
-            [DATA / "exam-sims.js", DATA / "exam-sims-recon.js"],
+            [EXAMS / "exam-sims.js", EXAMS / "exam-sims-recon.js"],
             question_obj,
             row["id"],
             updates,
@@ -662,9 +670,7 @@ def published_text(rows):
 
 
 def write_atomic(path, text):
-    resolved = path.resolve()
-    if resolved.parent != DATA:
-        fail("יעד הכתיבה מחוץ לתיקיית data.")
+    resolved = inside(path)
     temporary = resolved.with_name(resolved.name + ".tmp")
     temporary.write_text(text, encoding="utf-8", newline="")
     temporary.replace(resolved)
@@ -692,7 +698,7 @@ def main():
     else:
         print("תוכן המקור זהה לתוכן שפורסם.")
     if leftovers:
-        print("%d באנרים יישארו ב-data/published-content.js." % len(leftovers))
+        print("%d באנרים יישארו ב-data/20937/published-content.js." % len(leftovers))
     if not write:
         print("בדיקה בלבד. לכתיבה הריצו שוב עם --write")
         return
@@ -700,7 +706,7 @@ def main():
         write_atomic(path, texts[path])
         print("נכתב %s" % path.relative_to(ROOT).as_posix())
     write_atomic(TARGET, published_text(leftovers))
-    print("נכתב data/published-content.js (%d באנרים)" % len(leftovers))
+    print("נכתב data/20937/published-content.js (%d באנרים)" % len(leftovers))
 
 
 if __name__ == "__main__":

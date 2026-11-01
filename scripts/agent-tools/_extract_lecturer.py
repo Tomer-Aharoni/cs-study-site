@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 warnings.filterwarnings("ignore")
 from pypdf import PdfReader
 
-OUT = Path(r"C:\Users\tomer\source\cs-study-site\_extract\lecturer")
+OUT = Path(r"C:\Users\tomer\source\cs-study-site\sources\20937\text\lecturer")
 OUT.mkdir(parents=True, exist_ok=True)
 DL = Path(r"C:\Users\tomer\Downloads")
 FILES = [

@@ -32,7 +32,7 @@ def main():
         print("Falling back to 'small' model...")
         model = whisper.load_model("small")
 
-    target_dir = os.path.join(os.path.dirname(__file__), '..', 'irena_lectures_mp3')
+    target_dir = os.path.join(os.path.dirname(__file__), '..', 'sources', '20937', 'audio', 'irena')
     
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
@@ -47,7 +47,7 @@ def main():
             files_to_transcribe.append(os.path.join(target_dir, f))
 
     if not files_to_transcribe:
-        print("No media files found! Please make sure your recordings are in 'irena_lectures_mp3' and run again.")
+        print("No media files found! Please make sure your recordings are in 'sources/20937/audio/irena' and run again.")
         return
 
     for file_path in files_to_transcribe:

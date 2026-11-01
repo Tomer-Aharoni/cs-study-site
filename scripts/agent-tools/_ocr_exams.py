@@ -10,8 +10,8 @@ import pypdfium2 as pdfium
 import pytesseract
 
 DOWNLOADS = Path(r"C:\Users\tomer\Downloads")
-OUT = Path(r"C:\Users\tomer\source\cs-study-site\_extract\ocr")
-TESSDATA = Path(r"C:\Users\tomer\source\cs-study-site\_extract\tessdata")
+OUT = Path(r"C:\Users\tomer\source\cs-study-site\sources\20937\text\exams-ocr")
+TESSDATA = Path(r"C:\Users\tomer\source\cs-study-site\sources\20937\tools\tessdata")
 TESS = Path(r"C:\Program Files\Tesseract-OCR\tesseract.exe")
 
 pytesseract.pytesseract.tesseract_cmd = str(TESS)

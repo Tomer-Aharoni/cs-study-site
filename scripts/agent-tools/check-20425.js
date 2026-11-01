@@ -49,9 +49,14 @@ function walk(value, where) {
 
 for (const unit of COURSE.units) {
   const n = unit.id;
-  for (const suffix of ["", "-interact", "-summary"]) {
+  const files = [
+    ["units", ""],
+    ["units", "-interact"],
+    ["summary", "-summary"],
+  ];
+  for (const [folder, suffix] of files) {
     try {
-      require(path.join(root, `data/20425/unit${n}${suffix}.js`));
+      require(path.join(root, `data/20425/${folder}/unit${n}${suffix}.js`));
     } catch (err) {
       problems.push(`unit${n}${suffix}.js: ${err.message}`);
     }

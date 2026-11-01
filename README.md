@@ -39,7 +39,7 @@ update public.profiles set role = 'admin' where email = 'you@gmail.com';
 py scripts/publish-content.py --write
 ```
 
-הפקודה רצה רק אצלכם. היא קוראת את התוכן הציבורי וכותבת קובץ נתונים אחד, `data/published-content.js`. אין לה כתובת רשת, והיא לא נוגעת בשאר הקבצים. אחר כך שומרים את הקובץ בגיט.
+הפקודה רצה רק אצלכם. היא קוראת את התוכן הציבורי וכותבת את הבאנרים אל `data/20937/published-content.js`, ואת שאר הפריטים אל קובץ המקור שלהם תחת `data/20937/`. אין לה כתובת רשת. אחר כך שומרים את הקבצים בגיט.
 
 אין דגל `--course`. הסקריפט כותב רק את קבצי 20937. שורות שמזהה שלהן מתחיל ב־`20425/` נדלגות, כדי שתוכן של 20425 בשרת לא ישבור את הפרסום של 20937. פרסום של 20425 אל `data/20425/` עדיין לא ממומש.
 
@@ -47,16 +47,18 @@ py scripts/publish-content.py --write
 
 ## מבנה
 
-- `index.html` — מעטפת של 20937. סדר התגיות קובע את סדר הטעינה.
-- `prob.html` — מעטפת של 20425. טוענת `data/20425/` ואת KaTeX, ולא את `data/content-origin.js`.
-- `app.js` — ניווט, מעטפת, והאזנה ללחיצות. הפונקציות גלובליות כי `js/content-store.js` קורא להן.
-- `js/labs.js`, `js/summary.js`, `js/practice.js`, `js/print.js` — אותן פונקציות, מחולקות לפי מסך. נטענות לפני `app.js`.
-- `js/ai.js` — עוזר לטקסט מסומן. נטען אחרי `app.js`.
-- `styles.css` — עיצוב
+- `index.html` — מעטפת של 20937. סדר התגיות קובע את סדר הטעינה. הכתובת נשארת בשורש.
+- `prob.html` — מעטפת של 20425. טוענת `data/20425/` ואת KaTeX, ולא את `data/20937/content-origin.js`.
+- `js/app.js` — ניווט, מעטפת, והאזנה ללחיצות. הפונקציות גלובליות כי `js/content-store.js` קורא להן.
+- `js/labs.js`, `js/summary.js`, `js/practice.js`, `js/print.js` — אותן פונקציות, מחולקות לפי מסך. נטענות לפני `js/app.js`.
+- `js/ai.js` — עוזר לטקסט מסומן. נטען אחרי `js/app.js`.
+- `css/styles.css` — עיצוב משותף. `css/prob.css` — עיצוב של 20425.
 - `js/auth.js`, `js/banners.js`, `js/content-store.js`, `js/progress-sync.js`, `js/admin.js` — התחברות, באנרים, שמירת תוכן והתקדמות
-- `data/` — תוכן הקורס. נשאר בתיקייה שטוחה: `index.html` ו־`scripts/publish-content.py` פונים לקבצים בשם `data/unitN*.js`.
+- `data/20937/` — תוכן 20937: `units/`, `exams/`, `summary/`, `labs/`, וקבצי המניפסט ליד השורש של הקורס.
+- `data/20425/` — תוכן 20425: `units/`, `summary/`, וקבצי המניפסט ליד השורש של הקורס.
 - `scripts/publish-content.py` — העתקת תוכן שפורסם מהשרת אל קבצי המקור
 - `scripts/agent-tools/` — כלי עיבוד מקורות והערות שלא נטענים באתר. נשארים להמשך עבודה של סוכנים.
-- `notebookLLM_review/` — מקורות עומק לסיכומים. לא חלק מהאתר הרץ.
-- `sources/20425/` — חומרי הקורס 20425 וטקסט שחולץ מהם, מחוץ לגיט. בגיט נשמרת רק המפה, `sources/20425/INDEX.md`, שמסבירה גם איך לשחזר את התיקייה.
+- `sources/` — חומרי המקור, מחוץ לאתר הרץ. המפה: `sources/README.md`.
+- `sources/20425/` — הסתברות. בגיט רק `INDEX.md`. העץ משקף את תיקיית ההורדה, כי `ingest-20425-sources.py` מעתיק אותה כמו שהיא.
+- `sources/20937/` — תכנות מערכות דפנסיבי, מחולק לפי סוג מקור (`raw`, `text`, `audio`, `notes`). בגיט: `INDEX.md` והערות `notes/notebookllm`.
 - `scripts/agent-tools/20425-brief.md` — החוזה לסוכנים שכותבים תוכן לאזור 20425: קבצים, מזהים, נוסחאות, מעבדות ומקורות. `check-20425.js` בודק את התוכן.

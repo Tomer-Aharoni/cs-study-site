@@ -3,82 +3,82 @@
   const inflight = new Map();
   const UNITS = {
     "1": {
-      main: "data/unit1.js?v=38",
+      main: "data/20937/units/unit1.js?v=38",
       rest: [],
-      interact: "data/unit1-interact.js?v=33",
+      interact: "data/20937/units/unit1-interact.js?v=33",
       quizzes: "UNIT1_QUIZZES",
     },
     "2": {
-      main: "data/unit2.js?v=31",
+      main: "data/20937/units/unit2.js?v=31",
       rest: [
-        "data/unit2-part-a.js?v=30",
-        "data/unit2-part-b.js?v=30",
-        "data/unit2-part-c.js?v=38",
-        "data/unit2-part-d.js?v=31",
-        "data/unit2-hw.js?v=31",
+        "data/20937/units/unit2-part-a.js?v=30",
+        "data/20937/units/unit2-part-b.js?v=30",
+        "data/20937/units/unit2-part-c.js?v=38",
+        "data/20937/units/unit2-part-d.js?v=31",
+        "data/20937/units/unit2-hw.js?v=31",
       ],
-      interact: "data/unit2-interact.js?v=37",
+      interact: "data/20937/units/unit2-interact.js?v=37",
       quizzes: "UNIT2_QUIZZES",
     },
     "3": {
-      main: "data/unit3.js?v=33",
+      main: "data/20937/units/unit3.js?v=33",
       rest: [
-        "data/unit3-part-a.js?v=31",
-        "data/unit3-part-b.js?v=34",
-        "data/unit3-part-c.js?v=36",
-        "data/unit3-part-d.js?v=34",
+        "data/20937/units/unit3-part-a.js?v=31",
+        "data/20937/units/unit3-part-b.js?v=34",
+        "data/20937/units/unit3-part-c.js?v=36",
+        "data/20937/units/unit3-part-d.js?v=34",
       ],
-      interact: "data/unit3-interact.js?v=35",
+      interact: "data/20937/units/unit3-interact.js?v=35",
       quizzes: "UNIT3_QUIZZES",
     },
     "4": {
-      main: "data/unit4.js?v=30",
+      main: "data/20937/units/unit4.js?v=30",
       rest: [
-        "data/unit4-part-a.js?v=38",
-        "data/unit4-part-b.js?v=37",
-        "data/unit4-part-c.js?v=36",
-        "data/unit4-part-d.js?v=37",
-        "data/unit4-hw.js?v=30",
+        "data/20937/units/unit4-part-a.js?v=38",
+        "data/20937/units/unit4-part-b.js?v=37",
+        "data/20937/units/unit4-part-c.js?v=36",
+        "data/20937/units/unit4-part-d.js?v=37",
+        "data/20937/units/unit4-hw.js?v=30",
       ],
-      interact: "data/unit4-interact.js?v=37",
+      interact: "data/20937/units/unit4-interact.js?v=37",
       quizzes: "UNIT4_QUIZZES",
     },
     "5": {
-      main: "data/unit5.js?v=30",
+      main: "data/20937/units/unit5.js?v=30",
       rest: [
-        "data/unit5-part-a.js?v=34",
-        "data/unit5-part-b.js?v=37",
-        "data/unit5-part-c.js?v=34",
-        "data/unit5-part-d.js?v=34",
-        "data/unit5-hw.js?v=31",
+        "data/20937/units/unit5-part-a.js?v=34",
+        "data/20937/units/unit5-part-b.js?v=37",
+        "data/20937/units/unit5-part-c.js?v=34",
+        "data/20937/units/unit5-part-d.js?v=34",
+        "data/20937/units/unit5-hw.js?v=31",
       ],
-      interact: "data/unit5-interact.js?v=35",
+      interact: "data/20937/units/unit5-interact.js?v=35",
       quizzes: "UNIT5_QUIZZES",
     },
     "6": {
-      main: "data/unit6.js?v=30",
-      rest: ["data/unit6-part-a.js?v=35", "data/unit6-part-b.js?v=33", "data/unit6-part-c.js?v=33"],
-      interact: "data/unit6-interact.js?v=33",
+      main: "data/20937/units/unit6.js?v=30",
+      rest: ["data/20937/units/unit6-part-a.js?v=35", "data/20937/units/unit6-part-b.js?v=33", "data/20937/units/unit6-part-c.js?v=33"],
+      interact: "data/20937/units/unit6-interact.js?v=33",
       quizzes: "UNIT6_QUIZZES",
     },
     "7": {
-      main: "data/unit7.js?v=30",
+      main: "data/20937/units/unit7.js?v=30",
       rest: [
-        "data/unit7-part-a.js?v=31",
-        "data/unit7-part-b.js?v=34",
-        "data/unit7-part-c.js?v=33",
-        "data/unit7-part-d.js?v=36",
-        "data/unit7-hw.js?v=31",
+        "data/20937/units/unit7-part-a.js?v=31",
+        "data/20937/units/unit7-part-b.js?v=34",
+        "data/20937/units/unit7-part-c.js?v=33",
+        "data/20937/units/unit7-part-d.js?v=36",
+        "data/20937/units/unit7-hw.js?v=31",
       ],
-      interact: "data/unit7-interact.js?v=34",
+      interact: "data/20937/units/unit7-interact.js?v=34",
       quizzes: "UNIT7_QUIZZES",
     },
   };
-  const VIZ = "data/viz.js?v=30";
-  const BANKS = ["data/exam-prep-bank.js?v=34", "data/exam-mc-bank.js?v=1"];
-  const EXAMS = ["data/exam-recon.js?v=37", "data/exam-sims.js?v=36", "data/exam-sims-recon.js?v=39"].concat(BANKS);
-  const SUMMARY = ["data/summary-prose.js?v=34", "data/summary-detail.js?v=31"];
-  const GUIDE = "data/study-guide-notes.js?v=2";
+  const VIZ = "data/20937/labs/viz.js?v=30";
+  const BANKS = ["data/20937/exams/exam-prep-bank.js?v=34", "data/20937/exams/exam-mc-bank.js?v=1"];
+  const EXAMS = ["data/20937/exams/exam-recon.js?v=37", "data/20937/exams/exam-sims.js?v=36", "data/20937/exams/exam-sims-recon.js?v=39"].concat(BANKS);
+  const SUMMARY = ["data/20937/summary/summary-prose.js?v=34", "data/20937/summary/summary-detail.js?v=31"];
+  const GUIDE = "data/20937/summary/study-guide-notes.js?v=2";
   const LEGACY_IDS = ["1", "2", "3", "4", "5", "6", "7"];
   const SUPABASE = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js";
 
