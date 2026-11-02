@@ -83,7 +83,7 @@ window.SUMMARY_DETAIL = window.SUMMARY_DETAIL || {};
     const id = String(n);
     units[id] = {
       main: "data/20425/units/unit" + n + ".js?v=1",
-      rest: [],
+      rest: ["data/20425/units/unit" + n + "-hw.js?v=1"],
       interact: "data/20425/units/unit" + n + "-interact.js?v=1",
       quizzes: "UNIT" + n + "_QUIZZES",
     };

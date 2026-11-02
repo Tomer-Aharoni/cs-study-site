@@ -1,20 +1,23 @@
+// edit-pass: 1 | expansion: L1 | date: 2026-11-02
 window.SUMMARY_PROSE = window.SUMMARY_PROSE || [];
 window.SUMMARY_PROSE.push({
   unit: "5",
   title: "יחידה 5 · משתנים מקריים רציפים",
-  intro: "צפיפות מול הסתברות של נקודה, הקשר אל פונקציית ההתפלגות, תוחלת ושונות, אחידה נורמלית ומעריכית, קירוב נורמלי לבינומית, ופונקציה של משתנה מקרי.",
+  intro: "צפיפות מול הסתברות בנקודה, מעבר אל פונקציית ההתפלגות המצטברת, חישוב תוחלת ושונות באינטגרלים, התפלגויות אחידה, נורמלית ומעריכית, קירוב נורמלי לבינומית וטרנספורמציות.",
   parts: [
     {
       id: "density",
       title: "צפיפות, CDF ותוחלת",
       html: `
         <ul>
-          <li>\\(f\\ge 0\\) ו־\\(\\int_{-\\infty}^{\\infty}f=1\\). \\(P(a\\le X\\le b)=\\int_a^b f\\). \\(P(X=a)=0\\), ולכן קצוות הקטע אינם משנים.</li>
-          <li>\\(F(x)=\\int_{-\\infty}^{x}f\\), ו־\\(F'(x)=f(x)\\) במקום רציפות של \\(f\\). \\(P(a\\lt X\\le b)=F(b)-F(a)\\).</li>
-          <li>\\(E[X]=\\int x f(x)\\,dx\\), \\(E[g(X)]=\\int g(x)f(x)\\,dx\\), \\(\\operatorname{Var}(X)=E[X^2]-(E[X])^2\\).</li>
-          <li>\\(\\operatorname{Var}(aX+b)=a^2\\operatorname{Var}(X)\\). \\(E[g(X)]=g(E[X])\\) לפונקציה לינארית בלבד, בדרך כלל.</li>
-          <li>אם \\(X\\ge 0\\): \\(E[X]=\\int_0^{\\infty}P(X\\gt x)\\,dx\\).</li>
+          <li><strong>פונקציית צפיפות:</strong> \\(f(x)\\ge 0\\) והשטח הכולל תחתיה הוא \\(\\int_{-\\infty}^{\\infty} f(x)\\,dx = 1\\). הסתברות של קטע היא השטח תחת הגרף: \\(P(a\\le X\\le b) = \\int_a^b f(x)\\,dx\\).</li>
+          <li><strong>נקודה בודדת:</strong> ברציף \\(P(X=a)=0\\) לכל \\(a\\), ולכן קצוות הקטע אינם משפיעים: \\(P(a\\le X\\le b) = P(a\\lt X\\lt b)\\). גובה הצפיפות אינו הסתברות ויכול לעלות על 1.</li>
+          <li><strong>קשר ל־CDF:</strong> הפונקציה המצטברת היא אינטגרל הצפיפות \\(F(x) = \\int_{-\\infty}^x f(t)\\,dt\\), וגוזרים אותה לקבלת הצפיפות: \\(F'(x) = f(x)\\). הסתברות קטע: \\(P(a\\le X\\le b) = F(b) - F(a)\\).</li>
+          <li><strong>תוחלת ושונות:</strong> \\(E[X] = \\int_{-\\infty}^{\\infty} x f(x)\\,dx\\), \\(E[X^2] = \\int_{-\\infty}^{\\infty} x^2 f(x)\\,dx\\), ו־\\(\\operatorname{Var}(X) = E[X^2] - (E[X])^2\\). לינאריות: \\(E[aX+b] = aE[X]+b\\), \\(\\operatorname{Var}(aX+b) = a^2\\operatorname{Var}(X)\\).</li>
+          <li><strong>LOTUS:</strong> \\(E[g(X)] = \\int_{-\\infty}^{\\infty} g(x) f(x)\\,dx\\). ממצעים ישירות דרך צפיפות \\(X\\), ללא בניית צפיפות עבור \\(g(X)\\).</li>
+          <li><strong>למת הזנב:</strong> עבור משתנה אי־שלילי (\\(X\\ge 0\\)) בלבד: \\(E[X] = \\int_0^{\\infty} P(X > x)\\,dx = \\int_0^{\\infty} (1 - F(x))\\,dx\\).</li>
         </ul>
+        <!-- L2: להוסיף נוסחת תוחלת מפוצלת לשני זנבות עבור משתנה רציף כללי היכול לקבל גם ערכים שליליים -->
       `,
     },
     {
@@ -25,9 +28,9 @@ window.SUMMARY_PROSE.push({
           <thead>
             <tr>
               <th style="border:1px solid var(--line); padding:0.35rem;">התפלגות</th>
-              <th style="border:1px solid var(--line); padding:0.35rem;">צפיפות</th>
-              <th style="border:1px solid var(--line); padding:0.35rem;">תוחלת</th>
-              <th style="border:1px solid var(--line); padding:0.35rem;">שונות</th>
+              <th style="border:1px solid var(--line); padding:0.35rem;">צפיפות \\(f(x)\\)</th>
+              <th style="border:1px solid var(--line); padding:0.35rem;">תוחלת \\(E[X]\\)</th>
+              <th style="border:1px solid var(--line); padding:0.35rem;">שונות \\(\\operatorname{Var}(X)\\)</th>
             </tr>
           </thead>
           <tbody>
@@ -44,13 +47,13 @@ window.SUMMARY_PROSE.push({
               <td style="border:1px solid var(--line); padding:0.35rem;">\\(\\sigma^2\\)</td>
             </tr>
             <tr>
-              <td style="border:1px solid var(--line); padding:0.35rem;">מעריכית \\(\\operatorname{Exp}(\\lambda)\\), קצב</td>
+              <td style="border:1px solid var(--line); padding:0.35rem;">מעריכית \\(\\operatorname{Exp}(\\lambda)\\) (קצב)</td>
               <td style="border:1px solid var(--line); padding:0.35rem;">\\(\\lambda e^{-\\lambda x}\\), \\(x\\ge 0\\)</td>
               <td style="border:1px solid var(--line); padding:0.35rem;">\\(1/\\lambda\\)</td>
               <td style="border:1px solid var(--line); padding:0.35rem;">\\(1/\\lambda^2\\)</td>
             </tr>
             <tr>
-              <td style="border:1px solid var(--line); padding:0.35rem;">גמא \\(\\alpha,\\lambda\\) (הרחבה)</td>
+              <td style="border:1px solid var(--line); padding:0.35rem;">גמא \\(\\operatorname{Gamma}(\\alpha,\\lambda)\\) (הרחבה)</td>
               <td style="border:1px solid var(--line); padding:0.35rem;">\\(\\lambda^{\\alpha} x^{\\alpha-1}e^{-\\lambda x}/\\Gamma(\\alpha)\\)</td>
               <td style="border:1px solid var(--line); padding:0.35rem;">\\(\\alpha/\\lambda\\)</td>
               <td style="border:1px solid var(--line); padding:0.35rem;">\\(\\alpha/\\lambda^2\\)</td>
@@ -58,14 +61,13 @@ window.SUMMARY_PROSE.push({
           </tbody>
         </table>
         <ul>
-          <li><strong>תקנון:</strong> \\(Z=(X-\\mu)/\\sigma\\). \\(\\Phi(-z)=1-\\Phi(z)\\). \\(P(|Z|\\le z)=2\\Phi(z)-1\\).</li>
-          <li><strong>68–95–99.7:</strong> בפועל כ־\\(0.6827\\), \\(0.9545\\), \\(0.9973\\). \\(\\Phi(1)\\approx 0.8413\\), \\(\\Phi(2)\\approx 0.9772\\), \\(\\Phi(1.96)\\approx 0.9750\\).</li>
-          <li><strong>דה־מואבר–לפלס:</strong> \\(B(n,p)\\) קרובה ל־\\(N(np,np(1-p))\\) כש־\\(np\\) ו־\\(n(1-p)\\) גדולים (אצבע: לפחות 10). \\(P(a\\le X\\le b)\\approx\\Phi((b+0.5-\\mu)/\\sigma)-\\Phi((a-0.5-\\mu)/\\sigma)\\).</li>
-          <li><strong>מעריכית:</strong> \\(P(X\\gt s+t\\mid X\\gt t)=P(X\\gt s)\\) לכל \\(s,t\\ge 0\\). זהו המשתנה היחיד שהקורס מכנה חסר־זיכרון. בתהליך פואסון בקצב \\(\\lambda\\), \\(N(t)\\sim\\operatorname{Po}(\\lambda t)\\) והזמן עד המופע הראשון הוא \\(\\operatorname{Exp}(\\lambda)\\).</li>
-          <li><strong>הרחבה:</strong> קצב סיכון וגמא אינם בסיכום פרק 5. תיקון רציפות נלמד בפרק 8.</li>
-          <li><strong>קצב סיכון (הרחבה):</strong> \\(r(t)=f(t)/(1-F(t))\\). למעריכית הוא הקבוע \\(\\lambda\\).</li>
-          <li><strong>גמא (הרחבה):</strong> סכום של \\(n\\) מעריכיות i.i.d. הוא \\(\\operatorname{Gamma}(n,\\lambda)\\), זמן עד האירוע ה־\\(n\\).</li>
+          <li><strong>תקנון נורמלי:</strong> \\(Z = (X-\\mu)/\\sigma\\sim N(0,1)\\). סימטריה: \\(\\Phi(-z) = 1 - \\Phi(z)\\), \\(P(|Z|\\le z) = 2\\Phi(z) - 1\\). כלל 68–95–99.7: כ־0.6827, 0.9545 ו־0.9973 עבור 1, 2 ו־3 סטיות תקן.</li>
+          <li><strong>דה־מואבר–לפלס:</strong> \\(B(n,p)\\approx N(np, np(1-p))\\) כש־\\(np, n(1-p)\\ge 10\\). עם תיקון רציפות: \\(P(a\\le X\\le b)\\approx\\Phi\\big((b+0.5-\\mu)/\\sigma\\big) - \\Phi\\big((a-0.5-\\mu)/\\sigma\\big)\\).</li>
+          <li><strong>חוסר־הזיכרון של המעריכית:</strong> \\(P(X > s+t \\mid X > t) = P(X > s)\\) לכל \\(s,t\\ge 0\\). בקורס זוהי ההתפלגות היחידה שנקראת חסרת־זיכרון. בתהליך פואסון בקצב \\(\\lambda\\), הזמן עד המופע הראשון הוא \\(\\operatorname{Exp}(\\lambda)\\).</li>
+          <li><strong>קצב סיכון (הרחבה):</strong> \\(r(t) = f(t)/(1-F(t))\\). למעריכית קצב הסיכון הוא הקבוע \\(\\lambda\\).</li>
+          <li><strong>גמא (הרחבה):</strong> סכום של \\(n\\) מעריכיות i.i.d. הוא \\(\\operatorname{Gamma}(n,\\lambda)\\), זמן ההמתנה עד האירוע ה־\\(n\\) בתהליך פואסון.</li>
         </ul>
+        <!-- L2: להוסיף דיאגרמת זרימה לבחירת מודל רציף: אחידה (ללא העדפה), מעריכית (זמן ללא בלאי), נורמלית (סכום רעשים) -->
       `,
     },
     {
@@ -73,12 +75,14 @@ window.SUMMARY_PROSE.push({
       title: "פונקציה של משתנה מקרי",
       html: `
         <ul>
-          <li><strong>CDF:</strong> \\(F_Y(y)=P(g(X)\\le y)\\), ואז \\(f_Y=F_Y'\\).</li>
-          <li><strong>מונוטונית:</strong> אם \\(h=g^{-1}\\), אז \\(f_Y(y)=f_X(h(y))\\,|h'(y)|\\).</li>
-          <li>לא חד־חד־ערכי, למשל \\(Y=X^2\\) כש־\\(X\\) דו־צדדי: מחברים את ענפי ההופכיות, או נשארים עם שיטת ה־CDF.</li>
-          <li>\\(Y=aX+b\\): \\(f_Y(y)=f_X((y-b)/a)/|a|\\). נורמלית נשארת נורמלית.</li>
-          <li>רק תוחלת של \\(g(X)\\): LOTUS, בלי לבנות את \\(f_Y\\).</li>
+          <li><strong>שיטת ה־CDF:</strong> עובדת תמיד! רושמים \\(F_Y(y) = P(g(X)\\le y)\\), מחשבים בעזרת \\(F_X\\), וגוזרים: \\(f_Y(y) = F_Y'(y)\\).</li>
+          <li><strong>הנוסחה לטרנספורמציה מונוטונית:</strong> כאשר \\(g\\) מונוטונית ממש וגזירה עם הופכית \\(h = g^{-1}\\):
+            \\[ f_Y(y) = f_X\\big(h(y)\\big) \\cdot \\big|h'(y)\\big| \\]
+          </li>
+          <li><strong>העתקה לינארית:</strong> \\(Y = aX + b\\) נותן \\(f_Y(y) = \\frac{1}{|a|} f_X\\left(\\frac{y-b}{a}\\right)\\). משתנה נורמלי נשאר נורמלי.</li>
+          <li><strong>פונקציה שאינה חח\"ע (כגון \\(Y=X^2\\) על תחום חיובי ושלילי):</strong> מפצלים לענפים מונוטוניים וסוכמים את התרומות, או משתמשים בשיטת ה־CDF.</li>
         </ul>
+        <!-- L2: להוסיף את שיטת היעקוביאן לטרנספורמציה של וקטור מקרי דו-ממדי כהכנה ליחידה 6 -->
       `,
     },
   ],

@@ -245,12 +245,14 @@
   fill: var(--muted);
   font-size: 12px;
   font-family: Heebo, "Segoe UI", Arial, sans-serif;
+
 }
 
 .prob-mu {
   fill: var(--accent-ink);
   font-size: 13px;
   font-family: Heebo, "Segoe UI", Arial, sans-serif;
+
 }
 
 .prob-grid {
@@ -489,6 +491,576 @@
 .prob-table .katex {
   font-size: 1em;
 }
+
+/* === הרחבות מעבדות 20425 === */
+
+.prob-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.prob-btn-group .prob-toggle {
+  flex: 1 1 auto;
+  min-width: 6rem;
+  text-align: center;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.9rem;
+}
+
+.prob-wizard-box {
+  background: var(--lab);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.75rem;
+  grid-column: 1 / -1;
+}
+
+.prob-wizard-q {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.prob-wizard-q-label {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+.prob-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11.5rem), 1fr));
+  gap: 0.65rem;
+  grid-column: 1 / -1;
+  margin: 0.5rem 0;
+}
+
+.prob-card {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  position: relative;
+  text-align: right;
+  cursor: pointer;
+}
+
+.prob-card:hover {
+  border-color: var(--accent);
+}
+
+.prob-card.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.prob-card-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  margin: 0 0 0.25rem;
+  color: var(--ink);
+}
+
+.prob-card-formula {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-weight: 700;
+  color: var(--accent-ink);
+  font-size: 1.05rem;
+  margin: 0.2rem 0;
+  text-align: left;
+}
+
+.prob-card-desc {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.prob-tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  max-height: 9rem;
+  overflow-y: auto;
+  padding: 0.45rem;
+  background: var(--lab);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  grid-column: 1 / -1;
+}
+
+.prob-tag {
+  display: inline-flex;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.prob-tag.is-match {
+  background: var(--bad-bg);
+  border-color: var(--bad);
+  color: var(--bad);
+  font-weight: 800;
+}
+
+.prob-stars-stage {
+  background: var(--lab);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.85rem;
+  margin: 0.5rem 0;
+}
+
+.prob-bins-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: center;
+}
+
+.prob-bin-box {
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  min-width: 5.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.prob-bin-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.prob-bin-balls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: center;
+  min-height: 1.4rem;
+}
+
+.prob-ball {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.prob-stars-bars-str {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: center;
+  font-size: 1.25rem;
+  letter-spacing: 0.25rem;
+  font-family: monospace;
+  padding: 0.6rem;
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px dashed var(--line);
+  overflow-x: auto;
+}
+
+.prob-str-star {
+  color: var(--accent);
+}
+
+.prob-str-bar {
+  color: var(--bad);
+  font-weight: 800;
+  padding: 0 0.2rem;
+}
+
+.prob-pascal-wrap {
+  overflow-x: auto;
+  padding: 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--lab);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin: 0.5rem 0;
+}
+
+.prob-pascal-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.prob-pascal-sum {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  width: 3.5rem;
+  text-align: left;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.prob-pascal-cell {
+  min-width: 2.2rem;
+  height: 2.1rem;
+  padding: 0 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 120ms ease;
+}
+
+.prob-pascal-cell:hover {
+  border-color: var(--accent);
+  transform: scale(1.08);
+}
+
+.prob-pascal-cell.is-selected {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent-ink);
+  transform: scale(1.12);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.prob-pascal-cell.is-parent {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.prob-pascal-cell.is-odd {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.prob-pascal-cell.is-even {
+  background: var(--surface);
+  color: var(--muted);
+  opacity: 0.45;
+}
+
+.prob-dice-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.35rem;
+  max-width: 24rem;
+  margin: 0.5rem auto;
+}
+
+.prob-dice-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  direction: ltr;
+  unicode-bidi: isolate;
+  transition: all 120ms ease;
+}
+
+.prob-dice-cell.is-a {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.prob-dice-cell.is-b {
+  background: rgba(37, 99, 235, 0.15);
+  border-color: #2563eb;
+  color: #1d4ed8;
+}
+
+.prob-dice-cell.is-both {
+  background: var(--ok-bg);
+  border-color: var(--ok);
+  color: var(--ok);
+  font-weight: 800;
+  box-shadow: 0 0 0 1.5px var(--ok);
+}
+
+.prob-joint-table {
+  width: 100%;
+  max-width: 26rem;
+  margin: 0.75rem auto;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+.prob-joint-table th,
+.prob-joint-table td {
+  padding: 0.45rem;
+  border: 1px solid var(--line);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.prob-joint-table thead th,
+.prob-joint-table tbody th {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.prob-joint-table td input {
+  width: 3.5rem;
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.25rem 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.prob-joint-table td input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.prob-joint-marginal {
+  background: var(--accent-soft) !important;
+  color: var(--accent-ink) !important;
+  font-weight: 800;
+}
+
+.prob-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.prob-badge-ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+  border: 1px solid var(--ok);
+}
+
+.prob-badge-bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+  border: 1px solid var(--bad);
+}
+
+.prob-badge-info {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border: 1px solid var(--accent);
+}
+
+.prob-bar-compare {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.65rem 0;
+  grid-column: 1 / -1;
+}
+
+.prob-bar-compare-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+}
+
+.prob-bar-compare-label {
+  min-width: 8.5rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.prob-bar-track {
+  flex: 1 1 auto;
+  height: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.prob-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 160ms ease;
+}
+
+.prob-bar-fill.true-prob {
+  background: var(--ok);
+}
+
+.prob-bar-fill.bound-prob {
+  background: var(--accent);
+}
+
+.prob-bar-val {
+  min-width: 4rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+}
+
+.prob-tree-branch {
+  stroke: var(--muted);
+  stroke-width: 2;
+  transition: stroke 140ms ease, stroke-width 140ms ease;
+}
+
+.prob-tree-branch.is-active {
+  stroke: var(--accent);
+  stroke-width: 3.5;
+}
+
+.prob-tree-node {
+  fill: var(--card);
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.prob-tree-node.is-active {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+
+.prob-venn-circle {
+  fill: var(--accent);
+  fill-opacity: 0.18;
+  stroke: var(--accent);
+  stroke-width: 2;
+  transition: fill-opacity 140ms ease;
+}
+
+.prob-venn-circle.circle-b {
+  fill: #2563eb;
+  stroke: #2563eb;
+  fill-opacity: 0.18;
+}
+
+.prob-venn-circle.circle-c {
+  fill: #d97706;
+  stroke: #d97706;
+  fill-opacity: 0.18;
+}
+
+.prob-venn-region {
+  cursor: pointer;
+  transition: fill 140ms ease, opacity 140ms ease;
+}
+
+.prob-venn-region:hover {
+  opacity: 0.85;
+}
+
+.prob-ci-line {
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.prob-ci-line.hit {
+  stroke: var(--accent);
+  opacity: 0.75;
+}
+
+.prob-ci-line.miss {
+  stroke: var(--bad);
+  stroke-width: 2.75;
+  opacity: 1;
+}
+
+.prob-ci-target {
+  stroke: var(--accent-ink);
+  stroke-width: 2.5;
+  stroke-dasharray: 4 3;
+}
+
+.prob-curve-h0 {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.25;
+}
+
+.prob-curve-h1 {
+  fill: none;
+  stroke: #2563eb;
+  stroke-width: 2.25;
+}
+
+.prob-shade-alpha {
+  fill: var(--bad);
+  opacity: 0.45;
+}
+
+.prob-shade-beta {
+  fill: #2563eb;
+  opacity: 0.35;
+}
+
+.prob-shade-power {
+  fill: var(--ok);
+  opacity: 0.35;
+}
+
+.prob-line-crit {
+  stroke: var(--bad);
+  stroke-width: 2;
+  stroke-dasharray: 3 3;
+}
+
+.prob-line-obs {
+  stroke: var(--ink);
+  stroke-width: 2.5;
+}
+
+/* === /הרחבות מעבדות 20425 === */
 
 /* === katex-rtl (infrastructure) === */
 .katex {

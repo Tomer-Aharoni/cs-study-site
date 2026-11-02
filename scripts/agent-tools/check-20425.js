@@ -1,6 +1,7 @@
 /* Static check of data/20425: parts vs sections, unique ids, and every \( \) / \[ \] segment rendered by KaTeX.
    usage: node scripts/agent-tools/check-20425.js <path-to-katex.min.js> */
 const path = require("path");
+const fs = require("fs");
 const root = path.resolve(__dirname, "..", "..");
 const katex = require(path.resolve(process.argv[2] || ""));
 globalThis.window = globalThis;
@@ -61,12 +62,20 @@ for (const unit of COURSE.units) {
       problems.push(`unit${n}${suffix}.js: ${err.message}`);
     }
   }
+  const hwPath = path.join(root, "data/20425/units/unit" + n + "-hw.js");
+  if (fs.existsSync(hwPath)) {
+    try {
+      require(hwPath);
+    } catch (err) {
+      problems.push("unit" + n + "-hw.js: " + err.message);
+    }
+  }
   const data = window["UNIT" + n];
   if (!data) continue;
   const sectionIds = data.sections.map((s) => s.id);
   sectionIds.forEach((id) => claim(id, `unit${n} section`));
   const parted = (UNIT_PARTS[n] || []).flatMap((p) => p.sections);
-  parted.filter((id) => !sectionIds.includes(id)).forEach((id) => problems.push(`unit${n}: part lists missing section ${id}`));
+  parted.filter((id) => !sectionIds.includes(id) && !(id === `p${n}-hw` && !fs.existsSync(hwPath))).forEach((id) => problems.push(`unit${n}: part lists missing section ${id}`));
   sectionIds.filter((id) => !parted.includes(id)).forEach((id) => problems.push(`unit${n}: section ${id} not in any part`));
   walk(data, `UNIT${n}`);
   (window[`UNIT${n}_QUIZZES`] || []).forEach((q) => claim(q.id, `unit${n} quiz`));

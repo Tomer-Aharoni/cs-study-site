@@ -151,11 +151,14 @@
     return job;
   }
 
+  const failedOptional = new Set();
   async function loadOptional(src, keys) {
+    if (!src || failedOptional.has(src)) return;
     try {
       await loadOne(src, keys);
     } catch (err) {
       if (!window.COURSE_DATA) throw err;
+      failedOptional.add(src);
     }
   }
 
