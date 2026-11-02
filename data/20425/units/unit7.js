@@ -226,12 +226,12 @@ window.UNIT7 = {
           <li>\\(\\operatorname{Var}(X-Y) = 0.60 + 0.59 - 2(0.10) = 0.99 = 99/100\\). שתי השונויות נשארות חיוביות; רק סימן האיבר המעורב מתהפך!</li>
         </ol>
         <div class="panel">
-          <p><strong>טענה להוכחה בבחינה (תוחלת ושונות של ממוצע מדגם).</strong> יהיו \\(X_1,\\dots,X_n\\) שווי־התפלגות ובלתי־תלויים עם תוחלת \\(\\mu\\) ושונות \\(\\sigma^2\\). ממוצע המדגם \\(\\bar{X} = \\frac{1}{n}\\sum X_i\\). הוכח כי \\(E[\\bar{X}] = \\mu\\) ו־\\(\\operatorname{Var}(\\bar{X}) = \\sigma^2/n\\).</p>
+          <p><strong>טענה להוכחה בבחינה (תוחלת ושונות של ממוצע מדגם).</strong> יהיו \\(X_1,\\dots,X_n\\) שווי־התפלגות ובלתי־תלויים עם תוחלת \\(\\mu\\) ושונות \\(\\sigma^2\\). ממוצע המדגם \\(\\bar{X} = \\frac{1}{n}\\sum_{i=1}^n X_i\\). הוכח כי \\(E[\\bar{X}] = \\mu\\) ו־\\(\\operatorname{Var}(\\bar{X}) = \\sigma^2/n\\).</p>
           <p><strong>הוכחה:</strong></p>
           <ol>
-            <li>\\(E[\\bar{X}] = \\frac{1}{n}\\sum E[X_i] = \\frac{1}{n}(n\\mu) = \\mu\\).</li>
-            <li>בזכות אי־התלות: \\(\\operatorname{Var}(\\sum X_i) = \\sum \\operatorname{Var}(X_i) = n\\sigma^2\\).</li>
-            <li>לפי תכונת הסקלר: \\(\\operatorname{Var}(\\bar{X}) = \\frac{1}{n^2}\\operatorname{Var}(\\sum X_i) = \\frac{n\\sigma^2}{n^2} = \\frac{\\sigma^2}{n}\\). ∎</li>
+            <li>\\(E[\\bar{X}] = \\frac{1}{n}\\sum_{i=1}^n E[X_i] = \\frac{1}{n}(n\\mu) = \\mu\\).</li>
+            <li>בזכות אי־התלות: \\(\\operatorname{Var}\\left(\\sum_{i=1}^n X_i\\right) = \\sum_{i=1}^n \\operatorname{Var}(X_i) = n\\sigma^2\\).</li>
+            <li>לפי תכונת הסקלר: \\(\\operatorname{Var}(\\bar{X}) = \\frac{1}{n^2}\\operatorname{Var}\\left(\\sum_{i=1}^n X_i\\right) = \\frac{n\\sigma^2}{n^2} = \\frac{\\sigma^2}{n}\\). ∎</li>
           </ol>
         </div>
         <div class="panel">
@@ -355,7 +355,7 @@ window.UNIT7 = {
           <li>בהינתן \\(Y=2\\) (הסתברות \\(5/20\\)): \\(E[X \\mid Y=2] = (0\\cdot 1 + 1\\cdot 2 + 2\\cdot 2)/5 = 6/5\\).</li>
           <li>לכן המשתנה המקרי \\(E[X \\mid Y]\\) מקבל את הערכים \\(6/7\\), \\(1\\), \\(6/5\\) בהסתברויות \\(7/20, 8/20, 5/20\\) בהתאמה.</li>
         </ol>
-        <p><strong>דוגמה 2 (הוצאת גורם ידוע ומקרה רציף).</strong> לפי כלל הוצאת הידוע, \\(E[Y^2 X \\mid Y] = Y^2 E[X \\mid Y]\\). בצפיפות \\(f(x,y)=x+y\\) על הריבוע, אינטגרציה מותנית נותנת \\(E[X \\mid Y=y] = \\frac{1/3 + y/2}{y + 1/2}\\) עבור \\(0 \\lt y \\lt 1\\).</p>
+        <p><strong>דוגמה 2 (הוצאת גורם ידוע ומקרה רציף).</strong> לפי כלל הוצאת הידוע, \\(E[Y^2 X \\mid Y] = Y^2 E[X \\mid Y]\\). בצפיפות \\(f(x,y)=x+y\\) על הריבוע, אינטגרציה מותנית נותנת \\(E[X \\mid Y=y] = \\frac{1/3 + y/2}{y + 1/2} = \\frac{3y+2}{6y+3}\\) עבור \\(0 \\lt y \\lt 1\\).</p>
         <div class="panel">
           <p><strong>מוקש נפוץ.</strong> \\(E[X \\mid Y=1]\\) הוא מספר, בעוד \\(E[X \\mid Y]\\) הוא משתנה מקרי. שימו לב להבחנה בניסוח השאלות. מוקש שני: אם המשתנים תלויים, אסור להחליף את \\(E[X \\mid Y]\\) ב־\\(E[X]\\).</p>
         </div>
@@ -484,7 +484,7 @@ window.UNIT7 = {
             <tr><td>בינומית שלילית \\(r,p\\)</td><td>\\(\\Big(\\dfrac{pe^{t}}{1-(1-p)e^{t}}\\Big)^{r}\\)</td><td>\\(t \\lt -\\ln(1-p)\\)</td></tr>
             <tr><td>אחידה \\((a,b)\\)</td><td>\\(\\dfrac{e^{tb}-e^{ta}}{t(b-a)}\\)</td><td>\\(t \\neq 0\\)</td></tr>
             <tr><td>מעריכית \\(\\lambda\\) (קצב)</td><td>\\(\\dfrac{\\lambda}{\\lambda-t}\\)</td><td>\\(t \\lt \\lambda\\)</td></tr>
-            <tr><td>גמא שלם \\(n,\\lambda\\)</td><td>\\(\\Big(\\dfrac{\\lambda}{\\lambda-t}\\Big)^{n}\\)</td><td>\\(t \\lt \\lambda\\)</td></tr>
+            <tr><td>גמא שלם \\(n,\\lambda\\) (סכום \\(n\\) מעריכיות ב״ת)</td><td>\\(\\Big(\\dfrac{\\lambda}{\\lambda-t}\\Big)^{n}\\)</td><td>\\(t \\lt \\lambda\\)</td></tr>
             <tr><td>נורמלית \\(\\mu,\\sigma^2\\)</td><td>\\(\\exp\\big(\\mu t + \\sigma^2 t^2/2\\big)\\)</td><td>כל \\(t\\)</td></tr>
           </tbody>
         </table>
