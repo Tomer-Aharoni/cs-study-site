@@ -216,6 +216,7 @@ function moveFlip(delta) {
 
 function showFlip() {
   app.innerHTML = renderFlip();
+  if (typeof renderMath === "function") renderMath(app);
   const card = app.querySelector("[data-flip]");
   if (card) card.focus();
 }
@@ -247,7 +248,7 @@ function renderFlip() {
   const face = card
     ? `<button type="button" class="flash-card${flipState.back ? " is-back" : ""}" data-flip>
         <span class="flash-kicker">${flipState.back ? "הסבר" : esc(card.kind) + " · יחידה " + esc(card.unit)}</span>
-        <strong>${esc(flipState.back ? card.body : card.title)}</strong>
+        <strong>${studyInline(flipState.back ? card.body : card.title)}</strong>
         <span class="muted">${flipState.back ? "לחצו שוב למושג" : "לחצו להסבר"}</span>
       </button>`
     : `<p>אין כרטיסיות בסינון הזה.</p>`;

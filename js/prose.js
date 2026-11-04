@@ -16,7 +16,9 @@ function studyInline(raw) {
 }
 
 function looksLikeCode(block) {
-  const lines = String(block || "")
+  const raw = String(block || "");
+  if (/\\\(|\\\[/.test(raw)) return false;
+  const lines = raw
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);

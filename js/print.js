@@ -262,6 +262,7 @@ function runRangePrint() {
     return;
   }
   host.innerHTML = printSheetHtml();
+  if (typeof renderMath === "function") renderMath(host);
   host.hidden = false;
   document.body.classList.add("is-range-print");
   window.print();

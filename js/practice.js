@@ -327,9 +327,9 @@ function examMcqHtml(exam, run, review) {
         review && picked
           ? picked === q.answer
             ? `<p class="feedback ok">נכון.</p>`
-            : `<p class="feedback bad">התשובה הנכונה: ${esc((q.options.find((o) => o.id === q.answer) || {}).text || q.answer)}</p>`
+            : `<p class="feedback bad">התשובה הנכונה: ${studyInline((q.options.find((o) => o.id === q.answer) || {}).text || q.answer)}</p>`
           : review
-            ? `<p class="feedback bad">לא נענתה. נכון: ${esc((q.options.find((o) => o.id === q.answer) || {}).text || "")}</p>`
+            ? `<p class="feedback bad">לא נענתה. נכון: ${studyInline((q.options.find((o) => o.id === q.answer) || {}).text || "")}</p>`
             : "";
       const hint = foldHtml("💡 רמז לפתרון", practiceHintHtml(q));
       const solution = review ? foldHtml((answerBuiltByAi(q, exam) ? aiBubble() : "") + "פתרון מפורט ודרך חישוב", practiceSolutionHtml(q)) : "";

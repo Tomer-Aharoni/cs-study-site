@@ -325,7 +325,9 @@ function startRound(unit, count) {
     mode: "round",
     unit: unit,
   });
-  location.hash = `#/course/${COURSE.id}/practice/round`;
+  const dest = `#/course/${COURSE.id}/practice/round`;
+  if (location.hash === dest) route();
+  else location.hash = dest;
 }
 
 function startReview() {
@@ -1080,6 +1082,7 @@ async function route() {
   }
   if (r.print) {
     app.innerHTML = shell(renderPrintPage());
+    renderMath(app);
     return;
   }
   if (r.me) {
@@ -1314,6 +1317,7 @@ app.addEventListener("click", async (e) => {
     saveExamRun(run);
     app.innerHTML = renderPractice();
     mountExamClock();
+    renderMath(app);
     return;
   }
 
@@ -1333,6 +1337,7 @@ app.addEventListener("click", async (e) => {
     saveExamRun(run);
     app.innerHTML = renderPractice();
     mountExamClock();
+    renderMath(app);
     return;
   }
 
@@ -1347,6 +1352,7 @@ app.addEventListener("click", async (e) => {
     saveRound(round);
     noteAnswer(q.id, choice === q.answer);
     app.innerHTML = renderRound(round.mode);
+    renderMath(app);
     return;
   }
 
@@ -1356,6 +1362,7 @@ app.addEventListener("click", async (e) => {
     round.index += 1;
     saveRound(round);
     app.innerHTML = renderRound(round.mode);
+    renderMath(app);
     return;
   }
 
@@ -1368,6 +1375,7 @@ app.addEventListener("click", async (e) => {
     round.revealed[q.id] = true;
     saveRound(round);
     app.innerHTML = renderRound(round.mode);
+    renderMath(app);
     return;
   }
 
@@ -1956,6 +1964,7 @@ app.addEventListener("click", async (e) => {
       return;
     }
     app.innerHTML = renderSummary();
+    renderMath(app);
     scrollSummaryFocus();
     return;
   }
@@ -1964,6 +1973,7 @@ app.addEventListener("click", async (e) => {
   if (unitFilter) {
     summaryUnit = unitFilter.getAttribute("data-unit-filter");
     app.innerHTML = renderSummary();
+    renderMath(app);
     return;
   }
 
@@ -1973,7 +1983,10 @@ app.addEventListener("click", async (e) => {
     app.querySelectorAll("#sum-filters button").forEach((b) => b.classList.remove("active"));
     kindBtn.classList.add("active");
     const grid = document.getElementById("sum-grid");
-    if (grid) grid.innerHTML = summaryCardsHtml();
+    if (grid) {
+      grid.innerHTML = summaryCardsHtml();
+      renderMath(grid);
+    }
     return;
   }
 
@@ -1993,6 +2006,7 @@ app.addEventListener("click", async (e) => {
   fb.hidden = false;
   fb.className = "feedback " + (good ? "ok" : "bad");
   fb.innerHTML = (answerBuiltByAi(q) ? aiBubble() : "") + studyRich(q.explain);
+  renderMath(fb);
   noteAnswer(q.id, good);
 });
 
@@ -2042,7 +2056,10 @@ app.addEventListener("input", (e) => {
   if (!e.target.matches("[data-search-input]")) return;
   const q = e.target.value;
   const box = app.querySelector("[data-search-results]");
-  if (box) box.innerHTML = searchResultsHtml(q);
+  if (box) {
+    box.innerHTML = searchResultsHtml(q);
+    renderMath(box);
+  }
   const next = `#/course/${COURSE.id}/search` + (q.trim() ? "/" + encodeURIComponent(q.trim()) : "");
   if (location.hash !== next) history.replaceState(null, "", next);
 });
@@ -2082,7 +2099,10 @@ app.addEventListener("change", (e) => {
     ids.forEach((id) => (box.checked ? printState.selected.add(id) : printState.selected.delete(id)));
     savePrintState();
     const tree = document.querySelector(".print-tree");
-    if (tree) tree.innerHTML = printTreeHtml(printTree(), 0);
+    if (tree) {
+      tree.innerHTML = printTreeHtml(printTree(), 0);
+      renderMath(tree);
+    }
     return;
   }
   const opt = e.target.closest("[data-print-opt]");
