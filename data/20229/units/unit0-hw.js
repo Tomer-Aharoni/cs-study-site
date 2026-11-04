@@ -68,7 +68,7 @@
 </details>
 
 <details class="fold">
-  <summary>תרגיל 2 · עקבה, שחלוף ומטריצות — הוכחת תכונת הציקליות ואי־פתירות AB - BA = I</summary>
+  <summary>תרגיל 2 · עקבה, שחלוף ומטריצות — הוכחת תכונת הציקליות ואי־פתירות \(AB - BA = I\)</summary>
   <div class="fold-body">
     <p><strong>ניסוח השאלה:</strong></p>
     <p>א. הוכיחו כי לכל שתי מטריצות ריבועיות \\(A, B \\in M_{n \\times n}(\\mathbb{F})\\) מתקיים \\(\\text{tr}(AB) = \\text{tr}(BA)\\).</p>

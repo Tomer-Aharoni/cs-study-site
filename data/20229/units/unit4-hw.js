@@ -238,7 +238,7 @@
       </li>
     </ol>
 
-    <p><strong>סעיף ב — חישוב המטריצה החופפת B = M^t A M:</strong></p>
+    <p><strong>סעיף ב — חישוב המטריצה החופפת \(B = M^t A M\):</strong></p>
     <p>נחשב צעד אחר צעד ללא דילוג:
       ראשית נחשב את המכפלה \\(A M\\):
       \\[ A M = \\begin{pmatrix} 1 & 2 \\\\ 2 & 3 \\end{pmatrix} \\begin{pmatrix} 1 & 1 \\\\ 1 & -1 \\end{pmatrix} = \\begin{pmatrix} 1(1) + 2(1) & 1(1) + 2(-1) \\\\ 2(1) + 3(1) & 2(1) + 3(-1) \\end{pmatrix} = \\begin{pmatrix} 3 & -1 \\\\ 5 & -1 \\end{pmatrix} \\]

@@ -1905,6 +1905,39 @@ var {
   text-align: left;
 }
 
+/* === KaTeX RTL & Math Infrastructure === */
+.katex,
+.katex-html {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  text-align: left;
+}
+
+.katex-display {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  text-align: center !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 1em 0;
+}
+
+.katex-display > .katex {
+  display: inline-block;
+  text-align: initial;
+}
+
+.katex .mtable,
+.katex .matrix,
+.katex .arraycolsep,
+.katex .col-align-c,
+.katex .col-align-l,
+.katex .col-align-r,
+.katex .base {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+}
+
 .endian-box,
 .hyb-box {
   background: var(--surface);
