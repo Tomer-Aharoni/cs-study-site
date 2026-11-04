@@ -1,0 +1,77 @@
+window.UNIT_PARTS = {
+  "0": [
+    { id: "a", title: "שדות ומספרים מרוכבים", sections: ["l0-fields-complex", "l0-char-field"] },
+    { id: "b", title: "מטריצות ודירוג גאוס", sections: ["l0-matrix-ops", "l0-gauss-nullspace"] },
+    { id: "c", title: "מרחבים וקטוריים ובסיסים", sections: ["l0-span-indep", "l0-basis-dim-sum", "l0-coords-transition"] },
+    { id: "d", title: "העתקות לינאריות ודמיון", sections: ["l0-linear-maps-ker-im", "l0-rep-matrix-similarity"] },
+    { id: "e", title: "דטרמיננטות, ע״ע ולכסון", sections: ["l0-det-charpoly", "l0-eigen-diag"] },
+    { id: "f", title: "תרגילי בית", sections: ["l0-hw"] },
+  ],
+  "1": [
+    { id: "a", title: "מכפלה פנימית ומרחבים", sections: ["l1-inner-product-def", "l1-standard-frobenius"] },
+    { id: "b", title: "נורמה, מרחק וקושי־שוורץ", sections: ["l1-hermitian-pos-mat", "l1-norm-dist-cauchy"] },
+    { id: "c", title: "אורתוגונליות ובסיס אורתונורמלי", sections: ["l1-orthogonality-pythagoras", "l1-onb-fourier-parseval"] },
+    { id: "d", title: "היטל אורתוגונלי וגרם־שמידט", sections: ["l1-ortho-projection-gram", "l1-ortho-complement-decomp", "l1-gram-schmidt"] },
+    { id: "e", title: "תרגילי בית", sections: ["l1-hw"] },
+  ],
+  "2": [
+    { id: "a", title: "ההעתקה הצמודה", sections: ["l2-adjoint-def", "l2-adjoint-matrix-props"] },
+    { id: "b", title: "העתקות צמודות לעצמן", sections: ["l2-self-adjoint-hermitian", "l2-skew-hermitian-decomp"] },
+    { id: "c", title: "העתקות חיוביות לחלוטין", sections: ["l2-positive-operators"] },
+    { id: "d", title: "העתקות ומטריצות אוניטריות", sections: ["l2-unitary-orthogonal", "l2-ker-im-fredholm-eigen"] },
+    { id: "e", title: "תרגילי בית", sections: ["l2-hw"] },
+  ],
+  "3": [
+    { id: "a", title: "לכסינות אוניטרית ונורמליות", sections: ["l3-unitary-diag-def", "l3-normal-operators-schur"] },
+    { id: "b", title: "משפט הלכסון האוניטרי", sections: ["l3-spectral-thm-normal", "l3-finding-unitary-q"] },
+    { id: "c", title: "אפיון לפי ע״ע ופירוק ספקטרלי", sections: ["l3-eigen-characterization", "l3-spectral-decomposition"] },
+    { id: "d", title: "תרגילי בית", sections: ["l3-hw"] },
+  ],
+  "4": [
+    { id: "a", title: "תבניות בילינאריות ומטריצה מייצגת", sections: ["l4-bilinear-def-poly", "l4-bilinear-matrix-sym"] },
+    { id: "b", title: "תבניות ריבועיות וקוטביות", sections: ["l4-quadratic-polar", "l4-quadratic-matrix"] },
+    { id: "c", title: "מעבר בסיס וחפיפת מטריצות", sections: ["l4-congruence-vs-similarity"] },
+    { id: "d", title: "תרגילי בית", sections: ["l4-hw"] },
+  ],
+  "5": [
+    { id: "a", title: "הצגה אלכסונית ודרגת תבנית", sections: ["l5-diag-existence-rank", "l5-ortho-diag-method"] },
+    { id: "b", title: "שיטת לגרנז׳", sections: ["l5-lagrange-algorithm", "l5-lagrange-basis"] },
+    { id: "c", title: "חפיפות אלמנטריות", sections: ["l5-elementary-congruence"] },
+    { id: "d", title: "תרגילי בית", sections: ["l5-hw"] },
+  ],
+  "6": [
+    { id: "a", title: "צורה קנונית ומשפט סילבסטר", sections: ["l6-canonical-sylvester", "l6-signature-congruence"] },
+    { id: "b", title: "מיון תבניות לפי סימן", sections: ["l6-sign-classification", "l6-rayleigh-max-subspace"] },
+    { id: "c", title: "שיטת יעקבי וקריטריון סילבסטר", sections: ["l6-jacobi-method", "l6-sylvester-criterion"] },
+    { id: "d", title: "לכסון סימולטני, קיצון ואיזוטרופיות", sections: ["l6-simultaneous-diag", "l6-extrema-isotropic"] },
+    { id: "e", title: "תרגילי בית", sections: ["l6-hw"] },
+  ],
+  "7": [
+    { id: "a", title: "חילוק פולינומים, gcd ו־lcm", sections: ["l7-poly-div-gcd", "l7-coprime-lcm"] },
+    { id: "b", title: "פולינומים אי־פריקים ושדות סגורים", sections: ["l7-irreducible-factorization", "l7-algebraically-closed"] },
+    { id: "c", title: "תרגילי בית", sections: ["l7-hw"] },
+  ],
+  "8": [
+    { id: "a", title: "מטריצות משולשיות וקיום שילוש", sections: ["l8-upper-triangular", "l8-triangulation-thm-algo"] },
+    { id: "b", title: "תת־מרחבים T־שמורים", sections: ["l8-invariant-subspaces", "l8-cyclic-orbit-restriction"] },
+    { id: "c", title: "מטריצות בלוקים ושילוש סימולטני", sections: ["l8-block-triangular-commuting"] },
+    { id: "d", title: "תרגילי בית", sections: ["l8-hw"] },
+  ],
+  "9": [
+    { id: "a", title: "הצבת מטריצה בפולינום וקיילי־המילטון", sections: ["l9-matrix-poly-eval", "l9-cayley-hamilton"] },
+    { id: "b", title: "הפולינום המינימלי", sections: ["l9-minimal-poly-def", "l9-minimal-poly-props-finding"] },
+    { id: "c", title: "מטריצות והעתקות נילפוטנטיות", sections: ["l9-nilpotent-chains", "l9-single-eigenvalue-geom"] },
+    { id: "d", title: "תרגילי בית", sections: ["l9-hw"] },
+  ],
+  "10": [
+    { id: "a", title: "מטריצות בלוקים אלכסוניות", sections: ["l10-block-diagonal-ops", "l10-block-char-min-poly"] },
+    { id: "b", title: "משפט הפירוק הפרימרי", sections: ["l10-primary-decomp-thm", "l10-diag-criterion-blocks"] },
+    { id: "c", title: "תרגילי בית", sections: ["l10-hw"] },
+  ],
+  "11": [
+    { id: "a", title: "בלוקי ז׳ורדן ומטריצות ז׳ורדן נילפוטנטיות", sections: ["l11-jordan-nilpotent", "l11-rank-formula-tau"] },
+    { id: "b", title: "צורת ז׳ורדן הכללית ומציאתה בבחינה", sections: ["l11-general-jordan-uniqueness", "l11-finding-jordan-exam"] },
+    { id: "c", title: "חזקות ז׳ורדן והמטריצה המז׳רדנת", sections: ["l11-jordan-powers-binomial", "l11-jordan-basis-matrix-p"] },
+    { id: "d", title: "תרגילי בית", sections: ["l11-hw"] },
+  ],
+};

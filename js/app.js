@@ -132,6 +132,7 @@ function areaSwitcher() {
       : [
           { id: "20937", href: "index.html", label: "20937 · תכנות מערכות דפנסיבי" },
           { id: "20425", href: "prob.html", label: "20425 · הסתברות וסטטיסטיקה" },
+          { id: "20229", href: "linear.html", label: "20229 · אלגברה לינארית 2" },
         ];
   const current = (window.COURSE && COURSE.id) || "";
   const links = areas
