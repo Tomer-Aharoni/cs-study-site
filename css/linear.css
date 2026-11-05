@@ -690,3 +690,151 @@
   border-radius: 50%;
   background: var(--accent);
 }
+
+/* === Unit 0 Interactive Extensions === */
+.linear-cell-interactive {
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.linear-cell-interactive:hover {
+  outline: 2px solid var(--accent);
+  transform: scale(1.05);
+}
+
+.linear-cell-active-row {
+  background: rgba(37, 99, 235, 0.22) !important;
+  color: #2563eb !important;
+  font-weight: 800 !important;
+}
+
+.linear-cell-active-col {
+  background: rgba(234, 88, 12, 0.22) !important;
+  color: #ea580c !important;
+  font-weight: 800 !important;
+}
+
+.linear-cell-active-target {
+  background: var(--accent) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--accent);
+}
+
+.linear-cell-crossed {
+  opacity: 0.28;
+  text-decoration: line-through;
+  background: var(--surface) !important;
+}
+
+.linear-cell-minor {
+  background: var(--accent-soft) !important;
+  color: var(--accent-ink) !important;
+  font-weight: 700 !important;
+  outline: 1.5px solid var(--accent);
+}
+
+/* === Modular Field Table === */
+.linear-mod-table {
+  border-collapse: collapse;
+  margin: 0.5rem auto;
+  direction: ltr;
+}
+
+.linear-mod-table th,
+.linear-mod-table td {
+  width: 2.3rem;
+  height: 2.3rem;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid var(--line);
+  font-family: monospace;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.linear-mod-table th {
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.linear-mod-table td.is-one {
+  background: var(--ok-bg);
+  color: var(--ok);
+  font-weight: 800;
+  outline: 2px solid var(--ok);
+  box-shadow: inset 0 0 0 1px var(--ok);
+}
+
+.linear-mod-table td.is-hovered {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+/* === Subspaces Dimension Balance Bar === */
+.linear-balance-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin: 0.75rem 0;
+  font-weight: 700;
+}
+
+.linear-balance-chip {
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+/* === 3x3 Determinant Checkerboard Visual === */
+.linear-det-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+  max-width: 260px;
+  margin: 0.5rem auto;
+  direction: ltr;
+}
+
+.linear-det-cell {
+  height: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.linear-det-cell:hover {
+  border-color: var(--accent);
+}
+
+.linear-det-cell-sign {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.linear-det-cell-val {
+  font-family: monospace;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+

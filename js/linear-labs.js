@@ -3015,6 +3015,2489 @@
     renderBuilder();
   }
 
+
+
+
+  /* ==========================================================================
+     מעבדה 1 (יחידה 0): המישור המרוכב, צמוד ופעולות אריתמטיות (complex-plane)
+     ========================================================================== */
+
+  function mountComplexPlane(host) {
+    function fmtComplexTex(re, im) {
+      var rStr = fmtNum(re);
+      if (Math.abs(im) < 1e-9) return rStr;
+      var sgn = im >= 0 ? "+" : "-";
+      var absIm = Math.abs(im);
+      var iStr = (Math.abs(absIm - 1) < 1e-9 ? "" : fmtNum(absIm)) + "i";
+      return rStr + sgn + iStr;
+    }
+
+    var presets = [
+      { label: "3 + 4i (משולש 3-4-5)", a: 3, b: 4, c: 1, d: 2, n: 3 },
+      { label: "1 + i (זווית 45°)", a: 1, b: 1, c: 2, d: 1, n: 4 },
+      { label: "-2 + 2i (רביע שני)", a: -2, b: 2, c: 1, d: -1, n: 3 },
+      { label: "0 + 3i (מדומה טהור)", a: 0, b: 3, c: 2, d: 0, n: 2 },
+      { label: "2 - 2i (רביע רביעי)", a: 2, b: -2, c: 0, d: 2, n: 4 }
+    ];
+
+    var state = {
+      mode: "conj", // "conj", "mul", "div", "pow"
+      presetIdx: 0,
+      a: 3,
+      b: 4,
+      c: 1,
+      d: 2,
+      n: 3
+    };
+
+    host.innerHTML =
+      '<div class="linear-lab-header">' +
+      '<span class="linear-lab-tag">יחידה 0 · מעבדה אינטראקטיבית</span>' +
+      '<h3 class="linear-lab-title">המישור המרוכב, צמוד ופעולות אריתמטיות (The Complex Plane, Conjugate & Arithmetic)</h3>' +
+      '<p class="linear-lab-desc">חקור את המישור המרוכב של גאוס, ראה את ההצמדה המרוכבת כשיקוף גיאומטרי, למד כיצד כפל מסובב ומותח, כיצד חילוק נעזר בצמוד להפיכת המכנה לממשי, וכיצד חזקות יוצרות ספירלה על פי נוסחת דה-מואבר.</p>' +
+      '</div>' +
+      '<div class="linear-tabs" data-modes>' +
+      '<button class="linear-tab-btn is-active" data-mode="conj">צמוד ומודול (Conjugate & Modulus)</button>' +
+      '<button class="linear-tab-btn" data-mode="mul">כפל מרוכבים (Multiplication)</button>' +
+      '<button class="linear-tab-btn" data-mode="div">חילוק מרוכבים (Division & Conjugate)</button>' +
+      '<button class="linear-tab-btn" data-mode="pow">חזקות ונוסחת דה-מואבר (Powers & De Moivre)</button>' +
+      '</div>' +
+      '<div class="linear-controls">' +
+      '<div class="linear-field">' +
+      '<span class="linear-field-label">בחר תרחיש מוכן:</span>' +
+      '<div class="linear-btn-group" data-presets></div>' +
+      '</div>' +
+      '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:0.75rem;">' +
+      '<div class="linear-field">' +
+      '<div class="linear-field-top"><span class="linear-field-label">חלק ממשי \\(\\text{Re}(z_1) = a\\):</span><span class="linear-field-val" data-a-val>3</span></div>' +
+      '<input type="range" min="-4" max="4" step="0.5" value="3" data-a-slider>' +
+      '</div>' +
+      '<div class="linear-field">' +
+      '<div class="linear-field-top"><span class="linear-field-label">חלק מדומה \\(\\text{Im}(z_1) = b\\):</span><span class="linear-field-val" data-b-val>4</span></div>' +
+      '<input type="range" min="-4" max="4" step="0.5" value="4" data-b-slider>' +
+      '</div>' +
+      '<div class="linear-field" data-c-wrap style="display:none;">' +
+      '<div class="linear-field-top"><span class="linear-field-label">חלק ממשי \\(\\text{Re}(z_2) = c\\):</span><span class="linear-field-val" data-c-val>1</span></div>' +
+      '<input type="range" min="-4" max="4" step="0.5" value="1" data-c-slider>' +
+      '</div>' +
+      '<div class="linear-field" data-d-wrap style="display:none;">' +
+      '<div class="linear-field-top"><span class="linear-field-label">חלק מדומה \\(\\text{Im}(z_2) = d\\):</span><span class="linear-field-val" data-d-val>2</span></div>' +
+      '<input type="range" min="-4" max="4" step="0.5" value="2" data-d-slider>' +
+      '</div>' +
+      '<div class="linear-field" data-n-wrap style="display:none;">' +
+      '<div class="linear-field-top"><span class="linear-field-label">מעריך החזקה \\(n\\):</span><span class="linear-field-val" data-n-val>3</span></div>' +
+      '<input type="range" min="1" max="8" step="1" value="3" data-n-slider>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="linear-layout-dual">' +
+      '<div class="linear-panel linear-svg-container">' +
+      '<svg class="linear-svg" viewBox="-160 -160 320 320" data-svg></svg>' +
+      '</div>' +
+      '<div class="linear-panel">' +
+      '<div data-badges style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem;"></div>' +
+      '<div class="linear-panel" style="background:var(--card); font-size:0.92rem; margin-bottom:0.75rem;" data-math-panel></div>' +
+      '<div class="linear-callout" data-callout></div>' +
+      '</div>' +
+      '</div>';
+
+    var presetGroup = host.querySelector("[data-presets]");
+    presets.forEach(function (p, idx) {
+      var btn = document.createElement("button");
+      btn.className = "linear-btn" + (idx === 0 ? " is-active" : "");
+      btn.textContent = p.label.split("(")[0];
+      btn.title = p.label;
+      btn.addEventListener("click", function () {
+        state.presetIdx = idx;
+        state.a = p.a;
+        state.b = p.b;
+        state.c = p.c;
+        state.d = p.d;
+        state.n = p.n;
+        syncInputs();
+        updatePresetBtns();
+        paint();
+      });
+      presetGroup.appendChild(btn);
+    });
+
+    function updatePresetBtns() {
+      var btns = presetGroup.querySelectorAll(".linear-btn");
+      btns.forEach(function (b, i) {
+        b.classList.toggle("is-active", i === state.presetIdx);
+      });
+    }
+
+    var tabBtns = host.querySelectorAll("[data-modes] .linear-tab-btn");
+    tabBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.mode = btn.getAttribute("data-mode");
+        tabBtns.forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        updateVisibleInputs();
+        paint();
+      });
+    });
+
+    function updateVisibleInputs() {
+      var showZ2 = state.mode === "mul" || state.mode === "div";
+      var showN = state.mode === "pow";
+      host.querySelector("[data-c-wrap]").style.display = showZ2 ? "" : "none";
+      host.querySelector("[data-d-wrap]").style.display = showZ2 ? "" : "none";
+      host.querySelector("[data-n-wrap]").style.display = showN ? "" : "none";
+    }
+
+    var aSlider = host.querySelector("[data-a-slider]");
+    var bSlider = host.querySelector("[data-b-slider]");
+    var cSlider = host.querySelector("[data-c-slider]");
+    var dSlider = host.querySelector("[data-d-slider]");
+    var nSlider = host.querySelector("[data-n-slider]");
+
+    aSlider.addEventListener("input", function () {
+      state.a = parseFloat(aSlider.value);
+      state.presetIdx = -1;
+      updatePresetBtns();
+      host.querySelector("[data-a-val]").textContent = state.a;
+      paint();
+    });
+    bSlider.addEventListener("input", function () {
+      state.b = parseFloat(bSlider.value);
+      state.presetIdx = -1;
+      updatePresetBtns();
+      host.querySelector("[data-b-val]").textContent = state.b;
+      paint();
+    });
+    cSlider.addEventListener("input", function () {
+      state.c = parseFloat(cSlider.value);
+      state.presetIdx = -1;
+      updatePresetBtns();
+      host.querySelector("[data-c-val]").textContent = state.c;
+      paint();
+    });
+    dSlider.addEventListener("input", function () {
+      state.d = parseFloat(dSlider.value);
+      state.presetIdx = -1;
+      updatePresetBtns();
+      host.querySelector("[data-d-val]").textContent = state.d;
+      paint();
+    });
+    nSlider.addEventListener("input", function () {
+      state.n = parseInt(nSlider.value, 10);
+      host.querySelector("[data-n-val]").textContent = state.n;
+      paint();
+    });
+
+    function syncInputs() {
+      aSlider.value = state.a;
+      bSlider.value = state.b;
+      cSlider.value = state.c;
+      dSlider.value = state.d;
+      nSlider.value = state.n;
+      host.querySelector("[data-a-val]").textContent = state.a;
+      host.querySelector("[data-b-val]").textContent = state.b;
+      host.querySelector("[data-c-val]").textContent = state.c;
+      host.querySelector("[data-d-val]").textContent = state.d;
+      host.querySelector("[data-n-val]").textContent = state.n;
+    }
+
+    var svg = host.querySelector("[data-svg]");
+    makeArrowMarker(svg, "arr-cp-blue", "#2563eb");
+    makeArrowMarker(svg, "arr-cp-purple", "#9333ea");
+    makeArrowMarker(svg, "arr-cp-orange", "#ea580c");
+    makeArrowMarker(svg, "arr-cp-teal", "#0f766e");
+
+    function paint() {
+      var a = state.a;
+      var b = state.b;
+      var c = state.c;
+      var d = state.d;
+      var n = state.n;
+      var mode = state.mode;
+
+      var z1Str = fmtComplexTex(a, b);
+      var z1cStr = fmtComplexTex(a, -b);
+      var z2Str = fmtComplexTex(c, d);
+      var z2cStr = fmtComplexTex(c, -d);
+
+      while (svg.childNodes.length > 1) {
+        svg.removeChild(svg.lastChild);
+      }
+
+      var gGrid = createSvgEl("g", { class: "linear-svg-grid-group" });
+      var S = 24;
+      for (var k = -6; k <= 6; k++) {
+        var pos = k * S;
+        gGrid.appendChild(createSvgEl("line", { x1: pos, y1: -150, x2: pos, y2: 150, class: "linear-svg-grid" }));
+        gGrid.appendChild(createSvgEl("line", { x1: -150, y1: pos, x2: 150, y2: pos, class: "linear-svg-grid" }));
+      }
+      svg.appendChild(gGrid);
+
+      var gAxes = createSvgEl("g", {});
+      gAxes.appendChild(createSvgEl("line", { x1: -150, y1: 0, x2: 150, y2: 0, class: "linear-svg-axis" }));
+      gAxes.appendChild(createSvgEl("line", { x1: 0, y1: 150, x2: 0, y2: -150, class: "linear-svg-axis" }));
+      var reLbl = createSvgEl("text", { x: 135, y: -8, class: "linear-svg-label" });
+      reLbl.textContent = "Re";
+      var imLbl = createSvgEl("text", { x: 8, y: -135, class: "linear-svg-label" });
+      imLbl.textContent = "Im";
+      gAxes.appendChild(reLbl);
+      gAxes.appendChild(imLbl);
+      svg.appendChild(gAxes);
+
+      var mathPanel = host.querySelector("[data-math-panel]");
+      var badgesEl = host.querySelector("[data-badges]");
+      var calloutEl = host.querySelector("[data-callout]");
+
+      var r1 = Math.sqrt(a * a + b * b);
+      var deg1 = ((Math.atan2(b, a) * 180 / Math.PI) + 360) % 360;
+
+      if (mode === "conj") {
+        var x1 = a * S;
+        var y1 = -b * S;
+        var x1c = a * S;
+        var y1c = b * S;
+
+        var gTri = createSvgEl("g", {});
+        gTri.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: x1, y2: 0, stroke: "#2563eb", "stroke-width": 1.5, "stroke-dasharray": "3,3" }));
+        gTri.appendChild(createSvgEl("line", { x1: x1, y1: 0, x2: x1, y2: y1, stroke: "#2563eb", "stroke-width": 1.5, "stroke-dasharray": "3,3" }));
+        gTri.appendChild(createSvgEl("line", { x1: x1, y1: y1, x2: x1c, y2: y1c, stroke: "#9333ea", "stroke-width": 1.2, "stroke-dasharray": "4,3" }));
+        svg.appendChild(gTri);
+
+        var vec1 = createSvgEl("line", { x1: 0, y1: 0, x2: x1, y2: y1, stroke: "#2563eb", "stroke-width": 2.5, "marker-end": "url(#arr-cp-blue)" });
+        svg.appendChild(vec1);
+        var lblZ1 = createSvgEl("text", { x: x1 + (a >= 0 ? 6 : -38), y: y1 + (b >= 0 ? -8 : 16), class: "linear-svg-label", fill: "#2563eb" });
+        lblZ1.textContent = "z₁ (" + z1Str + ")";
+        svg.appendChild(lblZ1);
+
+        var vec1c = createSvgEl("line", { x1: 0, y1: 0, x2: x1c, y2: y1c, stroke: "#9333ea", "stroke-width": 2.5, "marker-end": "url(#arr-cp-purple)" });
+        svg.appendChild(vec1c);
+        var lblZ1c = createSvgEl("text", { x: x1c + (a >= 0 ? 6 : -48), y: y1c + (b <= 0 ? -8 : 16), class: "linear-svg-label", fill: "#9333ea" });
+        lblZ1c.textContent = "z̄₁ (" + z1cStr + ")";
+        svg.appendChild(lblZ1c);
+
+        badgesEl.innerHTML =
+          '<span class="linear-badge linear-badge-accent">וקטור מקור: \\(z_1 = ' + z1Str + '\\)</span>' +
+          '<span class="linear-badge" style="border-color:#9333ea; color:#9333ea;">צמוד: \\(\\overline{z_1} = ' + z1cStr + '\\)</span>';
+
+        var texStep =
+          "|z_1| = \\sqrt{a^2 + b^2} = \\sqrt{" + a + "^2 + (" + b + ")^2} = \\sqrt{" + fmtNum(a * a + b * b) + "} = " + fmtNum(r1) +
+          "\\\\ \\theta_1 = \\text{atan2}(" + b + ", " + a + ") = " + fmtNum(deg1, 1) + "^\\circ" +
+          "\\\\ z_1 \\cdot \\overline{z_1} = (a+bi)(a-bi) = a^2 - (bi)^2 = a^2 + b^2 = " + fmtNum(a * a + b * b) + " = |z_1|^2";
+        renderMathBlock(mathPanel, texStep, texStep);
+
+        calloutEl.innerHTML =
+          '<div class="linear-callout-title">מדוע הצמוד המרוכב הוא כלי מפתח באלגברה לינארית?</div>' +
+          '<p style="margin:0;">שיקוף בציר הממשי: החלק הממשי נשאר זהה, והחלק המדומה הופך סימן. המכפלה \\(z \\cdot \\overline{z} = |z|^2\\) היא <strong>תמיד מספר ממשי אי-שלילי (\\(\\ge 0\\))</strong>! תכונה זו מאפשרת חילוק מרוכבים, מגדירה את הנורמה במרחב מכפלה פנימית מרוכב (יחידה 1), ומהווה את הבסיס להצמדה הרמיטית \\(A^*\\) במטריצות.</p>';
+      } else if (mode === "mul") {
+        var pw_r = a * c - b * d;
+        var pw_i = a * d + b * c;
+        var prodStr = fmtComplexTex(pw_r, pw_i);
+        var rw = Math.sqrt(pw_r * pw_r + pw_i * pw_i);
+        var r2 = Math.sqrt(c * c + d * d);
+        var deg2 = ((Math.atan2(d, c) * 180 / Math.PI) + 360) % 360;
+        var degW = (deg1 + deg2) % 360;
+
+        var maxCoord = Math.max(Math.abs(a), Math.abs(b), Math.abs(c), Math.abs(d), Math.abs(pw_r), Math.abs(pw_i), 4.5);
+        var sScale = maxCoord > 5 ? 120 / maxCoord : S;
+
+        svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: a * sScale, y2: -b * sScale, stroke: "#2563eb", "stroke-width": 2, "marker-end": "url(#arr-cp-blue)" }));
+        svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: c * sScale, y2: -d * sScale, stroke: "#ea580c", "stroke-width": 2, "marker-end": "url(#arr-cp-orange)" }));
+        svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: pw_r * sScale, y2: -pw_i * sScale, stroke: "#0f766e", "stroke-width": 3, "marker-end": "url(#arr-cp-teal)" }));
+
+        badgesEl.innerHTML =
+          '<span class="linear-badge" style="border-color:#2563eb; color:#2563eb;">\\(z_1 = ' + z1Str + '\\)</span>' +
+          '<span class="linear-badge" style="border-color:#ea580c; color:#ea580c;">\\(z_2 = ' + z2Str + '\\)</span>' +
+          '<span class="linear-badge linear-badge-ok">מכפלה: \\(z_1 z_2 = ' + prodStr + '\\)</span>';
+
+        var texMul =
+          "z_1 z_2 = (" + z1Str + ")(" + z2Str + ")" +
+          " = [" + a + "\\cdot" + c + " - " + b + "\\cdot" + d + "] + [" + a + "\\cdot" + d + " + " + b + "\\cdot" + c + "]i" +
+          " = " + prodStr +
+          "\\\\ |z_1 z_2| = |z_1|\\cdot |z_2| = " + fmtNum(r1) + "\\cdot " + fmtNum(r2) + " = " + fmtNum(rw) +
+          "\\\\ \\theta_{\\text{prod}} = \\theta_1 + \\theta_2 = " + fmtNum(deg1, 1) + "^\\circ + " + fmtNum(deg2, 1) + "^\\circ = " + fmtNum(degW, 1) + "^\\circ";
+        renderMathBlock(mathPanel, texMul, texMul);
+
+        calloutEl.innerHTML =
+          '<div class="linear-callout-title">המשמעות הגיאומטרית של כפל מרוכבים: סיבוב ומתיחה!</div>' +
+          '<p style="margin:0;">בכפל מספרים מרוכבים, <strong>המודולים נכפלים</strong> (מתיחה פי \\(|z_2|\\)) ו<strong>הארגומנטים נחברים</strong> (סיבוב בזווית \\(\\theta_2\\)). כפל ב-\\(i = 1\\cdot e^{i 90^\\circ}\\) הוא סיבוב ב-90° נגד כיוון השעון ללא שינוי אורך!</p>';
+      } else if (mode === "div") {
+        var denom = c * c + d * d;
+        var r2Div = Math.sqrt(denom);
+        if (denom === 0) {
+          badgesEl.innerHTML = '<span class="linear-badge linear-badge-bad">שגיאה: חלוקה באפס (z₂ = 0)</span>';
+          mathPanel.innerHTML = '<p style="color:var(--bad); font-weight:700;">המכנה הוא 0. לא ניתן לחלק באפס במספרים מרוכבים בדיוק כמו במספרים ממשיים.</p>';
+          calloutEl.innerHTML = '<p>בחר ערכי \\(c, d\\) שאינם שניהם 0.</p>';
+          return;
+        }
+
+        var qNum_r = a * c + b * d;
+        var qNum_i = b * c - a * d;
+        var q_r = qNum_r / denom;
+        var q_i = qNum_i / denom;
+        var quotStr = fmtComplexTex(q_r, q_i);
+        var rq = r1 / r2Div;
+        var deg2Div = ((Math.atan2(d, c) * 180 / Math.PI) + 360) % 360;
+        var degQ = ((deg1 - deg2Div) + 360) % 360;
+
+        svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: a * S, y2: -b * S, stroke: "#2563eb", "stroke-width": 2, "marker-end": "url(#arr-cp-blue)" }));
+        svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: c * S, y2: -d * S, stroke: "#ea580c", "stroke-width": 2, "marker-end": "url(#arr-cp-orange)" }));
+        svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: q_r * S, y2: -q_i * S, stroke: "#0f766e", "stroke-width": 2.5, "marker-end": "url(#arr-cp-teal)" }));
+
+        badgesEl.innerHTML =
+          '<span class="linear-badge" style="border-color:#2563eb; color:#2563eb;">מונה: \\(z_1 = ' + z1Str + '\\)</span>' +
+          '<span class="linear-badge" style="border-color:#ea580c; color:#ea580c;">מכנה: \\(z_2 = ' + z2Str + '\\)</span>' +
+          '<span class="linear-badge linear-badge-ok">מנה: \\(' + quotStr + '\\)</span>';
+
+        var texDiv =
+          "\\frac{z_1}{z_2} = \\frac{" + z1Str + "}{" + z2Str + "} \\cdot \\frac{" + z2cStr + "}{" + z2cStr + "}" +
+          "\\\\ = \\frac{(" + z1Str + ")(" + z2cStr + ")}{" + c + "^2 + " + d + "^2} = \\frac{" + qNum_r + (qNum_i >= 0 ? "+" : "") + qNum_i + "i}{" + denom + "}" +
+          " = " + quotStr +
+          "\\\\ |z_1 / z_2| = \\frac{|z_1|}{|z_2|} = \\frac{" + fmtNum(r1) + "}{" + fmtNum(r2Div) + "} = " + fmtNum(rq) +
+          ", \\quad \\theta_{\\text{quot}} = \\theta_1 - \\theta_2 = " + fmtNum(degQ, 1) + "^\\circ";
+        renderMathBlock(mathPanel, texDiv, texDiv);
+
+        calloutEl.innerHTML =
+          '<div class="linear-callout-title">הטריק של כפל בצמוד (Rationalizing the Denominator):</div>' +
+          '<p style="margin:0;">בחלוקת מספרים מרוכבים, אין אפשרות לחלק ישירות ביחידה מדומה. לכן <strong>כופלים מונה ומכנה בצמוד של המכנה (\\(\\overline{z_2}\\))</strong>. המכנה הופך למספר ממשי טהור \\(|z_2|^2 = c^2+d^2\\), ואז מפרידים לחלק ממשי ולחלק מדומה!</p>';
+      } else if (mode === "pow") {
+        var rad1 = deg1 * Math.PI / 180;
+        var maxP = 0;
+        var pData = [];
+        for (var kPow = 1; kPow <= n; kPow++) {
+          var rk = Math.pow(r1, kPow);
+          var thetak = rad1 * kPow;
+          var xk = rk * Math.cos(thetak);
+          var yk = rk * Math.sin(thetak);
+          pData.push({ k: kPow, r: rk, thetaDeg: (deg1 * kPow) % 360, x: xk, y: yk });
+          if (rk > maxP) maxP = rk;
+        }
+
+        var sPow = maxP > 5.5 ? 130 / maxP : S;
+
+        var pathD = "";
+        for (var pi = 0; pi < pData.length; pi++) {
+          var pt = pData[pi];
+          var sx = pt.x * sPow;
+          var sy = -pt.y * sPow;
+          pathD += (pi === 0 ? "M " : " L ") + sx + " " + sy;
+          svg.appendChild(createSvgEl("circle", { cx: sx, cy: sy, r: 4, fill: pi === pData.length - 1 ? "#0f766e" : "#2563eb" }));
+          var lbl = createSvgEl("text", { x: sx + 6, y: sy - 4, class: "linear-svg-label", fill: pi === pData.length - 1 ? "#0f766e" : "var(--muted)" });
+          lbl.textContent = "z₁" + (pt.k > 1 ? ("^" + pt.k) : "");
+          svg.appendChild(lbl);
+        }
+        if (pathD) {
+          svg.appendChild(createSvgEl("path", { d: pathD, fill: "none", stroke: "#0f766e", "stroke-width": 1.5, "stroke-dasharray": "3,3" }));
+        }
+
+        var lastP = pData[pData.length - 1];
+        var powStr = fmtComplexTex(lastP.x, lastP.y);
+        badgesEl.innerHTML =
+          '<span class="linear-badge linear-badge-accent">בסיס: \\(z_1 = ' + z1Str + '\\)</span>' +
+          '<span class="linear-badge">מודול: \\(r = ' + fmtNum(r1) + '\\)</span>' +
+          '<span class="linear-badge">חזקה: \\(n = ' + n + '\\)</span>' +
+          '<span class="linear-badge linear-badge-ok">תוצאה: \\(z_1^{' + n + '} = ' + powStr + '\\)</span>';
+
+        var texPow =
+          "z_1 = r(\\cos\\theta + i\\sin\\theta) = " + fmtNum(r1) + "(\\cos(" + fmtNum(deg1, 1) + "^\\circ) + i\\sin(" + fmtNum(deg1, 1) + "^\\circ))" +
+          "\\\\ z_1^{" + n + "} = r^{" + n + "}(\\cos(" + n + "\\theta) + i\\sin(" + n + "\\theta))" +
+          " = " + fmtNum(lastP.r) + "(\\cos(" + fmtNum(lastP.thetaDeg, 1) + "^\\circ) + i\\sin(" + fmtNum(lastP.thetaDeg, 1) + "^\\circ))" +
+          " = " + powStr;
+        renderMathBlock(mathPanel, texPow, texPow);
+
+        calloutEl.innerHTML =
+          '<div class="linear-callout-title">נוסחת דה-מואבר (De Moivre\'s Formula):</div>' +
+          '<p style="margin:0;">במקום לפתוח סוגריים \\(n\\) פעמים באלגברה מפרכת, עוברים להצגה קוטבית: המודול מועלה בחזקת \\(n\\) (\\(r^n\\)) והזווית מוכפלת פי \\(n\\) (\\(n\\theta\\))! כאשר \\(|z|=1\\), החזקות מסתובבות על מעגל היחידה ויוצרות את <strong>שורשי היחידה</strong>.</p>';
+      }
+    }
+
+    paint();
+    host.linearRedraw = paint;
+  }
+
+  /* ==========================================================================
+     מעבדה 2 (יחידה 0): שדות סופיים Z_p ומאפיין שדה (modular-field-calc)
+     ========================================================================== */
+
+  function mountModularFieldCalc(host) {
+    var primes = [2, 3, 5, 7];
+    var state = {
+      p: 5,
+      mode: "table",
+      a: 1,
+      b: 2,
+      c: 4,
+      d: 3
+    };
+
+    host.innerHTML =
+      '<div class="linear-lab-header">' +
+      '<span class="linear-lab-tag">יחידה 0 · מעבדה אינטראקטיבית</span>' +
+      '<h3 class="linear-lab-title">שדות סופיים \\(\\mathbb{Z}_p\\) ומאפיין שדה (Finite Fields & Characteristic)</h3>' +
+      '<p class="linear-lab-desc">חקור את האריתמטיקה של שדות סופיים \\(\\mathbb{Z}_p\\), ראה מדוע לכל איבר שונה מאפס יש הופכי כפלי, גלה מתי קיים \\(2^{-1}\\), והבן מדוע פירוק מטריצה לסימטרית ואנטי-סימטרית קורס מעל שדות ממאפיין 2!</p>' +
+      '</div>' +
+      '<div class="linear-controls">' +
+      '<div style="display:flex; flex-wrap:wrap; gap:1.25rem; align-items:center;">' +
+      '<div class="linear-field">' +
+      '<span class="linear-field-label">בחר שדה סופי \\(\\mathbb{Z}_p\\):</span>' +
+      '<div class="linear-btn-group" data-primes></div>' +
+      '</div>' +
+      '<div class="linear-field">' +
+      '<span class="linear-field-label">בחר מצב עבודה:</span>' +
+      '<div class="linear-btn-group" data-modes>' +
+      '<button class="linear-btn is-active" data-mode="table">לוח כפל והופכיים (Multiplication & Inverses)</button>' +
+      '<button class="linear-btn" data-mode="decomp">פירוק מטריצה ומאפיין 2 (Matrix Decomposition)</button>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div data-content-area></div>';
+
+    var primesGroup = host.querySelector("[data-primes]");
+    primes.forEach(function (pVal) {
+      var btn = document.createElement("button");
+      btn.className = "linear-btn" + (pVal === state.p ? " is-active" : "");
+      btn.textContent = "ℤ_" + pVal;
+      btn.addEventListener("click", function () {
+        state.p = pVal;
+        primesGroup.querySelectorAll(".linear-btn").forEach(function (b) {
+          b.classList.toggle("is-active", b.textContent === "ℤ_" + pVal);
+        });
+        state.a = state.a % pVal;
+        state.b = state.b % pVal;
+        state.c = state.c % pVal;
+        state.d = state.d % pVal;
+        renderContent();
+      });
+      primesGroup.appendChild(btn);
+    });
+
+    var modeBtns = host.querySelectorAll("[data-modes] .linear-btn");
+    modeBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.mode = btn.getAttribute("data-mode");
+        modeBtns.forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        renderContent();
+      });
+    });
+
+    function modInverse(val, p) {
+      val = ((val % p) + p) % p;
+      if (val === 0) return null;
+      for (var x = 1; x < p; x++) {
+        if ((val * x) % p === 1) return x;
+      }
+      return null;
+    }
+
+    function renderContent() {
+      var p = state.p;
+      var area = host.querySelector("[data-content-area]");
+
+      if (state.mode === "table") {
+        var inv2 = modInverse(2, p);
+        var tableHtml = '<table class="linear-mod-table"><tr><th>×</th>';
+        for (var col = 1; col < p; col++) tableHtml += '<th>' + col + '</th>';
+        tableHtml += '</tr>';
+
+        for (var r = 1; r < p; r++) {
+          tableHtml += '<tr><th>' + r + '</th>';
+          for (var c = 1; c < p; c++) {
+            var prod = (r * c) % p;
+            var isOne = prod === 1;
+            tableHtml += '<td class="' + (isOne ? "is-one" : "") + '" data-r="' + r + '" data-c="' + c + '" title="' + r + ' × ' + c + ' ≡ ' + prod + ' (mod ' + p + ')">' + prod + '</td>';
+          }
+          tableHtml += '</tr>';
+        }
+        tableHtml += '</table>';
+
+        var invList = [];
+        for (var el = 1; el < p; el++) {
+          var inv = modInverse(el, p);
+          invList.push(el + "^{-1} \\equiv " + inv);
+        }
+
+        area.innerHTML =
+          '<div class="linear-layout-dual">' +
+          '<div class="linear-panel">' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">' +
+          '<h4 style="margin:0; font-size:1rem;">לוח כפל של \\(\\mathbb{Z}_{' + p + '}^\\times\\) (מודולו ' + p + '):</h4>' +
+          '<span class="linear-badge linear-badge-ok">ירוק = איבר נייטרלי 1</span>' +
+          '</div>' +
+          tableHtml +
+          '<p style="font-size:0.8rem; color:var(--muted); text-align:center; margin-top:0.5rem;">כל איבר \\(1\\) בטבלה מסמן צמד הופכי כפלי: \\(a \\cdot b \\equiv 1 \\pmod{' + p + '}\\)</p>' +
+          '</div>' +
+          '<div class="linear-panel">' +
+          '<div style="margin-bottom:0.75rem;">' +
+          '<div style="font-weight:700; font-size:0.95rem; margin-bottom:0.35rem;">רשימת ההופכיים הכפליים בשדה \\(\\mathbb{Z}_{' + p + '}\\):</div>' +
+          '<div class="linear-panel" style="background:var(--card); font-size:0.95rem;" data-inv-tex></div>' +
+          '</div>' +
+          '<div style="margin-bottom:0.75rem;">' +
+          (inv2 === null
+            ? '<div class="linear-badge linear-badge-bad" style="width:100%; justify-content:center; padding:0.5rem; font-size:0.9rem;">⚠️ בשדה \\(\\mathbb{Z}_2\\): האיבר \\(2 \\equiv 0\\), ולכן אין לו הופכי כפלי כלל (לא ניתן לחלק ב-2)!</div>'
+            : '<div class="linear-badge linear-badge-ok" style="width:100%; justify-content:center; padding:0.5rem; font-size:0.9rem;">✓ ההופכי של 2 בשדה \\(\\mathbb{Z}_{' + p + '}\\) הוא: \\(2^{-1} = ' + inv2 + '\\) כי \\(2 \\times ' + inv2 + ' = ' + (2 * inv2) + ' \\equiv 1 \\pmod{' + p + '}\\)</div>') +
+          '</div>' +
+          '<div class="linear-callout">' +
+          '<div class="linear-callout-title">אקסיומת ההופכי הכפלי ומאפיין השדה (Field Characteristic):</div>' +
+          '<p style="margin:0;">בכל שדה \\(\\mathbb{F}\\), לכל איבר שונה מאפס \\(a \\ne 0\\) קיים הופכי \\(a^{-1}\\). מאפיין השדה \\(\\text{char}(\\mathbb{F})\\) הוא מספר הפעמים שיש לחבר את \\(1\\) לעצמו כדי להגיע ל-0. בשדה \\(\\mathbb{Z}_{' + p + '}\\), המאפיין הוא \\(' + p + '\\). כאשר \\(\\text{char}(\\mathbb{F}) = 2\\), מתקיים \\(1+1 = 0\\), ולכן \\(2\\) אינו הפיך!</p>' +
+          '</div>' +
+          '</div>' +
+          '</div>';
+
+        renderMathBlock(area.querySelector("[data-inv-tex]"), invList.join(", \\quad "), invList.join(", "));
+      } else {
+        var a = state.a;
+        var b = state.b;
+        var c = state.c;
+        var d = state.d;
+        var inv2 = modInverse(2, p);
+
+        var a_t = a, b_t = c, c_t = b, d_t = d;
+        var sum_a = (a + a_t) % p, sum_b = (b + b_t) % p, sum_c = (c + c_t) % p, sum_d = (d + d_t) % p;
+        var diff_a = ((a - a_t) % p + p) % p, diff_b = ((b - b_t) % p + p) % p, diff_c = ((c - c_t) % p + p) % p, diff_d = ((d - d_t) % p + p) % p;
+
+        var controlsHtml =
+          '<div class="linear-panel" style="margin-bottom:1rem;">' +
+          '<div style="font-weight:700; margin-bottom:0.5rem;">הזן ערכי מטריצה \\(A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}\\) מעל \\(\\mathbb{Z}_{' + p + '}\\):</div>' +
+          '<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:0.6rem; max-width:380px;">' +
+          '<label class="linear-field"><span>a:</span><input type="number" min="0" max="' + (p - 1) + '" value="' + a + '" data-mat-a class="linear-btn" style="text-align:center;"></label>' +
+          '<label class="linear-field"><span>b:</span><input type="number" min="0" max="' + (p - 1) + '" value="' + b + '" data-mat-b class="linear-btn" style="text-align:center;"></label>' +
+          '<label class="linear-field"><span>c:</span><input type="number" min="0" max="' + (p - 1) + '" value="' + c + '" data-mat-c class="linear-btn" style="text-align:center;"></label>' +
+          '<label class="linear-field"><span>d:</span><input type="number" min="0" max="' + (p - 1) + '" value="' + d + '" data-mat-d class="linear-btn" style="text-align:center;"></label>' +
+          '</div>' +
+          '</div>';
+
+        if (p === 2) {
+          area.innerHTML =
+            controlsHtml +
+            '<div class="linear-callout" style="border-right-color:var(--bad); background:var(--bad-bg); color:var(--ink);">' +
+            '<div class="linear-callout-title" style="color:var(--bad);">⚠️ מלכודת מאפיין 2 (Characteristic 2 Trap): הפירוק נכשל!</div>' +
+            '<p>הפירוק הקלאסי של כל מטריצה ריבועית לסכום יחיד של מטריצה סימטרית ואנטי-סימטרית:</p>' +
+            '\\[ A = \\frac{1}{2}(A + A^t) + \\frac{1}{2}(A - A^t) \\]' +
+            '<p><strong>מחייב כפל ב-\\(2^{-1}\\) (חלוקה ב-2)!</strong></p>' +
+            '<p>אולם מעל שדה \\(\\mathbb{Z}_2\\), מתקיים \\(1 + 1 \\equiv 0 \\implies 2 \\equiv 0\\). לאיבר 2 אין הופכי כפלי, ולכן <strong>לא ניתן לחלק ב-2</strong>!</p>' +
+            '<p style="margin-top:0.5rem;">יתרה מכך: ב-\(\\mathbb{Z}_2\\), מתקיים \\(-1 \\equiv 1\\), ולכן מטריצה סימטרית (\\(A^t = A\\)) ומטריצה אנטי-סימטרית (\\(A^t = -A\\)) הן <strong>אותו מושג בדיוק</strong>! המרחבים אינם מהווים סכום ישר מעל שדות ממאפיין 2.</p>' +
+            '</div>';
+        } else {
+          var sym_a = (inv2 * sum_a) % p, sym_b = (inv2 * sum_b) % p, sym_c = (inv2 * sum_c) % p, sym_d = (inv2 * sum_d) % p;
+          var asym_a = (inv2 * diff_a) % p, asym_b = (inv2 * diff_b) % p, asym_c = (inv2 * diff_c) % p, asym_d = (inv2 * diff_d) % p;
+
+          area.innerHTML =
+            controlsHtml +
+            '<div class="linear-layout-dual">' +
+            '<div class="linear-panel">' +
+            '<h4 style="margin:0 0 0.5rem; font-size:1rem;">פירוק מפורט מעל \\(\\mathbb{Z}_{' + p + '}\\) (כאשר \\(2^{-1} = ' + inv2 + '\\)):</h4>' +
+            '<div data-decomp-tex style="font-size:0.95rem; line-height:1.7;"></div>' +
+            '</div>' +
+            '<div class="linear-panel">' +
+            '<div style="font-weight:700; font-size:0.95rem; margin-bottom:0.5rem;">בדיקת תכונות הפירוק:</div>' +
+            '<div style="display:grid; gap:0.4rem; font-size:0.9rem;">' +
+            '<div class="linear-diag-flag"><div class="linear-diag-flag-dot" style="background:var(--ok);"></div><span>סימטריות \\(A_s^t = A_s\\): \\(' + sym_b + ' = ' + sym_c + '\\) ✓</span></div>' +
+            '<div class="linear-diag-flag"><div class="linear-diag-flag-dot" style="background:var(--ok);"></div><span>אנטי-סימטריות \\(A_a^t = -A_a\\): \\(' + asym_b + ' \\equiv -' + asym_c + ' \\pmod{' + p + '}\\) ✓</span></div>' +
+            '<div class="linear-diag-flag"><div class="linear-diag-flag-dot" style="background:var(--ok);"></div><span>שחזור המטריצה \\(A_s + A_a = A\\): סכום האיברים שווה בדיוק ל-\\(A\\) ✓</span></div>' +
+            '</div>' +
+            '<div class="linear-callout" style="margin-top:0.75rem;">' +
+            '<div class="linear-callout-title">תובנה למבחן:</div>' +
+            '<p style="margin:0;">בכל שאלה שבה נתון "יהי שדה \\(\\mathbb{F}\\) שבו \\(1+1 \\ne 0\\)" או "\\(\\text{char}(\\mathbb{F}) \\ne 2\\)", הכותב רומז במפורש שמותר לחלק ב-2 ולפרק מטריצות וצורות ריבועיות!</p>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+
+          var texDecomp =
+            "A = \\begin{pmatrix} " + a + " & " + b + " \\\\ " + c + " & " + d + " \\end{pmatrix}, \\quad " +
+            "A^t = \\begin{pmatrix} " + a_t + " & " + b_t + " \\\\ " + c_t + " & " + d_t + " \\end{pmatrix}" +
+            "\\\\ A + A^t = \\begin{pmatrix} " + sum_a + " & " + sum_b + " \\\\ " + sum_c + " & " + sum_d + " \\end{pmatrix}, \\quad " +
+            "A - A^t = \\begin{pmatrix} " + diff_a + " & " + diff_b + " \\\\ " + diff_c + " & " + diff_d + " \\end{pmatrix}" +
+            "\\\\ A_s = " + inv2 + "(A + A^t) = \\begin{pmatrix} " + sym_a + " & " + sym_b + " \\\\ " + sym_c + " & " + sym_d + " \\end{pmatrix} \\text{ (סימטרית)}" +
+            "\\\\ A_a = " + inv2 + "(A - A^t) = \\begin{pmatrix} " + asym_a + " & " + asym_b + " \\\\ " + asym_c + " & " + asym_d + " \\end{pmatrix} \\text{ (אנטי-סימטרית)}";
+
+          renderMathBlock(area.querySelector("[data-decomp-tex]"), texDecomp, texDecomp);
+        }
+
+        var inA = area.querySelector("[data-mat-a]");
+        var inB = area.querySelector("[data-mat-b]");
+        var inC = area.querySelector("[data-mat-c]");
+        var inD = area.querySelector("[data-mat-d]");
+        if (inA) {
+          inA.addEventListener("input", function () { state.a = parseInt(inA.value, 10) % p || 0; renderContent(); });
+          inB.addEventListener("input", function () { state.b = parseInt(inB.value, 10) % p || 0; renderContent(); });
+          inC.addEventListener("input", function () { state.c = parseInt(inC.value, 10) % p || 0; renderContent(); });
+          inD.addEventListener("input", function () { state.d = parseInt(inD.value, 10) % p || 0; renderContent(); });
+        }
+      }
+    }
+
+    renderContent();
+  }
+
+  /* ==========================================================================
+     מעבדה 3 (יחידה 0): אלגברת מטריצות, הצמדה הרמיטית A* והיפוך (matrix-ops-adjoint)
+     ========================================================================== */
+
+  function mountMatrixOpsAdjoint(host) {
+    var state = {
+      tab: "mul",
+      mulPresetIdx: 0,
+      selR: 0,
+      selC: 0,
+      adjPresetIdx: 0,
+      invStepIdx: 0,
+      invPresetIdx: 0
+    };
+
+    var mulPresets = [
+      {
+        label: "2×2 כללי (הדגמת אי-קומוטטיביות ועקבה)",
+        dim: 2,
+        A: [[1, 2], [3, 4]],
+        B: [[2, 0], [1, 3]]
+      },
+      {
+        label: "2×2 נילפוטנטי (קומוטטור AB - BA)",
+        dim: 2,
+        A: [[0, 1], [0, 0]],
+        B: [[0, 0], [1, 0]]
+      },
+      {
+        label: "3×3 שלם (שורה בעמודה)",
+        dim: 3,
+        A: [[1, 2, 0], [0, 1, 1], [2, 0, 1]],
+        B: [[1, 0, 2], [0, 2, 1], [1, 1, 0]]
+      }
+    ];
+
+    var adjPresets = [
+      {
+        label: "מטריצה מרוכבת כללית",
+        A: [["1+i", "2"], ["3-i", "4i"]],
+        matReal: [[1, 1, 2, 0], [3, -1, 0, 4]]
+      },
+      {
+        label: "מטריצה הרמיטית (A* = A)",
+        A: [["3", "2-i"], ["2+i", "1"]],
+        matReal: [[3, 0, 2, -1], [2, 1, 1, 0]]
+      },
+      {
+        label: "מטריצה אנטי-הרמיטית (A* = -A)",
+        A: [["2i", "1-i"], ["-1-i", "0"]],
+        matReal: [[0, 2, 1, -1], [-1, -1, 0, 0]]
+      }
+    ];
+
+    var invPresets = [
+      {
+        label: "3×3 הפיכה עם איברים שלמים",
+        dim: 3,
+        steps: [
+          {
+            desc: "מטריצה מורחבת התחלתית \\([A \\mid I_3]\\):",
+            A: [[1, 2, 1], [0, 1, 2], [1, 1, 0]],
+            I: [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+            op: "מצב התחלתי"
+          },
+          {
+            desc: "מאפסים מתחת לאיבר המוביל הראשון: \\(R_3 \\leftarrow R_3 - R_1\\)",
+            A: [[1, 2, 1], [0, 1, 2], [0, -1, -1]],
+            I: [[1, 0, 0], [0, 1, 0], [-1, 0, 1]],
+            op: "R_3 - R_1"
+          },
+          {
+            desc: "מאפסים מתחת לאיבר המוביל השני: \\(R_3 \\leftarrow R_3 + R_2\\)",
+            A: [[1, 2, 1], [0, 1, 2], [0, 0, 1]],
+            I: [[1, 0, 0], [0, 1, 0], [-1, 1, 1]],
+            op: "R_3 + R_2"
+          },
+          {
+            desc: "מאפסים מעל האיבר המוביל השלישי: \\(R_2 \\leftarrow R_2 - 2R_3\\)",
+            A: [[1, 2, 1], [0, 1, 0], [0, 0, 1]],
+            I: [[1, 0, 0], [2, -1, -2], [-1, 1, 1]],
+            op: "R_2 - 2R_3"
+          },
+          {
+            desc: "מאפסים מעל האיבר המוביל השלישי בשורה הראשונה: \\(R_1 \\leftarrow R_1 - R_3\\)",
+            A: [[1, 2, 0], [0, 1, 0], [0, 0, 1]],
+            I: [[2, -1, -1], [2, -1, -2], [-1, 1, 1]],
+            op: "R_1 - R_3"
+          },
+          {
+            desc: "מאפסים מעל האיבר המוביל השני בשורה הראשונה: \\(R_1 \\leftarrow R_1 - 2R_2\\). הגענו ל-\\(I\\) בצד שמאל!",
+            A: [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+            I: [[-2, 1, 3], [2, -1, -2], [-1, 1, 1]],
+            op: "R_1 - 2R_2 (סיום)"
+          }
+        ]
+      },
+      {
+        label: "2×2 הפיכה",
+        dim: 2,
+        steps: [
+          {
+            desc: "מטריצה מורחבת \\([A \\mid I_2]\\):",
+            A: [[2, 5], [1, 3]],
+            I: [[1, 0], [0, 1]],
+            op: "מצב התחלתי"
+          },
+          {
+            desc: "החלפת שורות לקבלת איבר מוביל נוח 1: \\(R_1 \\leftrightarrow R_2\\)",
+            A: [[1, 3], [2, 5]],
+            I: [[0, 1], [1, 0]],
+            op: "R_1 ↔ R_2"
+          },
+          {
+            desc: "איפוס מתחת למוביל: \\(R_2 \\leftarrow R_2 - 2R_1\\)",
+            A: [[1, 3], [0, -1]],
+            I: [[0, 1], [1, -2]],
+            op: "R_2 - 2R_1"
+          },
+          {
+            desc: "נרמול השורה השנייה: \\(R_2 \\leftarrow -R_2\\)",
+            A: [[1, 3], [0, 1]],
+            I: [[0, 1], [-1, 2]],
+            op: "(-1)·R_2"
+          },
+          {
+            desc: "איפוס מעל המוביל: \\(R_1 \\leftarrow R_1 - 3R_2\\). בצד ימין קיבלנו את \\(A^{-1}\\)!",
+            A: [[1, 0], [0, 1]],
+            I: [[3, -5], [-1, 2]],
+            op: "R_1 - 3R_2 (סיום)"
+          }
+        ]
+      }
+    ];
+
+    host.innerHTML =
+      '<div class="linear-lab-header">' +
+      '<span class="linear-lab-tag">יחידה 0 · מעבדה אינטראקטיבית</span>' +
+      '<h3 class="linear-lab-title">אלגברת מטריצות: כפל שורה-בעמודה, הצמדה הרמיטית \\(A^*\\) והיפוך</h3>' +
+      '<p class="linear-lab-desc">חקור את פעולות היסוד באלגברה לינארית: לחץ על תאי המכפלה כדי לראות את המכפלה הסקלרית של שורה בעמודה, ראה את תכונת העקבה \\(\\text{tr}(AB)=\\text{tr}(BA)\\), גלה את ההצמדה ההרמיטית \\(A^*\\), ובצע היפוך מטריצה צעד-אחר-צעד בשיטת גאוס-ז\'ורדן.</p>' +
+      '</div>' +
+      '<div class="linear-tabs" data-tabs>' +
+      '<button class="linear-tab-btn is-active" data-tab="mul">כפל שורה-בעמודה ועקבה (Multiplication & Trace)</button>' +
+      '<button class="linear-tab-btn" data-tab="adjoint">שחלוף והצמדה הרמיטית A* (Hermitian Adjoint)</button>' +
+      '<button class="linear-tab-btn" data-tab="invert">היפוך מטריצה [A | I] → [I | A⁻¹] (Gauss Invert)</button>' +
+      '</div>' +
+      '<div data-body></div>';
+
+    var tabBtns = host.querySelectorAll("[data-tabs] .linear-tab-btn");
+    tabBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.tab = btn.getAttribute("data-tab");
+        tabBtns.forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        renderTab();
+      });
+    });
+
+    function renderTab() {
+      var body = host.querySelector("[data-body]");
+      if (state.tab === "mul") {
+        renderMulTab(body);
+      } else if (state.tab === "adjoint") {
+        renderAdjointTab(body);
+      } else {
+        renderInvertTab(body);
+      }
+    }
+
+    function renderMulTab(container) {
+      var p = mulPresets[state.mulPresetIdx];
+      var A = p.A;
+      var B = p.B;
+      var n = p.dim;
+
+      var C = [];
+      for (var r = 0; r < n; r++) {
+        C[r] = [];
+        for (var c = 0; c < n; c++) {
+          var sum = 0;
+          for (var k = 0; k < n; k++) sum += A[r][k] * B[k][c];
+          C[r][c] = sum;
+        }
+      }
+
+      var BA = [];
+      for (var r2 = 0; r2 < n; r2++) {
+        BA[r2] = [];
+        for (var c2 = 0; c2 < n; c2++) {
+          var sum2 = 0;
+          for (var k2 = 0; k2 < n; k2++) sum2 += B[r2][k2] * A[k2][c2];
+          BA[r2][c2] = sum2;
+        }
+      }
+
+      var trAB = 0, trBA = 0;
+      for (var ti = 0; ti < n; ti++) {
+        trAB += C[ti][ti];
+        trBA += BA[ti][ti];
+      }
+
+      var isCommutative = true;
+      for (var cr = 0; cr < n; cr++) {
+        for (var cc = 0; cc < n; cc++) {
+          if (C[cr][cc] !== BA[cr][cc]) isCommutative = false;
+        }
+      }
+
+      container.innerHTML =
+        '<div class="linear-controls">' +
+        '<div class="linear-field">' +
+        '<span class="linear-field-label">בחר תרחיש כפל:</span>' +
+        '<div class="linear-btn-group" data-mul-presets></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="linear-layout-dual">' +
+        '<div class="linear-panel">' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">' +
+        '<span class="linear-badge linear-badge-accent">לחץ על תא בתוצאה \\(C\\) כדי להאיר שורה ועמודה:</span>' +
+        '</div>' +
+        '<div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0.5rem; margin:1rem 0;" data-matrices-row>' +
+        '</div>' +
+        '<div class="linear-panel" style="background:var(--card); font-size:0.95rem; text-align:center;" data-cell-calc></div>' +
+        '</div>' +
+        '<div class="linear-panel">' +
+        '<div style="margin-bottom:0.75rem;">' +
+        '<div style="font-weight:700; font-size:0.95rem; margin-bottom:0.35rem;">השוואת \\(AB\\) מול \\(BA\\) ותכונת העקבה (Trace):</div>' +
+        '<div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">' +
+        (isCommutative
+          ? '<span class="linear-badge linear-badge-ok">\\(AB = BA\\) (מטריצות מתחלפות)</span>'
+          : '<span class="linear-badge linear-badge-bad">\\(AB \\ne BA\\) (כפל מטריצות אינו קומוטטיבי!)</span>') +
+        '<span class="linear-badge linear-badge-accent">\\(\\text{tr}(AB) = ' + trAB + ', \\; \\text{tr}(BA) = ' + trBA + '\\)</span>' +
+        '</div>' +
+        '<div class="linear-callout">' +
+        '<div class="linear-callout-title">תכונת הציקליות של העקבה: \\(\\text{tr}(AB) = \\text{tr}(BA)\\)</div>' +
+        '<p style="margin:0;">אף על פי ש-\\(' + (isCommutative ? "A" : "AB \\ne BA") + '\\), סכום איברי האלכסון הראשי (העקבה) שווה תמיד: \\[ \\text{tr}(AB) = \\sum_{i=1}^n (AB)_{ii} = \\sum_i \\sum_k A_{ik} B_{ki} = \\sum_k \\sum_i B_{ki} A_{ik} = \\text{tr}(BA) \\] עובדה זו מבטיחה שלמטריצות דומות יש בדיוק אותה עקבה!</p>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+
+      var presGroup = container.querySelector("[data-mul-presets]");
+      mulPresets.forEach(function (mp, idx) {
+        var b = document.createElement("button");
+        b.className = "linear-btn" + (idx === state.mulPresetIdx ? " is-active" : "");
+        b.textContent = mp.label.split("(")[0];
+        b.addEventListener("click", function () {
+          state.mulPresetIdx = idx;
+          state.selR = 0;
+          state.selC = 0;
+          renderMulTab(container);
+        });
+        presGroup.appendChild(b);
+      });
+
+      var rowEl = container.querySelector("[data-matrices-row]");
+
+      function buildMatHtml(mat, highlightRow, highlightCol, isTarget) {
+        var h = '<div class="linear-matrix-wrap"><div class="linear-matrix-grid" style="grid-template-columns: repeat(' + n + ', auto);">';
+        for (var r = 0; r < n; r++) {
+          for (var c = 0; c < n; c++) {
+            var cls = "linear-matrix-cell";
+            if (isTarget) {
+              cls += " linear-cell-interactive";
+              if (r === state.selR && c === state.selC) cls += " linear-cell-active-target";
+            } else {
+              if (highlightRow === r) cls += " linear-cell-active-row";
+              if (highlightCol === c) cls += " linear-cell-active-col";
+            }
+            h += '<div class="' + cls + '" data-r="' + r + '" data-c="' + c + '">' + mat[r][c] + '</div>';
+          }
+        }
+        h += '</div></div>';
+        return h;
+      }
+
+      function updateMatViews() {
+        rowEl.innerHTML =
+          '<div><div style="text-align:center; font-weight:700; margin-bottom:0.25rem;">\\(A\\)</div>' + buildMatHtml(A, state.selR, -1, false) + '</div>' +
+          '<div style="font-size:1.2rem; font-weight:800;">×</div>' +
+          '<div><div style="text-align:center; font-weight:700; margin-bottom:0.25rem;">\\(B\\)</div>' + buildMatHtml(B, -1, state.selC, false) + '</div>' +
+          '<div style="font-size:1.2rem; font-weight:800;">=</div>' +
+          '<div><div style="text-align:center; font-weight:700; margin-bottom:0.25rem;">\\(C = AB\\)</div>' + buildMatHtml(C, -1, -1, true) + '</div>';
+
+        rowEl.querySelectorAll(".linear-cell-interactive").forEach(function (cell) {
+          cell.addEventListener("click", function () {
+            state.selR = parseInt(cell.getAttribute("data-r"), 10);
+            state.selC = parseInt(cell.getAttribute("data-c"), 10);
+            updateMatViews();
+          });
+        });
+
+        var sr = state.selR, sc = state.selC;
+        var terms = [];
+        for (var k = 0; k < n; k++) {
+          terms.push(A[sr][k] + "\\cdot " + B[k][sc]);
+        }
+        var dotTex = "C_{" + (sr + 1) + (sc + 1) + "} = \\text{Row}_" + (sr + 1) + "(A) \\cdot \\text{Col}_" + (sc + 1) + "(B) = " +
+          terms.join(" + ") + " = " + C[sr][sc];
+        renderMathBlock(container.querySelector("[data-cell-calc]"), dotTex, dotTex);
+      }
+
+      updateMatViews();
+    }
+
+    function renderAdjointTab(container) {
+      var ap = adjPresets[state.adjPresetIdx];
+      var A = ap.A;
+      var mr = ap.matReal;
+
+      var At = [
+        [A[0][0], A[1][0]],
+        [A[0][1], A[1][1]]
+      ];
+
+      function conjStr(s) {
+        if (s.indexOf("+") !== -1) return s.replace("+", "-");
+        if (s.indexOf("-") !== -1 && s.indexOf("-") > 0) return s.replace("-", "+");
+        if (s === "2i") return "-2i";
+        if (s === "4i") return "-4i";
+        return s;
+      }
+      var Aconj = [
+        [conjStr(A[0][0]), conjStr(A[0][1])],
+        [conjStr(A[1][0]), conjStr(A[1][1])]
+      ];
+
+      var Astar = [
+        [conjStr(At[0][0]), conjStr(At[0][1])],
+        [conjStr(At[1][0]), conjStr(At[1][1])]
+      ];
+
+      var d1 = (mr[0][0]*mr[0][0] + mr[0][1]*mr[0][1]) + (mr[1][0]*mr[1][0] + mr[1][1]*mr[1][1]);
+      var d2 = (mr[0][2]*mr[0][2] + mr[0][3]*mr[0][3]) + (mr[1][2]*mr[1][2] + mr[1][3]*mr[1][3]);
+
+      function formatMat2(m) {
+        return '<div class="linear-matrix-wrap"><div class="linear-matrix-grid" style="grid-template-columns: repeat(2, auto);">' +
+          '<div class="linear-matrix-cell">' + m[0][0] + '</div><div class="linear-matrix-cell">' + m[0][1] + '</div>' +
+          '<div class="linear-matrix-cell">' + m[1][0] + '</div><div class="linear-matrix-cell">' + m[1][1] + '</div>' +
+          '</div></div>';
+      }
+
+      container.innerHTML =
+        '<div class="linear-controls">' +
+        '<div class="linear-field">' +
+        '<span class="linear-field-label">בחר מטריצה מרוכבת:</span>' +
+        '<div class="linear-btn-group" data-adj-presets></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="linear-layout-dual">' +
+        '<div class="linear-panel">' +
+        '<h4 style="margin:0 0 0.75rem; font-size:1rem;">ארבעת המטריצות הקשורות:</h4>' +
+        '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; text-align:center;">' +
+        '<div class="linear-panel"><strong>מקורית \\(A\\):</strong>' + formatMat2(A) + '</div>' +
+        '<div class="linear-panel"><strong>משוחלפת \\(A^t\\):</strong>' + formatMat2(At) + '</div>' +
+        '<div class="linear-panel"><strong>צמודה \\(\\overline{A}\\):</strong>' + formatMat2(Aconj) + '</div>' +
+        '<div class="linear-panel" style="border-color:var(--accent); background:var(--card);"><strong>צמודה הרמיטית \\(A^* = \\overline{A}^t\\):</strong>' + formatMat2(Astar) + '</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="linear-panel">' +
+        '<h4 style="margin:0 0 0.5rem; font-size:1rem;">ניתוח המטריצה הגראמית \\(A^* A\\):</h4>' +
+        '<div class="linear-panel" style="background:var(--card); font-size:0.92rem; margin-bottom:0.75rem;">' +
+        'איברי האלכסון של \\(A^* A\\):<br>' +
+        '\\((A^* A)_{11} = |A_{11}|^2 + |A_{21}|^2 = ' + d1 + ' \\ge 0\\)<br>' +
+        '\\((A^* A)_{22} = |A_{12}|^2 + |A_{22}|^2 = ' + d2 + ' \\ge 0\\)' +
+        '</div>' +
+        '<div class="linear-callout">' +
+        '<div class="linear-callout-title">מדוע ההצמדה ההרמיטית \\(A^*\\) כה מכרעת?</div>' +
+        '<p style="margin:0;">במספרים מרוכבים, שחלוף רגיל אינו שומר על חיוביות: \\(v^t v = v_1^2 + v_2^2\\) עלול להתאפס עבור וקטור שאינו אפס (למשל עבור \\((1, i)^t\\)). לכן ההצמדה ההרמיטית כוללת <strong>גם שחלוף וגם הצמדה מרוכבת</strong>, ומבטיחה ש-\\(v^* v = \\sum |v_i|^2 \\ge 0\\). זהו הבסיס לכל יחידות 1, 2, 3, 4!</p>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+
+      var presGroup = container.querySelector("[data-adj-presets]");
+      adjPresets.forEach(function (p, idx) {
+        var b = document.createElement("button");
+        b.className = "linear-btn" + (idx === state.adjPresetIdx ? " is-active" : "");
+        b.textContent = p.label;
+        b.addEventListener("click", function () {
+          state.adjPresetIdx = idx;
+          renderAdjointTab(container);
+        });
+        presGroup.appendChild(b);
+      });
+    }
+
+    function renderInvertTab(container) {
+      var p = invPresets[state.invPresetIdx];
+      var step = p.steps[state.invStepIdx];
+      var totalSteps = p.steps.length;
+      var n = p.dim;
+
+      container.innerHTML =
+        '<div class="linear-controls">' +
+        '<div class="linear-field">' +
+        '<span class="linear-field-label">בחר תרחיש היפוך:</span>' +
+        '<div class="linear-btn-group" data-inv-presets></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="linear-layout-dual">' +
+        '<div class="linear-panel">' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">' +
+        '<span class="linear-badge linear-badge-accent">שלב ' + (state.invStepIdx + 1) + ' מתוך ' + totalSteps + ' (' + step.op + ')</span>' +
+        '<div class="linear-btn-group">' +
+        '<button class="linear-btn linear-btn-sm" data-btn-prev ' + (state.invStepIdx === 0 ? "disabled" : "") + '>← צעד קודם</button>' +
+        '<button class="linear-btn linear-btn-sm linear-btn-primary" data-btn-next ' + (state.invStepIdx === totalSteps - 1 ? "disabled" : "") + '>צעד הבא →</button>' +
+        '<button class="linear-btn linear-btn-sm" data-btn-reset>איפוס</button>' +
+        '</div>' +
+        '</div>' +
+        '<div class="linear-callout" style="margin-bottom:1rem;">' + step.desc + '</div>' +
+        '<div style="display:flex; justify-content:center; padding:0.5rem 0;" data-augmented-matrix></div>' +
+        '</div>' +
+        '<div class="linear-panel">' +
+        '<div style="font-weight:700; font-size:0.95rem; margin-bottom:0.4rem;">מדוע אלגוריתם \\([A \\mid I] \\to [I \\mid A^{-1}]\\) עובד?</div>' +
+        '<p style="font-size:0.9rem; line-height:1.6; margin:0 0 0.75rem;">כל פעולת שורה אלמנטרית שקולה לכפל משמאל במטריצה אלמנטרית \\(E_k\\). כאשר סדרת פעולות הופכת את \\(A\\) למטריצת היחידה \\(I\\): \\[ E_k \\cdots E_2 E_1 A = I \\implies E_k \\cdots E_2 E_1 = A^{-1} \\] היות ואותן פעולות שורה בדיוק מבוצעות במקביל על אגף ימין (שהתחיל כ-\\(I\\)): \\[ E_k \\cdots E_2 E_1 I = A^{-1} \\] בסיום הדירוג, אגף ימין מכיל במדויק את המטריצה ההופכית \\(A^{-1}\\)!</p>' +
+        (state.invStepIdx === totalSteps - 1
+          ? '<div class="linear-badge linear-badge-ok" style="width:100%; justify-content:center; padding:0.5rem; font-size:0.92rem;">המטריצה ההופכית נמצאה בהצלחה! אימות: \\(A \\cdot A^{-1} = I\\) ✓</div>'
+          : '') +
+        '</div>' +
+        '</div>';
+
+      var presGroup = container.querySelector("[data-inv-presets]");
+      invPresets.forEach(function (ip, idx) {
+        var b = document.createElement("button");
+        b.className = "linear-btn" + (idx === state.invPresetIdx ? " is-active" : "");
+        b.textContent = ip.label;
+        b.addEventListener("click", function () {
+          state.invPresetIdx = idx;
+          state.invStepIdx = 0;
+          renderInvertTab(container);
+        });
+        presGroup.appendChild(b);
+      });
+
+      container.querySelector("[data-btn-prev]").addEventListener("click", function () {
+        if (state.invStepIdx > 0) {
+          state.invStepIdx--;
+          renderInvertTab(container);
+        }
+      });
+      container.querySelector("[data-btn-next]").addEventListener("click", function () {
+        if (state.invStepIdx < totalSteps - 1) {
+          state.invStepIdx++;
+          renderInvertTab(container);
+        }
+      });
+      container.querySelector("[data-btn-reset]").addEventListener("click", function () {
+        state.invStepIdx = 0;
+        renderInvertTab(container);
+      });
+
+      var matHtml = '<div class="linear-matrix-wrap"><div class="linear-matrix-grid" style="grid-template-columns: repeat(' + (2 * n) + ', auto);">';
+      for (var r = 0; r < n; r++) {
+        for (var c = 0; c < n; c++) {
+          var valA = step.A[r][c];
+          var sep = (c === n - 1) ? " linear-matrix-augmented-sep" : "";
+          matHtml += '<div class="linear-matrix-cell' + sep + '">' + fmtNum(valA) + '</div>';
+        }
+        for (var c2 = 0; c2 < n; c2++) {
+          var valI = step.I[r][c2];
+          matHtml += '<div class="linear-matrix-cell" style="color:var(--accent-ink);">' + fmtNum(valI) + '</div>';
+        }
+      }
+      matHtml += '</div></div>';
+      container.querySelector("[data-augmented-matrix]").innerHTML = matHtml;
+    }
+
+    renderTab();
+  }
+
+  /* ==========================================================================
+     מעבדה 4 (יחידה 0): פרישה (Sp) ואי-תלות לינארית (span-independence)
+     ========================================================================== */
+
+  function mountSpanIndependence(host) {
+    var presets = [
+      {
+        label: "2 וקטורים בת\"ל ב-ℝ² (פורשים את כל המישור)",
+        dim: 2,
+        is2D: true,
+        v: [[2, 1], [-1, 2]],
+        isIndep: true,
+        rank: 2,
+        rref: [[1, 0], [0, 1]],
+        depEq: null,
+        desc: "הווקטורים אינם על אותו ישר. הדטרמיננטה היא 5 ≠ 0, ולכן הם פורשים את כל ℝ² (בסיס ל-ℝ²)."
+      },
+      {
+        label: "2 וקטורים תלויים ב-ℝ² (קולינאריים, קו ישר בלבד)",
+        dim: 2,
+        is2D: true,
+        v: [[2, 1], [4, 2]],
+        isIndep: false,
+        rank: 1,
+        rref: [[1, 2], [0, 0]],
+        depEq: "2v_1 - v_2 = \\vec{0}",
+        desc: "הווקטור v₂ הוא כפולה מדויקת של v₁ (v₂ = 2v₁). הפרישה שלהם היא ישר חד-ממדי בלבד ולא כל המישור!"
+      },
+      {
+        label: "3 וקטורים תלויים ב-ℝ³ (v₃ = 2v₁ - v₂)",
+        dim: 3,
+        is2D: false,
+        v: [[1, 0, 1], [0, 1, 1], [2, -1, 1]],
+        isIndep: false,
+        rank: 2,
+        rref: [[1, 0, 2], [0, 1, -1], [0, 0, 0]],
+        depEq: "2v_1 - v_2 - v_3 = \\vec{0}",
+        desc: "הווקטור השלישי נוצר כצירוף לינארי של שני הראשונים: v₃ = 2v₁ - v₂. לכן הקבוצה תלויה לינארית ופורשת מישור דו-ממדי בלבד ב-ℝ³."
+      },
+      {
+        label: "3 וקטורים בת\"ל ב-ℝ³ (בסיס סטנדרטי משופע)",
+        dim: 3,
+        is2D: false,
+        v: [[1, 0, 0], [1, 1, 0], [1, 1, 1]],
+        isIndep: true,
+        rank: 3,
+        rref: [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+        depEq: null,
+        desc: "מטריצת הווקטורים היא משולשית עם 1 באלכסון. כל העמודות הן עמודות איבר מוביל, ולכן הווקטורים בלתי תלויים לינארית ומהווים בסיס ל-ℝ³."
+      },
+      {
+        label: "פולינומים ב-ℝ₂[x]: {1+x, x+x², 1+x²}",
+        dim: 3,
+        is2D: false,
+        isPoly: true,
+        polyNames: ["1+x", "x+x^2", "1+x^2"],
+        v: [[1, 1, 0], [0, 1, 1], [1, 0, 1]],
+        isIndep: true,
+        rank: 3,
+        rref: [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+        depEq: null,
+        desc: "מעבר לווקטורי קואורדינטות לפי הבסיס הסטנדרטי {1, x, x²}. הדטרמיננטה שווה 2 ≠ 0, ולכן הפולינומים בלתי תלויים ומהווים בסיס למרחב הפולינומים!"
+      }
+    ];
+
+    var state = {
+      presetIdx: 0,
+      a1: 1,
+      a2: 1,
+      a3: 0
+    };
+
+    host.innerHTML =
+      '<div class="linear-lab-header">' +
+      '<span class="linear-lab-tag">יחידה 0 · מעבדה אינטראקטיבית</span>' +
+      '<h3 class="linear-lab-title">פרישה (\\(\\text{Sp}\\)) ואי-תלות לינארית (Span & Linear Independence)</h3>' +
+      '<p class="linear-lab-desc">חקור את מושגי היסוד של מרחבים וקטוריים: הזז את מקדמי הצירוף הלינארי \\(\\alpha_1, \\alpha_2\\), ראה את הוקטור הנפרש בזמן אמת, והבן את ההבדל הגיאומטרי והאלגברי בין וקטורים בת\"ל (הפורשים את כל המרחב) לווקטורים ת\"ל (הכלואים בתת-מרחב מנוון).</p>' +
+      '</div>' +
+      '<div class="linear-controls">' +
+      '<div class="linear-field">' +
+      '<span class="linear-field-label">בחר קבוצת וקטורים לבדיקה:</span>' +
+      '<div class="linear-btn-group" data-presets></div>' +
+      '</div>' +
+      '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:0.75rem;">' +
+      '<div class="linear-field">' +
+      '<div class="linear-field-top"><span class="linear-field-label">מקדם \\(\\alpha_1\\):</span><span class="linear-field-val" data-a1-val>1</span></div>' +
+      '<input type="range" min="-3" max="3" step="0.5" value="1" data-a1-slider>' +
+      '</div>' +
+      '<div class="linear-field">' +
+      '<div class="linear-field-top"><span class="linear-field-label">מקדם \\(\\alpha_2\\):</span><span class="linear-field-val" data-a2-val>1</span></div>' +
+      '<input type="range" min="-3" max="3" step="0.5" value="1" data-a2-slider>' +
+      '</div>' +
+      '<div class="linear-field" data-a3-wrap style="display:none;">' +
+      '<div class="linear-field-top"><span class="linear-field-label">מקדם \\(\\alpha_3\\):</span><span class="linear-field-val" data-a3-val>0</span></div>' +
+      '<input type="range" min="-3" max="3" step="0.5" value="0" data-a3-slider>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="linear-layout-dual">' +
+      '<div class="linear-panel" data-visual-panel>' +
+      '<div class="linear-svg-container" data-svg-wrap>' +
+      '<svg class="linear-svg" viewBox="-160 -160 320 320" data-svg></svg>' +
+      '</div>' +
+      '<div data-vector-list style="margin-top:0.75rem;"></div>' +
+      '</div>' +
+      '<div class="linear-panel">' +
+      '<div data-indep-badge style="margin-bottom:0.75rem;"></div>' +
+      '<div class="linear-panel" style="background:var(--card); font-size:0.92rem; margin-bottom:0.75rem;" data-comb-tex></div>' +
+      '<div class="linear-panel" style="background:var(--surface); font-size:0.9rem; margin-bottom:0.75rem;" data-matrix-reduction></div>' +
+      '<div class="linear-callout" data-callout></div>' +
+      '</div>' +
+      '</div>';
+
+    var presGroup = host.querySelector("[data-presets]");
+    presets.forEach(function (p, idx) {
+      var btn = document.createElement("button");
+      btn.className = "linear-btn" + (idx === 0 ? " is-active" : "");
+      btn.textContent = p.label.split("(")[0];
+      btn.title = p.label;
+      btn.addEventListener("click", function () {
+        state.presetIdx = idx;
+        presGroup.querySelectorAll(".linear-btn").forEach(function (b, i) {
+          b.classList.toggle("is-active", i === idx);
+        });
+        paint();
+      });
+      presGroup.appendChild(btn);
+    });
+
+    var a1Slider = host.querySelector("[data-a1-slider]");
+    var a2Slider = host.querySelector("[data-a2-slider]");
+    var a3Slider = host.querySelector("[data-a3-slider]");
+
+    a1Slider.addEventListener("input", function () {
+      state.a1 = parseFloat(a1Slider.value);
+      host.querySelector("[data-a1-val]").textContent = state.a1;
+      paint();
+    });
+    a2Slider.addEventListener("input", function () {
+      state.a2 = parseFloat(a2Slider.value);
+      host.querySelector("[data-a2-val]").textContent = state.a2;
+      paint();
+    });
+    a3Slider.addEventListener("input", function () {
+      state.a3 = parseFloat(a3Slider.value);
+      host.querySelector("[data-a3-val]").textContent = state.a3;
+      paint();
+    });
+
+    var svg = host.querySelector("[data-svg]");
+    makeArrowMarker(svg, "arr-sp-blue", "#2563eb");
+    makeArrowMarker(svg, "arr-sp-orange", "#ea580c");
+    makeArrowMarker(svg, "arr-sp-teal", "#0f766e");
+
+    function paint() {
+      var p = presets[state.presetIdx];
+      var has3 = p.v.length >= 3;
+      host.querySelector("[data-a3-wrap]").style.display = has3 ? "" : "none";
+
+      var svgWrap = host.querySelector("[data-svg-wrap]");
+      var vList = host.querySelector("[data-vector-list]");
+      var a1 = state.a1, a2 = state.a2, a3 = state.a3;
+
+      if (p.is2D) {
+        svgWrap.style.display = "";
+        while (svg.childNodes.length > 1) svg.removeChild(svg.lastChild);
+
+        var S = 24;
+        var gGrid = createSvgEl("g", {});
+        for (var k = -6; k <= 6; k++) {
+          gGrid.appendChild(createSvgEl("line", { x1: k * S, y1: -150, x2: k * S, y2: 150, class: "linear-svg-grid" }));
+          gGrid.appendChild(createSvgEl("line", { x1: -150, y1: k * S, x2: 150, y2: k * S, class: "linear-svg-grid" }));
+        }
+        svg.appendChild(gGrid);
+
+        var gAxes = createSvgEl("g", {});
+        gAxes.appendChild(createSvgEl("line", { x1: -150, y1: 0, x2: 150, y2: 0, class: "linear-svg-axis" }));
+        gAxes.appendChild(createSvgEl("line", { x1: 0, y1: 150, x2: 0, y2: -150, class: "linear-svg-axis" }));
+        svg.appendChild(gAxes);
+
+        var v1 = p.v[0], v2 = p.v[1];
+        var wx = a1 * v1[0] + a2 * v2[0];
+        var wy = a1 * v1[1] + a2 * v2[1];
+
+        if (!p.isIndep) {
+          var slope = v1[1] / v1[0];
+          svg.appendChild(createSvgEl("line", {
+            x1: -150, y1: 150 * slope, x2: 150, y2: -150 * slope,
+            stroke: "var(--accent)", "stroke-width": 2, "stroke-dasharray": "5,4", opacity: 0.6
+          }));
+        }
+
+        var p1x = a1 * v1[0] * S, p1y = -a1 * v1[1] * S;
+        var p2x = a2 * v2[0] * S, p2y = -a2 * v2[1] * S;
+        var wxS = wx * S, wyS = -wy * S;
+
+        svg.appendChild(createSvgEl("line", { x1: p1x, y1: p1y, x2: wxS, y2: wyS, stroke: "#ea580c", "stroke-width": 1.2, "stroke-dasharray": "3,3" }));
+        svg.appendChild(createSvgEl("line", { x1: p2x, y1: p2y, x2: wxS, y2: wyS, stroke: "#2563eb", "stroke-width": 1.2, "stroke-dasharray": "3,3" }));
+
+        svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: v1[0] * S, y2: -v1[1] * S, stroke: "#2563eb", "stroke-width": 2.5, "marker-end": "url(#arr-sp-blue)" }));
+        svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: v2[0] * S, y2: -v2[1] * S, stroke: "#ea580c", "stroke-width": 2.5, "marker-end": "url(#arr-sp-orange)" }));
+        svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: wxS, y2: wyS, stroke: "#0f766e", "stroke-width": 3, "marker-end": "url(#arr-sp-teal)" }));
+
+        vList.innerHTML =
+          '<div style="display:flex; justify-content:space-around; font-size:0.85rem; font-weight:700;">' +
+          '<span style="color:#2563eb;">v₁ = (' + v1[0] + ', ' + v1[1] + ')</span>' +
+          '<span style="color:#ea580c;">v₂ = (' + v2[0] + ', ' + v2[1] + ')</span>' +
+          '<span style="color:#0f766e;">w = (' + fmtNum(wx) + ', ' + fmtNum(wy) + ')</span>' +
+          '</div>';
+      } else {
+        svgWrap.style.display = "none";
+        var vecBoxes = p.v.map(function (vec, vi) {
+          var label = p.isPoly ? p.polyNames[vi] : ("v_" + (vi + 1));
+          return '<div class="linear-panel" style="text-align:center; padding:0.5rem;">' +
+            '<strong>' + label + ':</strong><br>\\(' + (p.isPoly ? "[" + label + "]_E = " : "") + "\\begin{pmatrix}" + vec.join(" \\\\ ") + "\\end{pmatrix}\\)</div>";
+        }).join("");
+        vList.innerHTML = '<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.5rem;">' + vecBoxes + '</div>';
+      }
+
+      var badgeBox = host.querySelector("[data-indep-badge]");
+      if (p.isIndep) {
+        badgeBox.innerHTML = '<span class="linear-badge linear-badge-ok" style="font-size:0.95rem; padding:0.4rem 0.8rem;">✓ הקבוצה בלתי תלויה לינארית (בת\"ל) — דרגת המטריצה היא ' + p.rank + ' (מלאה)</span>';
+      } else {
+        badgeBox.innerHTML = '<span class="linear-badge linear-badge-bad" style="font-size:0.95rem; padding:0.4rem 0.8rem;">✗ הקבוצה תלויה לינארית (ת\"ל) — קיים צירוף לא-טריוויאלי שמתאפס!</span>';
+      }
+
+      var combBox = host.querySelector("[data-comb-tex]");
+      var resVec = [];
+      for (var ri = 0; ri < p.v[0].length; ri++) {
+        var val = a1 * p.v[0][ri] + a2 * p.v[1][ri] + (has3 ? (a3 * p.v[2][ri]) : 0);
+        resVec.push(fmtNum(val));
+      }
+      var combTex = "w = " + a1 + "v_1 + " + a2 + "v_2" + (has3 ? (" + " + a3 + "v_3") : "") + " = \\begin{pmatrix}" + resVec.join(" \\\\ ") + "\\end{pmatrix}";
+      renderMathBlock(combBox, combTex, combTex);
+
+      var redBox = host.querySelector("[data-matrix-reduction]");
+      var matColTex = "\\begin{pmatrix}";
+      for (var rowI = 0; rowI < p.v[0].length; rowI++) {
+        var rVals = [];
+        for (var colI = 0; colI < p.v.length; colI++) rVals.push(p.v[colI][rowI]);
+        matColTex += rVals.join(" & ") + (rowI < p.v[0].length - 1 ? " \\\\ " : "");
+      }
+      matColTex += "\\end{pmatrix}";
+
+      var rrefTex = "\\begin{pmatrix}";
+      for (var rI = 0; rI < p.rref.length; rI++) {
+        rrefTex += p.rref[rI].join(" & ") + (rI < p.rref.length - 1 ? " \\\\ " : "");
+      }
+      rrefTex += "\\end{pmatrix}";
+
+      var redHtml = "<strong>מבחן אי-תלות אלגברי (מטריצת עמודות):</strong>" +
+        "\\[ M = " + matColTex + " \\xrightarrow{\\text{RREF}} " + rrefTex + " \\]" +
+        (p.depEq ? ("<div style='color:var(--bad); font-weight:700;'>קשר תלות לינארית מפורש: \\(" + p.depEq + "\\)</div>") : "<div style='color:var(--ok); font-weight:700;'>כל העמודות מובילות \\(\\implies \\alpha_1 = \\alpha_2 = \\dots = 0\\) הוא הפתרון היחיד!</div>");
+      redBox.innerHTML = redHtml;
+
+      host.querySelector("[data-callout]").innerHTML =
+        '<div class="linear-callout-title">הסבר פדגוגי:</div>' +
+        '<p style="margin:0;">' + p.desc + '</p>';
+    }
+
+    paint();
+    host.linearRedraw = paint;
+  }
+
+  /* ==========================================================================
+     מעבדה 5 (יחידה 0): חיתוך, סכום וסכום ישר (subspaces-direct-sum)
+     ========================================================================== */
+
+  function mountSubspacesDirectSum(host) {
+    var scenarios = [
+      {
+        id: "s1",
+        label: "סכום ישר ב-ℝ³: מישור z=0 וישר (t, t, t)",
+        dimV: 3,
+        dimU: 2,
+        dimW: 1,
+        dimInter: 0,
+        dimSum: 3,
+        isDirect: true,
+        basisU: ["(1, 0, 0)", "(0, 1, 0)"],
+        basisW: ["(1, 1, 1)"],
+        basisInter: "{\\vec{0}}",
+        basisSum: ["(1, 0, 0)", "(0, 1, 0)", "(0, 0, 1)"],
+        desc: "המישור U (מישור xy) והישר W נפגשים אך ורק בראשית {0}. סכום ממדיהם הוא 2+1=3, ולכן ℝ³ = U ⊕ W הוא סכום ישר!",
+        canDecomp: true
+      },
+      {
+        id: "s2",
+        label: "שני מישורים ב-ℝ³: מישור z=0 ומישור y=0 (אינו סכום ישר)",
+        dimV: 3,
+        dimU: 2,
+        dimW: 2,
+        dimInter: 1,
+        dimSum: 3,
+        isDirect: false,
+        basisU: ["(1, 0, 0)", "(0, 1, 0)"],
+        basisW: ["(1, 0, 0)", "(0, 0, 1)"],
+        basisInter: "\\text{Sp}\\{(1, 0, 0)\\} \\text{ (ציר x)}",
+        basisSum: ["(1, 0, 0)", "(0, 1, 0)", "(0, 0, 1)"],
+        desc: "שני המישורים נחתכים בציר ה-x כולו (חיתוך ממימד 1). לפי משפט הממדים: 2 + 2 - 1 = 3. הסכום הוא אמנם כל ℝ³, אך אינו סכום ישר כי החיתוך מכיל וקטורים שאינם אפס!",
+        canDecomp: false
+      },
+      {
+        id: "s3",
+        label: "שני תת-מרחבים דו-ממדיים ב-ℝ⁴",
+        dimV: 4,
+        dimU: 2,
+        dimW: 2,
+        dimInter: 1,
+        dimSum: 3,
+        isDirect: false,
+        basisU: ["(1, 1, 0, 0)", "(0, 1, 1, 0)"],
+        basisW: ["(0, 0, 1, 1)", "(1, 0, 0, 1)"],
+        basisInter: "\\text{Sp}\\{(1, 0, -1, 0)\\}",
+        basisSum: ["(1, 1, 0, 0)", "(0, 1, 1, 0)", "(0, 0, 1, 1)"],
+        desc: "דירוג שורות המטריצה המשותפת נותן מרחב סכום ממימד 3. לפי משפט הממדים: dim(U ∩ W) = 2 + 2 - 3 = 1. החיתוך הוא ישר חד-ממדי.",
+        canDecomp: false
+      }
+    ];
+
+    var state = {
+      scenarioIdx: 0,
+      vx: 3,
+      vy: 5,
+      vz: 2
+    };
+
+    host.innerHTML =
+      '<div class="linear-lab-header">' +
+      '<span class="linear-lab-tag">יחידה 0 · מעבדה אינטראקטיבית</span>' +
+      '<h3 class="linear-lab-title">תת-מרחבים: חיתוך \\(U \\cap W\\), סכום \\(U + W\\) וסכום ישר \\(U \\oplus W\\)</h3>' +
+      '<p class="linear-lab-desc">חקור את משפט הממדים של גראסמן במאזניים ויזואליים, ראה כיצד מוצאים בסיסים לסכום ולחיתוך באמצעות דירוג מטריצות, ובדוק מתי סכום הופך ל<strong>סכום ישר</strong> המאפשר פירוק יחיד לכל וקטור במרחב.</p>' +
+      '</div>' +
+      '<div class="linear-controls">' +
+      '<div class="linear-field">' +
+      '<span class="linear-field-label">בחר תרחיש תת-מרחבים:</span>' +
+      '<div class="linear-btn-group" data-scenarios></div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="linear-balance-bar" data-balance-bar></div>' +
+      '<div class="linear-layout-dual">' +
+      '<div class="linear-panel">' +
+      '<div data-status-badge style="margin-bottom:0.75rem;"></div>' +
+      '<div style="display:grid; gap:0.5rem; font-size:0.92rem;">' +
+      '<div class="linear-panel" style="background:var(--card);"><strong>בסיס לתת-המרחב \\(U\\):</strong> <span data-u-basis></span></div>' +
+      '<div class="linear-panel" style="background:var(--card);"><strong>בסיס לתת-המרחב \\(W\\):</strong> <span data-w-basis></span></div>' +
+      '<div class="linear-panel" style="background:var(--surface);"><strong>בסיס לחיתוך \\(U \\cap W\\):</strong> <span data-inter-basis></span></div>' +
+      '<div class="linear-panel" style="background:var(--surface);"><strong>בסיס לסכום \\(U + W\\):</strong> <span data-sum-basis></span></div>' +
+      '</div>' +
+      '<div class="linear-callout" data-callout style="margin-top:0.75rem;"></div>' +
+      '</div>' +
+      '<div class="linear-panel" data-decomp-panel>' +
+      '<h4 style="margin:0 0 0.5rem; font-size:1rem;">פירוק יחיד של וקטור בסכום ישר \\(v = u + w\\):</h4>' +
+      '<p style="font-size:0.88rem; color:var(--muted); margin:0 0 0.75rem;">בחר וקטור \\(v = (x, y, z)\\) וצפה בפירוק היחיד שלו לרכיב ב-\\(U\\) ולרכיב ב-\\(W\\):</p>' +
+      '<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.5rem; margin-bottom:0.75rem;">' +
+      '<label class="linear-field"><span>x:</span><input type="range" min="-4" max="4" step="1" value="3" data-vx-slider><span data-vx-val style="text-align:center; font-weight:700;">3</span></label>' +
+      '<label class="linear-field"><span>y:</span><input type="range" min="-4" max="4" step="1" value="5" data-vy-slider><span data-vy-val style="text-align:center; font-weight:700;">5</span></label>' +
+      '<label class="linear-field"><span>z:</span><input type="range" min="-4" max="4" step="1" value="2" data-vz-slider><span data-vz-val style="text-align:center; font-weight:700;">2</span></label>' +
+      '</div>' +
+      '<div class="linear-panel" style="background:var(--card); font-size:0.95rem;" data-decomp-result></div>' +
+      '</div>' +
+      '</div>';
+
+    var scnGroup = host.querySelector("[data-scenarios]");
+    scenarios.forEach(function (s, idx) {
+      var btn = document.createElement("button");
+      btn.className = "linear-btn" + (idx === 0 ? " is-active" : "");
+      btn.textContent = s.label.split(":")[0];
+      btn.title = s.label;
+      btn.addEventListener("click", function () {
+        state.scenarioIdx = idx;
+        scnGroup.querySelectorAll(".linear-btn").forEach(function (b, i) {
+          b.classList.toggle("is-active", i === idx);
+        });
+        render();
+      });
+      scnGroup.appendChild(btn);
+    });
+
+    var vxS = host.querySelector("[data-vx-slider]");
+    var vyS = host.querySelector("[data-vy-slider]");
+    var vzS = host.querySelector("[data-vz-slider]");
+
+    vxS.addEventListener("input", function () { state.vx = parseInt(vxS.value, 10); host.querySelector("[data-vx-val]").textContent = state.vx; renderDecomp(); });
+    vyS.addEventListener("input", function () { state.vy = parseInt(vyS.value, 10); host.querySelector("[data-vy-val]").textContent = state.vy; renderDecomp(); });
+    vzS.addEventListener("input", function () { state.vz = parseInt(vzS.value, 10); host.querySelector("[data-vz-val]").textContent = state.vz; renderDecomp(); });
+
+    function renderDecomp() {
+      var s = scenarios[state.scenarioIdx];
+      var decompPanel = host.querySelector("[data-decomp-panel]");
+      if (!s.canDecomp) {
+        decompPanel.style.display = "none";
+        return;
+      }
+      decompPanel.style.display = "";
+      var x = state.vx, y = state.vy, z = state.vz;
+      var ux = x - z, uy = y - z, uz = 0;
+      var wx = z, wy = z, wz = z;
+
+      var resHtml =
+        "\\[ v = \\begin{pmatrix}" + x + " \\\\ " + y + " \\\\ " + z + "\\end{pmatrix} = " +
+        "\\underbrace{\\begin{pmatrix}" + ux + " \\\\ " + uy + " \\\\ 0 \\end{pmatrix}}_{\\in U} + " +
+        "\\underbrace{\\begin{pmatrix}" + wx + " \\\\ " + wy + " \\\\ " + wz + "\\end{pmatrix}}_{\\in W} \\]" +
+        "<div style='font-size:0.85rem; color:var(--ok); font-weight:700; text-align:center;'>✓ אימות: הרכיב \\(u\\) מקיים \\(z=0\\), הרכיב \\(w\\) על הישר \\(x=y=z\\), וסכומם שווה בדיוק ל-\\(v\\)!</div>";
+      renderMathBlock(host.querySelector("[data-decomp-result]"), resHtml, resHtml);
+    }
+
+    function render() {
+      var s = scenarios[state.scenarioIdx];
+
+      var bBar = host.querySelector("[data-balance-bar]");
+      bBar.innerHTML =
+        '<span class="linear-balance-chip" style="border-color:var(--accent); background:var(--accent-soft); color:var(--accent-ink);">\\(\\dim(U+W) = ' + s.dimSum + '\\)</span>' +
+        '<span style="font-size:1.2rem; font-weight:800;">=</span>' +
+        '<span class="linear-balance-chip">\\(\\dim(U) = ' + s.dimU + '\\)</span>' +
+        '<span style="font-size:1.2rem; font-weight:800;">+</span>' +
+        '<span class="linear-balance-chip">\\(\\dim(W) = ' + s.dimW + '\\)</span>' +
+        '<span style="font-size:1.2rem; font-weight:800;">−</span>' +
+        '<span class="linear-balance-chip" style="border-color:' + (s.dimInter === 0 ? "var(--ok)" : "var(--bad)") + ';">\\(\\dim(U \\cap W) = ' + s.dimInter + '\\)</span>';
+
+      var badgeEl = host.querySelector("[data-status-badge]");
+      if (s.isDirect) {
+        badgeEl.innerHTML = '<span class="linear-badge linear-badge-ok" style="font-size:0.95rem; padding:0.45rem 0.8rem;">✓ סכום ישר: \\(V = U \\oplus W\\) — החיתוך טריוויאלי (\\(\\dim(U \\cap W)=0\\)), ולכל וקטור קיים פירוק יחיד!</span>';
+      } else {
+        badgeEl.innerHTML = '<span class="linear-badge linear-badge-bad" style="font-size:0.95rem; padding:0.45rem 0.8rem;">✗ אינו סכום ישר: החיתוך אינו טריוויאלי (\\(\\dim(U \\cap W) \\gt 0\\)) — לפיכך קיימים אינסוף פירוקים לכל וקטור!</span>';
+      }
+
+      host.querySelector("[data-u-basis]").textContent = "\\(" + s.basisU.join(", \\; ") + "\\)";
+      host.querySelector("[data-w-basis]").textContent = "\\(" + s.basisW.join(", \\; ") + "\\)";
+      host.querySelector("[data-inter-basis]").textContent = "\\(" + s.basisInter + "\\)";
+      host.querySelector("[data-sum-basis]").textContent = "\\(" + s.basisSum.join(", \\; ") + "\\)";
+
+      host.querySelector("[data-callout]").innerHTML =
+        '<div class="linear-callout-title">ניתוח גיאומטרי:</div>' +
+        '<p style="margin:0;">' + s.desc + '</p>';
+
+      renderDecomp();
+    }
+
+    render();
+  }
+
+  /* ==========================================================================
+     מעבדה 6 (יחידה 0): קואורדינטות ומטריצת מעבר בסיס (change-of-basis-2d)
+     ========================================================================== */
+
+  function mountChangeOfBasis2D(host) {
+    var presets = [
+      {
+        label: "בסיס נטוי אורתוגונלי: v₁=(2,1), v₂=(-1,2)",
+        v1: [2, 1],
+        v2: [-1, 2]
+      },
+      {
+        label: "בסיס מקבילית משופעת: v₁=(2,0), v₂=(1,2)",
+        v1: [2, 0],
+        v2: [1, 2]
+      },
+      {
+        label: "בסיס סיבוב 45°: v₁=(1,1), v₂=(-1,1)",
+        v1: [1, 1],
+        v2: [-1, 1]
+      },
+      {
+        label: "בסיס גזירה: v₁=(1,0), v₂=(1,1)",
+        v1: [1, 0],
+        v2: [1, 1]
+      }
+    ];
+
+    var state = {
+      presetIdx: 0,
+      wx: 2,
+      wy: 3
+    };
+
+    host.innerHTML =
+      '<div class="linear-lab-header">' +
+      '<span class="linear-lab-tag">יחידה 0 · מעבדה אינטראקטיבית</span>' +
+      '<h3 class="linear-lab-title">קואורדינטות \\([v]_B\\) ומטריצת מעבר בסיס \\([I]_B^C\\) (רשת כפולה)</h3>' +
+      '<p class="linear-lab-desc">חקור כיצד אותו וקטור בדיוק מתואר בעזרת קואורדינטות שונות תחת בסיסים שונים. צפה ברשת הכפולה: הרשת הישרה של הבסיס הסטנדרטי \\(E\\) לצד הרשת הנטויה של הבסיס \\(B\\), וגלה כיצד מטריצת המעבר מתרגמת ביניהן.</p>' +
+      '</div>' +
+      '<div class="linear-controls">' +
+      '<div class="linear-field">' +
+      '<span class="linear-field-label">בחר בסיס \\(B = (v_1, v_2)\\):</span>' +
+      '<div class="linear-btn-group" data-presets></div>' +
+      '</div>' +
+      '<div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem;">' +
+      '<div class="linear-field">' +
+      '<div class="linear-field-top"><span class="linear-field-label">וקטור מטרה \\([w]_E = x\\):</span><span class="linear-field-val" data-wx-val>2</span></div>' +
+      '<input type="range" min="-4" max="4" step="0.5" value="2" data-wx-slider>' +
+      '</div>' +
+      '<div class="linear-field">' +
+      '<div class="linear-field-top"><span class="linear-field-label">וקטור מטרה \\([w]_E = y\\):</span><span class="linear-field-val" data-wy-val>3</span></div>' +
+      '<input type="range" min="-4" max="4" step="0.5" value="3" data-wy-slider>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="linear-layout-dual">' +
+      '<div class="linear-panel linear-svg-container">' +
+      '<svg class="linear-svg" viewBox="-160 -160 320 320" data-svg></svg>' +
+      '</div>' +
+      '<div class="linear-panel">' +
+      '<div data-coord-badges style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem;"></div>' +
+      '<div class="linear-panel" style="background:var(--card); font-size:0.92rem; margin-bottom:0.75rem;" data-calc-panel></div>' +
+      '<div class="linear-callout" data-callout></div>' +
+      '</div>' +
+      '</div>';
+
+    var presGroup = host.querySelector("[data-presets]");
+    presets.forEach(function (p, idx) {
+      var btn = document.createElement("button");
+      btn.className = "linear-btn" + (idx === 0 ? " is-active" : "");
+      btn.textContent = p.label.split(":")[0];
+      btn.title = p.label;
+      btn.addEventListener("click", function () {
+        state.presetIdx = idx;
+        presGroup.querySelectorAll(".linear-btn").forEach(function (b, i) {
+          b.classList.toggle("is-active", i === idx);
+        });
+        paint();
+      });
+      presGroup.appendChild(btn);
+    });
+
+    var wxS = host.querySelector("[data-wx-slider]");
+    var wyS = host.querySelector("[data-wy-slider]");
+    wxS.addEventListener("input", function () {
+      state.wx = parseFloat(wxS.value);
+      host.querySelector("[data-wx-val]").textContent = state.wx;
+      paint();
+    });
+    wyS.addEventListener("input", function () {
+      state.wy = parseFloat(wyS.value);
+      host.querySelector("[data-wy-val]").textContent = state.wy;
+      paint();
+    });
+
+    var svg = host.querySelector("[data-svg]");
+    makeArrowMarker(svg, "arr-cob-blue", "#2563eb");
+    makeArrowMarker(svg, "arr-cob-orange", "#ea580c");
+    makeArrowMarker(svg, "arr-cob-teal", "#0f766e");
+
+    function paint() {
+      var p = presets[state.presetIdx];
+      var v1 = p.v1, v2 = p.v2;
+      var wx = state.wx, wy = state.wy;
+
+      while (svg.childNodes.length > 1) svg.removeChild(svg.lastChild);
+
+      var S = 24;
+
+      var gE = createSvgEl("g", {});
+      for (var k = -6; k <= 6; k++) {
+        gE.appendChild(createSvgEl("line", { x1: k * S, y1: -150, x2: k * S, y2: 150, class: "linear-svg-grid" }));
+        gE.appendChild(createSvgEl("line", { x1: -150, y1: k * S, x2: 150, y2: k * S, class: "linear-svg-grid" }));
+      }
+      svg.appendChild(gE);
+
+      var gB = createSvgEl("g", {});
+      for (var i = -4; i <= 4; i++) {
+        var xA = (i * v2[0] - 5 * v1[0]) * S, yA = -(i * v2[1] - 5 * v1[1]) * S;
+        var xB = (i * v2[0] + 5 * v1[0]) * S, yB = -(i * v2[1] + 5 * v1[1]) * S;
+        gB.appendChild(createSvgEl("line", { x1: xA, y1: yA, x2: xB, y2: yB, stroke: "#0f766e", "stroke-width": 0.9, opacity: 0.35 }));
+
+        var xC = (i * v1[0] - 5 * v2[0]) * S, yC = -(i * v1[1] - 5 * v2[1]) * S;
+        var xD = (i * v1[0] + 5 * v2[0]) * S, yD = -(i * v1[1] + 5 * v2[1]) * S;
+        gB.appendChild(createSvgEl("line", { x1: xC, y1: yC, x2: xD, y2: yD, stroke: "#0f766e", "stroke-width": 0.9, opacity: 0.35 }));
+      }
+      svg.appendChild(gB);
+
+      var gAxes = createSvgEl("g", {});
+      gAxes.appendChild(createSvgEl("line", { x1: -150, y1: 0, x2: 150, y2: 0, class: "linear-svg-axis" }));
+      gAxes.appendChild(createSvgEl("line", { x1: 0, y1: 150, x2: 0, y2: -150, class: "linear-svg-axis" }));
+      svg.appendChild(gAxes);
+
+      var a = v1[0], b = v2[0];
+      var c = v1[1], d = v2[1];
+      var det = a * d - b * c;
+
+      var alpha1 = (d * wx - b * wy) / det;
+      var alpha2 = (-c * wx + a * wy) / det;
+
+      var p1x = alpha1 * v1[0] * S, p1y = -alpha1 * v1[1] * S;
+      var p2x = alpha2 * v2[0] * S, p2y = -alpha2 * v2[1] * S;
+      var wxS = wx * S, wyS = -wy * S;
+
+      svg.appendChild(createSvgEl("line", { x1: p1x, y1: p1y, x2: wxS, y2: wyS, stroke: "#ea580c", "stroke-width": 1.5, "stroke-dasharray": "3,3" }));
+      svg.appendChild(createSvgEl("line", { x1: p2x, y1: p2y, x2: wxS, y2: wyS, stroke: "#2563eb", "stroke-width": 1.5, "stroke-dasharray": "3,3" }));
+
+      svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: v1[0] * S, y2: -v1[1] * S, stroke: "#2563eb", "stroke-width": 2.5, "marker-end": "url(#arr-cob-blue)" }));
+      svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: v2[0] * S, y2: -v2[1] * S, stroke: "#ea580c", "stroke-width": 2.5, "marker-end": "url(#arr-cob-orange)" }));
+      svg.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: wxS, y2: wyS, stroke: "#0f766e", "stroke-width": 3.2, "marker-end": "url(#arr-cob-teal)" }));
+
+      host.querySelector("[data-coord-badges]").innerHTML =
+        '<span class="linear-badge linear-badge-accent">בסיס סטנדרטי: \\([w]_E = \\begin{pmatrix}' + wx + ' \\\\ ' + wy + '\\end{pmatrix}\\)</span>' +
+        '<span class="linear-badge linear-badge-ok">קואורדינטות בבסיס \\(B\\): \\([w]_B = \\begin{pmatrix}' + fmtNum(alpha1) + ' \\\\ ' + fmtNum(alpha2) + '\\end{pmatrix}\\)</span>';
+
+      var calcTex =
+        "[I]_B^E = \\begin{pmatrix} v_1 & v_2 \\end{pmatrix} = \\begin{pmatrix} " + a + " & " + b + " \\\\ " + c + " & " + d + " \\end{pmatrix}, \\quad " +
+        "\\det([I]_B^E) = " + a + "\\cdot " + d + " - " + b + "\\cdot " + c + " = " + det +
+        "\\\\ [I]_E^B = ([I]_B^E)^{-1} = \\frac{1}{" + det + "}\\begin{pmatrix} " + d + " & " + (-b) + " \\\\ " + (-c) + " & " + a + " \\end{pmatrix}" +
+        "\\\\ [w]_B = [I]_E^B [w]_E = \\frac{1}{" + det + "}\\begin{pmatrix} " + d + " & " + (-b) + " \\\\ " + (-c) + " & " + a + " \\end{pmatrix}\\begin{pmatrix}" + wx + " \\\\ " + wy + "\\end{pmatrix} = \\begin{pmatrix}" + fmtNum(alpha1) + " \\\\ " + fmtNum(alpha2) + "\\end{pmatrix}" +
+        "\\\\ \\text{בדיקה: } " + fmtNum(alpha1) + "\\begin{pmatrix}" + v1[0] + " \\\\ " + v1[1] + "\\end{pmatrix} + " + fmtNum(alpha2) + "\\begin{pmatrix}" + v2[0] + " \\\\ " + v2[1] + "\\end{pmatrix} = \\begin{pmatrix}" + wx + " \\\\ " + wy + "\\end{pmatrix} = w \\; \\checkmark";
+
+      renderMathBlock(host.querySelector("[data-calc-panel]"), calcTex, calcTex);
+
+      host.querySelector("[data-callout]").innerHTML =
+        '<div class="linear-callout-title">העיקרון המוביל של החלפת בסיס:</div>' +
+        '<p style="margin:0;">מטריצת המעבר מהבסיס \\(B\\) לסטנדרטי \\([I]_B^E\\) נבנית על ידי <strong>הצבת וקטורי \\(B\\) בעמודות</strong>. כדי לעבור מהסטנדרטי ל-\\(B\\), פשוט <strong>הופכים את המטריצה</strong>: \\([I]_E^B = ([I]_B^E)^{-1}\\). כפל בוקטור הקואורדינטות נותן מיד את סקלרי הצירוף הלינארי!</p>';
+    }
+
+    paint();
+    host.linearRedraw = paint;
+  }
+
+  /* ==========================================================================
+     מעבדה 7 (יחידה 0): גרעין, תמונה ומשפט הממדים (linear-map-ker-im)
+     ========================================================================== */
+
+  function mountLinearMapKerIm(host) {
+    var maps = [
+      {
+        id: "proj",
+        label: "הטלה אורתוגונלית על ציר x",
+        is2D: true,
+        dimV: 2,
+        dimW: 2,
+        A: [[1, 0], [0, 0]],
+        dimKer: 1,
+        dimIm: 1,
+        kerBasis: "(0, 1)^t \\text{ (ציר y)}",
+        imBasis: "(1, 0)^t \\text{ (ציר x)}",
+        kerLine: "x = 0",
+        imLine: "y = 0",
+        isInjective: false,
+        isSurjective: false,
+        desc: "כל נקודה נזרקת אנכית אל ציר ה-x. כל הנקודות על ציר y נשלחות ל-0 (הגרעין), וכל התוצאות שוכנות על ציר x (התמונה). 1 + 1 = 2."
+      },
+      {
+        id: "collapse",
+        label: "קריסה על ישר משופע: T(x,y) = (x+2y, 2x+4y)",
+        is2D: true,
+        dimV: 2,
+        dimW: 2,
+        A: [[1, 2], [2, 4]],
+        dimKer: 1,
+        dimIm: 1,
+        kerBasis: "(-2, 1)^t \\text{ (הישר } x+2y=0)",
+        imBasis: "(1, 2)^t \\text{ (הישר } y=2x)",
+        kerLine: "x + 2y = 0",
+        imLine: "y = 2x",
+        isInjective: false,
+        isSurjective: false,
+        desc: "דרגת המטריצה היא 1 בלבד. המישור כולו קורס אל הישר y = 2x. כל הווקטורים על הישר הניצב x + 2y = 0 נשלחים לאפס!"
+      },
+      {
+        id: "rot",
+        label: "סיבוב ב-90° (איזומורפיזם: חח\"ע ועל)",
+        is2D: true,
+        dimV: 2,
+        dimW: 2,
+        A: [[0, -1], [1, 0]],
+        dimKer: 0,
+        dimIm: 2,
+        kerBasis: "{\\vec{0}}",
+        imBasis: "e_1, e_2 \\text{ (כל } \\mathbb{R}^2)",
+        kerLine: "\\text{נקודת האפס בלבד}",
+        imLine: "\\text{כל המישור}",
+        isInjective: true,
+        isSurjective: true,
+        desc: "ההעתקה הפיכה: אף וקטור שאינו אפס אינו מתאפס (גרעין טריוויאלי), והתמונה היא המישור כולו. dim(V) = 0 + 2 = 2."
+      },
+      {
+        id: "diff",
+        label: "אופרטור הגזירה בפולינומים: D(a+bx+cx²) = b+2cx",
+        is2D: false,
+        dimV: 3,
+        dimW: 3,
+        dimKer: 1,
+        dimIm: 2,
+        kerBasis: "\\text{Sp}\\{1\\} \\text{ (פולינומים קבועים)}",
+        imBasis: "\\text{Sp}\\{1, x\\} \\text{ (פולינומים ממעלה } \\le 1)",
+        isInjective: false,
+        isSurjective: false,
+        desc: "נגזרת של קבוע היא 0, ולכן הגרעין הוא מרחב הקבועים ממימד 1. נגזרת של פולינום ריבועי היא לינארית, ולכן התמונה ממימד 2. 1 + 2 = 3!"
+      },
+      {
+        id: "skew",
+        label: "הפרש שחלוף במטריצות: T(A) = A - Aᵗ על M_{2×2}",
+        is2D: false,
+        dimV: 4,
+        dimW: 4,
+        dimKer: 3,
+        dimIm: 1,
+        kerBasis: "\\text{Sp}\\{\\begin{pmatrix}1&0\\\\0&0\\end{pmatrix}, \\begin{pmatrix}0&0\\\\0&1\\end{pmatrix}, \\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}\\} \\text{ (מטריצות סימטריות)}",
+        imBasis: "\\text{Sp}\\{\\begin{pmatrix}0&1\\\\-1&0\\end{pmatrix}\\} \\text{ (אנטי-סימטריות)}",
+        isInjective: false,
+        isSurjective: false,
+        desc: "A מתאפסת אם ורק אם A = Aᵗ (סימטרית), מרחב ממימד 3. התוצאה היא תמיד אנטי-סימטרית (מימד 1). 3 + 1 = 4!"
+      }
+    ];
+
+    var state = {
+      mapIdx: 0,
+      vx: 2,
+      vy: 1
+    };
+
+    host.innerHTML =
+      '<div class="linear-lab-header">' +
+      '<span class="linear-lab-tag">יחידה 0 · מעבדה אינטראקטיבית</span>' +
+      '<h3 class="linear-lab-title">העתקות לינאריות: גרעין \\(\\ker(T)\\), תמונה \\(\\text{Im}(T)\\) ומשפט הממד</h3>' +
+      '<p class="linear-lab-desc">חקור את המבנה הגיאומטרי והאלגברי של העתקות לינאריות: הזז וקטור מקור ובדוק מתי הוא נופל לתוך הגרעין (ומתאפס ביעד), צפה במרחב התמונה, ואמת את <strong>משפט הדרגה והאפסיות</strong> (Rank-Nullity Theorem).</p>' +
+      '</div>' +
+      '<div class="linear-controls">' +
+      '<div class="linear-field">' +
+      '<span class="linear-field-label">בחר העתקה לינארית לבחינה:</span>' +
+      '<div class="linear-btn-group" data-maps></div>' +
+      '</div>' +
+      '<div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem;" data-sliders-row>' +
+      '<div class="linear-field">' +
+      '<div class="linear-field-top"><span class="linear-field-label">וקטור מקור \\(x\\):</span><span class="linear-field-val" data-vx-val>2</span></div>' +
+      '<input type="range" min="-4" max="4" step="0.5" value="2" data-vx-slider>' +
+      '</div>' +
+      '<div class="linear-field">' +
+      '<div class="linear-field-top"><span class="linear-field-label">וקטור מקור \\(y\\):</span><span class="linear-field-val" data-vy-val>1</span></div>' +
+      '<input type="range" min="-4" max="4" step="0.5" value="1" data-vy-slider>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="linear-layout-dual">' +
+      '<div class="linear-panel" data-canvas-panel>' +
+      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; text-align:center;">' +
+      '<div>' +
+      '<div style="font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">מרחב המקור \\(V\\) והגרעין \\(\\ker(T)\\):</div>' +
+      '<div class="linear-svg-container"><svg class="linear-svg" viewBox="-120 -120 240 240" data-svg-src></svg></div>' +
+      '</div>' +
+      '<div>' +
+      '<div style="font-weight:700; font-size:0.85rem; margin-bottom:0.25rem;">מרחב היעד \\(W\\) והתמונה \\(\\text{Im}(T)\\):</div>' +
+      '<div class="linear-svg-container"><svg class="linear-svg" viewBox="-120 -120 240 240" data-svg-tgt></svg></div>' +
+      '</div>' +
+      '</div>' +
+      '<div data-v-status style="margin-top:0.5rem; text-align:center; font-weight:700; font-size:0.9rem;"></div>' +
+      '</div>' +
+      '<div class="linear-panel">' +
+      '<div data-badges style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem;"></div>' +
+      '<div class="linear-panel" style="background:var(--card); font-size:0.92rem; margin-bottom:0.75rem;" data-rn-theorem></div>' +
+      '<div style="display:grid; gap:0.4rem; font-size:0.9rem; margin-bottom:0.75rem;">' +
+      '<div class="linear-panel"><strong>בסיס לגרעין \\(\\ker(T)\\):</strong> <span data-ker-tex></span></div>' +
+      '<div class="linear-panel"><strong>בסיס לתמונה \\(\\text{Im}(T)\\):</strong> <span data-im-tex></span></div>' +
+      '</div>' +
+      '<div class="linear-callout" data-callout></div>' +
+      '</div>' +
+      '</div>';
+
+    var mapsGroup = host.querySelector("[data-maps]");
+    maps.forEach(function (m, idx) {
+      var btn = document.createElement("button");
+      btn.className = "linear-btn" + (idx === 0 ? " is-active" : "");
+      btn.textContent = m.label.split(":")[0];
+      btn.title = m.label;
+      btn.addEventListener("click", function () {
+        state.mapIdx = idx;
+        mapsGroup.querySelectorAll(".linear-btn").forEach(function (b, i) {
+          b.classList.toggle("is-active", i === idx);
+        });
+        paint();
+      });
+      mapsGroup.appendChild(btn);
+    });
+
+    var vxS = host.querySelector("[data-vx-slider]");
+    var vyS = host.querySelector("[data-vy-slider]");
+    vxS.addEventListener("input", function () {
+      state.vx = parseFloat(vxS.value);
+      host.querySelector("[data-vx-val]").textContent = state.vx;
+      paint();
+    });
+    vyS.addEventListener("input", function () {
+      state.vy = parseFloat(vyS.value);
+      host.querySelector("[data-vy-val]").textContent = state.vy;
+      paint();
+    });
+
+    var svgSrc = host.querySelector("[data-svg-src]");
+    var svgTgt = host.querySelector("[data-svg-tgt]");
+    makeArrowMarker(svgSrc, "arr-lmap-blue", "#2563eb");
+    makeArrowMarker(svgTgt, "arr-lmap-teal", "#0f766e");
+
+    function paint() {
+      var m = maps[state.mapIdx];
+      var vx = state.vx, vy = state.vy;
+      var slidersRow = host.querySelector("[data-sliders-row]");
+      var canvasPanel = host.querySelector("[data-canvas-panel]");
+
+      if (m.is2D) {
+        slidersRow.style.display = "";
+        canvasPanel.style.display = "";
+
+        var S = 20;
+        while (svgSrc.childNodes.length > 1) svgSrc.removeChild(svgSrc.lastChild);
+        while (svgTgt.childNodes.length > 1) svgTgt.removeChild(svgTgt.lastChild);
+
+        function drawAxes(sEl) {
+          var g = createSvgEl("g", {});
+          for (var k = -5; k <= 5; k++) {
+            g.appendChild(createSvgEl("line", { x1: k * S, y1: -110, x2: k * S, y2: 110, class: "linear-svg-grid" }));
+            g.appendChild(createSvgEl("line", { x1: -110, y1: k * S, x2: 110, y2: k * S, class: "linear-svg-grid" }));
+          }
+          g.appendChild(createSvgEl("line", { x1: -110, y1: 0, x2: 110, y2: 0, class: "linear-svg-axis" }));
+          g.appendChild(createSvgEl("line", { x1: 0, y1: 110, x2: 0, y2: -110, class: "linear-svg-axis" }));
+          sEl.appendChild(g);
+        }
+        drawAxes(svgSrc);
+        drawAxes(svgTgt);
+
+        if (m.id === "proj") {
+          svgSrc.appendChild(createSvgEl("line", { x1: 0, y1: -110, x2: 0, y2: 110, stroke: "#dc2626", "stroke-width": 2.5, "stroke-dasharray": "4,3" }));
+        } else if (m.id === "collapse") {
+          svgSrc.appendChild(createSvgEl("line", { x1: -110, y1: -55, x2: 110, y2: 55, stroke: "#dc2626", "stroke-width": 2.5, "stroke-dasharray": "4,3" }));
+        }
+
+        if (m.id === "proj") {
+          svgTgt.appendChild(createSvgEl("line", { x1: -110, y1: 0, x2: 110, y2: 0, stroke: "#0f766e", "stroke-width": 2.5 }));
+        } else if (m.id === "collapse") {
+          svgTgt.appendChild(createSvgEl("line", { x1: -55, y1: 110, x2: 55, y2: -110, stroke: "#0f766e", "stroke-width": 2.5 }));
+        }
+
+        svgSrc.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: vx * S, y2: -vy * S, stroke: "#2563eb", "stroke-width": 2.5, "marker-end": "url(#arr-lmap-blue)" }));
+
+        var tvx = m.A[0][0] * vx + m.A[0][1] * vy;
+        var tvy = m.A[1][0] * vx + m.A[1][1] * vy;
+        var isZero = Math.abs(tvx) < 1e-4 && Math.abs(tvy) < 1e-4;
+
+        if (isZero) {
+          svgTgt.appendChild(createSvgEl("circle", { cx: 0, cy: 0, r: 6, fill: "#dc2626" }));
+        } else {
+          svgTgt.appendChild(createSvgEl("line", { x1: 0, y1: 0, x2: tvx * S, y2: -tvy * S, stroke: "#0f766e", "stroke-width": 2.8, "marker-end": "url(#arr-lmap-teal)" }));
+        }
+
+        var statusEl = host.querySelector("[data-v-status]");
+        if (isZero) {
+          statusEl.innerHTML = '<span style="color:var(--bad);">הווקטור \\(v\\) שייך לגרעין! \\(T(v) = \\vec{0}\\) (הווקטור התאפס!)</span>';
+        } else {
+          statusEl.innerHTML = '<span style="color:var(--ok);">הווקטור מועתק ל-\\(T(v) = (' + fmtNum(tvx) + ', ' + fmtNum(tvy) + ')\\)</span>';
+        }
+      } else {
+        slidersRow.style.display = "none";
+        canvasPanel.style.display = "none";
+      }
+
+      host.querySelector("[data-badges]").innerHTML =
+        '<span class="linear-badge ' + (m.isInjective ? "linear-badge-ok" : "linear-badge-bad") + '">' + (m.isInjective ? "✓ חח\"ע (גרעין טריוויאלי)" : "✗ אינה חח\"ע (גרעין מכיל וקטורים)") + '</span>' +
+        '<span class="linear-badge ' + (m.isSurjective ? "linear-badge-ok" : "linear-badge-bad") + '">' + (m.isSurjective ? "✓ על (תמונה מכסה את היעד)" : "✗ אינה על (תמונה מנוונת)") + '</span>' +
+        (m.isInjective && m.isSurjective ? '<span class="linear-badge linear-badge-accent">★ איזומורפיזם (הפיכה)</span>' : '');
+
+      var rnTex =
+        "\\dim(V) = \\dim\\ker(T) + \\dim\\text{Im}(T) \\implies " +
+        m.dimV + " = " + m.dimKer + " + " + m.dimIm;
+      renderMathBlock(host.querySelector("[data-rn-theorem]"), rnTex, rnTex);
+
+      host.querySelector("[data-ker-tex]").textContent = "\\(" + m.kerBasis + "\\)";
+      host.querySelector("[data-im-tex]").textContent = "\\(" + m.imBasis + "\\)";
+
+      host.querySelector("[data-callout]").innerHTML =
+        '<div class="linear-callout-title">הסבר פדגוגי ומשמעות גיאומטרית:</div>' +
+        '<p style="margin:0;">' + m.desc + '</p>';
+    }
+
+    paint();
+    host.linearRedraw = paint;
+  }
+
+  /* ==========================================================================
+     מעבדה 8 (יחידה 0): מטריצה מייצגת ודמיון מטריצות (rep-matrix-similarity)
+     ========================================================================== */
+
+  function mountRepMatrixSimilarity(host) {
+    var ops = [
+      {
+        label: "שיקוף בישר y=x: T(x,y) = (y, x)",
+        dim: 2,
+        vNames: ["v_1 = (1, 1)", "v_2 = (1, -1)"],
+        basisE: "E = (e_1, e_2)",
+        basisB: "B = ((1, 1)^t, (1, -1)^t)",
+        matE: [[0, 1], [1, 0]],
+        matB: [[1, 0], [0, -1]],
+        P: [[1, 1], [1, -1]],
+        Pinv: [[0.5, 0.5], [0.5, -0.5]],
+        stepsB: [
+          {
+            title: "עמודה 1: חישוב [T(v₁)]_B",
+            v: "(1, 1)",
+            Tv: "T(1, 1) = (1, 1)",
+            comb: "1 \\cdot v_1 + 0 \\cdot v_2",
+            coords: "\\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}",
+            colIdx: 0
+          },
+          {
+            title: "עמודה 2: חישוב [T(v₂)]_B",
+            v: "(1, -1)",
+            Tv: "T(1, -1) = (-1, 1) = -1 \\cdot (1, -1)",
+            comb: "0 \\cdot v_1 + (-1) \\cdot v_2",
+            coords: "\\begin{pmatrix} 0 \\\\ -1 \\end{pmatrix}",
+            colIdx: 1
+          }
+        ],
+        tr: 0,
+        det: -1,
+        charPoly: "x^2 - 1 = (x-1)(x+1)",
+        desc: "בבסיס הסטנדרטי המטריצה מכילה 0 באלכסון. בבסיס הווקטורים העצמיים B, המטריצה הופכת לאלכסונית לחלוטין! העקבה (0), הדטרמיננטה (-1) והפולינום האופייני זהים לחלוטין בשני הבסיסים."
+      },
+      {
+        label: "מתיחה וגזירה: T(x,y) = (3x+y, 2y)",
+        dim: 2,
+        vNames: ["v_1 = (1, 0)", "v_2 = (-1, 1)"],
+        basisE: "E = (e_1, e_2)",
+        basisB: "B = ((1, 0)^t, (-1, 1)^t)",
+        matE: [[3, 1], [0, 2]],
+        matB: [[3, 0], [0, 2]],
+        P: [[1, -1], [0, 1]],
+        Pinv: [[1, 1], [0, 1]],
+        stepsB: [
+          {
+            title: "עמודה 1: חישוב [T(v₁)]_B",
+            v: "(1, 0)",
+            Tv: "T(1, 0) = (3, 0) = 3v_1",
+            comb: "3 \\cdot v_1 + 0 \\cdot v_2",
+            coords: "\\begin{pmatrix} 3 \\\\ 0 \\end{pmatrix}",
+            colIdx: 0
+          },
+          {
+            title: "עמודה 2: חישוב [T(v₂)]_B",
+            v: "(-1, 1)",
+            Tv: "T(-1, 1) = (-2, 2) = 2(-1, 1) = 2v_2",
+            comb: "0 \\cdot v_1 + 2 \\cdot v_2",
+            coords: "\\begin{pmatrix} 0 \\\\ 2 \\end{pmatrix}",
+            colIdx: 1
+          }
+        ],
+        tr: 5,
+        det: 6,
+        charPoly: "x^2 - 5x + 6 = (x-2)(x-3)",
+        desc: "האלכסון של שתי המטריצות הדומות מציג אותה עקבה (5), אותה דטרמיננטה (6) ואותם ערכים עצמיים (2 ו-3)."
+      },
+      {
+        label: "אופרטור הזזה בפולינומים: T(p(x)) = p(x+1) על ℝ₂[x]",
+        dim: 3,
+        vNames: ["p_1 = 1", "p_2 = x", "p_3 = x^2"],
+        basisE: "E = (1, x, x^2)",
+        basisB: "E = (1, x, x^2)",
+        matE: [[1, 1, 1], [0, 1, 2], [0, 0, 1]],
+        matB: [[1, 1, 1], [0, 1, 2], [0, 0, 1]],
+        P: [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+        Pinv: [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+        stepsB: [
+          {
+            title: "עמודה 1: T(1) = 1",
+            v: "1",
+            Tv: "T(1) = 1 = 1\\cdot 1 + 0\\cdot x + 0\\cdot x^2",
+            comb: "1 \\cdot 1 + 0 \\cdot x + 0 \\cdot x^2",
+            coords: "\\begin{pmatrix} 1 \\\\ 0 \\\\ 0 \\end{pmatrix}",
+            colIdx: 0
+          },
+          {
+            title: "עמודה 2: T(x) = x+1",
+            v: "x",
+            Tv: "T(x) = x+1 = 1\\cdot 1 + 1\\cdot x + 0\\cdot x^2",
+            comb: "1 \\cdot 1 + 1 \\cdot x + 0 \\cdot x^2",
+            coords: "\\begin{pmatrix} 1 \\\\ 1 \\\\ 0 \\end{pmatrix}",
+            colIdx: 1
+          },
+          {
+            title: "עמודה 3: T(x²) = (x+1)²",
+            v: "x^2",
+            Tv: "T(x^2) = x^2 + 2x + 1 = 1\\cdot 1 + 2\\cdot x + 1\\cdot x^2",
+            comb: "1 \\cdot 1 + 2 \\cdot x + 1 \\cdot x^2",
+            coords: "\\begin{pmatrix} 1 \\\\ 2 \\\\ 1 \\end{pmatrix}",
+            colIdx: 2
+          }
+        ],
+        tr: 3,
+        det: 1,
+        charPoly: "(x-1)^3",
+        desc: "בניית מטריצה מייצגת לאופרטור שאינו פועל על וקטורים אלא על פולינומים! המטריצה משולשית עליונה עם 1 באלכסון (ע\"ע יחיד 1 מריבוי 3)."
+      }
+    ];
+
+    var state = {
+      opIdx: 0,
+      activeCol: 0
+    };
+
+    host.innerHTML =
+      '<div class="linear-lab-header">' +
+      '<span class="linear-lab-tag">יחידה 0 · מעבדה אינטראקטיבית</span>' +
+      '<h3 class="linear-lab-title">בניית המטריצה המייצגת \\([T]_B\\) ודמיון מטריצות \\(P^{-1}AP\\)</h3>' +
+      '<p class="linear-lab-desc">בנה שלב-אחר-שלב את המטריצה המייצגת על פי אלגוריתם שלוש הפעולות מלינארית 1: מפעילים את \\(T\\) על וקטורי הבסיס, מוצאים וקטורי קואורדינטות, ומשבצים בעמודות! צפה באימות דמיון המטריצות \\([T]_B = P^{-1}[T]_E P\\) ובשוויון האינווריאנטים: עקבה, דטרמיננטה ופולינום אופייני.</p>' +
+      '</div>' +
+      '<div class="linear-controls">' +
+      '<div class="linear-field">' +
+      '<span class="linear-field-label">בחר אופרטור לינארי:</span>' +
+      '<div class="linear-btn-group" data-ops></div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="linear-layout-dual">' +
+      '<div class="linear-panel">' +
+      '<div style="font-weight:700; margin-bottom:0.5rem;">שלבי הבנייה: לחץ על עמודה כדי לראות את חישובה:</div>' +
+      '<div class="linear-btn-group" data-col-btns style="margin-bottom:0.75rem;"></div>' +
+      '<div class="linear-panel" style="background:var(--card); font-size:0.92rem; margin-bottom:0.75rem;" data-col-calc></div>' +
+      '<div style="display:flex; justify-content:center; align-items:center; gap:1rem;" data-matrix-builder-view></div>' +
+      '</div>' +
+      '<div class="linear-panel">' +
+      '<h4 style="margin:0 0 0.5rem; font-size:1rem;">דמיון מטריצות ואינווריאנטים (Similarity Invariants):</h4>' +
+      '<div class="linear-panel" style="background:var(--card); font-size:0.92rem; margin-bottom:0.75rem;" data-sim-diagram></div>' +
+      '<table class="linear-table">' +
+      '<thead><tr><th>אינווריאנט</th><th>בסיס סטנדרטי \\([T]_E\\)</th><th>בסיס חדש \\([T]_B\\)</th><th>מסקנה</th></tr></thead>' +
+      '<tbody data-invariants-body></tbody>' +
+      '</table>' +
+      '<div class="linear-callout" data-callout style="margin-top:0.75rem;"></div>' +
+      '</div>' +
+      '</div>';
+
+    var opsGroup = host.querySelector("[data-ops]");
+    ops.forEach(function (op, idx) {
+      var btn = document.createElement("button");
+      btn.className = "linear-btn" + (idx === 0 ? " is-active" : "");
+      btn.textContent = op.label.split(":")[0];
+      btn.title = op.label;
+      btn.addEventListener("click", function () {
+        state.opIdx = idx;
+        state.activeCol = 0;
+        opsGroup.querySelectorAll(".linear-btn").forEach(function (b, i) {
+          b.classList.toggle("is-active", i === idx);
+        });
+        render();
+      });
+      opsGroup.appendChild(btn);
+    });
+
+    function render() {
+      var op = ops[state.opIdx];
+      var n = op.dim;
+
+      var colBtnsGroup = host.querySelector("[data-col-btns]");
+      colBtnsGroup.innerHTML = "";
+      op.stepsB.forEach(function (st, idx) {
+        var b = document.createElement("button");
+        b.className = "linear-btn" + (idx === state.activeCol ? " is-active" : "");
+        b.textContent = "עמודה " + (idx + 1) + ": T(" + st.v + ")";
+        b.addEventListener("click", function () {
+          state.activeCol = idx;
+          colBtnsGroup.querySelectorAll(".linear-btn").forEach(function (cb, ci) {
+            cb.classList.toggle("is-active", ci === idx);
+          });
+          renderActiveCol();
+        });
+        colBtnsGroup.appendChild(b);
+      });
+
+      renderActiveCol();
+
+      var pMatTex = "\\begin{pmatrix}";
+      for (var r = 0; r < n; r++) {
+        pMatTex += op.P[r].join(" & ") + (r < n - 1 ? " \\\\ " : "");
+      }
+      pMatTex += "\\end{pmatrix}";
+
+      var simTex =
+        "[T]_B = P^{-1} [T]_E P, \\quad P = [I]_B^E = " + pMatTex;
+      renderMathBlock(host.querySelector("[data-sim-diagram]"), simTex, simTex);
+
+      host.querySelector("[data-invariants-body]").innerHTML =
+        '<tr><td><strong>עקבה (\\(\\text{tr}\\))</strong></td><td>' + op.tr + '</td><td>' + op.tr + '</td><td><span class="linear-badge linear-badge-ok">זהה ✓</span></td></tr>' +
+        '<tr><td><strong>דטרמיננטה (\\(\\det\\))</strong></td><td>' + op.det + '</td><td>' + op.det + '</td><td><span class="linear-badge linear-badge-ok">זהה ✓</span></td></tr>' +
+        '<tr><td><strong>פולינום אופייני</strong></td><td>\\(' + op.charPoly + '\\)</td><td>\\(' + op.charPoly + '\\)</td><td><span class="linear-badge linear-badge-ok">זהה ✓</span></td></tr>';
+
+      host.querySelector("[data-callout]").innerHTML =
+        '<div class="linear-callout-title">התובנה של יחידה 0 לקראת לינארית 2:</div>' +
+        '<p style="margin:0;">' + op.desc + '</p>';
+    }
+
+    function renderActiveCol() {
+      var op = ops[state.opIdx];
+      var st = op.stepsB[state.activeCol];
+      var n = op.dim;
+
+      var colHtml =
+        "<strong>" + st.title + ":</strong><br>" +
+        "1. הפעלת ההעתקה: \\(" + st.Tv + "\\)<br>" +
+        "2. הצגה כצירוף לינארי של איברי הבסיס: \\(" + st.comb + "\\)<br>" +
+        "3. וקטור קואורדינטות (שיבוץ בעמודה " + (state.activeCol + 1) + "): \\(" + st.coords + "\\)";
+      renderMathBlock(host.querySelector("[data-col-calc]"), colHtml, colHtml);
+
+      var matHtml = '<div><div style="text-align:center; font-weight:700; margin-bottom:0.25rem;">המטריצה המייצגת \\([T]_B\\)</div>' +
+        '<div class="linear-matrix-wrap"><div class="linear-matrix-grid" style="grid-template-columns: repeat(' + n + ', auto);">';
+      for (var r = 0; r < n; r++) {
+        for (var c = 0; c < n; c++) {
+          var val = op.matB[r][c];
+          var cls = "linear-matrix-cell";
+          if (c === state.activeCol) cls += " linear-cell-active-col";
+          matHtml += '<div class="' + cls + '">' + fmtNum(val) + '</div>';
+        }
+      }
+      matHtml += '</div></div></div>';
+      host.querySelector("[data-matrix-builder-view]").innerHTML = matHtml;
+    }
+
+    render();
+  }
+
+  /* ==========================================================================
+     מעבדה 9 (יחידה 0): דטרמיננטה 3x3 ופולינום אופייני (det-charpoly-3x3)
+     ========================================================================== */
+
+  function mountDetCharpoly3x3(host) {
+    var presets = [
+      {
+        label: "3×3 עם אפסים: ע\"ע 1, 2, 3",
+        A: [[2, 1, 0], [0, 3, 0], [1, 2, 1]],
+        eigs: [1, 2, 3],
+        det: 6,
+        tr: 6,
+        m2: 11,
+        factored: "(x-1)(x-2)(x-3)",
+        desc: "שימו לב: בשורה 2 ובעמודה 3 יש אפסים מרובים. פיתוח לפלס לאורכם חוסך 66% מהחישובים!"
+      },
+      {
+        label: "3×3 מלאה: ע\"ע 3 (ריבוי 2), 5",
+        A: [[4, 1, -1], [2, 5, -2], [1, 1, 2]],
+        eigs: [3, 3, 5],
+        det: 45,
+        tr: 11,
+        m2: 39,
+        factored: "(x-3)^2 (x-5)",
+        desc: "מטריצה מלאה. הערך העצמי 3 מופיע בריבוי אלגברי 2."
+      },
+      {
+        label: "מטריצה נלווית (Companion): ע\"ע 1, 2, 3",
+        A: [[0, 1, 0], [0, 0, 1], [6, -11, 6]],
+        eigs: [1, 2, 3],
+        det: 6,
+        tr: 6,
+        m2: 11,
+        factored: "(x-1)(x-2)(x-3)",
+        desc: "מטריצה נלווית לפולינום x³ - 6x² + 11x - 6. מקדמי הפולינום מופיעים ישירות בשורה התחתונה!"
+      },
+      {
+        label: "מטריצה לא הפיכה (שורות תלויות, det = 0)",
+        A: [[1, 2, 3], [2, 4, 6], [0, 1, 1]],
+        eigs: [0, "λ₂", "λ₃"],
+        det: 0,
+        tr: 6,
+        m2: 2,
+        factored: "x(x^2 - 6x + 2)",
+        desc: "שורה 2 שווה בדיוק ל-2·R₁. הדטרמיננטה מתאפסת, המטריצה אינה הפיכה, ו-0 הוא ערך עצמי!"
+      }
+    ];
+
+    var state = {
+      presetIdx: 0,
+      mode: "laplace", // "laplace", "charpoly"
+      expandType: "row", // "row" or "col"
+      expandIdx: 0, // 0, 1, 2
+      activeTerm: 0
+    };
+
+    host.innerHTML =
+      '<div class="linear-lab-header">' +
+      '<span class="linear-lab-tag">יחידה 0 · מעבדה אינטראקטיבית</span>' +
+      '<h3 class="linear-lab-title">דטרמיננטה \\(3\\times 3\\) והפולינום האופייני \\(P_A(x) = \\det(xI - A)\\)</h3>' +
+      '<p class="linear-lab-desc">חקור את חישוב הדטרמיננטה לפי פיתוח לפלס בשורות ובעמודות: ראה את תבנית סימני השחמט \\((-1)^{i+j}\\), חצה שורה ועמודה כדי לגלות את המינור הנותר \\(2\\times 2\\), ועבור לפיתוח הפולינום האופייני \\(\\det(xI - A)\\) לקביעת הערכים העצמיים.</p>' +
+      '</div>' +
+      '<div class="linear-tabs" data-modes>' +
+      '<button class="linear-tab-btn is-active" data-mode="laplace">חישוב הדטרמיננטה לפי פיתוח לפלס (Laplace Expansion)</button>' +
+      '<button class="linear-tab-btn" data-mode="charpoly">פיתוח הפולינום האופייני det(xI - A) (Characteristic Polynomial)</button>' +
+      '</div>' +
+      '<div class="linear-controls">' +
+      '<div class="linear-field">' +
+      '<span class="linear-field-label">בחר מטריצה \\(3\\times 3\\):</span>' +
+      '<div class="linear-btn-group" data-presets></div>' +
+      '</div>' +
+      '<div class="linear-field" data-expand-controls>' +
+      '<span class="linear-field-label">בחר שורה או עמודה לפיתוח לפלס:</span>' +
+      '<div class="linear-btn-group" data-lines>' +
+      '<button class="linear-btn is-active" data-type="row" data-idx="0">שורה 1</button>' +
+      '<button class="linear-btn" data-type="row" data-idx="1">שורה 2</button>' +
+      '<button class="linear-btn" data-type="row" data-idx="2">שורה 3</button>' +
+      '<button class="linear-btn" data-type="col" data-idx="0">עמודה 1</button>' +
+      '<button class="linear-btn" data-type="col" data-idx="1">עמודה 2</button>' +
+      '<button class="linear-btn" data-type="col" data-idx="2">עמודה 3</button>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="linear-layout-dual">' +
+      '<div class="linear-panel">' +
+      '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">' +
+      '<span style="font-weight:700; font-size:0.92rem;">רשת המטריצה ותבנית הסימנים \\((-1)^{i+j}\\):</span>' +
+      '</div>' +
+      '<div class="linear-det-grid" data-det-grid></div>' +
+      '<div style="text-align:center; font-size:0.8rem; color:var(--muted); margin-top:0.4rem;">לחץ על איבר בשורת/עמודת הפיתוח כדי לחצות את השורה והעמודה שלו</div>' +
+      '</div>' +
+      '<div class="linear-panel">' +
+      '<div data-badges style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem;"></div>' +
+      '<div class="linear-panel" style="background:var(--card); font-size:0.92rem; margin-bottom:0.75rem;" data-formula-panel></div>' +
+      '<div class="linear-callout" data-callout></div>' +
+      '</div>' +
+      '</div>';
+
+    var presGroup = host.querySelector("[data-presets]");
+    presets.forEach(function (p, idx) {
+      var btn = document.createElement("button");
+      btn.className = "linear-btn" + (idx === 0 ? " is-active" : "");
+      btn.textContent = p.label.split(":")[0];
+      btn.title = p.label;
+      btn.addEventListener("click", function () {
+        state.presetIdx = idx;
+        presGroup.querySelectorAll(".linear-btn").forEach(function (b, i) {
+          b.classList.toggle("is-active", i === idx);
+        });
+        paint();
+      });
+      presGroup.appendChild(btn);
+    });
+
+    var modeBtns = host.querySelectorAll("[data-modes] .linear-tab-btn");
+    modeBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.mode = btn.getAttribute("data-mode");
+        modeBtns.forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        host.querySelector("[data-expand-controls]").style.display = state.mode === "laplace" ? "" : "none";
+        paint();
+      });
+    });
+
+    var lineBtns = host.querySelectorAll("[data-lines] .linear-btn");
+    lineBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.expandType = btn.getAttribute("data-type");
+        state.expandIdx = parseInt(btn.getAttribute("data-idx"), 10);
+        state.activeTerm = 0;
+        lineBtns.forEach(function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        paint();
+      });
+    });
+
+    function paint() {
+      var p = presets[state.presetIdx];
+      var A = p.A;
+      var gridEl = host.querySelector("[data-det-grid]");
+      var badgesEl = host.querySelector("[data-badges]");
+      var formEl = host.querySelector("[data-formula-panel]");
+      var calloutEl = host.querySelector("[data-callout]");
+
+      if (state.mode === "laplace") {
+        var isRow = state.expandType === "row";
+        var lineIdx = state.expandIdx;
+
+        var crossR = isRow ? lineIdx : state.activeTerm;
+        var crossC = isRow ? state.activeTerm : lineIdx;
+
+        gridEl.innerHTML = "";
+        for (var r = 0; r < 3; r++) {
+          for (var c = 0; c < 3; c++) {
+            var cell = document.createElement("div");
+            cell.className = "linear-det-cell";
+            var sign = (r + c) % 2 === 0 ? "+" : "−";
+            var isChosenLine = isRow ? (r === lineIdx) : (c === lineIdx);
+            var isPivotEl = (r === crossR && c === crossC);
+            var isCrossed = (r === crossR || c === crossC) && !isPivotEl;
+            var isMinor = (!isCrossed && !isPivotEl);
+
+            if (isPivotEl) cell.className += " linear-cell-active-target";
+            else if (isCrossed) cell.className += " linear-cell-crossed";
+            else if (isMinor) cell.className += " linear-cell-minor";
+
+            cell.innerHTML =
+              '<span class="linear-det-cell-sign">' + sign + '</span>' +
+              '<span class="linear-det-cell-val">' + A[r][c] + '</span>';
+
+            (function (row, col) {
+              cell.addEventListener("click", function () {
+                if (isRow && row === lineIdx) {
+                  state.activeTerm = col;
+                  paint();
+                } else if (!isRow && col === lineIdx) {
+                  state.activeTerm = row;
+                  paint();
+                }
+              });
+            })(r, c);
+
+            gridEl.appendChild(cell);
+          }
+        }
+
+        var termsData = [];
+        var totalDet = 0;
+        for (var k = 0; k < 3; k++) {
+          var curR = isRow ? lineIdx : k;
+          var curC = isRow ? k : lineIdx;
+          var val = A[curR][curC];
+          var sgn = (curR + curC) % 2 === 0 ? 1 : -1;
+
+          var sub = [];
+          for (var i = 0; i < 3; i++) {
+            if (i === curR) continue;
+            var rowVals = [];
+            for (var j = 0; j < 3; j++) {
+              if (j === curC) continue;
+              rowVals.push(A[i][j]);
+            }
+            sub.push(rowVals);
+          }
+          var minorVal = sub[0][0] * sub[1][1] - sub[0][1] * sub[1][0];
+          var cofactor = sgn * minorVal;
+          var termContrib = val * cofactor;
+          totalDet += termContrib;
+
+          termsData.push({
+            r: curR, c: curC, val: val, sgn: sgn,
+            sub: sub, minor: minorVal, cofactor: cofactor, contrib: termContrib
+          });
+        }
+
+        badgesEl.innerHTML =
+          '<span class="linear-badge linear-badge-accent">פיתוח לפי ' + (isRow ? "שורה " : "עמודה ") + (lineIdx + 1) + '</span>' +
+          '<span class="linear-badge ' + (totalDet !== 0 ? "linear-badge-ok" : "linear-badge-bad") + '">\\(\\det(A) = ' + totalDet + '\\) (' + (totalDet !== 0 ? "הפיכה" : "סינגולרית / לא הפיכה") + ')</span>';
+
+        var act = termsData[state.activeTerm];
+        var sgnText = act.sgn > 0 ? "+1" : "-1";
+
+        var calcHtml =
+          "<strong>איבר נבחר: \\(a_{" + (act.r + 1) + (act.c + 1) + "} = " + act.val + "\\)</strong><br>" +
+          "1. סימן שחמט: \\((-1)^{" + (act.r + 1) + "+" + (act.c + 1) + "} = " + sgnText + "\\)<br>" +
+          "2. מינור \\(2\\times 2\\) נותר: \\(M_{" + (act.r + 1) + (act.c + 1) + "} = \\begin{vmatrix} " + act.sub[0][0] + " & " + act.sub[0][1] + " \\\\ " + act.sub[1][0] + " & " + act.sub[1][1] + " \\end{vmatrix} = (" + act.sub[0][0] + "\\cdot " + act.sub[1][1] + " - " + act.sub[0][1] + "\\cdot " + act.sub[1][0] + ") = " + act.minor + "\\)<br>" +
+          "3. קו-פקטור: \\(C_{" + (act.r + 1) + (act.c + 1) + "} = (" + sgnText + ") \\cdot " + act.minor + " = " + act.cofactor + "\\)<br>" +
+          "4. תרומה לדטרמיננטה: \\(" + act.val + " \\cdot (" + act.cofactor + ") = " + act.contrib + "\\)" +
+          "<hr style='border:none; border-top:1px solid var(--line); margin:0.5rem 0;'>" +
+          "<strong>סכום לפלס המלא:</strong>" +
+          "\\[ \\det(A) = (" + termsData[0].contrib + ") + (" + termsData[1].contrib + ") + (" + termsData[2].contrib + ") = " + totalDet + " \\]";
+
+        renderMathBlock(formEl, calcHtml, calcHtml);
+
+        calloutEl.innerHTML =
+          '<div class="linear-callout-title">טיפ אסטרטגי לפיתוח לפלס:</div>' +
+          '<p style="margin:0;">' + p.desc + '</p>';
+      } else {
+        gridEl.innerHTML = "";
+        for (var r2 = 0; r2 < 3; r2++) {
+          for (var c2 = 0; c2 < 3; c2++) {
+            var cell2 = document.createElement("div");
+            cell2.className = "linear-det-cell";
+            var text = "";
+            if (r2 === c2) {
+              text = "x" + (A[r2][c2] >= 0 ? "−" + A[r2][c2] : "+" + Math.abs(A[r2][c2]));
+            } else {
+              text = String(-A[r2][c2]);
+            }
+            cell2.innerHTML = '<span class="linear-det-cell-val" style="font-size:0.95rem;">' + text + '</span>';
+            gridEl.appendChild(cell2);
+          }
+        }
+
+        badgesEl.innerHTML =
+          '<span class="linear-badge linear-badge-accent">עקבה: \\(\\text{tr}(A) = ' + p.tr + '\\)</span>' +
+          '<span class="linear-badge linear-badge-accent">\\(M_2(A) = ' + p.m2 + '\\)</span>' +
+          '<span class="linear-badge linear-badge-accent">\\(\\det(A) = ' + p.det + '\\)</span>' +
+          '<span class="linear-badge linear-badge-ok">ע\"ע: \\(' + p.eigs.join(", ") + '\\)</span>';
+
+        var cpTex =
+          "P_A(x) = \\det(xI - A) = \\begin{vmatrix} " +
+          "x - " + A[0][0] + " & " + (-A[0][1]) + " & " + (-A[0][2]) + " \\\\ " +
+          (-A[1][0]) + " & x - " + A[1][1] + " & " + (-A[1][2]) + " \\\\ " +
+          (-A[2][0]) + " & " + (-A[2][1]) + " & x - " + A[2][2] + " \\end{vmatrix}" +
+          "\\\\ = x^3 - \\text{tr}(A)x^2 + M_2(A)x - \\det(A)" +
+          " = x^3 - " + p.tr + "x^2 + " + p.m2 + "x - " + p.det +
+          "\\\\ = " + p.factored + " = 0";
+
+        renderMathBlock(formEl, cpTex, cpTex);
+
+        calloutEl.innerHTML =
+          '<div class="linear-callout-title">נוסחת ויאטה לפולינום אופייני \\(3\\times 3\\):</div>' +
+          '<p style="margin:0;">במטריצות \\(3\\times 3\\), מקדם \\(x^2\\) הוא תמיד מינוס העקבה (\\(-\\text{tr}(A)\\)), המקדם החופשי הוא מינוס הדטרמיננטה (\\(-\\det(A)\\)), והמקדם של \\(x\\) הוא סכום שלושת המינורים הראשיים \\(2\\times 2\\) (\\(M_2(A)\\)). פירוק הפולינום לגורמים חושף מיד את כל הערכים העצמיים והריבויים האלגבריים!</p>';
+      }
+    }
+
+    paint();
+  }
+
+
   /* --------------------------------------------------------------------------
      4. הנתב המרכזי והרשמה ל-CS_ENHANCERS
      -------------------------------------------------------------------------- */
@@ -3075,6 +5558,24 @@
         kind === "jordan-chains"
       ) {
         mountJordanChains(node);
+      } else if (kind === "lab-complex-plane" || kind === "complex-plane") {
+        mountComplexPlane(node);
+      } else if (kind === "lab-modular-field-calc" || kind === "modular-field-calc") {
+        mountModularFieldCalc(node);
+      } else if (kind === "lab-matrix-ops-adjoint" || kind === "matrix-ops-adjoint") {
+        mountMatrixOpsAdjoint(node);
+      } else if (kind === "lab-span-independence" || kind === "span-independence") {
+        mountSpanIndependence(node);
+      } else if (kind === "lab-subspaces-direct-sum" || kind === "subspaces-direct-sum") {
+        mountSubspacesDirectSum(node);
+      } else if (kind === "lab-change-of-basis-2d" || kind === "change-of-basis-2d") {
+        mountChangeOfBasis2D(node);
+      } else if (kind === "lab-linear-map-ker-im" || kind === "linear-map-ker-im") {
+        mountLinearMapKerIm(node);
+      } else if (kind === "lab-rep-matrix-similarity" || kind === "rep-matrix-similarity") {
+        mountRepMatrixSimilarity(node);
+      } else if (kind === "lab-det-charpoly-3x3" || kind === "det-charpoly-3x3") {
+        mountDetCharpoly3x3(node);
       } else {
         // Fallback placeholder if unknown id
         node.innerHTML =
