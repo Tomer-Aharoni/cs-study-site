@@ -95,7 +95,7 @@ window.SUMMARY_DETAIL = window.SUMMARY_DETAIL || {};
     viz: null,
     banks: [],
     exams: [],
-    guide: "data/20425/summary/study-guide-notes.js?v=1",
+    guide: "data/20425/summary/study-guide-notes.js?v=2",
     publishedContent: "data/20425/published-content.js?v=1",
     areas: [
       { id: "20937", href: "index.html", label: "20937 · תכנות מערכות דפנסיבי" },
