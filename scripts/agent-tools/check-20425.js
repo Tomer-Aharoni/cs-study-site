@@ -85,6 +85,15 @@ SUMMARY_CARDS.forEach((c) => claim(c.id, "card"));
 walk(SUMMARY_CARDS, "SUMMARY_CARDS");
 walk(window.SUMMARY_PROSE || {}, "SUMMARY_PROSE");
 walk(window.SUMMARY_DETAIL || {}, "SUMMARY_DETAIL");
+const guidePath = path.join(root, "data/20425/summary/study-guide-notes.js");
+if (fs.existsSync(guidePath)) {
+  try {
+    require(guidePath);
+    walk(window.STUDY_GUIDE_NOTES || [], "STUDY_GUIDE_NOTES");
+  } catch (err) {
+    problems.push("study-guide-notes.js: " + err.message);
+  }
+}
 
 console.log(`${segments} math segments, ${ids.size} ids, ${problems.length} problems`);
 problems.forEach((p) => console.log(" - " + p));

@@ -272,8 +272,9 @@ function renderFlip() {
 function renderGuideNotes() {
   const notes = window.STUDY_GUIDE_NOTES || [];
   let html = `<p class="back-row"><a class="back" href="#/course/${COURSE.id}">לקורס</a></p>`;
-  html += `<h1>הערות למדריך הלמידה</h1>`;
-  html += `<p class="muted">ריכוז הערות ו"צ'יט-שיטים" מומלצים לכתיבה במדריך הלמידה הרשמי לקראת המבחן.</p>`;
+  const isProb = window.COURSE && COURSE.id === "20425";
+  html += `<h1>${isProb ? "הערות עזר לספר «סטטיסטיקה» למבחן" : "הערות למדריך הלמידה"}</h1>`;
+  html += `<p class="muted">${isProb ? 'ריכוז תמציתי של נוסחאות, קיצורי דרך וטריקים שאינם מופיעים בדף הנוסחאות הרשמי — להעתקה אל הספר «סטטיסטיקה» שמותר להכניס לבחינה, יחד עם הסבר מתי ואיך לשלוף כל אחד.' : 'ריכוז הערות ו"צ\'יט-שיטים" מומלצים לכתיבה במדריך הלמידה הרשמי לקראת המבחן.'}</p>`;
   
     html += `
     <div class="panel quiz is-bad" style="background-color: var(--bad-bg); border-color: var(--bad); padding: 15px; margin-bottom: 25px; border-radius: 12px; box-shadow: var(--shadow-sm);">
@@ -291,7 +292,7 @@ function renderGuideNotes() {
   
   notes.forEach((note) => {
     html += `<div class="panel quiz">
-      <div class="box-head"><h2>יחידה ${note.unit}: ${esc(note.title)}</h2></div>
+      <div class="box-head"><h2>${note.unit === "כללי" || note.unit === "General" ? "" : "יחידה " + note.unit + ": "}${esc(note.title)}</h2></div>
       <div class="content">${note.content}</div>
     </div>`;
   });
